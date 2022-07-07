@@ -6,6 +6,13 @@ const { checkPermission } = require("../accessControl");
 let resource = "user";
 
 router.get(
+  "/generate-number",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGenerateNumber
+);
+
+router.get(
   "/",
   auth.required,
   checkPermission(resource, "read"),
@@ -22,7 +29,7 @@ router.post(
   "/",
   auth.required,
   checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(

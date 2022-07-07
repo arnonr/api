@@ -20,9 +20,17 @@ const methods = {
     $where = {};
 
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
-    if (req.query.StaffNumber) $where["StaffNumber"] = req.query.StaffNumber;
+
+    if (req.query.StaffNumber)
+      $where["StaffNumber"] = {
+        [Op.like]: "%" + req.query.StaffNumber + "%",
+      };
+
     if (req.query.StaffIdentificationNumber)
-      $where["StaffIdentificationNumber"] = req.query.StaffIdentificationNumber;
+      $where["StaffIdentificationNumber"] = {
+        [Op.like]: "%" + req.query.StaffIdentificationNumber + "%",
+      };
+
     if (req.query.StaffTitleID) $where["StaffTitleID"] = req.query.StaffTitleID;
 
     if (req.query.StaffGivenName)

@@ -51,6 +51,16 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGenerateNumber(req, res) {
+    try {
+      let result = await Service.GenerateNumber(req.query.OrganizationID);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
 };
 
 module.exports = { ...methods };

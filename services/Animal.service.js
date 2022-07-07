@@ -52,6 +52,13 @@ const methods = {
     if (req.query.OrganizationZoneID) $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
     
     // Breed
+
+    // ช่วงวันเกิด
+    if (req.query.AnimalBirthDateStart) {
+      $where["AnimalBirthDate"] = {
+        [Op.between]: [req.query.AnimalBirthDateStart, req.query.AnimalBirthDateEnd],
+      };
+    }
     
     // ProjectID
     let WhereProject = null;

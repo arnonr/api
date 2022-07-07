@@ -1,9 +1,11 @@
+const e = require("express");
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farm"),
   { Op } = require("sequelize");
 
 const FarmToProject = require("../models/FarmToProject");
+const Organization = require("../models/Organization");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -36,6 +38,15 @@ const methods = {
     if (req.query.FarmStatusID)
       $where["FarmProvinceID"] = req.query.FarmStatusID;
     if (req.query.ProjectID) $where["FarmProvinceID"] = req.query.ProjectID;
+
+    if (req.query.FarmRegisterStartDate) {
+      $where["FarmRegisterDate"] = {
+        [Op.between]: [
+          req.query.FarmRegisterStartDate,
+          req.query.FarmRegisterEndDate,
+        ],
+      };
+    }
 
     // ProjectID
     let WhereProject = null;
@@ -181,15 +192,14 @@ const methods = {
 
         // loop pta ของทั้งหมดที่มาจาก DB
         searchFTP.forEach((ftp) => {
-            console.log(ProjectIDList)
-            console.log(ftp.ProjectID)
+          console.log(ProjectIDList);
+          console.log(ftp.ProjectID);
           // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
           if (!ProjectIDList.includes(String(ftp.ProjectID))) {
-            console.log("freedom")
+            console.log("freedom");
             FarmToProject.destroy({
               where: { FarmToProjectID: ftp.FarmToProjectID },
             });
-
           }
         });
 
@@ -229,14 +239,42 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = FarmToProject.update({ isRemove: 1, isActive: 0 }, { where: { FarmID: id } });
-
+        const obj1 = FarmToProject.update(
+          { isRemove: 1, isActive: 0 },
+          { where: { FarmID: id } }
+        );
 
         resolve();
       } catch (error) {
         reject(error);
       }
     });
+  },
+
+  GenerateNumber(OrganizationID) {
+    // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
+    return new Promise(async (resolve, reject) => {
+      try {
+        let farm = await db.max('FarmIdentificationNumber',{ where: { OrganizationID: OrganizationID } });
+
+        if(farm){
+          var FarmNumberGenerate = parseInt(farm)+1
+        }else{
+          let organization = await Organization.findByPk(OrganizationID);
+          if(!organization){
+            reject(ErrorNotFound("Organization ID: not found"));
+          }else{
+            FarmNumberGenerate = parseInt(organization.OrganizationCode+"0001")
+          }
+        }
+        
+        resolve({FarmNumberGenerate: FarmNumberGenerate});
+      } catch (error) {
+        reject(ErrorNotFound("id: not found"));
+      }
+    });
+
+    
   },
 };
 
