@@ -1,0 +1,134 @@
+const { Model, DataTypes } = require("sequelize"),
+  crypto = require("crypto"),
+  jwt = require("jsonwebtoken"),
+  config = require("../configs/app"),
+  { sequelize } = require("../configs/databases");
+
+class User extends Model {
+  // Generate JWT
+  generateJWT(obj) {
+    let today = new Date(),
+      exp = new Date(today);
+    // exp.setDate(today.getDate() + config.token_exp_days || 1);
+    exp.setMinutes(today.getMinutes() + 60);
+    return jwt.sign(
+      {
+        id: this.id,
+        username: this.username,
+        role: this.role,
+        exp: parseInt(exp.getTime() / 1000),
+      },
+      config.secret
+    );
+  }
+
+  getFullname() {
+    return [this.firstname, this.lastname].join(" ");
+  }
+
+  // Custom JSON Response
+  toJSON() {
+    return {
+      id: this.id,
+      username: this.username,
+      firstname: this.firstname,
+      lastname: this.lastname,
+      email: this.email,
+      age: this.age,
+      photo_url:
+        (this.photo_url) ? "http://localhost:3000/static/uploads/images/users/"+this.photo_url : "http://localhost:3000/static/uploads/images/users/",
+      birthday: this.birthday,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
+
+  // Hash Password
+  passwordHash(password) {
+    return crypto.createHash("sha1").update(password).digest("hex");
+  }
+
+  // Verify Password
+  validPassword(password) {
+    return this.passwordHash(password) === this.password;
+  }
+}
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isUnique: function (value, next) {
+          let self = this;
+          User.findOne({ where: { username: value, active: 1 } })
+            .then(function (user) {
+              if (user && self.id !== user.id) {
+                throw new Error("Username already in use!");
+              }
+              return next();
+            })
+            .catch(function (err) {
+              return next(err);
+            });
+        },
+      },
+    },
+    password: DataTypes.STRING(255),
+    firstname: DataTypes.STRING(255),
+    lastname: DataTypes.STRING(255),
+    role: DataTypes.STRING(255),
+    photo_url: DataTypes.STRING(255),
+    fullName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.firstName} ${this.lastName}`;
+      },
+      set(value) {
+        throw new Error("Do not try to set the `fullName` value!");
+      },
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+    },
+    active: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
+  },
+  {
+    sequelize,
+    timestamps: true,
+    modelName: 'users',
+    hooks: {
+      beforeSave: (user) => {
+        //  user
+      },
+    },
+  }
+);
+
+(async () => {
+  await sequelize.sync();
+  // Code here
+})();
+
+module.exports = User;
+
+

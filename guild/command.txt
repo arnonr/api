@@ -1,0 +1,12 @@
+
+npx sequelize migration:generate --name groups
+
+npx sequelize db:migrate
+
+npx sequelize-cli db:seed --seed update-feature.js
+
+
+docker compose up -d
+
+
+docker logs -f a18
