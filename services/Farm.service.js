@@ -255,26 +255,28 @@ const methods = {
     // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
     return new Promise(async (resolve, reject) => {
       try {
-        let farm = await db.max('FarmIdentificationNumber',{ where: { OrganizationID: OrganizationID } });
+        let farm = await db.max("FarmIdentificationNumber", {
+          where: { OrganizationID: OrganizationID },
+        });
 
-        if(farm){
-          var FarmNumberGenerate = parseInt(farm)+1
-        }else{
+        if (farm) {
+          var FarmNumberGenerate = parseInt(farm) + 1;
+        } else {
           let organization = await Organization.findByPk(OrganizationID);
-          if(!organization){
+          if (!organization) {
             reject(ErrorNotFound("Organization ID: not found"));
-          }else{
-            FarmNumberGenerate = parseInt(organization.OrganizationCode+"0001")
+          } else {
+            FarmNumberGenerate = parseInt(
+              organization.OrganizationCode + "0001"
+            );
           }
         }
-        
-        resolve({FarmNumberGenerate: FarmNumberGenerate});
+
+        resolve({ FarmNumberGenerate: FarmNumberGenerate });
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
     });
-
-    
   },
 };
 

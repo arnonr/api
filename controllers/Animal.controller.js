@@ -51,6 +51,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGenerateNumber(req, res) {
+    try {
+      let result = await Service.GenerateNumber(req.query.FarmID,req.query.BirthDate);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

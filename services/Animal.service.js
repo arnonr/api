@@ -2,8 +2,10 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Animal"),
   { Op } = require("sequelize");
+const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
+const Farm = require("../models/Farm");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -40,26 +42,37 @@ const methods = {
       };
 
     if (req.query.FarmID) $where["AnimalSexID"] = req.query.FarmID;
-    if (req.query.AnimalFirstBreed) $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
-    if (req.query.AnimalFatherID) $where["AnimalFatherID"] = req.query.AnimalFatherID;
-    if (req.query.AnimalMotherID) $where["AnimalMotherID"] = req.query.AnimalMotherID;
+    if (req.query.AnimalFirstBreed)
+      $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
+    if (req.query.AnimalFatherID)
+      $where["AnimalFatherID"] = req.query.AnimalFatherID;
+    if (req.query.AnimalMotherID)
+      $where["AnimalMotherID"] = req.query.AnimalMotherID;
 
-    if (req.query.AnimalBornType) $where["AnimalBornType"] = req.query.AnimalBornType;
-    if (req.query.AnimalBornTypeID) $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
-    if (req.query.AnimalSource) $where["AnimalBornTypeID"] = req.query.	AnimalSource;
+    if (req.query.AnimalBornType)
+      $where["AnimalBornType"] = req.query.AnimalBornType;
+    if (req.query.AnimalBornTypeID)
+      $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
+    if (req.query.AnimalSource)
+      $where["AnimalBornTypeID"] = req.query.AnimalSource;
     if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
-    if (req.query.OrganizationID) $where["OrganizationID"] = req.query.OrganizationID;
-    if (req.query.OrganizationZoneID) $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-    
+    if (req.query.OrganizationID)
+      $where["OrganizationID"] = req.query.OrganizationID;
+    if (req.query.OrganizationZoneID)
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
     // Breed
 
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {
       $where["AnimalBirthDate"] = {
-        [Op.between]: [req.query.AnimalBirthDateStart, req.query.AnimalBirthDateEnd],
+        [Op.between]: [
+          req.query.AnimalBirthDateStart,
+          req.query.AnimalBirthDateEnd,
+        ],
       };
     }
-    
+
     // ProjectID
     let WhereProject = null;
     if (req.query.ProjectID) {
@@ -259,6 +272,58 @@ const methods = {
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  GenerateNumber(FarmID, BirthDate) {
+    // หมายเลขประจำตัวสัตว์ ระบบ auto generate ให้ มี FORMAT ตามปีเกิด + เลขทะเบียนฟาร์ม + running number 5 หลัก เช่น ปีเกิดคือ 2022 เลขทะเบียนฟาร์มคือ 101010-0001 เลขที่ได้จะเป็น 1022101010-0001-00001 กรณีที่ไม่ทราบปีเกิดให้ใช้ปีที่บันทึกข้อมูล
+    return new Promise(async (resolve, reject) => {
+      try {
+        let date = new Date();
+        if (BirthDate) {
+          date = new Date(BirthDate);
+        }
+
+        year = date.getFullYear();
+
+        let farm = await Farm.findByPk(FarmID);
+        if (farm) {
+          let animal = await db.max("AnimalIdentificationID", {
+            where: {
+              FarmID: FarmID,
+              AnimalIdentificationID: {
+                [Op.startsWith]: year,
+              },
+            },
+          });
+
+          if (animal) {
+            let codeLastest = animal.substr(-5);
+            codeLastest = parseInt(codeLastest) + 1;
+            let number = 5 - parseInt(String(codeLastest).length);
+
+            if (number != 0) {
+              console.log(number);
+              codeLastest = String(codeLastest);
+              for (let i = 1; i <= number; i++) {
+                codeLastest = "0" + codeLastest;
+              }
+            }
+
+            AnimalNumberGenerate =
+              year + farm.FarmIdentificationNumber + codeLastest;
+          } else {
+            AnimalNumberGenerate =
+              year + farm.FarmIdentificationNumber + "00001";
+          }
+        } else {
+          reject(ErrorNotFound("Farm ID: not found"));
+        }
+
+        resolve({ AnimalNumberGenerate: AnimalNumberGenerate });
+      } catch (error) {
+        reject(ErrorNotFound("id: not found"));
       }
     });
   },
