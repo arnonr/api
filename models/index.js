@@ -26,6 +26,7 @@ const Gender = require("./Gender");
 const MarriedStatus = require("./MarriedStatus");
 const PositionType = require("./PositionType");
 const Position = require("./Position");
+const Major = require("./Major");
 const Education = require("./Education");
 const Occupation = require("./Occupation");
 
@@ -79,6 +80,7 @@ Staff.associate({
   Province,
   Tumbol,
   Education,
+  Major
 });
 
 User.associate({ Staff, Group, UserToAnimalType });

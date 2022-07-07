@@ -123,6 +123,12 @@ class Staff extends Model {
             EducationNameEN: this.get().Education.EducationNameEN,
           }
         : "",
+      Major: this.get().Major
+        ? {
+            MajorCode: this.get().Major.MajorCode,
+            MajorName: this.get().Major.MajorName,
+          }
+        : "",
     };
   }
 }
