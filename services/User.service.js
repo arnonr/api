@@ -24,6 +24,7 @@ const Group = require("../models/Group");
 const GroupAuthorize = require("../models/GroupAuthorize");
 
 const UserToAnimalType = require("../models/UserToAnimalType");
+const AnimalType = require("../models/AnimalType");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -80,8 +81,7 @@ const methods = {
     query["include"] = [
       { all: true, nested: true },
       {
-        model: UserToAnimalType,
-        as: "UserToAnimalType",
+        model: AnimalType,
         where: WhereAnimalType,
       },
     ];
@@ -97,8 +97,26 @@ const methods = {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[1];
+
+            //
+            rows = rows.map((data) => {
+              let animalTypeArray = "";
+              data.AnimalTypes.forEach((element) => {
+                if (animalTypeArray == "") {
+                  animalTypeArray = element.AnimalTypeName;
+                } else {
+                  animalTypeArray =
+                    animalTypeArray + "," + element.AnimalTypeName;
+                }
+              });
+              data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
+
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -118,12 +136,29 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true, nested: true },
+        let obj = await db.findByPk(id, {
+          include: [
+            { all: true, nested: true },
+            {
+              model: AnimalType,
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let animalTypeArray = "";
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          if (animalTypeArray == "") {
+            animalTypeArray = element.AnimalTypeName;
+          } else {
+            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
+          }
+        });
+
+        obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -149,7 +184,12 @@ const methods = {
         });
 
         const res = await db.findByPk(inserted.UserID, {
-          include: { all: true, nested: true },
+          include: [
+            { all: true, nested: true },
+            {
+              model: AnimalType,
+            },
+          ],
         });
 
         resolve(res);
@@ -176,7 +216,12 @@ const methods = {
         await db.update(data, { where: { UserID: id } });
 
         const res = await db.findByPk(id, {
-          include: { all: true, nested: true },
+          include: [
+            { all: true, nested: true },
+            {
+              model: AnimalType,
+            },
+          ],
         });
 
         // insert ProjectToAnimalType
@@ -198,14 +243,14 @@ const methods = {
         AnimalTypeIDList.forEach(async (AnimalTypeID) => {
           const searchPTAOne = await UserToAnimalType.findOne({
             where: {
-                UserID: res.UserID,
+              UserID: res.UserID,
               AnimalTypeID: AnimalTypeID,
             },
           });
 
           if (!searchPTAOne) {
             const obj1 = UserToAnimalType.create({
-                UserID: res.UserID,
+              UserID: res.UserID,
               AnimalTypeID: AnimalTypeID,
               CreatedUserID: data.UpdatedUserID,
             });

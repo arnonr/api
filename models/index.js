@@ -83,11 +83,12 @@ Staff.associate({
   Major,
 });
 
-User.associate({ Staff, Group, UserToAnimalType });
+User.associate({ Staff, Group, UserToAnimalType, AnimalType });
 Group.associate({ User, GroupAuthorize });
 GroupAuthorize.associate({ Group, Menu });
 Project.associate({ Organization, ProjectToAnimalType, AnimalType });
 ProjectToAnimalType.associate({ AnimalType, Project });
+UserToAnimalType.associate({ AnimalType, User});
 
 Farm.associate({
   FarmStatus,
@@ -113,7 +114,14 @@ Farmer.associate({
 //
 
 AnimalGroupType.associate({ AnimalGenre });
-AnimalType.associate({ AnimalGenre, AnimalGroupType, ProjectToAnimalType, Project });
+AnimalType.associate({
+  AnimalGenre,
+  AnimalGroupType,
+  ProjectToAnimalType,
+  Project,
+  UserToAnimalType,
+  User,
+});
 AnimalBreed.associate({ AnimalType });
 AnimalStatus.associate({ AnimalStatusToAnimalType, AnimalStatusToAnimalSex });
 Animal.associate({

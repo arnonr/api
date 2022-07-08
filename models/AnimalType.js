@@ -17,13 +17,21 @@ class AnimalType extends Model {
       foreignKey: "AnimalTypeID",
       // as: "Project",
     });
+
+    this.belongsToMany(models.User, {
+      through: models.UserToAnimalType,
+      foreignKey: "AnimalTypeID",
+      as: "Users",
+    });
   }
 
   // Custom JSON Response
   toJSON() {
     return {
       ...this.get(),
-      ProjectToAnimalType: undefined
+      ProjectToAnimalType: undefined,
+      Projects: undefined,
+      Users: undefined
     };
   }
 }

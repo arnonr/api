@@ -3,6 +3,16 @@ const { Model, DataTypes } = require("sequelize"),
 
 class UserToAnimalType extends Model {
   // Custom JSON Response
+  static associate(models) {
+    // this.belongsTo(models.AnimalType, {
+    //   foreignKey: "AnimalTypeID",
+    //   // as: "AnimalType",
+    // });
+    // this.belongsTo(models.Project, {
+    //   foreignKey: "ProjectID",
+    //   as: "Project",
+    // });
+  }
   toJSON() {
     return {
       ...this.get(),

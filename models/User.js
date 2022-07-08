@@ -13,10 +13,16 @@ class User extends Model {
     // });
     this.belongsTo(models.Staff, { foreignKey: "StaffID", as: "Staff" });
     this.belongsTo(models.Group, { foreignKey: "GroupID", as: "Group" });
-    this.hasMany(models.UserToAnimalType, {
-        foreignKey: "UserID",
-        as: "UserToAnimalType",
-      });
+
+    this.belongsToMany(models.AnimalType, {
+      through: models.UserToAnimalType,
+      foreignKey: "UserID",
+      // as: "AnimalTypes",
+    });
+
+    // this.hasMany(models.UserToAnimalType, {
+    //   foreignKey: "UserID",
+    // });
   }
 
   generateJWT(obj) {
@@ -49,7 +55,7 @@ class User extends Model {
             GroupName: this.get().Group.GroupName,
             GroupDescription: this.get().Group.GroupDescription,
             DataAccessLevelID: this.get().Group.DataAccessLevelID,
-            GroupAuthorize: this.get().Group.GroupAuthorize
+            GroupAuthorize: this.get().Group.GroupAuthorize,
           }
         : "",
     };
