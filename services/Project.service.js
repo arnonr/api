@@ -5,6 +5,8 @@ const config = require("../configs/app"),
 
 const ProjectToAnimalType = require("../models/ProjectToAnimalType");
 
+const AnimalType = require("../models/AnimalType");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -32,9 +34,9 @@ const methods = {
       var AnimalTypeIDList = req.query.AnimalTypeID.split(",");
       WhereAnimalType = {
         AnimalTypeID: {
-            [Op.in]: AnimalTypeIDList,
-          },
-      }
+          [Op.in]: AnimalTypeIDList,
+        },
+      };
     }
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
@@ -64,10 +66,9 @@ const methods = {
     query["include"] = [
       { all: true },
       {
-        model: ProjectToAnimalType,
-        as: "ProjectToAnimalType",
+        model: AnimalType,
         where: WhereAnimalType,
-      }
+      },
     ];
 
     return { query: query };
@@ -81,8 +82,26 @@ const methods = {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[1];
+
+            // 
+            rows = rows.map((data) => {
+              let animalTypeArray = "";
+              data.AnimalTypes.forEach((element) => {
+                if (animalTypeArray == "") {
+                  animalTypeArray = element.AnimalTypeName;
+                } else {
+                  animalTypeArray =
+                    animalTypeArray + "," + element.AnimalTypeName;
+                }
+              });
+              data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
+
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -102,12 +121,24 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true },
+        let obj = await db.findByPk(id, {
+          include: [{ all: true }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let animalTypeArray = "";
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          if (animalTypeArray == "") {
+            animalTypeArray = element.AnimalTypeName;
+          } else {
+            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
+          }
+        });
+
+        obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -131,7 +162,7 @@ const methods = {
           });
         });
         const res = await db.findByPk(inserted.ProjectID, {
-          include: { all: true },
+          include: [{ all: true }],
         });
 
         resolve(res);
@@ -157,7 +188,7 @@ const methods = {
         await db.update(data, { where: { ProjectID: id } });
 
         const res = await db.findByPk(id, {
-          include: { all: true },
+          include: [{ all: true }],
         });
 
         // insert ProjectToAnimalType
@@ -212,8 +243,10 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = ProjectToAnimalType.update({ isRemove: 1, isActive: 0 }, { where: { ProjectID: id }});
-        
+        const obj1 = ProjectToAnimalType.update(
+          { isRemove: 1, isActive: 0 },
+          { where: { ProjectID: id } }
+        );
 
         resolve();
       } catch (error) {

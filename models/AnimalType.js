@@ -9,7 +9,13 @@ class AnimalType extends Model {
     });
     this.belongsTo(models.AnimalGroupType, {
       foreignKey: "AnimalGroupTypeID",
-      as: "AnimalGroupType",
+      // as: "AnimalGroupTypes",
+    });
+
+    this.belongsToMany(models.Project, {
+      through: models.ProjectToAnimalType,
+      foreignKey: "AnimalTypeID",
+      // as: "Project",
     });
   }
 
@@ -17,6 +23,7 @@ class AnimalType extends Model {
   toJSON() {
     return {
       ...this.get(),
+      ProjectToAnimalType: undefined
     };
   }
 }

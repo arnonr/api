@@ -54,7 +54,7 @@ const AnimalStatusToAnimalType = require("./AnimalStatusToAnimalType");
 const AnimalStatusToAnimalSex = require("./AnimalStatusToAnimalSex");
 const Animal = require("./Animal");
 const AnimalToProject = require("./AnimalToProject");
-// 
+//
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -80,13 +80,14 @@ Staff.associate({
   Province,
   Tumbol,
   Education,
-  Major
+  Major,
 });
 
 User.associate({ Staff, Group, UserToAnimalType });
 Group.associate({ User, GroupAuthorize });
 GroupAuthorize.associate({ Group, Menu });
-Project.associate({ Organization, ProjectToAnimalType });
+Project.associate({ Organization, ProjectToAnimalType, AnimalType });
+ProjectToAnimalType.associate({ AnimalType, Project });
 
 Farm.associate({
   FarmStatus,
@@ -112,7 +113,7 @@ Farmer.associate({
 //
 
 AnimalGroupType.associate({ AnimalGenre });
-AnimalType.associate({ AnimalGenre, AnimalGroupType });
+AnimalType.associate({ AnimalGenre, AnimalGroupType, ProjectToAnimalType, Project });
 AnimalBreed.associate({ AnimalType });
 AnimalStatus.associate({ AnimalStatusToAnimalType, AnimalStatusToAnimalSex });
 Animal.associate({

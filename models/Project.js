@@ -7,15 +7,18 @@ class Project extends Model {
       foreignKey: "OrganizationID",
       as: "Organization",
     });
-    this.hasMany(models.ProjectToAnimalType, {
+    this.belongsToMany(models.AnimalType, {
+      through: models.ProjectToAnimalType,
       foreignKey: "ProjectID",
-      as: "ProjectToAnimalType",
+      // as: "AnimalType",
     });
   }
   // Custom JSON Response
   toJSON() {
     return {
       ...this.get(),
+      // AnimalTypeName: {...this.get().ProjectToAnimalType},
+      AnimalType: this.get().AnimalType,
       ProjectToAnimalType: undefined
     };
   }

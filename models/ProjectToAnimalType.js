@@ -3,9 +3,24 @@ const { Model, DataTypes } = require("sequelize"),
 
 class ProjectToAnimalType extends Model {
   // Custom JSON Response
+  static associate(models) {
+    // this.belongsTo(models.AnimalType, {
+    //   foreignKey: "AnimalTypeID",
+    //   // as: "AnimalType",
+    // });
+    // this.belongsTo(models.Project, {
+    //   foreignKey: "ProjectID",
+    //   as: "Project",
+    // });
+  }
   toJSON() {
     return {
       ...this.get(),
+      AnimalTypeName: this.get().AnimalType
+        ? this.get().AnimalType.AnimalTypeName
+        : null,
+
+      AnimalType: undefined,
     };
   }
 }
