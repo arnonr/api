@@ -5,6 +5,8 @@ const config = require("../configs/app"),
 
 const AnimalStatusToAnimalType = require("../models/AnimalStatusToAnimalType");
 const AnimalStatusToAnimalSex = require("../models/AnimalStatusToAnimalSex");
+const AnimalType = require("../models/AnimalType");
+const AnimalSex = require("../models/AnimalSex");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -79,17 +81,29 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    // query["include"] = [
+    //   { all: true },
+    //   {
+    //     model: AnimalStatusToAnimalType,
+    //     as: "AnimalStatusToAnimalType",
+    //     where: WhereAnimalType,
+    //   },
+    //   {
+    //     model: AnimalStatusToAnimalSex,
+    //     as: "AnimalStatusToAnimalSex",
+    //     // where: WhereAnimalSex,
+    //   },
+    // ];
+
     query["include"] = [
       { all: true },
       {
-        model: AnimalStatusToAnimalType,
-        as: "AnimalStatusToAnimalType",
+        model: AnimalType,
         where: WhereAnimalType,
       },
       {
-        model: AnimalStatusToAnimalSex,
-        as: "AnimalStatusToAnimalSex",
-        // where: WhereAnimalSex,
+        model: AnimalSex,
+        where: WhereAnimalSex,
       },
     ];
 
@@ -104,8 +118,39 @@ const methods = {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[1];
+
+            //
+            rows = rows.map((data) => {
+              let animalTypeArray = "";
+              data.AnimalTypes.forEach((element) => {
+                if (animalTypeArray == "") {
+                  animalTypeArray = element.AnimalTypeName;
+                } else {
+                  animalTypeArray =
+                    animalTypeArray + "," + element.AnimalTypeName;
+                }
+              });
+
+              let animalSexArray = "";
+              data.AnimalSexes.forEach((element) => {
+                if (animalSexArray == "") {
+                  animalSexArray = element.AnimalSexName;
+                } else {
+                  animalSexArray = animalSexArray + "," + element.AnimalSexName;
+                }
+              });
+
+              data = {
+                ...data.toJSON(),
+                AnimalTypes: animalTypeArray,
+                AnimalSexes: animalSexArray,
+              };
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -125,12 +170,45 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true },
+        let obj = await db.findByPk(id, {
+          include: [
+            { all: true },
+            {
+              model: AnimalType,
+            },
+            {
+              model: AnimalSex,
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let animalTypeArray = "";
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          if (animalTypeArray == "") {
+            animalTypeArray = element.AnimalTypeName;
+          } else {
+            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
+          }
+        });
+
+        let animalSexArray = "";
+        obj.toJSON().AnimalSexes.forEach((element) => {
+          if (animalSexArray == "") {
+            animalSexArray = element.AnimalSexName;
+          } else {
+            animalSexArray = animalSexArray + "," + element.AnimalSexName;
+          }
+        });
+
+        obj = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalSexes: animalSexArray,
+        };
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -165,7 +243,15 @@ const methods = {
         });
 
         const res = await db.findByPk(inserted.AnimalStatusID, {
-          include: { all: true },
+          include: [
+            { all: true },
+            {
+              model: AnimalType,
+            },
+            {
+              model: AnimalSex,
+            },
+          ],
         });
 
         resolve(res);
@@ -191,7 +277,15 @@ const methods = {
         await db.update(data, { where: { AnimalStatusID: id } });
 
         const res = await db.findByPk(id, {
-          include: { all: true },
+          include: [
+            { all: true },
+            {
+              model: AnimalType,
+            },
+            {
+              model: AnimalSex,
+            },
+          ],
         });
 
         // insert ProjectToAnimalType

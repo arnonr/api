@@ -2,7 +2,13 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class AnimalSex extends Model {
-
+  static associate(models) {
+    this.belongsToMany(models.AnimalStatus, {
+      through: models.AnimalStatusToAnimalSex,
+      foreignKey: "AnimalSexID",
+      as: "AnimalStatuses",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {

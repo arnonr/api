@@ -114,6 +114,7 @@ Farmer.associate({
 //
 
 AnimalGroupType.associate({ AnimalGenre });
+
 AnimalType.associate({
   AnimalGenre,
   AnimalGroupType,
@@ -121,9 +122,14 @@ AnimalType.associate({
   Project,
   UserToAnimalType,
   User,
+  AnimalStatusToAnimalType,
+  AnimalStatus
 });
+
 AnimalBreed.associate({ AnimalType });
-AnimalStatus.associate({ AnimalStatusToAnimalType, AnimalStatusToAnimalSex });
+AnimalSex.associate({ AnimalStatusToAnimalSex, AnimalStatus });
+AnimalStatus.associate({ AnimalStatusToAnimalType,AnimalType,AnimalStatusToAnimalSex, AnimalSex });
+
 Animal.associate({
   AnimalSex,
   Farm,

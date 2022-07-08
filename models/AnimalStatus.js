@@ -3,13 +3,13 @@ const { Model, DataTypes } = require("sequelize"),
 
 class AnimalStatus extends Model {
   static associate(models) {
-    this.hasMany(models.AnimalStatusToAnimalType, {
+    this.belongsToMany(models.AnimalType, {
+      through: models.AnimalStatusToAnimalType,
       foreignKey: "AnimalStatusID",
-      as: "AnimalStatusToAnimalType",
     });
-    this.hasMany(models.AnimalStatusToAnimalSex, {
+    this.belongsToMany(models.AnimalSex, {
+      through: models.AnimalStatusToAnimalSex,
       foreignKey: "AnimalStatusID",
-      as: "AnimalStatusToAnimalSex",
     });
   }
 

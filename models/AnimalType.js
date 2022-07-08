@@ -23,6 +23,12 @@ class AnimalType extends Model {
       foreignKey: "AnimalTypeID",
       as: "Users",
     });
+
+    this.belongsToMany(models.AnimalStatus, {
+      through: models.AnimalStatusToAnimalType,
+      foreignKey: "AnimalTypeID",
+      as: "AnimalStatuses",
+    });
   }
 
   // Custom JSON Response

@@ -16,11 +16,11 @@ class ProjectToAnimalType extends Model {
   toJSON() {
     return {
       ...this.get(),
-      AnimalTypeName: this.get().AnimalType
-        ? this.get().AnimalType.AnimalTypeName
-        : null,
+      // AnimalTypeName: this.get().AnimalType
+      //   ? this.get().AnimalType.AnimalTypeName
+      //   : null,
 
-      AnimalType: undefined,
+      // AnimalType: undefined,
     };
   }
 }
