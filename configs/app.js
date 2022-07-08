@@ -7,7 +7,7 @@ module.exports = {
   token_exp_days: process.env.TOKEN_EXP_DAYS || 1,
   secret: process.env.NODE_ENV === 'production' ? process.env.SECRET : 'my-secret',
   mongodbUri: process.env.MONGODB_URI,
-  pageLimit: process.env.PAGE_LIMIT || 15,
+  // pageLimit: process.env.PAGE_LIMIT || 100,
   DbHostname:  process.env.DB_HOSTNAME,
   DbPort:  process.env.DB_PORT,
   DbUsername: process.env.DB_USERNAME,

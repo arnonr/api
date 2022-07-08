@@ -10,3 +10,6 @@ docker compose up -d
 
 
 docker logs -f a18
+
+git reset --hard
+git pull
