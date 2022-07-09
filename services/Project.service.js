@@ -30,11 +30,11 @@ const methods = {
 
     // AnimalTypeID
     let WhereAnimalType = null;
+
     if (req.query.AnimalTypeID) {
-      var AnimalTypeIDList = req.query.AnimalTypeID.split(",");
       WhereAnimalType = {
         AnimalTypeID: {
-          [Op.in]: AnimalTypeIDList,
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
         },
       };
     }
@@ -80,24 +80,26 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query),delete _q.query.include, db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             let rows = result[0],
               count = result[2];
 
-            // 
+            //
             rows = rows.map((data) => {
               let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-                animalTypeArray.push(element.AnimalTypeName)
-                // if (animalTypeArray == "") {
-                //   animalTypeArray = element.AnimalTypeName;
-                // } else {
-                //   animalTypeArray =
-                //     animalTypeArray + "," + element.AnimalTypeName;
-                // }
+                animalTypeArray.push(element.AnimalTypeName);
               });
-              data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
+              data = {
+                ...data.toJSON(),
+                AnimalTypes: animalTypeArray,
+                AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
+              };
 
               return data;
             });
@@ -122,20 +124,23 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("Freedom")
+        console.log("Freedom");
         let obj = await db.findByPk(id, {
           include: [{ all: true }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        
         let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
-          animalTypeArray.push(element.AnimalTypeName)
+          animalTypeArray.push(element.AnimalTypeName);
         });
-        
-        obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
+
+        obj = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
 
         resolve(obj);
       } catch (error) {
@@ -149,17 +154,17 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
 
-        let AnimalTypeID = data.AnimalTypeID;
-        data.AnimalTypeID = data.AnimalTypeID.toString();
-        
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
         const obj = new db(data);
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
-        await AnimalTypeID.forEach((id) => {
+        AnimalTypeIDList.forEach((AnimalTypeID) => {
           const obj1 = ProjectToAnimalType.create({
             ProjectID: inserted.ProjectID,
-            AnimalTypeID: id,
+            AnimalTypeID: AnimalTypeID,
             CreatedUserID: data.CreatedUserID,
           });
         });
@@ -188,8 +193,8 @@ const methods = {
         data.ProjectID = parseInt(id);
         data.UpdatedUserID = 1;
 
-        let AnimalTypeID = [...data.AnimalTypeID];
-        data.AnimalTypeID = data.AnimalTypeID.toString();
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
         await db.update(data, { where: { ProjectID: id } });
 
@@ -198,7 +203,6 @@ const methods = {
         });
 
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = AnimalTypeID
 
         const searchPTA = await ProjectToAnimalType.findAll({
           where: { ProjectID: res.ProjectID },
@@ -213,18 +217,18 @@ const methods = {
           }
         });
 
-        AnimalTypeIDList.forEach(async (id) => {
+        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
           const searchPTAOne = await ProjectToAnimalType.findOne({
             where: {
               ProjectID: res.ProjectID,
-              AnimalTypeID: id,
+              AnimalTypeID: AnimalTypeID,
             },
           });
 
           if (!searchPTAOne) {
             const obj1 = ProjectToAnimalType.create({
               ProjectID: res.ProjectID,
-              AnimalTypeID: id,
+              AnimalTypeID: AnimalTypeID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
