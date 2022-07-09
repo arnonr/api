@@ -74,17 +74,18 @@ const methods = {
       ];
     query["order"] = $order;
 
-    if (!isNaN(limit)) query["limit"] = limit;
-
-    if (!isNaN(offset)) query["offset"] = offset;
-
     query["include"] = [
-      { all: true },
+      { all: true, required: false },
       {
         model: AnimalType,
         where: WhereAnimalType,
+        required: false,
       },
     ];
+
+    if (!isNaN(limit)) query["limit"] = limit;
+
+    if (!isNaN(offset)) query["offset"] = offset;
 
     return { query: query };
   },
@@ -95,21 +96,22 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([db.findAll(_q.query), delete _q.query.include, db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
-              count = result[1];
+              count = result[2];
 
             //
             rows = rows.map((data) => {
-              let animalTypeArray = "";
+              let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-                if (animalTypeArray == "") {
-                  animalTypeArray = element.AnimalTypeName;
-                } else {
-                  animalTypeArray =
-                    animalTypeArray + "," + element.AnimalTypeName;
-                }
+              animalTypeArray.push(element.AnimalTypeName)
+                // if (animalTypeArray == "") {
+                //   animalTypeArray = element.AnimalTypeName;
+                // } else {
+                //   animalTypeArray =
+                //     animalTypeArray + "," + element.AnimalTypeName;
+                // }
               });
               data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
 
@@ -147,13 +149,14 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let animalTypeArray = "";
+        let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
-          if (animalTypeArray == "") {
-            animalTypeArray = element.AnimalTypeName;
-          } else {
-            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
-          }
+            animalTypeArray.push(element.AnimalTypeName)
+          // if (animalTypeArray == "") {
+          //   animalTypeArray = element.AnimalTypeName;
+          // } else {
+          //   animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
+          // }
         });
 
         obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };

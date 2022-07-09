@@ -84,11 +84,12 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true },
+      { all: true,required:false },
       {
         model: FarmToProject,
         as: "FarmToProject",
         where: WhereProject,
+        required:false
       },
     ];
 
@@ -105,6 +106,10 @@ const methods = {
           .then((result) => {
             const rows = result[0],
               count = result[1];
+
+
+
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),

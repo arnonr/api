@@ -127,13 +127,14 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let animalTypeArray = "";
+        let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
-          if (animalTypeArray == "") {
-            animalTypeArray = element.AnimalTypeName;
-          } else {
-            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
-          }
+          animalTypeArray.push(element.AnimalTypeName)
+          // if (animalTypeArray == "") {
+          //   animalTypeArray = element.AnimalTypeName;
+          // } else {
+          //   animalTypeArray.push = animalTypeArray + "," + element.AnimalTypeName;
+          // }
         });
 
         obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
