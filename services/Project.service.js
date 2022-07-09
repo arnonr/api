@@ -188,7 +188,7 @@ const methods = {
         data.ProjectID = parseInt(id);
         data.UpdatedUserID = 1;
 
-        let AnimalTypeID = data.AnimalTypeID;
+        let AnimalTypeID = [...data.AnimalTypeID];
         data.AnimalTypeID = data.AnimalTypeID.toString();
 
         await db.update(data, { where: { ProjectID: id } });
@@ -198,7 +198,7 @@ const methods = {
         });
 
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = AnimalTypeID.split(",");
+        let AnimalTypeIDList = AnimalTypeID
 
         const searchPTA = await ProjectToAnimalType.findAll({
           where: { ProjectID: res.ProjectID },
