@@ -10,7 +10,7 @@ module.exports = async (app) => {
     const db = require('../models/index.js')
 
   // CORS
-  const allowedOrigins = ['*','http://localhost:8080','http://178.128.216.177'];
+  const allowedOrigins = ['*','http://localhost:8080','http://178.128.216.177','http://192.168.1.131:8080'];
   const corsOptions = {
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
