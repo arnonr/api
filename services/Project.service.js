@@ -87,14 +87,15 @@ const methods = {
 
             // 
             rows = rows.map((data) => {
-              let animalTypeArray = "";
+              let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-                if (animalTypeArray == "") {
-                  animalTypeArray = element.AnimalTypeName;
-                } else {
-                  animalTypeArray =
-                    animalTypeArray + "," + element.AnimalTypeName;
-                }
+                animalTypeArray.push(element.AnimalTypeName)
+                // if (animalTypeArray == "") {
+                //   animalTypeArray = element.AnimalTypeName;
+                // } else {
+                //   animalTypeArray =
+                //     animalTypeArray + "," + element.AnimalTypeName;
+                // }
               });
               data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
 
@@ -121,22 +122,19 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log("Freedom")
         let obj = await db.findByPk(id, {
           include: [{ all: true }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
+        
         let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
           animalTypeArray.push(element.AnimalTypeName)
-          // if (animalTypeArray == "") {
-          //   animalTypeArray = element.AnimalTypeName;
-          // } else {
-          //   animalTypeArray.push = animalTypeArray + "," + element.AnimalTypeName;
-          // }
         });
-
+        
         obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
 
         resolve(obj);
@@ -150,18 +148,22 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+
+        let AnimalTypeID = data.AnimalTypeID;
+        data.AnimalTypeID = data.AnimalTypeID.toString();
+        
         const obj = new db(data);
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = data.AnimalTypeID.split(",");
-        AnimalTypeIDList.forEach((AnimalTypeID) => {
+        await AnimalTypeID.forEach((id) => {
           const obj1 = ProjectToAnimalType.create({
             ProjectID: inserted.ProjectID,
-            AnimalTypeID: AnimalTypeID,
+            AnimalTypeID: id,
             CreatedUserID: data.CreatedUserID,
           });
         });
+
         const res = await db.findByPk(inserted.ProjectID, {
           include: [{ all: true }],
         });
@@ -186,6 +188,9 @@ const methods = {
         data.ProjectID = parseInt(id);
         data.UpdatedUserID = 1;
 
+        let AnimalTypeID = data.AnimalTypeID;
+        data.AnimalTypeID = data.AnimalTypeID.toString();
+
         await db.update(data, { where: { ProjectID: id } });
 
         const res = await db.findByPk(id, {
@@ -193,7 +198,7 @@ const methods = {
         });
 
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = res.AnimalTypeID.split(",");
+        let AnimalTypeIDList = AnimalTypeID.split(",");
 
         const searchPTA = await ProjectToAnimalType.findAll({
           where: { ProjectID: res.ProjectID },
@@ -208,18 +213,18 @@ const methods = {
           }
         });
 
-        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+        AnimalTypeIDList.forEach(async (id) => {
           const searchPTAOne = await ProjectToAnimalType.findOne({
             where: {
               ProjectID: res.ProjectID,
-              AnimalTypeID: AnimalTypeID,
+              AnimalTypeID: id,
             },
           });
 
           if (!searchPTAOne) {
             const obj1 = ProjectToAnimalType.create({
               ProjectID: res.ProjectID,
-              AnimalTypeID: AnimalTypeID,
+              AnimalTypeID: id,
               CreatedUserID: data.UpdatedUserID,
             });
           }
