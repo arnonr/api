@@ -80,10 +80,10 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([db.findAll(_q.query),delete _q.query.include, db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
-              count = result[1];
+              count = result[2];
 
             // 
             rows = rows.map((data) => {
