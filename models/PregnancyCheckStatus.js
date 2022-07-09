@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class EmbryoStage extends Model {
+class PregnancyCheckStatus extends Model {
   static associate(models) {}
 
   // Custom JSON Response
@@ -12,29 +12,29 @@ class EmbryoStage extends Model {
   }
 }
 
-EmbryoStage.init(
+PregnancyCheckStatus.init(
   {
-    EmbryoStageID: {
+    PregnancyCheckStatusID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง ระยะตัวอ่อน",
+      comment: "เลขไอดีอ้างอิง วิธีการตรวจการตั้งท้อง",
     },
-    EmbryoStageCode: {
+    PregnancyCheckStatusCode: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "รหัสระยะตัวอ่อน",
+      comment: "รหัสวิธีการตรวจการตั้งท้อง",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          EmbryoStage.findOne({
-            where: { EmbryoStageCode: value, isRemove: 0 },
+          PregnancyCheckStatus.findOne({
+            where: { PregnancyCheckStatusCode: value, isRemove: 0 },
           })
             .then(function (data) {
               console.log(self);
-              if (data && self.EmbryoStageID !== data.EmbryoStageID) {
-                throw new Error("EmbryoStage Code already in use!");
+              if (data && self.PregnancyCheckStatusID !== data.PregnancyCheckStatusID) {
+                throw new Error("PregnancyCheckStatus Code already in use!");
               }
               return next();
             })
@@ -44,38 +44,10 @@ EmbryoStage.init(
         },
       },
     },
-    EmbryoStageName: {
+    PregnancyCheckStatusName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "ชื่อระยะ",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          EmbryoStage.findOne({
-            where: { EmbryoStageName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.EmbryoStageID !== data.EmbryoStageID) {
-                throw new Error("EmbryoStage Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
-    },
-    EmbryoStageGrade: {
-      type: DataTypes.ENUM('A', 'B', 'C', 'D'),
-      allowNull: true,
-      comment: "เกรด",
-    },
-    IsTransfer: {
-      type: DataTypes.TINYINT(1),
-      allowNull: false,
-      defaultValue: 1,
-      comment: "1=สามารถย้ายฝาก, 0= ไม่สามารถย้ายฝาก",
+      comment: "คำอธิบายการตรวจการตั้งท้อง",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -116,8 +88,8 @@ EmbryoStage.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "EmbryoStage",
+    modelName: "PregnancyCheckStatus",
   }
 );
 
-module.exports = EmbryoStage;
+module.exports = PregnancyCheckStatus;

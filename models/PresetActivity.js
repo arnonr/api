@@ -1,8 +1,13 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class EmbryoStage extends Model {
-  static associate(models) {}
+class PresetActivity extends Model {
+  static associate(models) {
+    // this.belongsTo(models.AnimalType, {
+    //   through: models.PresetActivityToAnimalType,
+    //   foreignKey: "AnimalTypeID",
+    // });
+  }
 
   // Custom JSON Response
   toJSON() {
@@ -12,29 +17,28 @@ class EmbryoStage extends Model {
   }
 }
 
-EmbryoStage.init(
+PresetActivity.init(
   {
-    EmbryoStageID: {
+    PresetActivityID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง ระยะตัวอ่อน",
+      comment: "เลขไอดีอ้างอิง กิจกรรม",
     },
-    EmbryoStageCode: {
+    PresetActivityName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "รหัสระยะตัวอ่อน",
+      comment: "ชื่อกิจกรรม",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          EmbryoStage.findOne({
-            where: { EmbryoStageCode: value, isRemove: 0 },
+          PresetActivity.findOne({
+            where: { PresetActivityName: value, isRemove: 0 },
           })
             .then(function (data) {
-              console.log(self);
-              if (data && self.EmbryoStageID !== data.EmbryoStageID) {
-                throw new Error("EmbryoStage Code already in use!");
+              if (data && self.PresetActivityID !== data.PresetActivityID) {
+                throw new Error("PresetActivity Name already in use!");
               }
               return next();
             })
@@ -44,38 +48,15 @@ EmbryoStage.init(
         },
       },
     },
-    EmbryoStageName: {
-      type: DataTypes.STRING(255),
+    PresetActivityFor: {
+      type: DataTypes.ENUM("D", "R", "DR"),
       allowNull: false,
-      comment: "ชื่อระยะ",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          EmbryoStage.findOne({
-            where: { EmbryoStageName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.EmbryoStageID !== data.EmbryoStageID) {
-                throw new Error("EmbryoStage Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "กิจกรรมสำหรับตัวให้,ตัวรับ",
     },
-    EmbryoStageGrade: {
-      type: DataTypes.ENUM('A', 'B', 'C', 'D'),
+    AnimalTypeID: {
+      type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "เกรด",
-    },
-    IsTransfer: {
-      type: DataTypes.TINYINT(1),
-      allowNull: false,
-      defaultValue: 1,
-      comment: "1=สามารถย้ายฝาก, 0= ไม่สามารถย้ายฝาก",
+      comment: "รหัสอ้างอิงชนิดสัตว์ (Array)",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -116,8 +97,8 @@ EmbryoStage.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "EmbryoStage",
+    modelName: "PresetActivity",
   }
 );
 
-module.exports = EmbryoStage;
+module.exports = PresetActivity;

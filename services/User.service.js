@@ -79,7 +79,7 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true, nested: true },
+      { all: true },
       {
         model: AnimalType,
         where: WhereAnimalType,
@@ -138,7 +138,7 @@ const methods = {
       try {
         let obj = await db.findByPk(id, {
           include: [
-            { all: true, nested: true },
+            { all: true },
             {
               model: AnimalType,
             },
@@ -294,7 +294,7 @@ const methods = {
       try {
         const obj = await db.findOne({
           where: { Username: data.Username },
-          include: { all: true, nested: true },
+          include: { all: true },
         });
 
         // ตรวจสอบว่ามี username
@@ -354,7 +354,7 @@ const methods = {
         const decoded = jwt.decode(accessToken);
         const obj = await db.findOne({
           where: { Username: decoded.Username },
-          include: { all: true, nested: true },
+          include: { all: true },
         });
 
         if (!obj) {
