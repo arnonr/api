@@ -35,10 +35,9 @@ const methods = {
     // AnimalTypeID
     let WhereAnimalType = null;
     if (req.query.AnimalTypeID) {
-      var AnimalTypeIDList = req.query.AnimalTypeID.split(",");
       WhereAnimalType = {
         AnimalTypeID: {
-          [Op.in]: AnimalTypeIDList,
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
         },
       };
     }
@@ -46,10 +45,9 @@ const methods = {
     // AnimalTypeID
     let WhereAnimalSex = null;
     if (req.query.AnimalSexID) {
-      var AnimalSexIDList = req.query.AnimalSexID.split(",");
       WhereAnimalSex = {
         AnimalSexID: {
-          [Op.in]: AnimalSexIDList,
+          [Op.in]:  JSON.parse(req.query.AnimalSexID),
         },
       };
     }
@@ -83,12 +81,10 @@ const methods = {
       {
         model: AnimalType,
         where: WhereAnimalType,
-        required: false,
       },
       {
         model: AnimalSex,
         where: WhereAnimalSex,
-        required: false,
       },
     ];
 
@@ -103,12 +99,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
+              count = rows.length;
 
             //
             rows = rows.map((data) => {
@@ -127,7 +122,7 @@ const methods = {
                 AnimalTypes: animalTypeArray,
                 AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
                 AnimalSexes: animalSexArray,
-                AnimalTypeID: JSON.parse(data.toJSON().AnimalSexID),
+                AnimalSexID: JSON.parse(data.toJSON().AnimalSexID),
               };
               return data;
             });

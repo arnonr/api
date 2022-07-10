@@ -31,13 +31,12 @@ const methods = {
 
     // if (req.query.FarmProvinceID) $where["ResidenceLatitude"] = req.query.ResidenceLatitude;
     if (req.query.OrganizationID)
-      $where["FarmProvinceID"] = req.query.OrganizationID;
+      $where["OrganizationID"] = req.query.OrganizationID;
     if (req.query.OrganizationZoneID)
-      $where["FarmProvinceID"] = req.query.OrganizationZoneID;
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
     if (req.query.AIZoneID) $where["FarmProvinceID"] = req.query.AIZoneID;
     if (req.query.FarmStatusID)
-      $where["FarmProvinceID"] = req.query.FarmStatusID;
-    if (req.query.ProjectID) $where["FarmProvinceID"] = req.query.ProjectID;
+      $where["FarmStatusID"] = req.query.FarmStatusID;
 
     if (req.query.FarmRegisterStartDate) {
       $where["FarmRegisterDate"] = {
@@ -50,8 +49,6 @@ const methods = {
 
     // ProjectID
     let WhereProject = null;
-    // console.log(JSON.parse(req.query.ProjectID))
-    // console.log("Fredom")
 
     if (req.query.ProjectID) {
       WhereProject = {
@@ -89,16 +86,10 @@ const methods = {
       { all: true, required: false },
       {
         model: Project,
-        // where: WhereProject,
-        where: {
-          ProjectID: {
-            [Op.in]: [2],
-          },
-        },
-        required: false,
+        where: WhereProject,
       },
     ];
-
+    
     return { query: query };
   },
 
@@ -110,13 +101,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
-
+              count = rows.length;
             //
             rows = rows.map((data) => {
               let projectArray = [];

@@ -27,10 +27,9 @@ const methods = {
     // AnimalTypeID
     let WhereAnimalType = {};
     if (req.query.AnimalTypeID) {
-      var AnimalTypeIDList = req.query.AnimalTypeID.split(",");
       WhereAnimalType = {
         AnimalTypeID: {
-          [Op.in]: AnimalTypeIDList,
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
         },
       };
     }
@@ -64,7 +63,6 @@ const methods = {
       {
         model: AnimalType,
         where: WhereAnimalType,
-        required: false,
       },
     ];
 
@@ -83,12 +81,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
+              count = rows.length;
 
             //
             rows = rows.map((data) => {
