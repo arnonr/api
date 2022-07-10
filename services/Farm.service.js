@@ -5,7 +5,7 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const FarmToProject = require("../models/FarmToProject");
-const Organization = require("../models/Organization");
+const Project = require("../models/Project");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -50,11 +50,13 @@ const methods = {
 
     // ProjectID
     let WhereProject = null;
+    // console.log(JSON.parse(req.query.ProjectID))
+    // console.log("Fredom")
+
     if (req.query.ProjectID) {
-      var ProjectIDList = req.query.ProjectID.split(",");
       WhereProject = {
         ProjectID: {
-          [Op.in]: ProjectIDList,
+          [Op.in]: JSON.parse(req.query.ProjectID),
         },
       };
     }
@@ -84,12 +86,16 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true,required:false },
+      { all: true, required: false },
       {
-        model: FarmToProject,
-        as: "FarmToProject",
-        where: WhereProject,
-        required:false
+        model: Project,
+        // where: WhereProject,
+        where: {
+          ProjectID: {
+            [Op.in]: [2],
+          },
+        },
+        required: false,
       },
     ];
 
@@ -102,13 +108,30 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
-            const rows = result[0],
-              count = result[1];
+            let rows = result[0],
+              count = result[2];
 
+            //
+            rows = rows.map((data) => {
+              let projectArray = [];
+              data.Projects.forEach((element) => {
+                projectArray.push(element.ProjectName);
+              });
+              data = {
+                ...data.toJSON(),
+                Projects: projectArray,
+                ProjectID: JSON.parse(data.toJSON().ProjectID),
+              };
 
-
+              return data;
+            });
+            //
 
             resolve({
               total: count,
@@ -129,12 +152,24 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true },
+        let obj = await db.findByPk(id, {
+          include: { all: true, required: false },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let projectArray = [];
+        obj.toJSON().Projects.forEach((element) => {
+          projectArray.push(element.ProjectName);
+        });
+
+        obj = {
+          ...obj.toJSON(),
+          Projects: projectArray,
+          ProjectID: JSON.parse(obj.toJSON().ProjectID),
+        };
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -145,11 +180,13 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        let ProjectIDList = [...data.ProjectID];
+        data.ProjectID = JSON.stringify(data.ProjectID);
+
         const obj = new db(data);
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
-        let ProjectIDList = data.ProjectID.split(",");
         ProjectIDList.forEach((ProjectID) => {
           const obj1 = FarmToProject.create({
             FarmID: inserted.FarmID,
@@ -158,9 +195,7 @@ const methods = {
           });
         });
 
-        const res = await db.findByPk(inserted.FarmID, {
-          include: { all: true },
-        });
+        let res = methods.findById(inserted.FarmID);
 
         resolve(res);
       } catch (error) {
@@ -176,32 +211,23 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.FarmID = parseInt(id);
-        data.UpdatedUserID = 1;
+
+        let ProjectIDList = [...data.ProjectID];
+        data.ProjectID = JSON.stringify(data.ProjectID);
 
         await db.update(data, { where: { FarmID: id } });
 
-        const res = await db.findByPk(id, {
-          include: { all: true },
-        });
-
         // insert FarmToProject
-        let ProjectIDList = res.ProjectID.split(",");
-
         const searchFTP = await FarmToProject.findAll({
-          where: { FarmID: res.FarmID },
+          where: { FarmID: obj.FarmID },
         });
 
         // loop pta ของทั้งหมดที่มาจาก DB
         searchFTP.forEach((ftp) => {
-          console.log(ProjectIDList);
-          console.log(ftp.ProjectID);
           // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
           if (!ProjectIDList.includes(String(ftp.ProjectID))) {
-            console.log("freedom");
             FarmToProject.destroy({
               where: { FarmToProjectID: ftp.FarmToProjectID },
             });
@@ -211,19 +237,21 @@ const methods = {
         ProjectIDList.forEach(async (ProjectID) => {
           const searchFTPOne = await FarmToProject.findOne({
             where: {
-              FarmID: res.FarmID,
+              FarmID: obj.FarmID,
               ProjectID: ProjectID,
             },
           });
 
           if (!searchFTPOne) {
             const obj1 = FarmToProject.create({
-              FarmID: res.FarmID,
+              FarmID: obj.FarmID,
               ProjectID: ProjectID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
         });
+
+        let res = methods.findById(data.FarmID);
 
         resolve(res);
       } catch (error) {

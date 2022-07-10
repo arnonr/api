@@ -40,7 +40,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true };
+    query["include"] = { all: true, required: false };
 
     return { query: query };
   },
@@ -51,10 +51,14 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             const rows = result[0],
-              count = result[1];
+              count = result[2];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -75,7 +79,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true },
+          include: { all: true, required: false  },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -93,9 +97,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        const res = await db.findByPk(inserted.GroupAuthorizeID, {
-            include: { all: true },
-          });
+        let res = methods.findById(inserted.GroupAuthorizeID);
 
         resolve(res);
       } catch (error) {
@@ -111,17 +113,12 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
-        // Update
+       // Update
         data.GroupAuthorizeID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { GroupAuthorizeID: id } });
 
-        const res = await db.findByPk(id, {
-            include: { all: true },
-          });
+        let res = methods.findById(data.GroupAuthorizeID);
 
         resolve(res);
       } catch (error) {

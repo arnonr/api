@@ -5,7 +5,7 @@ const config = require("../configs/app"),
 const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
-const Farm = require("../models/Farm");
+const Project = require("../models/Project");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -76,10 +76,9 @@ const methods = {
     // ProjectID
     let WhereProject = null;
     if (req.query.ProjectID) {
-      var ProjectIDList = req.query.ProjectID.split(",");
       WhereProject = {
         ProjectID: {
-          [Op.in]: ProjectIDList,
+          [Op.in]: JSON.parse(req.query.ProjectID),
         },
       };
     }
@@ -109,11 +108,11 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true },
+      { all: true, required: false },
       {
-        model: AnimalToProject,
-        as: "AnimalToProject",
+        model: Project,
         where: WhereProject,
+        required: false,
       },
     ];
 
@@ -126,10 +125,31 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
-            const rows = result[0],
-              count = result[1];
+            let rows = result[0],
+              count = result[2];
+
+            //
+            rows = rows.map((data) => {
+              let projectArray = [];
+              data.Projects.forEach((element) => {
+                projectArray.push(element.ProjectName);
+              });
+              data = {
+                ...data.toJSON(),
+                Projects: projectArray,
+                ProjectID: JSON.parse(data.toJSON().ProjectID),
+              };
+
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -149,12 +169,23 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true },
+        let obj = await db.findByPk(id, {
+          include: { all: true, required: false  },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+        
+        let projectArray = [];
+        obj.toJSON().Projects.forEach((element) => {
+          projectArray.push(element.ProjectName);
+        });
+
+        obj = {
+          ...obj.toJSON(),
+          Projects: projectArray,
+          ProjectID: JSON.parse(obj.toJSON().ProjectID),
+        };
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -165,11 +196,13 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        let ProjectIDList = [...data.ProjectID];
+        data.ProjectID = JSON.stringify(data.ProjectID);
+        
         const obj = new db(data);
         const inserted = await obj.save();
 
         // insert AnimalToAnimalType
-        let ProjectIDList = data.ProjectID.split(",");
         ProjectIDList.forEach((ProjectID) => {
           const obj1 = AnimalToProject.create({
             AnimalID: inserted.AnimalID,
@@ -178,9 +211,7 @@ const methods = {
           });
         });
 
-        const res = await db.findByPk(inserted.AnimalID, {
-          include: { all: true },
-        });
+        let res = methods.findById(inserted.AnimalID);
 
         resolve(res);
       } catch (error) {
@@ -196,23 +227,17 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.AnimalID = parseInt(id);
-        data.UpdatedUserID = 1;
 
+        let ProjectIDList = [...data.ProjectID];
+        data.ProjectID = JSON.stringify(data.ProjectID);
+        
         await db.update(data, { where: { AnimalID: id } });
 
-        const res = await db.findByPk(id, {
-          include: { all: true },
-        });
-
         // insert AnimalToProject
-        let ProjectIDList = res.ProjectID.split(",");
-
         const searchATP = await AnimalToProject.findAll({
-          where: { AnimalID: res.AnimalID },
+          where: { AnimalID: obj.AnimalID },
         });
 
         // loop ATP ของทั้งหมดที่มาจาก DB
@@ -226,25 +251,26 @@ const methods = {
             });
           }
         });
-
+        
         ProjectIDList.forEach(async (ProjectID) => {
           const searchATPOne = await AnimalToProject.findOne({
             where: {
-              AnimalID: res.AnimalID,
+              AnimalID: obj.AnimalID,
               ProjectID: ProjectID,
             },
           });
 
           if (!searchATPOne) {
             const obj1 = AnimalToProject.create({
-              AnimalID: res.AnimalID,
+              AnimalID: obj.AnimalID,
               ProjectID: ProjectID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
         });
-        //
-        // await User.update(data, { where: { id: id }, individualHooks: true });
+        
+        let res = methods.findById(data.AnimalID);
+        
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

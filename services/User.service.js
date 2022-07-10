@@ -8,21 +8,6 @@ const config = require("../configs/app"),
   } = require("../configs/errorMethods"),
   { Op } = require("sequelize");
 
-const Staff = require("../models/Staff");
-
-const Title = require("../models/Title");
-const Gender = require("../models/Gender");
-const MarriedStatus = require("../models/MarriedStatus");
-const Organization = require("../models/Organization");
-const PositionType = require("../models/PositionType");
-const Position = require("../models/Position");
-const Province = require("../models/Province");
-const Amphur = require("../models/Amphur");
-const Tumbol = require("../models/Tumbol");
-const Education = require("../models/Education");
-const Group = require("../models/Group");
-const GroupAuthorize = require("../models/GroupAuthorize");
-
 const UserToAnimalType = require("../models/UserToAnimalType");
 const AnimalType = require("../models/AnimalType");
 
@@ -96,7 +81,11 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), delete _q.query.include, db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             let rows = result[0],
               count = result[2];
@@ -105,15 +94,13 @@ const methods = {
             rows = rows.map((data) => {
               let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-              animalTypeArray.push(element.AnimalTypeName)
-                // if (animalTypeArray == "") {
-                //   animalTypeArray = element.AnimalTypeName;
-                // } else {
-                //   animalTypeArray =
-                //     animalTypeArray + "," + element.AnimalTypeName;
-                // }
+                animalTypeArray.push(element.AnimalTypeName);
               });
-              data = { ...data.toJSON(), AnimalTypes: animalTypeArray };
+              data = {
+                ...data.toJSON(),
+                AnimalTypes: animalTypeArray,
+                AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
+              };
 
               return data;
             });
@@ -140,7 +127,7 @@ const methods = {
       try {
         let obj = await db.findByPk(id, {
           include: [
-            { all: true },
+            { all: true, nested: true },
             {
               model: AnimalType,
             },
@@ -151,15 +138,14 @@ const methods = {
 
         let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
-            animalTypeArray.push(element.AnimalTypeName)
-          // if (animalTypeArray == "") {
-          //   animalTypeArray = element.AnimalTypeName;
-          // } else {
-          //   animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
-          // }
+          animalTypeArray.push(element.AnimalTypeName);
         });
 
-        obj = { ...obj.toJSON(), AnimalTypes: animalTypeArray };
+        obj = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
 
         resolve(obj);
       } catch (error) {
@@ -172,12 +158,14 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = data.AnimalTypeID.split(",");
         AnimalTypeIDList.forEach((AnimalTypeID) => {
           const obj1 = UserToAnimalType.create({
             UserID: inserted.UserID,
@@ -186,14 +174,7 @@ const methods = {
           });
         });
 
-        const res = await db.findByPk(inserted.UserID, {
-          include: [
-            { all: true, nested: true },
-            {
-              model: AnimalType,
-            },
-          ],
-        });
+        let res = methods.findById(inserted.UserID);
 
         resolve(res);
       } catch (error) {
@@ -209,29 +190,18 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.UserID = parseInt(id);
         data.Password = obj.passwordHash(data.Password);
-        data.UpdatedUserID = 1;
+
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
         await db.update(data, { where: { UserID: id } });
 
-        const res = await db.findByPk(id, {
-          include: [
-            { all: true, nested: true },
-            {
-              model: AnimalType,
-            },
-          ],
-        });
-
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = res.AnimalTypeID.split(",");
-
         const searchPTA = await UserToAnimalType.findAll({
-          where: { UserID: res.UserID },
+          where: { UserID: obj.UserID },
         });
         // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
         searchPTA.forEach((pta) => {
@@ -246,21 +216,22 @@ const methods = {
         AnimalTypeIDList.forEach(async (AnimalTypeID) => {
           const searchPTAOne = await UserToAnimalType.findOne({
             where: {
-              UserID: res.UserID,
+              UserID: obj.UserID,
               AnimalTypeID: AnimalTypeID,
             },
           });
 
           if (!searchPTAOne) {
             const obj1 = UserToAnimalType.create({
-              UserID: res.UserID,
+              UserID: obj.UserID,
               AnimalTypeID: AnimalTypeID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
         });
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
+        let res = methods.findById(obj.UserID);
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -280,10 +251,10 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        let AnimalTypeIDList = obj.AnimalTypeID.split(",");
-        AnimalTypeIDList.forEach((AnimalTypeID) => {
-          const obj1 = UserToAnimalType.update({ isRemove: 1, isActive: 0 });
-        });
+        const obj1 = UserToAnimalType.update(
+          { isRemove: 1, isActive: 0 },
+          { where: { UserID: id } }
+        );
 
         resolve();
       } catch (error) {
@@ -317,20 +288,19 @@ const methods = {
             reject(ErrorUnauthorized("ไม่อนุมัติ"));
           }
         }
-        // let userData = {
-        //   id: obj.id,
-        //   username: obj.username,
-        //   //   firstname: obj.firstname,
-        //   //   lastname: obj.lastname,
-        //   //   role: obj.role,
-        //   //   email: obj.email,
-        //   photoURL:
-        //     "https://icons-for-free.com/iconfiles/png/512/business+costume+male+man+office+user+icon-1320196264882354682.png",
-        //   createdDatetime: obj.created_datetime,
-        //   updatedDatetime: obj.updated_datetime,
-        // };
 
-        resolve({ accessToken: obj.generateJWT(obj), userData: obj });
+        let animalTypeArray = [];
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          animalTypeArray.push(element.AnimalTypeName);
+        });
+
+        res = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
+
+        resolve({ accessToken: obj.generateJWT(obj), userData: res });
       } catch (error) {
         reject(error);
       }
@@ -344,6 +314,8 @@ const methods = {
         const obj = new db(data);
         obj.password = obj.passwordHash(obj.password);
         const inserted = await obj.save();
+
+        
         resolve(inserted);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -357,7 +329,12 @@ const methods = {
         const decoded = jwt.decode(accessToken);
         const obj = await db.findOne({
           where: { Username: decoded.Username },
-          include: { all: true },
+          include: [
+            { all: true, nested: true },
+            {
+              model: AnimalType,
+            },
+          ],
         });
 
         if (!obj) {

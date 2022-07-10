@@ -8,14 +8,15 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.OrganizationTypeID) $where["OrganizationTypeID"] = req.query.OrganizationTypeID;
+    if (req.query.OrganizationTypeID)
+      $where["OrganizationTypeID"] = req.query.OrganizationTypeID;
     if (req.query.OrganizationTypeCode)
       $where["OrganizationTypeCode"] = req.query.OrganizationTypeCode;
     if (req.query.OrganizationTypeName)
       $where["OrganizationTypeName"] = {
         [Op.like]: "%" + req.query.OrganizationTypeName + "%",
       };
-    
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -105,17 +106,13 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.OrganizationTypeID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { OrganizationTypeID: id } });
 
         const res = await db.findByPk(id);
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

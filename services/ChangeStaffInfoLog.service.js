@@ -106,7 +106,6 @@ const methods = {
 
         // Update
         data.ChangeStaffInfoLogID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { ChangeStaffInfoLogID: id } });
 

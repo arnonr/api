@@ -3,12 +3,6 @@ const config = require("../configs/app"),
   db = require("../models/Organization"),
   { Op } = require("sequelize");
 
-const OrganizationType = require("../models/OrganizationType");
-const OrganizationZone = require("../models/OrganizationZone");
-const Province = require("../models/Province");
-const Amphur = require("../models/Amphur");
-const Tumbol = require("../models/Tumbol");
-
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -76,7 +70,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true };
+    query["include"] = { all: true, required: false };
 
     return { query: query };
   },
@@ -87,10 +81,14 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             const rows = result[0],
-              count = result[1];
+              count = result[2];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -111,7 +109,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true },
+          include: { all: true, required: false },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -129,9 +127,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        const res = await db.findByPk(inserted.OrganizationID,{
-            include: { all: true }
-        });
+        let res = methods.findById(inserted.OrganizationID);
 
         resolve(res);
       } catch (error) {
@@ -147,19 +143,13 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.OrganizationID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { OrganizationID: id } });
 
-        const res = await db.findByPk(id,{
-            include: { all: true }
-        });
+        let res = methods.findById(data.OrganizationID);
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

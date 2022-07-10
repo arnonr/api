@@ -7,22 +7,13 @@ const { Model, DataTypes } = require("sequelize"),
 class User extends Model {
   // Custom JSON Response
   static associate(models) {
-    // this.hasOne(models.PersonalData, {
-    //   foreignKey: "id",
-    //   as: "PersonalData",
-    // });
     this.belongsTo(models.Staff, { foreignKey: "StaffID", as: "Staff" });
     this.belongsTo(models.Group, { foreignKey: "GroupID", as: "Group" });
 
     this.belongsToMany(models.AnimalType, {
       through: models.UserToAnimalType,
       foreignKey: "UserID",
-      // as: "AnimalTypes",
     });
-
-    // this.hasMany(models.UserToAnimalType, {
-    //   foreignKey: "UserID",
-    // });
   }
 
   generateJWT(obj) {
@@ -48,7 +39,6 @@ class User extends Model {
     return {
       ...this.get(),
       Password: undefined,
-      UserToAnimalType: undefined,
       Group: this.get().Group
         ? {
             GroupCode: this.get().Group.GroupCode,

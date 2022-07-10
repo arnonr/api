@@ -4,7 +4,6 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const ProjectToAnimalType = require("../models/ProjectToAnimalType");
-
 const AnimalType = require("../models/AnimalType");
 
 const methods = {
@@ -13,7 +12,10 @@ const methods = {
     $where = {};
 
     if (req.query.ProjectID) $where["ProjectID"] = req.query.ProjectID;
-    if (req.query.ProjectCode) $where["ProjectCode"] = req.query.ProjectCode;
+    if (req.query.ProjectCode)
+      $where["ProjectCode"] = {
+        [Op.like]: "%" + req.query.ProjectCode + "%",
+      };
     if (req.query.ProjectName)
       $where["ProjectName"] = {
         [Op.like]: "%" + req.query.ProjectName + "%",
@@ -64,7 +66,7 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true },
+      { all: true, required: false },
       {
         model: AnimalType,
         where: WhereAnimalType,
@@ -82,13 +84,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
-
+              count = rows.length;
             //
             rows = rows.map((data) => {
               let animalTypeArray = [];
@@ -124,9 +124,8 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("Freedom");
         let obj = await db.findByPk(id, {
-          include: [{ all: true }],
+          include: [{ all: true, required: false }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -153,7 +152,6 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
@@ -169,9 +167,7 @@ const methods = {
           });
         });
 
-        const res = await db.findByPk(inserted.ProjectID, {
-          include: [{ all: true }],
-        });
+        let res = methods.findById(inserted.ProjectID);
 
         resolve(res);
       } catch (error) {
@@ -187,25 +183,17 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.ProjectID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
         await db.update(data, { where: { ProjectID: id } });
 
-        const res = await db.findByPk(id, {
-          include: [{ all: true }],
-        });
-
         // insert ProjectToAnimalType
-
         const searchPTA = await ProjectToAnimalType.findAll({
-          where: { ProjectID: res.ProjectID },
+          where: { ProjectID: obj.ProjectID },
         });
         // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
         searchPTA.forEach((pta) => {
@@ -220,20 +208,21 @@ const methods = {
         AnimalTypeIDList.forEach(async (AnimalTypeID) => {
           const searchPTAOne = await ProjectToAnimalType.findOne({
             where: {
-              ProjectID: res.ProjectID,
+              ProjectID: obj.ProjectID,
               AnimalTypeID: AnimalTypeID,
             },
           });
 
           if (!searchPTAOne) {
             const obj1 = ProjectToAnimalType.create({
-              ProjectID: res.ProjectID,
+              ProjectID: obj.ProjectID,
               AnimalTypeID: AnimalTypeID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
         });
 
+        let res = methods.findById(data.ProjectID);
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

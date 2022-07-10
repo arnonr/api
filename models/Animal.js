@@ -61,9 +61,9 @@ class Animal extends Model {
     });
 
     // Project
-    this.hasMany(models.AnimalToProject, {
+    this.belongsToMany(models.Project, {
+      through: models.AnimalToProject,
       foreignKey: "AnimalID",
-      as: "AnimalToProject",
     });
 
     this.belongsTo(models.AnimalStatus, {

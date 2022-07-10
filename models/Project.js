@@ -10,14 +10,20 @@ class Project extends Model {
     this.belongsToMany(models.AnimalType, {
       through: models.ProjectToAnimalType,
       foreignKey: "ProjectID",
-      // as: "AnimalType",
+    });
+    this.belongsToMany(models.Animal, {
+      through: models.AnimalToProject,
+      foreignKey: "ProjectID",
+    });
+    this.belongsToMany(models.Farm, {
+      through: models.FarmToProject,
+      foreignKey: "ProjectID",
     });
   }
   // Custom JSON Response
   toJSON() {
     return {
       ...this.get(),
-      // AnimalTypeName: {...this.get().ProjectToAnimalType},
       AnimalType: this.get().AnimalType,
       ProjectToAnimalType: undefined
     };
@@ -78,21 +84,6 @@ Project.init(
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "ชื่อโครงการ (ภาษาอังกฤษ)",
-      //   validate: {
-      //     isUnique: function (value, next) {
-      //       let self = this;
-      //       Project.findOne({ where: { ProjectNameEN: value, isRemove: 0 } })
-      //         .then(function (data) {
-      //           if (data && self.ProjectID !== data.ProjectID) {
-      //             throw new Error("Project Name EN already in use!");
-      //           }
-      //           return next();
-      //         })
-      //         .catch(function (err) {
-      //           return next(err);
-      //         });
-      //     },
-      //   },
     },
     StartDate: {
       type: DataTypes.DATE,

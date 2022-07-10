@@ -2,6 +2,8 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class FarmToProject extends Model {
+  static associate(models) {
+  }
   // Custom JSON Response
   toJSON() {
     return {

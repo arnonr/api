@@ -105,12 +105,9 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.MenuID = parseInt(id);
-        data.UpdatedUserID = 1;
-
+        
         await db.update(data, { where: { MenuID: id } });
 
         const res = await db.findByPk(id);

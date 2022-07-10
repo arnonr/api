@@ -54,9 +54,6 @@ const methods = {
       };
     }
 
-    // if (req.query.AnimalTypeID) $where["AnimalGenreID"] = req.query.AnimalGenreID;
-    // if (req.query.AnimalSexID) $where["AnimalGroupStatusID"] = req.query.AnimalGroupStatusID;
-
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -81,29 +78,17 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    // query["include"] = [
-    //   { all: true },
-    //   {
-    //     model: AnimalStatusToAnimalType,
-    //     as: "AnimalStatusToAnimalType",
-    //     where: WhereAnimalType,
-    //   },
-    //   {
-    //     model: AnimalStatusToAnimalSex,
-    //     as: "AnimalStatusToAnimalSex",
-    //     // where: WhereAnimalSex,
-    //   },
-    // ];
-
     query["include"] = [
-      { all: true },
+      { all: true, required: false },
       {
         model: AnimalType,
         where: WhereAnimalType,
+        required: false,
       },
       {
         model: AnimalSex,
         where: WhereAnimalSex,
+        required: false,
       },
     ];
 
@@ -116,36 +101,33 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             let rows = result[0],
-              count = result[1];
+              count = result[2];
 
             //
             rows = rows.map((data) => {
-              let animalTypeArray = "";
+              let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-                if (animalTypeArray == "") {
-                  animalTypeArray = element.AnimalTypeName;
-                } else {
-                  animalTypeArray =
-                    animalTypeArray + "," + element.AnimalTypeName;
-                }
+                animalTypeArray.push(element.AnimalTypeName);
               });
 
-              let animalSexArray = "";
+              let animalSexArray = [];
               data.AnimalSexes.forEach((element) => {
-                if (animalSexArray == "") {
-                  animalSexArray = element.AnimalSexName;
-                } else {
-                  animalSexArray = animalSexArray + "," + element.AnimalSexName;
-                }
+                animalTypeArray.push(element.AnimalSexName);
               });
 
               data = {
                 ...data.toJSON(),
                 AnimalTypes: animalTypeArray,
+                AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
                 AnimalSexes: animalSexArray,
+                AnimalTypeID: JSON.parse(data.toJSON().AnimalSexID),
               };
               return data;
             });
@@ -172,7 +154,7 @@ const methods = {
       try {
         let obj = await db.findByPk(id, {
           include: [
-            { all: true },
+            { all: true, required: false },
             {
               model: AnimalType,
             },
@@ -184,28 +166,22 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let animalTypeArray = "";
+        let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
-          if (animalTypeArray == "") {
-            animalTypeArray = element.AnimalTypeName;
-          } else {
-            animalTypeArray = animalTypeArray + "," + element.AnimalTypeName;
-          }
+          animalTypeArray.push(element.AnimalTypeName);
         });
 
-        let animalSexArray = "";
+        let animalSexArray = [];
         obj.toJSON().AnimalSexes.forEach((element) => {
-          if (animalSexArray == "") {
-            animalSexArray = element.AnimalSexName;
-          } else {
-            animalSexArray = animalSexArray + "," + element.AnimalSexName;
-          }
+          animalSexArray.push(element.AnimalSexName);
         });
 
         obj = {
           ...obj.toJSON(),
           AnimalTypes: animalTypeArray,
           AnimalSexes: animalSexArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+          AnimalSexID: JSON.parse(obj.toJSON().AnimalSexID),
         };
 
         resolve(obj);
@@ -219,11 +195,16 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
+        let AnimalSexIDList = [...data.AnimalSexID];
+        data.AnimalSexID = JSON.stringify(data.AnimalSexID);
+
         const obj = new db(data);
         const inserted = await obj.save();
 
         // insert AnimalStatusToAnimalType
-        let AnimalTypeIDList = data.AnimalTypeID.split(",");
         AnimalTypeIDList.forEach((AnimalTypeID) => {
           const obj1 = AnimalStatusToAnimalType.create({
             AnimalStatusID: inserted.AnimalStatusID,
@@ -232,8 +213,7 @@ const methods = {
           });
         });
 
-        // insert AnimalStatusToAnimalType
-        let AnimalSexIDList = data.AnimalSexID.split(",");
+        // insert AnimalStatusToAnimalSex
         AnimalSexIDList.forEach((AnimalSexID) => {
           const obj1 = AnimalStatusToAnimalSex.create({
             AnimalStatusID: inserted.AnimalStatusID,
@@ -242,17 +222,7 @@ const methods = {
           });
         });
 
-        const res = await db.findByPk(inserted.AnimalStatusID, {
-          include: [
-            { all: true },
-            {
-              model: AnimalType,
-            },
-            {
-              model: AnimalSex,
-            },
-          ],
-        });
+        let res = methods.findById(inserted.AnimalStatusID);
 
         resolve(res);
       } catch (error) {
@@ -268,33 +238,21 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.AnimalStatusID = parseInt(id);
-        data.UpdatedUserID = 1;
+
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
+        let AnimalSexIDList = [...data.AnimalSexID];
+        data.AnimalSexID = JSON.stringify(data.AnimalSexID);
 
         await db.update(data, { where: { AnimalStatusID: id } });
 
-        const res = await db.findByPk(id, {
-          include: [
-            { all: true },
-            {
-              model: AnimalType,
-            },
-            {
-              model: AnimalSex,
-            },
-          ],
-        });
-
         // insert ProjectToAnimalType
-        let AnimalTypeIDList = res.AnimalTypeID.split(",");
-
         const searchATA = await AnimalStatusToAnimalType.findAll({
-          where: { AnimalStatusID: res.AnimalStatusID },
+          where: { AnimalStatusID: obj.AnimalStatusID },
         });
-
         // loop pta ของทั้งหมดที่มาจาก DB
         searchATA.forEach((ata) => {
           // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
@@ -310,14 +268,14 @@ const methods = {
         AnimalTypeIDList.forEach(async (AnimalTypeID) => {
           const searchATAOne = await AnimalStatusToAnimalType.findOne({
             where: {
-              AnimalStatusID: res.AnimalStatusID,
+              AnimalStatusID: obj.AnimalStatusID,
               AnimalTypeID: AnimalTypeID,
             },
           });
 
           if (!searchATAOne) {
             const obj1 = AnimalStatusToAnimalType.create({
-              AnimalStatusID: res.AnimalStatusID,
+              AnimalStatusID: obj.AnimalStatusID,
               AnimalTypeID: AnimalTypeID,
               CreatedUserID: data.UpdatedUserID,
             });
@@ -326,10 +284,8 @@ const methods = {
         //
 
         // insert ProjectToAnimalType
-        let AnimalSexIDList = res.AnimalSexID.split(",");
-
         const searchATS = await AnimalStatusToAnimalSex.findAll({
-          where: { AnimalStatusID: res.AnimalStatusID },
+          where: { AnimalStatusID: obj.AnimalStatusID },
         });
 
         // loop ats ของทั้งหมดที่มาจาก DB
@@ -347,20 +303,22 @@ const methods = {
         AnimalSexIDList.forEach(async (AnimalSexID) => {
           const searchATSOne = await AnimalStatusToAnimalSex.findOne({
             where: {
-              AnimalStatusID: res.AnimalStatusID,
+              AnimalStatusID: obj.AnimalStatusID,
               AnimalSexID: AnimalSexID,
             },
           });
 
           if (!searchATSOne) {
             const obj1 = AnimalStatusToAnimalSex.create({
-              AnimalStatusID: res.AnimalStatusID,
+              AnimalStatusID: obj.AnimalStatusID,
               AnimalSexID: AnimalSexID,
               CreatedUserID: data.UpdatedUserID,
             });
           }
         });
         //
+
+        let res = methods.findById(data.AnimalStatusID);
 
         // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);

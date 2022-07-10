@@ -3,10 +3,6 @@ const config = require("../configs/app"),
   db = require("../models/Province"),
   { Op } = require("sequelize");
 
-const Region = require("../models/Region");
-const AIZone = require("../models/AIZone");
-const OrganizationZone = require("../models/OrganizationZone");
-
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -50,7 +46,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true };
+    query["include"] = { all: true, required: false };
 
     return { query: query };
   },
@@ -61,10 +57,14 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             const rows = result[0],
-              count = result[1];
+              count = result[2];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -85,7 +85,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true },
+          include: { all: true, required: false  },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -103,9 +103,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        const res = await db.findByPk(inserted.ProvinceID, {
-          include: { all: true },
-        });
+        let res = methods.findById(inserted.ProvinceID);
 
         resolve(res);
       } catch (error) {
@@ -118,22 +116,17 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         // Check ID
+        
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.ProvinceID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { ProvinceID: id } });
 
-        const res = await db.findByPk(id, {
-          include: { all: true },
-        });
-
-        // await User.update(data, { where: { id: id }, individualHooks: true });
+        let res = methods.findById(data.ProvinceID);
+        
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

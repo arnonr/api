@@ -109,17 +109,13 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.RegionID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { RegionID: id } });
 
         const res = await db.findByPk(id);
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

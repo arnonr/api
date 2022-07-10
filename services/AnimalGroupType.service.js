@@ -19,7 +19,8 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalGroupTypeName + "%",
       };
 
-    if (req.query.AnimalGenreID) $where["AnimalGenreID"] = req.query.AnimalGenreID;
+    if (req.query.AnimalGenreID)
+      $where["AnimalGenreID"] = req.query.AnimalGenreID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -45,7 +46,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true };
+    query["include"] = { all: true, required: false };
 
     return { query: query };
   },
@@ -56,10 +57,14 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
           .then((result) => {
             const rows = result[0],
-              count = result[1];
+              count = result[2];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -79,8 +84,8 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id,{
-            include: { all: true }
+        const obj = await db.findByPk(id, {
+          include: { all: true, required: false  },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -98,9 +103,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        const res = await db.findByPk(inserted.AnimalGroupTypeID,{
-            include: { all: true }
-        });
+        let res = methods.findById(inserted.AnimalGroupTypeID)
 
         resolve(res);
       } catch (error) {
@@ -116,19 +119,13 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-
         // Update
         data.AnimalGroupTypeID = parseInt(id);
-        data.UpdatedUserID = 1;
 
         await db.update(data, { where: { AnimalGroupTypeID: id } });
 
-        const res = await db.findByPk(id,{
-            include: { all: true }
-        });
+        let res = methods.findById(data.AnimalGroupTypeID);
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

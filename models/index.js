@@ -86,9 +86,17 @@ Staff.associate({
 User.associate({ Staff, Group, UserToAnimalType, AnimalType });
 Group.associate({ User, GroupAuthorize });
 GroupAuthorize.associate({ Group, Menu });
-Project.associate({ Organization, ProjectToAnimalType, AnimalType });
+Project.associate({
+  Organization,
+  ProjectToAnimalType,
+  AnimalType,
+  AnimalToProject,
+  Animal,
+  FarmToProject,
+  Farm
+});
 ProjectToAnimalType.associate({ AnimalType, Project });
-UserToAnimalType.associate({ AnimalType, User});
+UserToAnimalType.associate({ AnimalType, User });
 
 Farm.associate({
   FarmStatus,
@@ -99,6 +107,7 @@ Farm.associate({
   Organization,
   AIZone,
   FarmToProject,
+  Project
 });
 
 Farmer.associate({
@@ -123,12 +132,17 @@ AnimalType.associate({
   UserToAnimalType,
   User,
   AnimalStatusToAnimalType,
-  AnimalStatus
+  AnimalStatus,
 });
 
 AnimalBreed.associate({ AnimalType });
 AnimalSex.associate({ AnimalStatusToAnimalSex, AnimalStatus });
-AnimalStatus.associate({ AnimalStatusToAnimalType,AnimalType,AnimalStatusToAnimalSex, AnimalSex });
+AnimalStatus.associate({
+  AnimalStatusToAnimalType,
+  AnimalType,
+  AnimalStatusToAnimalSex,
+  AnimalSex,
+});
 
 Animal.associate({
   AnimalSex,
@@ -140,6 +154,7 @@ Animal.associate({
   AnimalToProject,
   AnimalStatus,
   AnimalType,
+  Project,
 });
 
 (async () => {
