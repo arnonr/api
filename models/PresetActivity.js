@@ -2,12 +2,7 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class PresetActivity extends Model {
-  static associate(models) {
-    // this.belongsTo(models.AnimalType, {
-    //   through: models.PresetActivityToAnimalType,
-    //   foreignKey: "AnimalTypeID",
-    // });
-  }
+  static associate(models) {}
 
   // Custom JSON Response
   toJSON() {

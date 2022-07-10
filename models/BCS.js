@@ -1,7 +1,9 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class WorkOn extends Model {
+class BCS extends Model {
+  static associate(models) {}
+
   // Custom JSON Response
   toJSON() {
     return {
@@ -10,26 +12,29 @@ class WorkOn extends Model {
   }
 }
 
-WorkOn.init(
+BCS.init(
   {
-    id: {
+    BCSID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง ทำงานเกี่ยวกับ",
+      comment: "เลขไอดีอ้างอิง เลขคะแนนร่างกาย",
     },
-    code: {
+    BCSNumber: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "รหัสทำงานเกี่ยวกับ",
+      comment: "เลขคะแนนร่างกาย",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          WorkOn.findOne({ where: { code: value, is_remove: 0 } })
+          BCS.findOne({
+            where: { BCSNumber: value, isRemove: 0 },
+          })
             .then(function (data) {
-              if (data && self.id !== data.id) {
-                throw new Error("Code already in use!");
+              console.log(self);
+              if (data && self.BCSID !== data.BCSID) {
+                throw new Error("BCS Number already in use!");
               }
               return next();
             })
@@ -39,57 +44,41 @@ WorkOn.init(
         },
       },
     },
-    name: {
+    BCSName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "ชื่อทำงานเกี่ยวกับ",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          WorkOn.findOne({ where: { name: value, is_remove: 0 } })
-            .then(function (data) {
-              if (data && self.id !== data.id) {
-                throw new Error("Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "คำอธิบายคะแนนร่างกาย",
     },
-    
-    is_active: {
+    isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 1,
       comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
     },
-    is_remove: {
+    isRemove: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 0,
       comment: "1 = ถูกลบ",
     },
-    created_user_id: {
+    CreatedUserID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
     },
     createdAt: {
-      field: "created_datetime",
+      field: "CreatedDatetime",
       type: DataTypes.DATE,
       allowNull: false,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
     },
-    updated_user_id: {
+    UpdatedUserID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่แก้ไขข้อมูลล่าสุด",
     },
     updatedAt: {
-      field: "updated_datetime",
+      field: "UpdatedDatetime",
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
@@ -98,8 +87,9 @@ WorkOn.init(
   {
     sequelize,
     timestamps: true,
-    modelName: "work_ons",
+    freezeTableName: true,
+    modelName: "BCS",
   }
 );
 
-module.exports = WorkOn;
+module.exports = BCS;

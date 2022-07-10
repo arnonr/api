@@ -1,18 +1,6 @@
 const router = require('express').Router()
 const auth = require('../auth')
 
-router.use('/production-status', auth.required, require('./productionStatus'))
-router.use('/animal-source', auth.required, require('./animalSource'))
-router.use('/distribution-status', auth.required, require('./distributionStatus'))
-router.use('/distribution-cause', auth.required, require('./distributionCause'))
-router.use('/work-on', auth.required, require('./workOn'))
-router.use('/embryo-stage', auth.required, require('./embryoStage'))
-router.use('/hormone', auth.required, require('./hormone'))
-router.use('/give-birth-type', auth.required, require('./giveBirthType'))
-router.use('/color', auth.required, require('./color'))
-router.use('/semen', auth.required, require('./semen'))
-
-
 router.use('/country', auth.required, require('./Country'))
 router.use('/region', auth.required, require('./Region'))
 router.use('/province', auth.required, require('./Province'))

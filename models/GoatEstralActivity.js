@@ -1,7 +1,9 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class Hormone extends Model {
+class GoatEstralActivity extends Model {
+  static associate(models) {}
+
   // Custom JSON Response
   toJSON() {
     return {
@@ -10,26 +12,29 @@ class Hormone extends Model {
   }
 }
 
-Hormone.init(
+GoatEstralActivity.init(
   {
-    id: {
+    GoatEstralActivityID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง ฮอร์โมน",
+      comment: "เลขไอดีอ้างอิง การเป็นสัดของแพะ",
     },
-    name: {
+    GoatEstralActivityCode: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "ชื่อฮอร์โมน",
+      comment: "รหัสการเป็นสัดของแพะ",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Hormone.findOne({ where: { name: value, is_remove: 0 } })
+          GoatEstralActivity.findOne({
+            where: { GoatEstralActivityCode: value, isRemove: 0 },
+          })
             .then(function (data) {
-              if (data && self.id !== data.id) {
-                throw new Error("Name already in use!");
+              console.log(self);
+              if (data && self.GoatEstralActivityID !== data.GoatEstralActivityID) {
+                throw new Error("GoatEstralActivity Code already in use!");
               }
               return next();
             })
@@ -39,36 +44,41 @@ Hormone.init(
         },
       },
     },
-    is_active: {
+    GoatEstralActivityName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      comment: "คำอธิบายการเป็นสัด",
+    },
+    isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 1,
       comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
     },
-    is_remove: {
+    isRemove: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 0,
       comment: "1 = ถูกลบ",
     },
-    created_user_id: {
+    CreatedUserID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
     },
     createdAt: {
-      field: "created_datetime",
+      field: "CreatedDatetime",
       type: DataTypes.DATE,
       allowNull: false,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
     },
-    updated_user_id: {
+    UpdatedUserID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่แก้ไขข้อมูลล่าสุด",
     },
     updatedAt: {
-      field: "updated_datetime",
+      field: "UpdatedDatetime",
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
@@ -77,8 +87,9 @@ Hormone.init(
   {
     sequelize,
     timestamps: true,
-    modelName: "hormones",
+    freezeTableName: true,
+    modelName: "GoatEstralActivity",
   }
 );
 
-module.exports = Hormone;
+module.exports = GoatEstralActivity;
