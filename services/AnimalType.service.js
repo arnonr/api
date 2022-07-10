@@ -11,7 +11,9 @@ const methods = {
     if (req.query.AnimalTypeID) $where["AnimalTypeID"] = req.query.AnimalTypeID;
 
     if (req.query.AnimalTypeCode)
-      $where["AnimalTypeCode"] = req.query.AnimalTypeCode;
+      $where["AnimalTypeCode"] = {
+        [Op.like]: "%" + req.query.AnimalTypeCode + "%",
+      };
 
     if (req.query.AnimalTypeName)
       $where["AnimalTypeName"] = {

@@ -10,7 +10,10 @@ const methods = {
 
     if (req.query.MajorID) $where["MajorID"] = req.query.MajorID;
     if (req.query.MajorCode)
-      $where["MajorCode"] = req.query.MajorCode;
+      $where["MajorCode"] = {
+        [Op.like]: "%" + req.query.MajorCode + "%",
+      };
+
     if (req.query.MajorName)
       $where["MajorName"] = {
         [Op.like]: "%" + req.query.MajorName + "%",

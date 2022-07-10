@@ -10,12 +10,15 @@ const methods = {
 
     if (req.query.FarmStatusID) $where["FarmStatusID"] = req.query.FarmStatusID;
     if (req.query.FarmStatusCode)
-      $where["FarmStatusCode"] = req.query.FarmStatusCode;
+      $where["FarmStatusCode"] = {
+        [Op.like]: "%" + req.query.FarmStatusCode + "%",
+      };
+
     if (req.query.FarmStatusName)
       $where["FarmStatusName"] = {
         [Op.like]: "%" + req.query.FarmStatusName + "%",
       };
-      
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -105,7 +108,7 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-       // Update
+        // Update
         data.FarmStatusID = parseInt(id);
 
         await db.update(data, { where: { FarmStatusID: id } });

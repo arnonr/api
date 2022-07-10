@@ -9,7 +9,11 @@ const methods = {
     $where = {};
 
     if (req.query.ProvinceID) $where["ProvinceID"] = req.query.ProvinceID;
-    if (req.query.ProvinceCode) $where["ProvinceCode"] = req.query.ProvinceCode;
+    if (req.query.ProvinceCode)
+      $where["ProvinceCode"] = {
+        [Op.like]: "%" + req.query.ProvinceCode + "%",
+      };
+
     if (req.query.ProvinceName)
       $where["ProvinceName"] = {
         [Op.like]: "%" + req.query.ProvinceName + "%",
@@ -85,7 +89,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false  },
+          include: { all: true, required: false },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -116,7 +120,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         // Check ID
-        
+
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
@@ -126,7 +130,7 @@ const methods = {
         await db.update(data, { where: { ProvinceID: id } });
 
         let res = methods.findById(data.ProvinceID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

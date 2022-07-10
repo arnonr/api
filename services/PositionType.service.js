@@ -11,7 +11,10 @@ const methods = {
     if (req.query.PositionTypeID)
       $where["PositionTypeID"] = req.query.PositionTypeID;
     if (req.query.PositionTypeCode)
-      $where["PositionTypeCode"] = req.query.PositionTypeCode;
+      $where["PositionTypeCode"] = {
+        [Op.like]: "%" + req.query.PositionTypeCode + "%",
+      };
+
     if (req.query.PositionTypeName)
       $where["PositionTypeName"] = {
         [Op.like]: "%" + req.query.PositionTypeName + "%",

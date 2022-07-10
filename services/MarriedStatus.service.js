@@ -11,7 +11,10 @@ const methods = {
     if (req.query.MarriedStatusID)
       $where["MarriedStatusID"] = req.query.MarriedStatusID;
     if (req.query.MarriedStatusCode)
-      $where["MarriedStatusCode"] = req.query.MarriedStatusCode;
+      $where["MarriedStatusCode"] = {
+        [Op.like]: "%" + req.query.MarriedStatusCode + "%",
+      };
+
     if (req.query.MarriedStatusName)
       $where["MarriedStatusName"] = {
         [Op.like]: "%" + req.query.MarriedStatusName + "%",

@@ -12,7 +12,9 @@ const methods = {
       $where["AnimalBreedID"] = req.query.AnimalBreedID;
 
     if (req.query.AnimalBreedCode)
-      $where["AnimalBreedCode"] = req.query.AnimalBreedCode;
+      $where["AnimalBreedCode"] = {
+        [Op.like]: "%" + req.query.AnimalBreedCode + "%",
+      };
 
     if (req.query.AnimalBreedShortName)
       $where["AnimalBreedShortName"] = {
@@ -94,7 +96,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false  },
+          include: { all: true, required: false },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -112,7 +114,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        let res = methods.findById(inserted.AnimalBreedID)
+        let res = methods.findById(inserted.AnimalBreedID);
 
         resolve(res);
       } catch (error) {
@@ -134,7 +136,7 @@ const methods = {
         await db.update(data, { where: { AnimalBreedID: id } });
 
         let res = methods.findById(data.AnimalBreedID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

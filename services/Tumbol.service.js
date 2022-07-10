@@ -9,7 +9,11 @@ const methods = {
     $where = {};
 
     if (req.query.TumbolID) $where["TumbolID"] = req.query.TumbolID;
-    if (req.query.TumbolCode) $where["TumbolCode"] = req.query.TumbolCode;
+    if (req.query.TumbolCode)
+      $where["TumbolCode"] = {
+        [Op.like]: "%" + req.query.TumbolCode + "%",
+      };
+
     if (req.query.TumbolName)
       $where["TumbolName"] = {
         [Op.like]: "%" + req.query.TumbolName + "%",

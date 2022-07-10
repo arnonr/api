@@ -10,7 +10,10 @@ const methods = {
 
     if (req.query.GroupID) $where["GroupID"] = req.query.GroupID;
     if (req.query.GroupCode)
-      $where["GroupCode"] = req.query.GroupCode;
+      $where["GroupCode"] = {
+        [Op.like]: "%" + req.query.GroupCode + "%",
+      };
+
     if (req.query.GroupName)
       $where["GroupName"] = {
         [Op.like]: "%" + req.query.GroupName + "%",

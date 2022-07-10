@@ -9,7 +9,11 @@ const methods = {
     $where = {};
 
     if (req.query.CountryID) $where["CountryID"] = req.query.CountryID;
-    if (req.query.CountryCode) $where["CountryCode"] = req.query.CountryCode;
+    if (req.query.CountryCode)
+      $where["CountryCode"] = {
+        [Op.like]: "%" + req.query.CountryCode + "%",
+      };
+
     if (req.query.CountryName)
       $where["CountryName"] = {
         [Op.like]: "%" + req.query.CountryName + "%",

@@ -9,7 +9,10 @@ const methods = {
     $where = {};
 
     if (req.query.RegionID) $where["RegionID"] = req.query.RegionID;
-    if (req.query.RegionCode) $where["RegionCode"] = req.query.RegionCode;
+    if (req.query.RegionCode)
+      $where["RegionCode"] = {
+        [Op.like]: "%" + req.query.RegionCode + "%",
+      };
     if (req.query.RegionName)
       $where["RegionName"] = {
         [Op.like]: "%" + req.query.RegionName + "%",

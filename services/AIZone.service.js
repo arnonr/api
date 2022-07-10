@@ -9,7 +9,12 @@ const methods = {
     $where = {};
 
     if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
-    if (req.query.AIZoneCode) $where["AIZoneCode"] = req.query.AIZoneCode;
+
+    if (req.query.AIZoneCode)
+      $where["AIZoneCode"] = {
+        [Op.like]: "%" + req.query.AIZoneCode + "%",
+      };
+
     if (req.query.AIZoneName)
       $where["AIZoneName"] = {
         [Op.like]: "%" + req.query.AIZoneName + "%",
@@ -96,7 +101,7 @@ const methods = {
       }
     });
   },
-  
+
   update(id, data) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -110,7 +115,7 @@ const methods = {
         await db.update(data, { where: { AIZoneID: id } });
 
         const res = await db.findByPk(id);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

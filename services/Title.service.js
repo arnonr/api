@@ -9,7 +9,10 @@ const methods = {
     $where = {};
 
     if (req.query.TitleID) $where["TitleID"] = req.query.TitleID;
-    if (req.query.TitleCode) $where["TitleCode"] = req.query.TitleCode;
+    if (req.query.TitleCode)
+      $where["TitleCode"] = {
+        [Op.like]: "%" + req.query.TitleCode + "%",
+      };
 
     if (req.query.TitleName)
       $where["TitleName"] = {

@@ -17,7 +17,9 @@ const methods = {
       $where["AnimalStatusID"] = req.query.AnimalStatusID;
 
     if (req.query.AnimalStatusCode)
-      $where["AnimalStatusCode"] = req.query.AnimalStatusCode;
+      $where["AnimalStatusCode"] = {
+        [Op.like]: "%" + req.query.AnimalStatusCode + "%",
+      };
 
     if (req.query.AnimalStatusName)
       $where["AnimalStatusName"] = {
@@ -47,7 +49,7 @@ const methods = {
     if (req.query.AnimalSexID) {
       WhereAnimalSex = {
         AnimalSexID: {
-          [Op.in]:  JSON.parse(req.query.AnimalSexID),
+          [Op.in]: JSON.parse(req.query.AnimalSexID),
         },
       };
     }
@@ -97,10 +99,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
               count = rows.length;

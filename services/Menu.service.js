@@ -10,7 +10,10 @@ const methods = {
 
     if (req.query.MenuID) $where["MenuID"] = req.query.MenuID;
     if (req.query.MenuCode)
-      $where["MenuCode"] = req.query.MenuCode;
+      $where["MenuCode"] = {
+        [Op.like]: "%" + req.query.MenuCode + "%",
+      };
+
     if (req.query.MenuName)
       $where["MenuName"] = {
         [Op.like]: "%" + req.query.MenuName + "%",

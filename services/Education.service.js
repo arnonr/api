@@ -10,7 +10,10 @@ const methods = {
 
     if (req.query.EducationID) $where["EducationID"] = req.query.EducationID;
     if (req.query.EducationCode)
-      $where["EducationCode"] = req.query.EducationCode;
+      $where["EducationCode"] = {
+        [Op.like]: "%" + req.query.EducationCode + "%",
+      };
+
     if (req.query.EducationName)
       $where["EducationName"] = {
         [Op.like]: "%" + req.query.EducationName + "%",

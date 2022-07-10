@@ -10,7 +10,10 @@ const methods = {
 
     if (req.query.GenderID) $where["GenderID"] = req.query.GenderID;
     if (req.query.GenderCode)
-      $where["GenderCode"] = req.query.GenderCode;
+      $where["GenderCode"] = {
+        [Op.like]: "%" + req.query.GenderCode + "%",
+      };
+
     if (req.query.GenderName)
       $where["GenderName"] = {
         [Op.like]: "%" + req.query.GenderName + "%",

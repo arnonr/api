@@ -8,10 +8,13 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.AnimalGenreID) $where["AnimalGenreID"] = req.query.AnimalGenreID;
+    if (req.query.AnimalGenreID)
+      $where["AnimalGenreID"] = req.query.AnimalGenreID;
 
     if (req.query.AnimalGenreCode)
-      $where["AnimalGenreCode"] = req.query.AnimalGenreCode;
+      $where["AnimalGenreCode"] = {
+        [Op.like]: "%" + req.query.AnimalGenreCode + "%",
+      };
 
     if (req.query.AnimalGenreName)
       $where["AnimalGenreName"] = {
@@ -113,7 +116,7 @@ const methods = {
         await db.update(data, { where: { AnimalGenreID: id } });
 
         const res = await db.findByPk(id);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

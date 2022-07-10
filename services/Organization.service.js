@@ -15,7 +15,10 @@ const methods = {
       $where["ParentOrganizationID"] = req.query.ParentOrganizationID;
 
     if (req.query.OrganizationCode)
-      $where["OrganizationCode"] = req.query.OrganizationCode;
+      $where["OrganizationCode"] = {
+        [Op.like]: "%" + req.query.OrganizationCode + "%",
+      };
+
     if (req.query.OrganizationName)
       $where["OrganizationName"] = {
         [Op.like]: "%" + req.query.OrganizationName + "%",
