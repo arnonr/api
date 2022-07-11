@@ -49,7 +49,9 @@ router.use('/animal-status', auth.required, require('./AnimalStatus'))
 router.use('/animal', auth.required, require('./Animal'))
 
 // 
-
 router.use('/bcs', auth.required, require('./BCS'))
+router.use('/gun-depth', auth.required, require('./GunDepth'))
+router.use('/goat-estral-activity', auth.required, require('./GoatEstralActivity'))
+router.use('/source-type', auth.required, require('./SourceType'))
 
 module.exports = router

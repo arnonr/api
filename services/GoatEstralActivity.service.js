@@ -1,6 +1,6 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
-  db = require("../models/Staff"),
+  db = require("../models/GoatEstralActivity"),
   { Op } = require("sequelize");
 
 const methods = {
@@ -8,48 +8,17 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
+    if (req.query.GoatEstralActivityID)
+      $where["GoatEstralActivityID"] = req.query.GoatEstralActivityID;
 
-    if (req.query.StaffNumber)
-      $where["StaffNumber"] = {
-        [Op.like]: "%" + req.query.StaffNumber + "%",
+    if (req.query.GoatEstralActivityCode)
+      $where["GoatEstralActivityCode"] = {
+        [Op.like]: "%" + req.query.GoatEstralActivityCode + "%",
       };
 
-    if (req.query.StaffIdentificationNumber)
-      $where["StaffIdentificationNumber"] = {
-        [Op.like]: "%" + req.query.StaffIdentificationNumber + "%",
-      };
-
-    if (req.query.StaffTitleID) $where["StaffTitleID"] = req.query.StaffTitleID;
-
-    if (req.query.StaffGivenName)
-      $where["StaffGivenName"] = {
-        [Op.like]: "%" + req.query.StaffGivenName + "%",
-      };
-    if (req.query.StaffSurname)
-      $where["StaffSurname"] = {
-        [Op.like]: "%" + req.query.StaffSurname + "%",
-      };
-
-    if (req.query.GenderID) $where["StaffGenderID"] = req.query.StaffGenderID;
-    if (req.query.StaffMarriedStatusID)
-      $where["StaffMarriedStatusID"] = req.query.StaffMarriedStatusID;
-    if (req.query.StaffOrganizationID)
-      $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
-    if (req.query.StaffPositionTypeID)
-      $where["StaffPositionTypeID"] = req.query.StaffPositionTypeID;
-    if (req.query.StaffPositionID)
-      $where["StaffPositionID"] = req.query.StaffPositionID;
-    if (req.query.StaffTumbolID)
-      $where["StaffTumbolID"] = req.query.StaffTumbolID;
-    if (req.query.StaffAmphurID)
-      $where["StaffAmphurID"] = req.query.StaffAmphurID;
-    if (req.query.StaffProvinceID)
-      $where["StaffProvinceID"] = req.query.StaffProvinceID;
-
-    if (req.query.StaffEmail)
-      $where["StaffEmail"] = {
-        [Op.like]: "%" + req.query.StaffEmail + "%",
+    if (req.query.GoatEstralActivityName)
+      $where["GoatEstralActivityName"] = {
+        [Op.like]: "%" + req.query.GoatEstralActivityName + "%",
       };
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
@@ -62,7 +31,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["StaffID", "ASC"]];
+    $order = [["GoatEstralActivityID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -76,7 +45,6 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
     return { query: query };
   },
 
@@ -86,14 +54,10 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          delete _q.query.include,
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             const rows = result[0],
-              count = result[2];
+              count = result[1];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -113,9 +77,7 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
-        });
+        const obj = await db.findByPk(id);
 
         if (!obj) reject(ErrorNotFound("id: not found"));
         resolve(obj.toJSON());
@@ -132,7 +94,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        let res = methods.findById(inserted.StaffID);
+        const res = await db.findByPk(inserted.GoatEstralActivityID);
 
         resolve(res);
       } catch (error) {
@@ -149,13 +111,12 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.StaffID = parseInt(id);
+        data.GoatEstralActivityID = parseInt(id);
 
-        await db.update(data, { where: { StaffID: id } });
+        await db.update(data, { where: { GoatEstralActivityID: id } });
 
-        let res = methods.findById(data.StaffID);
+        const res = await db.findByPk(id);
 
-        // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -171,36 +132,11 @@ const methods = {
 
         await db.update(
           { isRemove: 1, isActive: 0 },
-          { where: { StaffID: id } }
+          { where: { GoatEstralActivityID: id } }
         );
         resolve();
       } catch (error) {
         reject(error);
-      }
-    });
-  },
-
-  photo(id, filename) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Check ID
-        const obj = await db.findByPk(id);
-        if (!obj) reject(ErrorNotFound("id: not found"));
-
-        // Update
-        var os = require("os");
-        var hostname = os.hostname();
-        console.log(hostname);
-
-        obj.StaffImage =
-          config.UploadPath +
-          "/images/staff/" +
-          filename;
-        obj.save();
-        
-        resolve();
-      } catch (error) {
-        reject(ErrorBadRequest(error.message));
       }
     });
   },

@@ -1,4 +1,4 @@
-const Service = require("../services/GunDept.service"),
+const Service = require("../services/GunDepth.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
