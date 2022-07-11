@@ -55,11 +55,18 @@ const AnimalStatusToAnimalSex = require("./AnimalStatusToAnimalSex");
 const Animal = require("./Animal");
 const AnimalToProject = require("./AnimalToProject");
 //
-
 const BCS = require("./BCS");
 const GoatEstralActivity = require("./GoatEstralActivity");
 const GunDepth = require("./GunDepth");
 const SourceType = require("./SourceType");
+// 
+const AbortResult = require("./AbortResult");
+const EmbryoStage = require("./EmbryoStage");
+const GiveBirthHelp = require("./GiveBirthHelp");
+const PregnancyCheckMethod = require("./PregnancyCheckMethod");
+const PregnancyCheckStatus = require("./PregnancyCheckStatus");
+const PresetActivity = require("./PresetActivity");
+const TransferMethod = require("./TransferMethod");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });

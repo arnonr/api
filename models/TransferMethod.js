@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class TranferMethod extends Model {
+class TransferMethod extends Model {
   static associate(models) {}
 
   // Custom JSON Response
@@ -12,29 +12,29 @@ class TranferMethod extends Model {
   }
 }
 
-TranferMethod.init(
+TransferMethod.init(
   {
-    TranferMethodID: {
+    TransferMethodID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง วิธีการย้ายฝาก",
     },
-    TranferMethodCode: {
+    TransferMethodCode: {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "รหัสวิธีการย้ายฝาก",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          TranferMethod.findOne({
-            where: { TranferMethodCode: value, isRemove: 0 },
+          TransferMethod.findOne({
+            where: { TransferMethodCode: value, isRemove: 0 },
           })
             .then(function (data) {
               console.log(self);
-              if (data && self.TranferMethodID !== data.TranferMethodID) {
-                throw new Error("TranferMethod Code already in use!");
+              if (data && self.TransferMethodID !== data.TransferMethodID) {
+                throw new Error("TransferMethod Code already in use!");
               }
               return next();
             })
@@ -44,19 +44,19 @@ TranferMethod.init(
         },
       },
     },
-    TranferMethodName: {
+    TransferMethodName: {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "ชื่อวิธีการย้ายฝาก",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          TranferMethod.findOne({
-            where: { TranferMethodName: value, isRemove: 0 },
+          TransferMethod.findOne({
+            where: { TransferMethodName: value, isRemove: 0 },
           })
             .then(function (data) {
-              if (data && self.TranferMethodID !== data.TranferMethodID) {
-                throw new Error("TranferMethod Name already in use!");
+              if (data && self.TransferMethodID !== data.TransferMethodID) {
+                throw new Error("TransferMethod Name already in use!");
               }
               return next();
             })
@@ -105,8 +105,8 @@ TranferMethod.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "TranferMethod",
+    modelName: "TransferMethod",
   }
 );
 
-module.exports = TranferMethod;
+module.exports = TransferMethod;

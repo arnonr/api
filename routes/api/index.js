@@ -53,5 +53,14 @@ router.use('/bcs', auth.required, require('./BCS'))
 router.use('/gun-depth', auth.required, require('./GunDepth'))
 router.use('/goat-estral-activity', auth.required, require('./GoatEstralActivity'))
 router.use('/source-type', auth.required, require('./SourceType'))
+router.use('/abort-result', auth.required, require('./AbortResult'))
+router.use('/embryo-stage', auth.required, require('./EmbryoStage'))
+router.use('/give-birth-help', auth.required, require('./GiveBirthHelp'))
+router.use('/pregnancy-check-method', auth.required, require('./PregnancyCheckMethod'))
+router.use('/pregnancy-check-status', auth.required, require('./PregnancyCheckStatus'))
+router.use('/preset-activity', auth.required, require('./PresetActivity'))
+router.use('/transfer-method', auth.required, require('./TransferMethod'))
+// router.use('/', auth.required, require('./'))
+
 
 module.exports = router
