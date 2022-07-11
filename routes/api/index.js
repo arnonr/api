@@ -48,4 +48,8 @@ router.use('/animal-breed', auth.required, require('./AnimalBreed'))
 router.use('/animal-status', auth.required, require('./AnimalStatus'))
 router.use('/animal', auth.required, require('./Animal'))
 
+// 
+
+router.use('/bcs', auth.required, require('./BCS'))
+
 module.exports = router

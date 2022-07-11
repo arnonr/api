@@ -56,6 +56,8 @@ const Animal = require("./Animal");
 const AnimalToProject = require("./AnimalToProject");
 //
 
+const BCS = require("./BCS");
+
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });

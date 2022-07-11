@@ -47,6 +47,25 @@ const methods = {
     if (req.query.UpdatedUserID)
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
+    if (req.query.StartDate) {
+      // $where["StartDate"] = {
+      //   [Op.between]: [req.query.StartDate, req.query.EndDate],
+      // };
+
+      $where[Op.or] = [
+        {
+          StartDate: {
+            [Op.between]: [req.query.StartDate, req.query.EndDate],
+          },
+        },
+        {
+          EndDate: {
+            [Op.between]: [req.query.StartDate, req.query.EndDate],
+          },
+        },
+      ];
+    }
+
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
@@ -73,6 +92,7 @@ const methods = {
       },
     ];
 
+    console.log(query);
     return { query: query };
   },
 
@@ -82,10 +102,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
               count = rows.length;
