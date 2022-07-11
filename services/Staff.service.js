@@ -194,7 +194,7 @@ const methods = {
 
         obj.StaffImage =
           config.UploadPath +
-          "/images/staff/staff-1-1657524438996.jpeg" +
+          "/images/staff/" +
           filename;
         obj.save();
 
