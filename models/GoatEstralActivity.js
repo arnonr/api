@@ -49,6 +49,11 @@ GoatEstralActivity.init(
       allowNull: false,
       comment: "คำอธิบายการเป็นสัด",
     },
+    Remark: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "หมายเหตุ",
+    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

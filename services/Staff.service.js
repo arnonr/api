@@ -154,7 +154,7 @@ const methods = {
         await db.update(data, { where: { StaffID: id } });
 
         let res = methods.findById(data.StaffID);
-        
+
         // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
       } catch (error) {
@@ -176,6 +176,27 @@ const methods = {
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  photo(id, filename) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+        obj.StaffImage = filename;
+        obj.save();
+
+        // let res = methods.findById(data.StaffID);
+
+        // await User.update(data, { where: { id: id }, individualHooks: true });
+        resolve();
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },

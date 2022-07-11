@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(
       null,
-      "user-" +
+      "staff-" +
         req.params.id +
         "-" +
         Date.now() +
@@ -46,6 +46,7 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
 router.get(
   "/:id",
   auth.required,

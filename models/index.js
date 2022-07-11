@@ -57,6 +57,9 @@ const AnimalToProject = require("./AnimalToProject");
 //
 
 const BCS = require("./BCS");
+const GoatEstralActivity = require("./GoatEstralActivity");
+const GunDepth = require("./GunDepth");
+const SourceType = require("./SourceType");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
