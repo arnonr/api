@@ -52,6 +52,21 @@ const methods = {
         [Op.like]: "%" + req.query.StaffEmail + "%",
       };
 
+    if (req.query.StaffStartDate) {
+      $where[Op.or] = [
+        {
+          StaffStartDate: {
+            [Op.between]: [req.query.StaffStartDate, req.query.StaffEndDate],
+          },
+        },
+        {
+          StaffEndDate: {
+            [Op.between]: [req.query.StaffStartDate, req.query.StaffEndDate],
+          },
+        },
+      ];
+    }
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -192,12 +207,9 @@ const methods = {
         var hostname = os.hostname();
         console.log(hostname);
 
-        obj.StaffImage =
-          config.UploadPath +
-          "/images/staff/" +
-          filename;
+        obj.StaffImage = config.UploadPath + "/images/staff/" + filename;
         obj.save();
-        
+
         resolve();
       } catch (error) {
         reject(ErrorBadRequest(error.message));

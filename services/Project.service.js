@@ -48,10 +48,6 @@ const methods = {
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
     if (req.query.StartDate) {
-      // $where["StartDate"] = {
-      //   [Op.between]: [req.query.StartDate, req.query.EndDate],
-      // };
-
       $where[Op.or] = [
         {
           StartDate: {
