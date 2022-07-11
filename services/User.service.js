@@ -79,10 +79,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
               count = rows.length;
@@ -124,9 +121,10 @@ const methods = {
       try {
         let obj = await db.findByPk(id, {
           include: [
-            { all: true, nested: true },
+            { all: true, required: false },
             {
               model: AnimalType,
+              required: false,
             },
           ],
         });
@@ -312,7 +310,6 @@ const methods = {
         obj.password = obj.passwordHash(obj.password);
         const inserted = await obj.save();
 
-        
         resolve(inserted);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

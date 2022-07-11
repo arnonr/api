@@ -188,7 +188,14 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        obj.StaffImage = filename;
+        var os = require("os");
+        var hostname = os.hostname();
+        console.log(hostname);
+
+        obj.StaffImage =
+          config.UploadPath +
+          "/images/staff/staff-1-1657524438996.jpeg" +
+          filename;
         obj.save();
 
         // let res = methods.findById(data.StaffID);

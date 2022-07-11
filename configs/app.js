@@ -13,4 +13,5 @@ module.exports = {
   DbUsername: process.env.DB_USERNAME,
   DbPassword: process.env.DB_PASSWORD,
   DbDatabase: process.env.DB_NAME,
+  UploadPath:  process.env.UPLOAD_PATH,
 }
