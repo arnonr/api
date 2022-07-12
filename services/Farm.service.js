@@ -204,7 +204,7 @@ const methods = {
         // Update
         data.FarmID = parseInt(id);
         console.log("Freedom");
-        
+
         if (data.ProjectID) {
           if (!Array.isArray(data.ProjectID)) {
             reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));

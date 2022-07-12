@@ -79,7 +79,7 @@ const methods = {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
-              count = row.length;
+              count = rows.length;
 
             //
             rows = rows.map((data) => {
@@ -116,7 +116,7 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
+        let obj = await db.findByPk(id, {
           include: [{ all: true, required: false }],
         });
 

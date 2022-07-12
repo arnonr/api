@@ -33,7 +33,6 @@ class AnimalType extends Model {
     this.belongsToMany(models.PresetActivity, {
       through: models.PresetActivityToAnimalType,
       foreignKey: "AnimalTypeID",
-      as: "PresetActivities",
     });
 
     

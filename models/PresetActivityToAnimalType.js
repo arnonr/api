@@ -4,7 +4,9 @@ const { Model, DataTypes } = require("sequelize"),
 class PresetActivityToAnimalType extends Model {
   // Custom JSON Response
   static associate(models) {
+
   }
+
   toJSON() {
     return {
       ...this.get(),
@@ -29,7 +31,7 @@ PresetActivityToAnimalType.init(
     AnimalTypeID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "ชื่อโปรแกรมกิจกรรมเหนี่ยวนำ",
+      comment: "รหัสประเภทสัตว์",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
