@@ -203,46 +203,47 @@ const methods = {
         // Update
         data.ProjectID = parseInt(id);
 
-        if (!Array.isArray(data.AnimalTypeID)) {
-          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
-          return;
-        }
-        let AnimalTypeIDList = [...data.AnimalTypeID];
-        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
-
-        await db.update(data, { where: { ProjectID: id } });
-
-        // insert ProjectToAnimalType
-        const searchPTA = await ProjectToAnimalType.findAll({
-          where: { ProjectID: obj.ProjectID },
-        });
-        // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
-        searchPTA.forEach((pta) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
-            ProjectToAnimalType.destroy({
-              where: { ProjectToAnimalTypeID: pta.ProjectToAnimalTypeID },
-            });
+        if (data.AnimalTypeID) {
+          if (!Array.isArray(data.AnimalTypeID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
           }
-        });
+          let AnimalTypeIDList = [...data.AnimalTypeID];
+          data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
-          const searchPTAOne = await ProjectToAnimalType.findOne({
-            where: {
-              ProjectID: obj.ProjectID,
-              AnimalTypeID: AnimalTypeID,
-            },
+          await db.update(data, { where: { ProjectID: id } });
+
+          // insert ProjectToAnimalType
+          const searchPTA = await ProjectToAnimalType.findAll({
+            where: { ProjectID: obj.ProjectID },
+          });
+          // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
+          searchPTA.forEach((pta) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
+              ProjectToAnimalType.destroy({
+                where: { ProjectToAnimalTypeID: pta.ProjectToAnimalTypeID },
+              });
+            }
           });
 
-          if (!searchPTAOne) {
-            const obj1 = ProjectToAnimalType.create({
-              ProjectID: obj.ProjectID,
-              AnimalTypeID: AnimalTypeID,
-              CreatedUserID: data.UpdatedUserID,
+          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+            const searchPTAOne = await ProjectToAnimalType.findOne({
+              where: {
+                ProjectID: obj.ProjectID,
+                AnimalTypeID: AnimalTypeID,
+              },
             });
-          }
-        });
 
+            if (!searchPTAOne) {
+              const obj1 = ProjectToAnimalType.create({
+                ProjectID: obj.ProjectID,
+                AnimalTypeID: AnimalTypeID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
         let res = methods.findById(data.ProjectID);
         resolve(res);
       } catch (error) {

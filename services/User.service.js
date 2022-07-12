@@ -194,46 +194,48 @@ const methods = {
         data.UserID = parseInt(id);
         data.Password = obj.passwordHash(data.Password);
 
-        if (!Array.isArray(data.AnimalTypeID)) {
-          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
-          return;
-        }
-
-        let AnimalTypeIDList = [...data.AnimalTypeID];
-        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
-
-        await db.update(data, { where: { UserID: id } });
-
-        // insert ProjectToAnimalType
-        const searchPTA = await UserToAnimalType.findAll({
-          where: { UserID: obj.UserID },
-        });
-        // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
-        searchPTA.forEach((pta) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
-            UserToAnimalType.destroy({
-              where: { UserToAnimalTypeID: pta.UserToAnimalTypeID },
-            });
+        if (data.AnimalTypeID) {
+          if (!Array.isArray(data.AnimalTypeID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
           }
-        });
 
-        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
-          const searchPTAOne = await UserToAnimalType.findOne({
-            where: {
-              UserID: obj.UserID,
-              AnimalTypeID: AnimalTypeID,
-            },
+          let AnimalTypeIDList = [...data.AnimalTypeID];
+          data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
+          await db.update(data, { where: { UserID: id } });
+
+          // insert ProjectToAnimalType
+          const searchPTA = await UserToAnimalType.findAll({
+            where: { UserID: obj.UserID },
+          });
+          // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
+          searchPTA.forEach((pta) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
+              UserToAnimalType.destroy({
+                where: { UserToAnimalTypeID: pta.UserToAnimalTypeID },
+              });
+            }
           });
 
-          if (!searchPTAOne) {
-            const obj1 = UserToAnimalType.create({
-              UserID: obj.UserID,
-              AnimalTypeID: AnimalTypeID,
-              CreatedUserID: data.UpdatedUserID,
+          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+            const searchPTAOne = await UserToAnimalType.findOne({
+              where: {
+                UserID: obj.UserID,
+                AnimalTypeID: AnimalTypeID,
+              },
             });
-          }
-        });
+
+            if (!searchPTAOne) {
+              const obj1 = UserToAnimalType.create({
+                UserID: obj.UserID,
+                AnimalTypeID: AnimalTypeID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
 
         let res = methods.findById(obj.UserID);
 

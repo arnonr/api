@@ -203,48 +203,51 @@ const methods = {
 
         // Update
         data.FarmID = parseInt(id);
-
-        if (!Array.isArray(data.ProjectID)) {
-          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
-          return;
-        }
+        console.log("Freedom");
         
-        let ProjectIDList = [...data.ProjectID];
-        data.ProjectID = JSON.stringify(data.ProjectID);
-
-        await db.update(data, { where: { FarmID: id } });
-
-        // insert FarmToProject
-        const searchFTP = await FarmToProject.findAll({
-          where: { FarmID: obj.FarmID },
-        });
-
-        // loop pta ของทั้งหมดที่มาจาก DB
-        searchFTP.forEach((ftp) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!ProjectIDList.includes(String(ftp.ProjectID))) {
-            FarmToProject.destroy({
-              where: { FarmToProjectID: ftp.FarmToProjectID },
-            });
+        if (data.ProjectID) {
+          if (!Array.isArray(data.ProjectID)) {
+            reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+            return;
           }
-        });
 
-        ProjectIDList.forEach(async (ProjectID) => {
-          const searchFTPOne = await FarmToProject.findOne({
-            where: {
-              FarmID: obj.FarmID,
-              ProjectID: ProjectID,
-            },
+          let ProjectIDList = [...data.ProjectID];
+          data.ProjectID = JSON.stringify(data.ProjectID);
+
+          await db.update(data, { where: { FarmID: id } });
+
+          // insert FarmToProject
+          const searchFTP = await FarmToProject.findAll({
+            where: { FarmID: obj.FarmID },
           });
 
-          if (!searchFTPOne) {
-            const obj1 = FarmToProject.create({
-              FarmID: obj.FarmID,
-              ProjectID: ProjectID,
-              CreatedUserID: data.UpdatedUserID,
+          // loop pta ของทั้งหมดที่มาจาก DB
+          searchFTP.forEach((ftp) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!ProjectIDList.includes(String(ftp.ProjectID))) {
+              FarmToProject.destroy({
+                where: { FarmToProjectID: ftp.FarmToProjectID },
+              });
+            }
+          });
+
+          ProjectIDList.forEach(async (ProjectID) => {
+            const searchFTPOne = await FarmToProject.findOne({
+              where: {
+                FarmID: obj.FarmID,
+                ProjectID: ProjectID,
+              },
             });
-          }
-        });
+
+            if (!searchFTPOne) {
+              const obj1 = FarmToProject.create({
+                FarmID: obj.FarmID,
+                ProjectID: ProjectID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
 
         let res = methods.findById(data.FarmID);
 

@@ -229,50 +229,51 @@ const methods = {
         // Update
         data.AnimalID = parseInt(id);
 
-        if (!Array.isArray(data.ProjectID)) {
-          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
-          return;
-        }
-
-        let ProjectIDList = [...data.ProjectID];
-        data.ProjectID = JSON.stringify(data.ProjectID);
-
-        await db.update(data, { where: { AnimalID: id } });
-
-        // insert AnimalToProject
-        const searchATP = await AnimalToProject.findAll({
-          where: { AnimalID: obj.AnimalID },
-        });
-
-        // loop ATP ของทั้งหมดที่มาจาก DB
-        searchATP.forEach((atp) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!ProjectIDList.includes(atp.ProjectID)) {
-            AnimalToProject.destroy({
-              where: {
-                AnimalToProjectID: atp.AnimalToProjectID,
-              },
-            });
+        if (data.ProjectID) {
+          if (!Array.isArray(data.ProjectID)) {
+            reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+            return;
           }
-        });
 
-        ProjectIDList.forEach(async (ProjectID) => {
-          const searchATPOne = await AnimalToProject.findOne({
-            where: {
-              AnimalID: obj.AnimalID,
-              ProjectID: ProjectID,
-            },
+          let ProjectIDList = [...data.ProjectID];
+          data.ProjectID = JSON.stringify(data.ProjectID);
+
+          await db.update(data, { where: { AnimalID: id } });
+
+          // insert AnimalToProject
+          const searchATP = await AnimalToProject.findAll({
+            where: { AnimalID: obj.AnimalID },
           });
 
-          if (!searchATPOne) {
-            const obj1 = AnimalToProject.create({
-              AnimalID: obj.AnimalID,
-              ProjectID: ProjectID,
-              CreatedUserID: data.UpdatedUserID,
-            });
-          }
-        });
+          // loop ATP ของทั้งหมดที่มาจาก DB
+          searchATP.forEach((atp) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!ProjectIDList.includes(atp.ProjectID)) {
+              AnimalToProject.destroy({
+                where: {
+                  AnimalToProjectID: atp.AnimalToProjectID,
+                },
+              });
+            }
+          });
 
+          ProjectIDList.forEach(async (ProjectID) => {
+            const searchATPOne = await AnimalToProject.findOne({
+              where: {
+                AnimalID: obj.AnimalID,
+                ProjectID: ProjectID,
+              },
+            });
+
+            if (!searchATPOne) {
+              const obj1 = AnimalToProject.create({
+                AnimalID: obj.AnimalID,
+                ProjectID: ProjectID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
         let res = methods.findById(data.AnimalID);
 
         resolve(res);
