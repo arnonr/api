@@ -191,6 +191,10 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.ProjectID)) {
+          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);
 
@@ -224,6 +228,11 @@ const methods = {
 
         // Update
         data.AnimalID = parseInt(id);
+
+        if (!Array.isArray(data.ProjectID)) {
+          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
 
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);

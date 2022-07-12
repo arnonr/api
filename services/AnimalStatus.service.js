@@ -189,9 +189,17 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalTypeID)) {
+          reject(ErrorBadRequest("AnimalType ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
+        if (!Array.isArray(data.AnimalSexID)) {
+          reject(ErrorBadRequest("AnimalSex ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
         let AnimalSexIDList = [...data.AnimalSexID];
         data.AnimalSexID = JSON.stringify(data.AnimalSexID);
 

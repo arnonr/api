@@ -35,8 +35,7 @@ const methods = {
     if (req.query.OrganizationZoneID)
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
     if (req.query.AIZoneID) $where["FarmProvinceID"] = req.query.AIZoneID;
-    if (req.query.FarmStatusID)
-      $where["FarmStatusID"] = req.query.FarmStatusID;
+    if (req.query.FarmStatusID) $where["FarmStatusID"] = req.query.FarmStatusID;
 
     if (req.query.FarmRegisterStartDate) {
       $where["FarmRegisterDate"] = {
@@ -89,7 +88,7 @@ const methods = {
         where: WhereProject,
       },
     ];
-    
+
     return { query: query };
   },
 
@@ -99,10 +98,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
               count = rows.length;
@@ -169,6 +165,11 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.ProjectID)) {
+          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);
 
@@ -203,6 +204,11 @@ const methods = {
         // Update
         data.FarmID = parseInt(id);
 
+        if (!Array.isArray(data.ProjectID)) {
+          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+        
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);
 
