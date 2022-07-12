@@ -188,6 +188,11 @@ Farm.init(
       allowNull: true,
       comment: "วันที่ขึ้นทะเบียนฟาร์ม",
     },
+    FarmImagePath: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+      comment: "url ภาพประจำฟาร์ม",
+    },
     ProjectID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,

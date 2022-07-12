@@ -312,7 +312,7 @@ const methods = {
         var hostname = os.hostname();
         console.log(hostname);
 
-        obj.FarmImage = config.UploadPath + "/images/farm/" + filename;
+        obj.FarmImagePath = config.UploadPath + "/images/farm/" + filename;
         obj.save();
 
         resolve();

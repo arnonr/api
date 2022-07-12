@@ -275,7 +275,7 @@ Animal.init(
       comment: "สัดส่วนสายพันธุ์ที่ 5",
     },
     AnimalImagePath: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(500),
       allowNull: true,
       comment: "url ภาพประจำตัวสัตว์",
     },

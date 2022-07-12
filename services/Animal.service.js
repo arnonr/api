@@ -361,7 +361,7 @@ const methods = {
         var hostname = os.hostname();
         console.log(hostname);
 
-        obj.FarmImage = config.UploadPath + "/images/animal/" + filename;
+        obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
         obj.save();
 
         resolve();
