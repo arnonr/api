@@ -300,6 +300,27 @@ const methods = {
       }
     });
   },
+  photo(id, filename) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+        var os = require("os");
+        var hostname = os.hostname();
+        console.log(hostname);
+
+        obj.FarmImage = config.UploadPath + "/images/farm/" + filename;
+        obj.save();
+
+        resolve();
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

@@ -54,7 +54,19 @@ const methods = {
 
   async onGenerateNumber(req, res) {
     try {
-      let result = await Service.GenerateNumber(req.query.FarmID,req.query.BirthDate);
+      let result = await Service.GenerateNumber(
+        req.query.FarmID,
+        req.query.BirthDate
+      );
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  async onPhoto(req, res) {
+    try {
+      const result = await Service.photo(req.params.id, req.file.filename);
       res.success(result);
     } catch (error) {
       res.error(error);

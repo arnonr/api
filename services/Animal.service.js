@@ -124,10 +124,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             let rows = result[0],
               count = rows.length;
@@ -168,11 +165,11 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         let obj = await db.findByPk(id, {
-          include: { all: true, required: false  },
+          include: { all: true, required: false },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        
+
         let projectArray = [];
         obj.toJSON().Projects.forEach((element) => {
           projectArray.push(element.ProjectName);
@@ -196,7 +193,7 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);
-        
+
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -230,7 +227,7 @@ const methods = {
 
         let ProjectIDList = [...data.ProjectID];
         data.ProjectID = JSON.stringify(data.ProjectID);
-        
+
         await db.update(data, { where: { AnimalID: id } });
 
         // insert AnimalToProject
@@ -249,7 +246,7 @@ const methods = {
             });
           }
         });
-        
+
         ProjectIDList.forEach(async (ProjectID) => {
           const searchATPOne = await AnimalToProject.findOne({
             where: {
@@ -266,9 +263,9 @@ const methods = {
             });
           }
         });
-        
+
         let res = methods.findById(data.AnimalID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -348,6 +345,28 @@ const methods = {
         resolve({ AnimalNumberGenerate: AnimalNumberGenerate });
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
+      }
+    });
+  },
+
+  photo(id, filename) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+        var os = require("os");
+        var hostname = os.hostname();
+        console.log(hostname);
+
+        obj.FarmImage = config.UploadPath + "/images/animal/" + filename;
+        obj.save();
+
+        resolve();
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },
