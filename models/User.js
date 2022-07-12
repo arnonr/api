@@ -103,6 +103,22 @@ User.init(
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "รหัสบุคลากร",
+      validate: {
+        isUnique: function (value, next) {
+          let self = this;
+          User.findOne({ where: { StaffID: value, isRemove: 0 } })
+            .then(function (data) {
+              console.log(self);
+              if (data && self.UserID !== data.UserID) {
+                throw new Error("Staff already in use!");
+              }
+              return next();
+            })
+            .catch(function (err) {
+              return next(err);
+            });
+        },
+      },
     },
     RegisterDate: {
       type: DataTypes.DATE,

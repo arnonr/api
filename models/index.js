@@ -66,6 +66,7 @@ const GiveBirthHelp = require("./GiveBirthHelp");
 const PregnancyCheckMethod = require("./PregnancyCheckMethod");
 const PregnancyCheckStatus = require("./PregnancyCheckStatus");
 const PresetActivity = require("./PresetActivity");
+const PresetActivityToAnimalType = require("./PresetActivityToAnimalType");
 const TransferMethod = require("./TransferMethod");
 
 // Associate
@@ -145,6 +146,8 @@ AnimalType.associate({
   User,
   AnimalStatusToAnimalType,
   AnimalStatus,
+  PresetActivityToAnimalType,
+  PresetActivity
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -168,6 +171,12 @@ Animal.associate({
   AnimalType,
   Project,
 });
+
+PresetActivity.associate({
+  PresetActivityToAnimalType,
+  AnimalType,
+});
+
 
 (async () => {
   await sequelize.sync();

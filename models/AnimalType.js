@@ -29,6 +29,14 @@ class AnimalType extends Model {
       foreignKey: "AnimalTypeID",
       as: "AnimalStatuses",
     });
+
+    this.belongsToMany(models.PresetActivity, {
+      through: models.PresetActivityToAnimalType,
+      foreignKey: "AnimalTypeID",
+      as: "PresetActivities",
+    });
+
+    
   }
 
   // Custom JSON Response

@@ -88,7 +88,6 @@ const methods = {
       },
     ];
 
-    console.log(query);
     return { query: query };
   },
 

@@ -1,15 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class PresetActivity extends Model {
-  static associate(models) {
-    this.belongsToMany(models.AnimalType, {
-      through: models.PresetActivityToAnimalType,
-      foreignKey: "PresetActivityID",
-    });
-  }
-
+class PresetActivityToAnimalType extends Model {
   // Custom JSON Response
+  static associate(models) {
+  }
   toJSON() {
     return {
       ...this.get(),
@@ -17,46 +12,24 @@ class PresetActivity extends Model {
   }
 }
 
-PresetActivity.init(
+PresetActivityToAnimalType.init(
   {
-    PresetActivityID: {
+    PresetActivityToAnimalTypeID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง กิจกรรม",
+      comment: "เลขไอดีอ้างอิง",
     },
-    PresetActivityName: {
-      type: DataTypes.STRING(255),
+    PresetActivityID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "ชื่อกิจกรรม",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          PresetActivity.findOne({
-            where: { PresetActivityName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.PresetActivityID !== data.PresetActivityID) {
-                throw new Error("PresetActivity Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
-    },
-    PresetActivityFor: {
-      type: DataTypes.ENUM("D", "R", "D,R"),
-      allowNull: false,
-      comment: "กิจกรรมสำหรับตัวให้,ตัวรับ",
+      comment: "รหัสกิจกรรมเหนี่ยวนำ",
     },
     AnimalTypeID: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "รหัสอ้างอิงชนิดสัตว์ (Array)",
+      allowNull: false,
+      comment: "ชื่อโปรแกรมกิจกรรมเหนี่ยวนำ",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -97,8 +70,8 @@ PresetActivity.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "PresetActivity",
+    modelName: "PresetActivityToAnimalType",
   }
 );
 
-module.exports = PresetActivity;
+module.exports = PresetActivityToAnimalType;

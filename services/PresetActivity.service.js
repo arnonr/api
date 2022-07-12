@@ -3,6 +3,9 @@ const config = require("../configs/app"),
   db = require("../models/PresetActivity"),
   { Op } = require("sequelize");
 
+const PresetActivityToAnimalType = require("../models/PresetActivityToAnimalType");
+const AnimalType = require("../models/AnimalType");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -21,11 +24,16 @@ const methods = {
         [Op.like]: "%" + req.query.PresetActivityFor + "%",
       };
 
-    //   อันนี้ต้องแก้
-    if (req.query.AnimalTypeID)
-      $where["AnimalTypeID"] = {
-        [Op.like]: "%" + req.query.AnimalTypeID + "%",
+    // AnimalTypeID
+    let WhereAnimalType = null;
+
+    if (req.query.AnimalTypeID) {
+      WhereAnimalType = {
+        AnimalTypeID: {
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        },
       };
+    }
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -51,6 +59,14 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: AnimalType,
+        where: WhereAnimalType,
+      },
+    ];
+
     return { query: query };
   },
 
@@ -62,8 +78,25 @@ const methods = {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
-            const rows = result[0],
-              count = result[1];
+            let rows = result[0],
+              count = row.length;
+
+            //
+            rows = rows.map((data) => {
+              let animalTypeArray = [];
+              data.AnimalTypes.forEach((element) => {
+                animalTypeArray.push(element.AnimalTypeName);
+              });
+              data = {
+                ...data.toJSON(),
+                AnimalTypes: animalTypeArray,
+                AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
+              };
+
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -83,10 +116,24 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id);
+        const obj = await db.findByPk(id, {
+          include: [{ all: true, required: false }],
+        });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let animalTypeArray = [];
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          animalTypeArray.push(element.AnimalTypeName);
+        });
+
+        obj = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -97,10 +144,26 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalTypeID)) {
+          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
         const obj = new db(data);
         const inserted = await obj.save();
 
-        const res = await db.findByPk(inserted.PresetActivityID);
+        // insert PresetActivityToAnimalType
+        AnimalTypeIDList.forEach((AnimalTypeID) => {
+          const obj1 = PresetActivityToAnimalType.create({
+            PresetActivityID: inserted.PresetActivityID,
+            AnimalTypeID: AnimalTypeID,
+            CreatedUserID: data.CreatedUserID,
+          });
+        });
+
+        let res = methods.findById(inserted.PresetActivityID);
 
         resolve(res);
       } catch (error) {
@@ -119,10 +182,48 @@ const methods = {
         // Update
         data.PresetActivityID = parseInt(id);
 
-        await db.update(data, { where: { PresetActivityID: id } });
+        if (data.AnimalTypeID) {
+          if (!Array.isArray(data.AnimalTypeID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          let AnimalTypeIDList = [...data.AnimalTypeID];
+          data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        const res = await db.findByPk(id);
+          await db.update(data, { where: { PresetActivityID: id } });
 
+          // insert PresetActivityToAnimalType
+          const searchPTA = await PresetActivityToAnimalType.findAll({
+            where: { PresetActivityID: obj.PresetActivityID },
+          });
+          // loop pta ของโครงการนี้ทั้งหมดที่มาจาก DB
+          searchPTA.forEach((pta) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
+              PresetActivityToAnimalType.destroy({
+                where: { PresetActivityToAnimalTypeID: pta.PresetActivityToAnimalTypeID },
+              });
+            }
+          });
+
+          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+            const searchPTAOne = await PresetActivityToAnimalType.findOne({
+              where: {
+                PresetActivityID: obj.PresetActivityID,
+                AnimalTypeID: AnimalTypeID,
+              },
+            });
+
+            if (!searchPTAOne) {
+              const obj1 = PresetActivityToAnimalType.create({
+                PresetActivityID: obj.PresetActivityID,
+                AnimalTypeID: AnimalTypeID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+        let res = methods.findById(data.PresetActivityID);
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
