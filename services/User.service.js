@@ -192,7 +192,11 @@ const methods = {
 
         // Update
         data.UserID = parseInt(id);
-        data.Password = obj.passwordHash(data.Password);
+
+        if(data.Password){
+          data.Password = obj.passwordHash(data.Password);
+        }
+        
 
         if (data.AnimalTypeID) {
           if (!Array.isArray(data.AnimalTypeID)) {
