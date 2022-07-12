@@ -82,7 +82,7 @@ AnimalStatus.init(
       allowNull: true,
       comment: "อายุเริ่มต้น",
     },
-    AnimalStatusStartAgeAmount: {
+    AnimalStatusStartAgeUnit: {
       type: DataTypes.ENUM('DAY', 'MONTH', 'YEAR'),
       allowNull: true,
       comment: "หน่วยอายุเริ่มต้น",
