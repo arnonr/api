@@ -40,7 +40,7 @@ const methods = {
     if (req.query.HouseAmphurID)
       $where["HouseAmphurID"] = req.query.HouseAmphurID;
     if (req.query.HouseProvinceID)
-      $where["HouseAmphurID"] = req.query.HouseProvinceID;
+      $where["HouseProvinceID"] = req.query.HouseProvinceID;
 
     if (req.query.HouseZipCode)
       $where["HouseZipCode"] = {
@@ -52,7 +52,7 @@ const methods = {
     if (req.query.ResidenceAmphurID)
       $where["ResidenceAmphurID"] = req.query.ResidenceAmphurID;
     if (req.query.ResidenceProvinceID)
-      $where["ResidenceAmphurID"] = req.query.ResidenceProvinceID;
+      $where["ResidenceProviceID"] = req.query.ResidenceProvinceID;
     if (req.query.ResidenceZipCode)
       $where["ResidenceZipCode"] = {
         [Op.like]: "%" + req.query.ResidenceZipCode + "%",
