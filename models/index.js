@@ -71,6 +71,7 @@ const TransferMethod = require("./TransferMethod");
 //
 const AI = require("./AI");
 const GoatEstralActivityDetail = require("./GoatEstralActivityDetail");
+const PregnancyCheckup = require("./PregnancyCheckup");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -183,7 +184,9 @@ AI.associate({
   Animal,Staff,Project,GunDepth,BCS,GoatEstralActivity
 });
 
-
+PregnancyCheckup.associate({
+  Animal,Staff,AI,PregnancyCheckMethod,PregnancyCheckStatus
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

@@ -65,6 +65,7 @@ router.use('/transfer-method', auth.required, require('./TransferMethod'))
 //
 router.use('/ai', auth.required, require('./AI'))
 router.use('/goat-estral-activity-detail', auth.required, require('./GoatEstralActivityDetail'))
+router.use('/pregnancy-checkup', auth.required, require('./PregnancyCheckup'))
 
 
 module.exports = router
