@@ -62,5 +62,9 @@ router.use('/preset-activity', auth.required, require('./PresetActivity'))
 router.use('/transfer-method', auth.required, require('./TransferMethod'))
 // router.use('/', auth.required, require('./'))
 
+//
+router.use('/ai', auth.required, require('./AI'))
+router.use('/goat-estral-activity-detail', auth.required, require('./GoatEstralActivityDetail'))
+
 
 module.exports = router

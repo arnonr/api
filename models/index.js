@@ -59,7 +59,7 @@ const BCS = require("./BCS");
 const GoatEstralActivity = require("./GoatEstralActivity");
 const GunDepth = require("./GunDepth");
 const SourceType = require("./SourceType");
-// 
+//
 const AbortResult = require("./AbortResult");
 const EmbryoStage = require("./EmbryoStage");
 const GiveBirthHelp = require("./GiveBirthHelp");
@@ -68,6 +68,9 @@ const PregnancyCheckStatus = require("./PregnancyCheckStatus");
 const PresetActivity = require("./PresetActivity");
 const PresetActivityToAnimalType = require("./PresetActivityToAnimalType");
 const TransferMethod = require("./TransferMethod");
+//
+const AI = require("./AI");
+const GoatEstralActivityDetail = require("./GoatEstralActivityDetail");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -106,7 +109,7 @@ Project.associate({
   AnimalToProject,
   Animal,
   FarmToProject,
-  Farm
+  Farm,
 });
 ProjectToAnimalType.associate({ AnimalType, Project });
 UserToAnimalType.associate({ AnimalType, User });
@@ -120,7 +123,7 @@ Farm.associate({
   Organization,
   AIZone,
   FarmToProject,
-  Project
+  Project,
 });
 
 Farmer.associate({
@@ -147,7 +150,7 @@ AnimalType.associate({
   AnimalStatusToAnimalType,
   AnimalStatus,
   PresetActivityToAnimalType,
-  PresetActivity
+  PresetActivity,
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -172,11 +175,25 @@ Animal.associate({
   Project,
 });
 
+GoatEstralActivityDetail.associate({
+  PresetActivity,GoatEstralActivity
+});
+
+AI.associate({
+  Animal,Staff,Project,GunDepth,BCS,GoatEstralActivity
+});
+
+
+
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
+//
 
+
+
+// เคย error เรื่องของลำดับด้วย
 
 (async () => {
   await sequelize.sync();
