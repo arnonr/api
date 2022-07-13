@@ -83,6 +83,7 @@ const Preset = require("./Preset");
 const PresetDetail = require("./PresetDetail");
 const Donor = require("./Donor");
 const DonorActivity = require("./DonorActivity");
+const DonorCollectEmbryo = require("./DonorCollectEmbryo");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -259,6 +260,13 @@ DonorActivity.associate({
   Donor,
   Animal,
   PresetActivity,
+  Staff
+});
+
+DonorCollectEmbryo.associate({
+  Donor,
+  Animal,
+  BCS,
   Staff
 });
 
