@@ -87,6 +87,7 @@ const DonorCollectEmbryo = require("./DonorCollectEmbryo");
 const DonorCollectEmbryoDetail = require("./DonorCollectEmbryoDetail");
 const Recipient = require("./Recipient");
 const RecipientActivity = require("./RecipientActivity");
+const TransferEmbryo = require("./TransferEmbryo");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -292,10 +293,17 @@ RecipientActivity.associate({
   Staff
 });
 
+TransferEmbryo.associate({
+  Animal,
+  BCS,
+  Staff
+})
+
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
+
 //
 
 // เคย error เรื่องของลำดับด้วย
