@@ -78,5 +78,6 @@ router.use('/donor', auth.required, require('./Donor'))
 router.use('/donor-activity', auth.required, require('./DonorActivity'))
 router.use('/donor-collect-embryo', auth.required, require('./DonorCollectEmbryo'))
 router.use('/donor-collect-embryo-detail', auth.required, require('./DonorCollectEmbryoDetail'))
+router.use('/recipient', auth.required, require('./Recipient'))
 
 module.exports = router
