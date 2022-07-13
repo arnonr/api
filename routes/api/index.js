@@ -72,6 +72,7 @@ router.use('/yearling', auth.required, require('./Yearling'))
 router.use('/bcs-checkup', auth.required, require('./BCSCheckup'))
 router.use('/progress-checkup', auth.required, require('./ProgressCheckup'))
 router.use('/wean-milk', auth.required, require('./WeanMilk'))
+router.use('/preset', auth.required, require('./Preset'))
 
 
 

@@ -78,6 +78,8 @@ const Yearling = require("./Yearling");
 const BCSCheckup = require("./BCSCheckup");
 const ProgressCheckup = require("./ProgressCheckup");
 const WeanMilk = require("./WeanMilk");
+// Embryo
+const Preset = require("./Preset");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -238,6 +240,11 @@ WeanMilk.associate({
   Animal,
   Staff,
   BCS
+})
+
+Preset.associate({
+  Organization,
+  Staff
 })
 
 PresetActivity.associate({
