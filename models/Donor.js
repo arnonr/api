@@ -1,0 +1,98 @@
+const { Model, DataTypes } = require("sequelize"),
+  { sequelize } = require("../configs/databases");
+
+class Donor extends Model {
+  static associate(models) {
+    this.belongsTo(models.Preset, {
+      foreignKey: "PresetID",
+    });
+    this.belongsTo(models.Farm, {
+      foreignKey: "FarmID",
+    });
+  }
+  // Custom JSON Response
+  toJSON() {
+    return {
+      ...this.get(),
+    };
+  }
+}
+
+Donor.init(
+  {
+    DonorID: {
+      type: DataTypes.INTEGER(11),
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
+      comment: "เลขไอดีอ้างอิง",
+    },
+
+    StartDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      comment: "วันที่เริ่ม",
+    },
+
+    PresetID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงโปรแกรมเหนี่ยวนำการเป็นสัด",
+    },
+
+    FarmID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "ฟาร์มที่กำหนดโปรแกรม",
+    },
+
+    ResponsibilityStaffID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสเจ้าหน้าที่ผู้ตรวจ",
+    },
+
+    isActive: {
+      type: DataTypes.TINYINT(1),
+      allowNull: false,
+      defaultValue: 1,
+      comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
+    },
+    isRemove: {
+      type: DataTypes.TINYINT(1),
+      allowNull: false,
+      defaultValue: 0,
+      comment: "1 = ถูกลบ",
+    },
+    CreatedUserID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
+    },
+    createdAt: {
+      field: "CreatedDatetime",
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "วัน-เวลาที่เพิ่มข้อมูล",
+    },
+    UpdatedUserID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่แก้ไขข้อมูลล่าสุด",
+    },
+    updatedAt: {
+      field: "UpdatedDatetime",
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+  },
+  {
+    sequelize,
+    timestamps: true,
+    freezeTableName: true,
+    modelName: "Donor",
+  }
+);
+
+module.exports = Donor;
