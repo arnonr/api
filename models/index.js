@@ -80,6 +80,7 @@ const ProgressCheckup = require("./ProgressCheckup");
 const WeanMilk = require("./WeanMilk");
 // Embryo
 const Preset = require("./Preset");
+const PresetDetail = require("./PresetDetail");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -245,6 +246,10 @@ WeanMilk.associate({
 Preset.associate({
   Organization,
   Staff
+})
+
+PresetDetail.associate({
+  Preset, PresetActivity
 })
 
 PresetActivity.associate({
