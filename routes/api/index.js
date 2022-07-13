@@ -68,6 +68,7 @@ router.use('/goat-estral-activity-detail', auth.required, require('./GoatEstralA
 router.use('/pregnancy-checkup', auth.required, require('./PregnancyCheckup'))
 router.use('/abort-checkup', auth.required, require('./AbortCheckup'))
 router.use('/give-birth', auth.required, require('./GiveBirth'))
+router.use('/yearling', auth.required, require('./Yearling'))
 
 
 

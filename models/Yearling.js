@@ -1,26 +1,21 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class PregnancyCheckup extends Model {
+class Yearling extends Model {
   static associate(models) {
+    this.belongsTo(models.Animal, {
+      foreignKey: "MotherAnimalID",
+      as: "MotherAnimal",
+    });
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
     });
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
     });
-    this.belongsTo(models.AI, {
-      foreignKey: "AIID",
-    });
-    this.belongsTo(models.PregnancyCheckMethod, {
-      foreignKey: "PregnancyCheckMethodID",
-    });
-    this.belongsTo(models.PregnancyCheckStatus, {
-      foreignKey: "PregnancyCheckStatusID",
-    });
     this.belongsTo(models.Staff, {
       foreignKey: "RemoveByStaffID",
-      as: "RemoveBy"
+      as: "RemoveBy",
     });
   }
   // Custom JSON Response
@@ -31,64 +26,39 @@ class PregnancyCheckup extends Model {
   }
 }
 
-PregnancyCheckup.init(
+Yearling.init(
   {
-    PregnancyCheckupID: {
+    YearlingID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง การตรวจท้อง",
+      comment: "เลขไอดีอ้างอิง ติดตามลูกโคหลังคลอด",
+    },
+    MotherAnimalID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงสัตว์ตัวแม่",
     },
     AnimalID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสสัตว์",
     },
-    AIID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "รหัสอ้างอิงการผสมเทียม",
-    },
-    TransferEmbryoID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "รหัสอ้างอิงการย้ายฝากตัวอ่อน",
-    },
-    NormalBreedingID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "รหัสอ้างอิงกรณีผสมพันธุ์ตามธรรมชาติ",
-    },
-    TimeNo: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "ครั้งที่ตรวจ",
-    },
-    CheckupDate: {
+    FollowDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-      comment: "วันที่ตรวจ",
+      comment: "วันที่ติดตาม",
     },
-    PregnancyCheckMethodID: {
-      type: DataTypes.INTEGER(11),
+    Weight: {
+      type: DataTypes.DECIMAL,
       allowNull: false,
-      comment: "วิธีการตรวจการตั้งท้อง",
-    },
-    PregnancyCheckStatusID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "ผลการตรวจการตั้งท้อง",
+      comment: "น้ำหนัก",
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสเจ้าหน้าที่ผู้ตรวจ",
-    },
-    Remark: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      comment: "หมายเหตุ (ถ้ามี)",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -139,8 +109,8 @@ PregnancyCheckup.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "PregnancyCheckup",
+    modelName: "Yearling",
   }
 );
 
-module.exports = PregnancyCheckup;
+module.exports = Yearling;

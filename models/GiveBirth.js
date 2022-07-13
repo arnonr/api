@@ -52,11 +52,6 @@ GiveBirth.init(
       allowNull: true,
       comment: "รหัสอ้างอิงการย้ายฝากตัวอ่อน",
     },
-    TransferEmbryoID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "รหัสอ้างอิงการย้ายฝากตัวอ่อน",
-    },
     NormalBreedingID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,

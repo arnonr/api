@@ -74,6 +74,7 @@ const GoatEstralActivityDetail = require("./GoatEstralActivityDetail");
 const PregnancyCheckup = require("./PregnancyCheckup");
 const AbortCheckup = require("./AbortCheckup");
 const GiveBirth = require("./GiveBirth");
+const Yearling = require("./Yearling");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -213,6 +214,11 @@ GiveBirth.associate({
   AI,
   GiveBirthHelp,
 });
+
+Yearling.associate({
+  Animal,
+  Staff,
+})
 
 PresetActivity.associate({
   PresetActivityToAnimalType,
