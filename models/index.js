@@ -76,6 +76,7 @@ const AbortCheckup = require("./AbortCheckup");
 const GiveBirth = require("./GiveBirth");
 const Yearling = require("./Yearling");
 const BCSCheckup = require("./BCSCheckup");
+const ProgressCheckup = require("./ProgressCheckup");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -222,6 +223,11 @@ Yearling.associate({
 })
 
 BCSCheckup.associate({
+  Animal,
+  Staff,
+  BCS
+})
+ProgressCheckup.associate({
   Animal,
   Staff,
   BCS
