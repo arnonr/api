@@ -81,6 +81,8 @@ const WeanMilk = require("./WeanMilk");
 // Embryo
 const Preset = require("./Preset");
 const PresetDetail = require("./PresetDetail");
+const Donor = require("./Donor");
+const DonorActivity = require("./DonorActivity");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -224,33 +226,41 @@ GiveBirth.associate({
 Yearling.associate({
   Animal,
   Staff,
-})
+});
 
 BCSCheckup.associate({
   Animal,
   Staff,
-  BCS
-})
+  BCS,
+});
 ProgressCheckup.associate({
   Animal,
   Staff,
-  BCS
-})
+  BCS,
+});
 
 WeanMilk.associate({
   Animal,
   Staff,
-  BCS
-})
+  BCS,
+});
 
 Preset.associate({
   Organization,
-  Staff
-})
+  Staff,
+});
 
 PresetDetail.associate({
-  Preset, PresetActivity
-})
+  Preset,
+  PresetActivity,
+});
+
+DonorActivity.associate({
+  Donor,
+  Animal,
+  PresetActivity,
+  Staff
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,
