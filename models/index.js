@@ -75,6 +75,7 @@ const PregnancyCheckup = require("./PregnancyCheckup");
 const AbortCheckup = require("./AbortCheckup");
 const GiveBirth = require("./GiveBirth");
 const Yearling = require("./Yearling");
+const BCSCheckup = require("./BCSCheckup");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -218,6 +219,12 @@ GiveBirth.associate({
 Yearling.associate({
   Animal,
   Staff,
+})
+
+BCSCheckup.associate({
+  Animal,
+  Staff,
+  BCS
 })
 
 PresetActivity.associate({
