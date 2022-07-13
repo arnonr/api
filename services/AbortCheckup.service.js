@@ -1,17 +1,17 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
-  db = require("../models/PregnancyCheckup"),
+  db = require("../models/AbortCheckup"),
   { Op } = require("sequelize");
 
-  const Staff = require("../models/Staff");
+const Staff = require("../models/Staff");
 
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
-    if (req.query.PregnancyCheckupID)
-      $where["PregnancyCheckupID"] = req.query.PregnancyCheckupID;
+    if (req.query.AbortCheckupID)
+      $where["AbortCheckupID"] = req.query.AbortCheckupID;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
@@ -20,15 +20,15 @@ const methods = {
       $where["TransferEmbryoID"] = req.query.TransferEmbryoID;
     if (req.query.NormalBreedingID)
       $where["NormalBreedingID"] = req.query.NormalBreedingID;
-    if (req.query.TimeNo) $where["NormalBreedingID"] = req.query.TimeNo;
-    if (req.query.CheckupDate)
-      $where["CheckupDate"] = req.query.CheckupDate;
-    if (req.query.PregnancyCheckMethodID)
-      $where["PregnancyCheckMethodID"] = req.query.PregnancyCheckMethodID;
-    if (req.query.PregnancyCheckStatusID)
-      $where["PregnancyCheckStatusID"] = req.query.PregnancyCheckStatusID;
+
+    if (req.query.AbortDate) $where["AbortDate"] = req.query.AbortDate;
+    if (req.query.AbortResultID)
+      $where["AbortResultID"] = req.query.AbortResultID;
+
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+
+    if (req.query.PAR) $where["PAR"] = req.query.PAR;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -40,7 +40,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["PregnancyCheckupID", "ASC"]];
+    $order = [["AbortCheckupID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -56,10 +56,10 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-    //   {
-    //     model: Staff,
-    //     attributes: ['StaffGivenName', 'StaffSurname']
-    //   },
+      //   {
+      //     model: Staff,
+      //     attributes: ['StaffGivenName', 'StaffSurname']
+      //   },
     ];
 
     return { query: query };
@@ -117,7 +117,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        let res = methods.findById(inserted.PregnancyCheckupID);
+        let res = methods.findById(inserted.AbortCheckupID);
 
         resolve(res);
       } catch (error) {
@@ -134,11 +134,11 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.PregnancyCheckupID = parseInt(id);
+        data.AbortCheckupID = parseInt(id);
 
-        await db.update(data, { where: { PregnancyCheckupID: id } });
+        await db.update(data, { where: { AbortCheckupID: id } });
 
-        let res = methods.findById(data.PregnancyCheckupID);
+        let res = methods.findById(data.AbortCheckupID);
 
         resolve(res);
       } catch (error) {
@@ -155,7 +155,7 @@ const methods = {
 
         await db.update(
           { isRemove: 1, isActive: 0 },
-          { where: { PregnancyCheckupID: id } }
+          { where: { AbortCheckupID: id } }
         );
         resolve();
       } catch (error) {
