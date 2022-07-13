@@ -73,8 +73,7 @@ const AI = require("./AI");
 const GoatEstralActivityDetail = require("./GoatEstralActivityDetail");
 const PregnancyCheckup = require("./PregnancyCheckup");
 const AbortCheckup = require("./AbortCheckup");
-
-
+const GiveBirth = require("./GiveBirth");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -180,28 +179,46 @@ Animal.associate({
 });
 
 GoatEstralActivityDetail.associate({
-  PresetActivity,GoatEstralActivity
+  PresetActivity,
+  GoatEstralActivity,
 });
 
 AI.associate({
-  Animal,Staff,Project,GunDepth,BCS,GoatEstralActivity
+  Animal,
+  Staff,
+  Project,
+  GunDepth,
+  BCS,
+  GoatEstralActivity,
 });
 
 PregnancyCheckup.associate({
-  Animal,Staff,AI,PregnancyCheckMethod,PregnancyCheckStatus
+  Animal,
+  Staff,
+  AI,
+  PregnancyCheckMethod,
+  PregnancyCheckStatus,
 });
 
 AbortCheckup.associate({
-  Animal,Staff,AI,AbortResult
-})
+  Animal,
+  Staff,
+  AI,
+  AbortResult,
+});
+
+GiveBirth.associate({
+  Animal,
+  Staff,
+  AI,
+  GiveBirthHelp,
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
 //
-
-
 
 // เคย error เรื่องของลำดับด้วย
 
