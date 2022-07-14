@@ -88,10 +88,13 @@ const DonorCollectEmbryoDetail = require("./DonorCollectEmbryoDetail");
 const Recipient = require("./Recipient");
 const RecipientActivity = require("./RecipientActivity");
 const TransferEmbryo = require("./TransferEmbryo");
-// 
+//
 const DistributionReason = require("./DistributionReason");
 const DistributionReasonToAnimalType = require("./DistributionReasonToAnimalType");
 const Distribution = require("./Distribution");
+
+const AnnualGoal = require("./AnnualGoal");
+const AnnualGoalToAnimalType = require("./AnnualGoalToAnimalType");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -173,7 +176,9 @@ AnimalType.associate({
   PresetActivityToAnimalType,
   PresetActivity,
   DistributionReasonToAnimalType,
-  DistributionReason
+  DistributionReason,
+  AnnualGoalToAnimalType,
+  AnnualGoal,
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -270,53 +275,60 @@ DonorActivity.associate({
   Donor,
   Animal,
   PresetActivity,
-  Staff
+  Staff,
 });
 
 DonorCollectEmbryo.associate({
   Donor,
   Animal,
   BCS,
-  Staff
+  Staff,
 });
 
 DonorCollectEmbryoDetail.associate({
   Donor,
   Animal,
-  EmbryoStage
-})
+  EmbryoStage,
+});
 
 Recipient.associate({
   Preset,
   Farm,
-  Staff
-})
+  Staff,
+});
 
 RecipientActivity.associate({
   Recipient,
   Animal,
   PresetActivity,
-  Staff
+  Staff,
 });
 
 TransferEmbryo.associate({
   Animal,
   BCS,
-  Staff
-})
+  Staff,
+});
 
 DistributionReason.associate({
   DistributionReasonToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 Distribution.associate({
   Farm,
   Animal,
   DistributionReason,
   Staff,
-  Organization
-})
+  Organization,
+});
+
+AnnualGoal.associate({
+  AnnualGoalToAnimalType,
+  AnimalType,
+  Organization,
+  Project,
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

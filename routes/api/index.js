@@ -84,5 +84,6 @@ router.use('/transfer-embryo', auth.required, require('./TransferEmbryo'))
 
 router.use('/distribution-reason', auth.required, require('./DistributionReason'))
 router.use('/distribution', auth.required, require('./Distribution'))
+router.use('/annual-goal', auth.required, require('./AnnualGoal'))
 
 module.exports = router
