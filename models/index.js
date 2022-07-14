@@ -91,6 +91,7 @@ const TransferEmbryo = require("./TransferEmbryo");
 // 
 const DistributionReason = require("./DistributionReason");
 const DistributionReasonToAnimalType = require("./DistributionReasonToAnimalType");
+const Distribution = require("./Distribution");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -307,6 +308,14 @@ TransferEmbryo.associate({
 DistributionReason.associate({
   DistributionReasonToAnimalType,
   AnimalType
+})
+
+Distribution.associate({
+  Farm,
+  Animal,
+  DistributionReason,
+  Staff,
+  Organization
 })
 
 PresetActivity.associate({
