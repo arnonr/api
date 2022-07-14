@@ -6,6 +6,7 @@ const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
+const Farm = require("../models/Farm");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -315,7 +316,6 @@ const methods = {
         if (BirthDate) {
           date = new Date(BirthDate);
         }
-
         year = date.getFullYear();
 
         let farm = await Farm.findByPk(FarmID);
