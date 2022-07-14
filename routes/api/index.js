@@ -82,4 +82,6 @@ router.use('/recipient', auth.required, require('./Recipient'))
 router.use('/recipient-activity', auth.required, require('./RecipientActivity'))
 router.use('/transfer-embryo', auth.required, require('./TransferEmbryo'))
 
+router.use('/distribution-reason', auth.required, require('./DistributionReason'))
+
 module.exports = router
