@@ -95,6 +95,8 @@ const Distribution = require("./Distribution");
 
 const AnnualGoal = require("./AnnualGoal");
 const AnnualGoalToAnimalType = require("./AnnualGoalToAnimalType");
+const Concentrate = require("./Concentrate");
+const Roughages = require("./Roughages");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
