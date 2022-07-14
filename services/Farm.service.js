@@ -6,6 +6,7 @@ const config = require("../configs/app"),
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
+const Farmer = require("../models/Farmer");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -99,11 +100,11 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
-          .then((result) => {
+          .then(async (result) => {
             let rows = result[0],
               count = rows.length;
             //
-            rows = rows.map((data) => {
+            rows = await Promise.all(rows.map(async (data) => {
               let projectArray = [];
               data.Projects.forEach((element) => {
                 projectArray.push(element.ProjectName);
@@ -114,9 +115,26 @@ const methods = {
                 ProjectID: JSON.parse(data.toJSON().ProjectID),
               };
 
+              data.Farmer = await Farmer.findOne({
+                where: {
+                  FarmID: 2,
+                },
+              });
+
               return data;
-            });
+            }));
             //
+
+            // rows = rows.map((data) => {
+            //   let farmer = Farmer.findOne({
+            //     where: {
+            //       FarmID: 2,
+            //     },
+            //   });
+
+            //   data.Farmer = farmer;
+            //   return data;
+            // });
 
             resolve({
               total: count,
@@ -148,9 +166,16 @@ const methods = {
           projectArray.push(element.ProjectName);
         });
 
+        let farmer = await Farmer.findOne({
+          where: {
+            FarmID: obj.FarmID,
+          },
+        });
+
         obj = {
           ...obj.toJSON(),
           Projects: projectArray,
+          Farmer: farmer,
           ProjectID: JSON.parse(obj.toJSON().ProjectID),
         };
 
