@@ -207,11 +207,14 @@ const methods = {
             reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          let AnimalTypeIDList = [...data.AnimalTypeID];
+
+          var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
+        
+        await db.update(data, { where: { ProjectID: id } });
 
-          await db.update(data, { where: { ProjectID: id } });
-
+        if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
           const searchPTA = await ProjectToAnimalType.findAll({
             where: { ProjectID: obj.ProjectID },

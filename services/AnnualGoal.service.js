@@ -91,7 +91,6 @@ const methods = {
                 animalTypeArray.push(element.AnimalTypeName);
               });
 
-
               data = {
                 ...data.toJSON(),
                 AnimalTypes: animalTypeArray,
@@ -125,7 +124,7 @@ const methods = {
             { all: true, required: false },
             {
               model: AnimalType,
-            }
+            },
           ],
         });
 
@@ -191,43 +190,51 @@ const methods = {
         // Update
         data.AnnualGoalID = parseInt(id);
 
-        let AnimalTypeIDList = [...data.AnimalTypeID];
-        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        if (data.AnimalTypeID) {
+          if (!Array.isArray(data.AnimalTypeID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var AnimalTypeIDList = [...data.AnimalTypeID];
+          data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
 
         await db.update(data, { where: { AnnualGoalID: id } });
 
-        // insert ProjectToAnimalType
-        const searchATA = await AnnualGoalToAnimalType.findAll({
-          where: { AnnualGoalID: obj.AnnualGoalID },
-        });
-        // loop pta ของทั้งหมดที่มาจาก DB
-        searchATA.forEach((ata) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!AnimalTypeIDList.includes(ata.AnimalTypeID)) {
-            AnnualGoalToAnimalType.destroy({
-              where: {
-                AnnualGoalToAnimalTypeID: ata.AnnualGoalToAnimalTypeID,
-              },
-            });
-          }
-        });
-
-        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
-          const searchATAOne = await AnnualGoalToAnimalType.findOne({
-            where: {
-              AnnualGoalID: obj.AnnualGoalID,
-              AnimalTypeID: AnimalTypeID,
-            },
+        if (data.AnimalTypeID) {
+          // insert ProjectToAnimalType
+          const searchATA = await AnnualGoalToAnimalType.findAll({
+            where: { AnnualGoalID: obj.AnnualGoalID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          searchATA.forEach((ata) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalTypeIDList.includes(ata.AnimalTypeID)) {
+              AnnualGoalToAnimalType.destroy({
+                where: {
+                  AnnualGoalToAnimalTypeID: ata.AnnualGoalToAnimalTypeID,
+                },
+              });
+            }
           });
 
-          if (!searchATAOne) {
-            const obj1 = AnnualGoalToAnimalType.create({
-              AnnualGoalID: obj.AnnualGoalID,
-              AnimalTypeID: AnimalTypeID,
-              CreatedUserID: data.UpdatedUserID,
+          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+            const searchATAOne = await AnnualGoalToAnimalType.findOne({
+              where: {
+                AnnualGoalID: obj.AnnualGoalID,
+                AnimalTypeID: AnimalTypeID,
+              },
             });
-          }
-        });
+
+            if (!searchATAOne) {
+              const obj1 = AnnualGoalToAnimalType.create({
+                AnnualGoalID: obj.AnnualGoalID,
+                AnimalTypeID: AnimalTypeID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
         //
 
         let res = methods.findById(data.AnnualGoalID);

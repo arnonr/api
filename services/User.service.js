@@ -193,10 +193,9 @@ const methods = {
         // Update
         data.UserID = parseInt(id);
 
-        if(data.Password){
+        if (data.Password) {
           data.Password = obj.passwordHash(data.Password);
         }
-        
 
         if (data.AnimalTypeID) {
           if (!Array.isArray(data.AnimalTypeID)) {
@@ -204,11 +203,13 @@ const methods = {
             return;
           }
 
-          let AnimalTypeIDList = [...data.AnimalTypeID];
+          var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
 
-          await db.update(data, { where: { UserID: id } });
+        await db.update(data, { where: { UserID: id } });
 
+        if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
           const searchPTA = await UserToAnimalType.findAll({
             where: { UserID: obj.UserID },

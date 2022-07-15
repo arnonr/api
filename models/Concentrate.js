@@ -2,7 +2,12 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class Concentrate extends Model {
-  static associate(models) {}
+  static associate(models) {
+    this.belongsToMany(models.TMRFormula, {
+      through: models.TMRFormulaToConcentrate,
+      foreignKey: "ConcentrateID",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {

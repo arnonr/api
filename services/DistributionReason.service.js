@@ -11,7 +11,8 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.DistributionReasonID) $where["DistributionReasonID"] = req.query.DistributionReasonID;
+    if (req.query.DistributionReasonID)
+      $where["DistributionReasonID"] = req.query.DistributionReasonID;
 
     if (req.query.DistributionReasonName)
       $where["DistributionReasonName"] = {
@@ -180,11 +181,13 @@ const methods = {
             reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          let AnimalTypeIDList = [...data.AnimalTypeID];
+          var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
 
-          await db.update(data, { where: { DistributionReasonID: id } });
+        await db.update(data, { where: { DistributionReasonID: id } });
 
+        if (data.AnimalTypeID) {
           // insert DistributionReasonToAnimalType
           const searchPTA = await DistributionReasonToAnimalType.findAll({
             where: { DistributionReasonID: obj.DistributionReasonID },
@@ -194,7 +197,10 @@ const methods = {
             // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
             if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
               DistributionReasonToAnimalType.destroy({
-                where: { DistributionReasonToAnimalTypeID: pta.DistributionReasonToAnimalTypeID },
+                where: {
+                  DistributionReasonToAnimalTypeID:
+                    pta.DistributionReasonToAnimalTypeID,
+                },
               });
             }
           });

@@ -1,14 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class Roughages extends Model {
-  static associate(models) {
-    this.belongsToMany(models.TMRFormula, {
-      through: models.TMRFormulaToRoughages,
-      foreignKey: "RoughagesID",
-    });
-  }
+class TMRFormulaToConcentrate extends Model {
   // Custom JSON Response
+  static associate(models) {
+  }
   toJSON() {
     return {
       ...this.get(),
@@ -16,36 +12,29 @@ class Roughages extends Model {
   }
 }
 
-Roughages.init(
+TMRFormulaToConcentrate.init(
   {
-    RoughagesID: {
+    TMRFormulaToConcentrateID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "รหัสอ้างอิง",
+      comment: "เลขไอดีอ้างอิง",
     },
-    RoughagesName: {
-      type: DataTypes.STRING(255),
+    TMRFormulaID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "ชื่ออาหารหยาบ",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Roughages.findOne({
-            where: { RoughagesName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.RoughagesID !== data.RoughagesID) {
-                throw new Error("Roughages Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "รหัสสูตร TMR",
+    },
+    ConcentrateID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิง อาหารข้น",
+    },
+    Amount: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "จำนวน",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -86,8 +75,8 @@ Roughages.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "Roughages",
+    modelName: "TMRFormulaToConcentrate",
   }
 );
 
-module.exports = Roughages;
+module.exports = TMRFormulaToConcentrate;

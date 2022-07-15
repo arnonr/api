@@ -87,5 +87,6 @@ router.use('/distribution', auth.required, require('./Distribution'))
 router.use('/annual-goal', auth.required, require('./AnnualGoal'))
 router.use('/concentrate', auth.required, require('./Concentrate'))
 router.use('/roughages', auth.required, require('./Roughages'))
+router.use('/tmr-formula', auth.required, require('./TMRFormula'))
 
 module.exports = router

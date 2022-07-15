@@ -187,11 +187,13 @@ const methods = {
             reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          let AnimalTypeIDList = [...data.AnimalTypeID];
+          var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
 
-          await db.update(data, { where: { PresetActivityID: id } });
+        await db.update(data, { where: { PresetActivityID: id } });
 
+        if (data.AnimalTypeID) {
           // insert PresetActivityToAnimalType
           const searchPTA = await PresetActivityToAnimalType.findAll({
             where: { PresetActivityID: obj.PresetActivityID },
@@ -201,7 +203,10 @@ const methods = {
             // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
             if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
               PresetActivityToAnimalType.destroy({
-                where: { PresetActivityToAnimalTypeID: pta.PresetActivityToAnimalTypeID },
+                where: {
+                  PresetActivityToAnimalTypeID:
+                    pta.PresetActivityToAnimalTypeID,
+                },
               });
             }
           });

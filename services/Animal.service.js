@@ -236,11 +236,13 @@ const methods = {
             return;
           }
 
-          let ProjectIDList = [...data.ProjectID];
+          var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
+        }
 
-          await db.update(data, { where: { AnimalID: id } });
-
+        await db.update(data, { where: { AnimalID: id } });
+        
+        if (data.ProjectID) {
           // insert AnimalToProject
           const searchATP = await AnimalToProject.findAll({
             where: { AnimalID: obj.AnimalID },

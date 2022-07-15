@@ -97,6 +97,9 @@ const AnnualGoal = require("./AnnualGoal");
 const AnnualGoalToAnimalType = require("./AnnualGoalToAnimalType");
 const Concentrate = require("./Concentrate");
 const Roughages = require("./Roughages");
+const TMRFormula = require("./TMRFormula");
+const TMRFormulaToRoughages = require("./TMRFormulaToRoughages");
+const TMRFormulaToConcentrate = require("./TMRFormulaToConcentrate");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -331,6 +334,24 @@ AnnualGoal.associate({
   Organization,
   Project,
 });
+
+Concentrate.associate({
+  TMRFormulaToConcentrate,
+  TMRFormula,
+})
+
+Roughages.associate({
+  TMRFormulaToRoughages,
+  TMRFormula,
+})
+
+TMRFormula.associate({
+  TMRFormulaToRoughages,
+  Roughages,
+  TMRFormulaToConcentrate,
+  Concentrate,
+  Staff
+})
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

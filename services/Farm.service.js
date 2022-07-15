@@ -104,25 +104,27 @@ const methods = {
             let rows = result[0],
               count = rows.length;
             //
-            rows = await Promise.all(rows.map(async (data) => {
-              let projectArray = [];
-              data.Projects.forEach((element) => {
-                projectArray.push(element.ProjectName);
-              });
-              data = {
-                ...data.toJSON(),
-                Projects: projectArray,
-                ProjectID: JSON.parse(data.toJSON().ProjectID),
-              };
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                let projectArray = [];
+                data.Projects.forEach((element) => {
+                  projectArray.push(element.ProjectName);
+                });
+                data = {
+                  ...data.toJSON(),
+                  Projects: projectArray,
+                  ProjectID: JSON.parse(data.toJSON().ProjectID),
+                };
 
-              data.Farmer = await Farmer.findOne({
-                where: {
-                  FarmID: 2,
-                },
-              });
+                data.Farmer = await Farmer.findOne({
+                  where: {
+                    FarmID: 2,
+                  },
+                });
 
-              return data;
-            }));
+                return data;
+              })
+            );
             //
 
             // rows = rows.map((data) => {
@@ -236,11 +238,11 @@ const methods = {
             return;
           }
 
-          let ProjectIDList = [...data.ProjectID];
+          var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
-
-          await db.update(data, { where: { FarmID: id } });
-
+        }
+        await db.update(data, { where: { FarmID: id } });
+        if (data.ProjectID) {
           // insert FarmToProject
           const searchFTP = await FarmToProject.findAll({
             where: { FarmID: obj.FarmID },

@@ -243,81 +243,89 @@ const methods = {
         // Update
         data.AnimalStatusID = parseInt(id);
 
-        let AnimalTypeIDList = [...data.AnimalTypeID];
-        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        if (data.AnimalTypeID) {
+          var AnimalTypeIDList = [...data.AnimalTypeID];
+          data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+        }
 
-        let AnimalSexIDList = [...data.AnimalSexID];
-        data.AnimalSexID = JSON.stringify(data.AnimalSexID);
+        if (data.AnimalSexID) {
+          var AnimalSexIDList = [...data.AnimalSexID];
+          data.AnimalSexID = JSON.stringify(data.AnimalSexID);
+        }
 
         await db.update(data, { where: { AnimalStatusID: id } });
 
-        // insert ProjectToAnimalType
-        const searchATA = await AnimalStatusToAnimalType.findAll({
-          where: { AnimalStatusID: obj.AnimalStatusID },
-        });
-        // loop pta ของทั้งหมดที่มาจาก DB
-        searchATA.forEach((ata) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!AnimalTypeIDList.includes(ata.AnimalTypeID)) {
-            AnimalStatusToAnimalType.destroy({
-              where: {
-                AnimalStatusToAnimalTypeID: ata.AnimalStatusToAnimalTypeID,
-              },
-            });
-          }
-        });
-
-        AnimalTypeIDList.forEach(async (AnimalTypeID) => {
-          const searchATAOne = await AnimalStatusToAnimalType.findOne({
-            where: {
-              AnimalStatusID: obj.AnimalStatusID,
-              AnimalTypeID: AnimalTypeID,
-            },
+        if (data.AnimalTypeID) {
+          // insert ProjectToAnimalType
+          const searchATA = await AnimalStatusToAnimalType.findAll({
+            where: { AnimalStatusID: obj.AnimalStatusID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          searchATA.forEach((ata) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalTypeIDList.includes(ata.AnimalTypeID)) {
+              AnimalStatusToAnimalType.destroy({
+                where: {
+                  AnimalStatusToAnimalTypeID: ata.AnimalStatusToAnimalTypeID,
+                },
+              });
+            }
           });
 
-          if (!searchATAOne) {
-            const obj1 = AnimalStatusToAnimalType.create({
-              AnimalStatusID: obj.AnimalStatusID,
-              AnimalTypeID: AnimalTypeID,
-              CreatedUserID: data.UpdatedUserID,
+          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
+            const searchATAOne = await AnimalStatusToAnimalType.findOne({
+              where: {
+                AnimalStatusID: obj.AnimalStatusID,
+                AnimalTypeID: AnimalTypeID,
+              },
             });
-          }
-        });
+
+            if (!searchATAOne) {
+              const obj1 = AnimalStatusToAnimalType.create({
+                AnimalStatusID: obj.AnimalStatusID,
+                AnimalTypeID: AnimalTypeID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
         //
 
-        // insert ProjectToAnimalType
-        const searchATS = await AnimalStatusToAnimalSex.findAll({
-          where: { AnimalStatusID: obj.AnimalStatusID },
-        });
-
-        // loop ats ของทั้งหมดที่มาจาก DB
-        searchATS.forEach((ats) => {
-          // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-          if (!AnimalSexIDList.includes(ats.AnimalSexID)) {
-            AnimalStatusToAnimalSex.destroy({
-              where: {
-                AnimalStatusToAnimalSexID: ats.AnimalStatusToAnimalSexID,
-              },
-            });
-          }
-        });
-
-        AnimalSexIDList.forEach(async (AnimalSexID) => {
-          const searchATSOne = await AnimalStatusToAnimalSex.findOne({
-            where: {
-              AnimalStatusID: obj.AnimalStatusID,
-              AnimalSexID: AnimalSexID,
-            },
+        if (data.AnimalSexID) {
+          // insert ProjectToAnimalType
+          const searchATS = await AnimalStatusToAnimalSex.findAll({
+            where: { AnimalStatusID: obj.AnimalStatusID },
           });
 
-          if (!searchATSOne) {
-            const obj1 = AnimalStatusToAnimalSex.create({
-              AnimalStatusID: obj.AnimalStatusID,
-              AnimalSexID: AnimalSexID,
-              CreatedUserID: data.UpdatedUserID,
+          // loop ats ของทั้งหมดที่มาจาก DB
+          searchATS.forEach((ats) => {
+            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
+            if (!AnimalSexIDList.includes(ats.AnimalSexID)) {
+              AnimalStatusToAnimalSex.destroy({
+                where: {
+                  AnimalStatusToAnimalSexID: ats.AnimalStatusToAnimalSexID,
+                },
+              });
+            }
+          });
+
+          AnimalSexIDList.forEach(async (AnimalSexID) => {
+            const searchATSOne = await AnimalStatusToAnimalSex.findOne({
+              where: {
+                AnimalStatusID: obj.AnimalStatusID,
+                AnimalSexID: AnimalSexID,
+              },
             });
-          }
-        });
+
+            if (!searchATSOne) {
+              const obj1 = AnimalStatusToAnimalSex.create({
+                AnimalStatusID: obj.AnimalStatusID,
+                AnimalSexID: AnimalSexID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
         //
 
         let res = methods.findById(data.AnimalStatusID);
