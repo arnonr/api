@@ -197,10 +197,11 @@ const methods = {
             reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          let ProjectIDList = [...data.ProjectID];
+          var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
         const obj = new db(data);
+        console.log(obj)
         const inserted = await obj.save();
 
         if (data.ProjectID) {
@@ -340,7 +341,6 @@ const methods = {
             let number = 5 - parseInt(String(codeLastest).length);
 
             if (number != 0) {
-              console.log(number);
               codeLastest = String(codeLastest);
               for (let i = 1; i <= number; i++) {
                 codeLastest = "0" + codeLastest;
@@ -374,7 +374,6 @@ const methods = {
         // Update
         var os = require("os");
         var hostname = os.hostname();
-        console.log(hostname);
 
         obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
         obj.save();
