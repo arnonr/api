@@ -192,24 +192,27 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        if (!Array.isArray(data.ProjectID)) {
-          reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
-          return;
+        if (data.ProjectID) {
+          if (!Array.isArray(data.ProjectID)) {
+            reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          let ProjectIDList = [...data.ProjectID];
+          data.ProjectID = JSON.stringify(data.ProjectID);
         }
-        let ProjectIDList = [...data.ProjectID];
-        data.ProjectID = JSON.stringify(data.ProjectID);
-
         const obj = new db(data);
         const inserted = await obj.save();
 
-        // insert AnimalToAnimalType
-        ProjectIDList.forEach((ProjectID) => {
-          const obj1 = AnimalToProject.create({
-            AnimalID: inserted.AnimalID,
-            ProjectID: ProjectID,
-            CreatedUserID: data.CreatedUserID,
+        if (data.ProjectID) {
+          // insert AnimalToAnimalType
+          ProjectIDList.forEach((ProjectID) => {
+            const obj1 = AnimalToProject.create({
+              AnimalID: inserted.AnimalID,
+              ProjectID: ProjectID,
+              CreatedUserID: data.CreatedUserID,
+            });
           });
-        });
+        }
 
         let res = methods.findById(inserted.AnimalID);
 
@@ -241,7 +244,7 @@ const methods = {
         }
 
         await db.update(data, { where: { AnimalID: id } });
-        
+
         if (data.ProjectID) {
           // insert AnimalToProject
           const searchATP = await AnimalToProject.findAll({
