@@ -1,11 +1,11 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
-  db = require("../models/TMRFormula"),
+  db = require("../models/FeedProgramProgress"),
   { Op } = require("sequelize");
 
-const TMRFormulaToConcentrate = require("../models/TMRFormulaToConcentrate");
+const FeedPPToConcentrate = require("../models/FeedPPToConcentrate");
 const Concentrate = require("../models/Concentrate");
-const TMRFormulaToRoughages = require("../models/TMRFormulaToRoughages");
+const FeedPPToRoughages = require("../models/FeedPPToRoughages");
 const Roughages = require("../models/Roughages");
 
 const methods = {
@@ -13,17 +13,9 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.TMRFormulaID) $where["TMRFormulaID"] = req.query.TMRFormulaID;
-    if (req.query.TMRFormulaCode)
-      $where["TMRFormulaCode"] = {
-        [Op.like]: "%" + req.query.TMRFormulaCode + "%",
-      };
-    if (req.query.TMRFormulaName)
-      $where["TMRFormulaName"] = {
-        [Op.like]: "%" + req.query.TMRFormulaName + "%",
-      };
-
-    if (req.query.TotalTMR) $where["TotalTMR"] = req.query.TotalTMR;
+    if (req.query.FeedProgramProgressID) $where["FeedProgramProgressID"] = req.query.FeedProgramProgressID;
+    if (req.query.FeedProgramID) $where["FeedProgramID"] = req.query.FeedProgramID;
+    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -65,7 +57,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["TMRFormulaID", "ASC"]];
+    $order = [["FeedProgramProgressID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -112,7 +104,7 @@ const methods = {
               data.Concentrates.forEach((element) => {
                 concentrateArray.push([
                   element.ConcentrateName,
-                  element.TMRFormulaToConcentrate.Amount,
+                  element.FeedPPToConcentrate.Amount,
                 ]);
               });
 
@@ -120,7 +112,7 @@ const methods = {
               data.Roughages.forEach((element) => {
                 roughagesArray.push([
                   element.RoughagesName,
-                  element.TMRFormulaToRoughages.Amount,
+                  element.FeedPPToRoughages.Amount,
                 ]);
               });
 
@@ -175,7 +167,7 @@ const methods = {
         obj.toJSON().Concentrates.forEach((element) => {
           concentrateArray.push([
             element.ConcentrateName,
-            element.TMRFormulaToConcentrate.Amount,
+            element.FeedPPToConcentrate.Amount,
           ]);
         });
 
@@ -183,7 +175,7 @@ const methods = {
         obj.toJSON().Roughages.forEach((element) => {
           roughagesArray.push([
             element.RoughagesName,
-            element.TMRFormulaToRoughages.Amount,
+            element.FeedPPToRoughages.Amount,
           ]);
         });
 
@@ -225,8 +217,8 @@ const methods = {
 
         // insert AnimalStatusToAnimalType
         ConcentrateIDList.forEach((ConcentrateID) => {
-          const obj1 = TMRFormulaToConcentrate.create({
-            TMRFormulaID: inserted.TMRFormulaID,
+          const obj1 = FeedPPToConcentrate.create({
+            FeedProgramProgressID: inserted.FeedProgramProgressID,
             ConcentrateID: ConcentrateID[0],
             Amount: ConcentrateID[1],
             CreatedUserID: data.CreatedUserID,
@@ -235,15 +227,15 @@ const methods = {
 
         // insert AnimalStatusToAnimalSex
         RoughagesIDList.forEach((RoughagesID) => {
-          const obj2 = TMRFormulaToRoughages.create({
-            TMRFormulaID: inserted.TMRFormulaID,
+          const obj2 = FeedPPToRoughages.create({
+            FeedProgramProgressID: inserted.FeedProgramProgressID,
             RoughagesID: RoughagesID[0],
             Amount: RoughagesID[1],
             CreatedUserID: data.CreatedUserID,
           });
         });
 
-        let res = methods.findById(inserted.TMRFormulaID);
+        let res = methods.findById(inserted.FeedProgramProgressID);
 
         resolve(res);
       } catch (error) {
@@ -260,7 +252,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.TMRFormulaID = parseInt(id);
+        data.FeedProgramProgressID = parseInt(id);
 
         if (data.ConcentrateID) {
           if (!Array.isArray(data.ConcentrateID)) {
@@ -281,59 +273,59 @@ const methods = {
           data.RoughagesID = JSON.stringify(data.RoughagesID);
         }
 
-        await db.update(data, { where: { TMRFormulaID: id } });
+        await db.update(data, { where: { FeedProgramProgressID: id } });
+
 
         if (data.ConcentrateID) {
           // ค้นหา table junction
-          const searchTTC = await TMRFormulaToConcentrate.findAll({
-            where: { TMRFormulaID: obj.TMRFormulaID },
+          const searchFPPTC = await FeedPPToConcentrate.findAll({
+            where: { FeedProgramProgressID: obj.FeedProgramProgressID },
           });
 
           // วนรอบ table junction ที่ได้เพื่อหา ConcentrateID ที่ตรงกันกับ Data อันใหม่ ทั้ง concentrate และ amount ถ้่าไม่เจอให้ลบ
-          searchTTC.forEach((ttc) => {
+          searchFPPTC.forEach((fpptc) => {
             let i = 0;
             ConcentrateIDList.find((element) => {
-              if (element[0] == ttc.ConcentrateID) {
+              if (element[0] == fpptc.ConcentrateID) {
                 i = 1;
               }
             });
 
             if (i == 0) {
-              TMRFormulaToConcentrate.destroy({
+              FeedPPToConcentrate.destroy({
                 where: {
-                  TMRFormulaToConcentrateID: ttc.TMRFormulaToConcentrateID,
+                  FeedPPToConcentrateID: fpptc.FeedPPToConcentrateID,
                 },
               });
             }
           });
-
+          // 
           ConcentrateIDList.forEach(async (ConcentrateID) => {
-            const searchTTCOne = await TMRFormulaToConcentrate.findOne({
+            const searchFPPTCOne = await FeedPPToConcentrate.findOne({
               where: {
-                TMRFormulaID: obj.TMRFormulaID,
+                FeedProgramProgressID: obj.FeedProgramProgressID,
                 ConcentrateID: ConcentrateID[0],
               },
             });
 
-            if (!searchTTCOne) {
-              const obj1 = TMRFormulaToConcentrate.create({
-                TMRFormulaID: obj.TMRFormulaID,
+            if (!searchFPPTCOne) {
+              const obj1 = await FeedPPToConcentrate.create({
+                FeedProgramProgressID: obj.FeedProgramProgressID,
                 ConcentrateID: ConcentrateID[0],
                 Amount: ConcentrateID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
             }else{
-              searchTTCOne.Amount = ConcentrateID[1];
-              await searchTTCOne.save();
+              searchFPPTCOne.Amount = ConcentrateID[1];
+              await searchFPPTCOne.save();
             }
           });
         }
 
-
         if (data.RoughagesID) {
           // ค้นหา table junction
-          const searchTTR = await TMRFormulaToRoughages.findAll({
-            where: { TMRFormulaID: obj.TMRFormulaID },
+          const searchTTR = await FeedPPToRoughages.findAll({
+            where: { FeedProgramProgressID: obj.FeedProgramProgressID },
           });
 
           // วนรอบ table junction ที่ได้เพื่อหา ConcentrateID ที่ตรงกันกับ Data อันใหม่ ทั้ง concentrate และ amount ถ้่าไม่เจอให้ลบ
@@ -346,25 +338,25 @@ const methods = {
             });
 
             if (i == 0) {
-              TMRFormulaToRoughages.destroy({
+              FeedPPToRoughages.destroy({
                 where: {
-                  TMRFormulaToRoughagesID: ttr.TMRFormulaToRoughagesID,
+                  FeedPPToRoughagesID: ttr.FeedPPToRoughagesID,
                 },
               });
             }
           });
 
           RoughagesIDList.forEach(async (RoughagesID) => {
-            const searchTTROne = await TMRFormulaToRoughages.findOne({
+            const searchTTROne = await FeedPPToRoughages.findOne({
               where: {
-                TMRFormulaID: obj.TMRFormulaID,
+                FeedProgramProgressID: obj.FeedProgramProgressID,
                 RoughagesID: RoughagesID[0],
               },
             });
 
             if (!searchTTROne) {
-              const obj2 = TMRFormulaToRoughages.create({
-                TMRFormulaID: obj.TMRFormulaID,
+              const obj2 = await FeedPPToRoughages.create({
+                FeedProgramProgressID: obj.FeedProgramProgressID,
                 RoughagesID: RoughagesID[0],
                 Amount: RoughagesID[1],
                 CreatedUserID: data.UpdatedUserID,
@@ -376,7 +368,7 @@ const methods = {
           });
         }
 
-        let res = methods.findById(data.TMRFormulaID);
+        let res = methods.findById(data.FeedProgramProgressID);
         
         resolve(res);
       } catch (error) {
@@ -393,17 +385,17 @@ const methods = {
 
         await db.update(
           { isRemove: 1, isActive: 0 },
-          { where: { TMRFormulaID: id } }
+          { where: { FeedProgramProgressID: id } }
         );
 
-        const obj1 = TMRFormulaToConcentrate.update(
+        const obj1 = FeedPPToConcentrate.update(
           { isRemove: 1, isActive: 0 },
-          { where: { TMRFormulaID: id } }
+          { where: { FeedProgramProgressID: id } }
         );
 
-        const obj2 = TMRFormulaToRoughages.update(
+        const obj2 = FeedPPToRoughages.update(
           { isRemove: 1, isActive: 0 },
-          { where: { TMRFormulaID: id } }
+          { where: { FeedProgramProgressID: id } }
         );
 
         resolve();

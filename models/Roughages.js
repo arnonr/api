@@ -7,6 +7,10 @@ class Roughages extends Model {
       through: models.TMRFormulaToRoughages,
       foreignKey: "RoughagesID",
     });
+    this.belongsToMany(models.FeedProgramProgress, {
+      through: models.FeedPPToRoughages,
+      foreignKey: "RoughagesID",
+    });
   }
   // Custom JSON Response
   toJSON() {

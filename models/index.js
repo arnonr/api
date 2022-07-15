@@ -104,6 +104,9 @@ const TMRFormulaToRoughages = require("./TMRFormulaToRoughages");
 const TMRFormulaToConcentrate = require("./TMRFormulaToConcentrate");
 const FeedProgram = require("./FeedProgram");
 const FeedProgramDetail = require("./FeedProgramDetail");
+const FeedProgramProgress = require("./FeedProgramProgress");
+const FeedPPToRoughages = require("./FeedPPToRoughages");
+const FeedPPToConcentrate = require("./FeedPPToConcentrate");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -342,30 +345,44 @@ AnnualGoal.associate({
 Concentrate.associate({
   TMRFormulaToConcentrate,
   TMRFormula,
-})
+  FeedPPToConcentrate,
+  FeedProgramProgress
+});
 
 Roughages.associate({
   TMRFormulaToRoughages,
   TMRFormula,
-})
+  FeedPPToRoughages,
+  FeedProgramProgress
+});
 
 TMRFormula.associate({
   TMRFormulaToRoughages,
   Roughages,
   TMRFormulaToConcentrate,
   Concentrate,
-  Staff
-})
+  Staff,
+});
 
 FeedProgram.associate({
   Farm,
-  Staff
-})
+  Staff,
+});
 
 FeedProgramDetail.associate({
   FeedProgram,
-  Animal
-})
+  Animal,
+});
+
+FeedProgramProgress.associate({
+  FeedProgram,
+  Animal,
+  Staff,
+  FeedPPToRoughages,
+  Roughages,
+  FeedPPToConcentrate,
+  Concentrate
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

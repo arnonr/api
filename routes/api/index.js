@@ -90,5 +90,6 @@ router.use('/roughages', auth.required, require('./Roughages'))
 router.use('/tmr-formula', auth.required, require('./TMRFormula'))
 router.use('/feed-program', auth.required, require('./FeedProgram'))
 router.use('/feed-program-detail', auth.required, require('./FeedProgramDetail'))
+router.use('/feed-program-progress', auth.required, require('./FeedProgramProgress'))
 
 module.exports = router

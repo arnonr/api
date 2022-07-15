@@ -1,18 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class Concentrate extends Model {
-  static associate(models) {
-    this.belongsToMany(models.TMRFormula, {
-      through: models.TMRFormulaToConcentrate,
-      foreignKey: "ConcentrateID",
-    });
-    this.belongsToMany(models.FeedProgramProgress, {
-      through: models.FeedPPToConcentrate,
-      foreignKey: "ConcentrateID",
-    });
-  }
+class FeedPPToConcentrate extends Model {
   // Custom JSON Response
+  static associate(models) {
+  }
   toJSON() {
     return {
       ...this.get(),
@@ -20,36 +12,29 @@ class Concentrate extends Model {
   }
 }
 
-Concentrate.init(
+FeedPPToConcentrate.init(
   {
-    ConcentrateID: {
+    FeedPPToConcentrateID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "รหัสอ้างอิง",
+      comment: "เลขไอดีอ้างอิง",
     },
-    ConcentrateName: {
-      type: DataTypes.STRING(255),
+    FeedProgramProgressID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "ชื่ออาหารข้น",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Concentrate.findOne({
-            where: { ConcentrateName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.ConcentrateID !== data.ConcentrateID) {
-                throw new Error("Concentrate Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "เลขไอดีตรวจการขุน",
+    },
+    ConcentrateID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิง อาหารข้น",
+    },
+    Amount: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "จำนวน",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -90,8 +75,8 @@ Concentrate.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "Concentrate",
+    modelName: "FeedPPToConcentrate",
   }
 );
 
-module.exports = Concentrate;
+module.exports = FeedPPToConcentrate;
