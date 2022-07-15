@@ -201,7 +201,15 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
         const obj = new db(data);
-        console.log(obj)
+        if (!obj.AnimalNationalID) {
+          obj.AnimalNationalID = null;
+        }
+        if (!obj.AnimalEarID) {
+          obj.AnimalEarID = null;
+        }
+        if (!obj.AnimalMicrochip) {
+          obj.AnimalMicrochip = null;
+        }
         const inserted = await obj.save();
 
         if (data.ProjectID) {

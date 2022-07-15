@@ -127,7 +127,7 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalNationalID: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.AnimalID !== data.AnimalID) {
+              if (data && self.AnimalNationalID != null && self.AnimalID !== data.AnimalID) {
                 throw new Error("Animal National ID already in use!");
               }
               return next();
@@ -148,7 +148,8 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalEarID: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.AnimalID !== data.AnimalID) {
+
+              if (data && self.AnimalEarID != null && self.AnimalID !== data.AnimalID) {
                 throw new Error("Animal Ear ID already in use!");
               }
               return next();
@@ -169,7 +170,7 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalMicrochip: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.AnimalID !== data.AnimalID) {
+              if (data && self.AnimalMicrochip != null && self.AnimalID !== data.AnimalID) {
                 throw new Error("Animal Microchip already in use!");
               }
               return next();
