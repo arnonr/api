@@ -103,6 +103,7 @@ const TMRFormula = require("./TMRFormula");
 const TMRFormulaToRoughages = require("./TMRFormulaToRoughages");
 const TMRFormulaToConcentrate = require("./TMRFormulaToConcentrate");
 const FeedProgram = require("./FeedProgram");
+const FeedProgramDetail = require("./FeedProgramDetail");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -359,6 +360,11 @@ TMRFormula.associate({
 FeedProgram.associate({
   Farm,
   Staff
+})
+
+FeedProgramDetail.associate({
+  FeedProgram,
+  Animal
 })
 
 PresetActivity.associate({
