@@ -95,11 +95,14 @@ const Distribution = require("./Distribution");
 
 const AnnualGoal = require("./AnnualGoal");
 const AnnualGoalToAnimalType = require("./AnnualGoalToAnimalType");
+
+// ขุน
 const Concentrate = require("./Concentrate");
 const Roughages = require("./Roughages");
 const TMRFormula = require("./TMRFormula");
 const TMRFormulaToRoughages = require("./TMRFormulaToRoughages");
 const TMRFormulaToConcentrate = require("./TMRFormulaToConcentrate");
+const FeedProgram = require("./FeedProgram");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -350,6 +353,11 @@ TMRFormula.associate({
   Roughages,
   TMRFormulaToConcentrate,
   Concentrate,
+  Staff
+})
+
+FeedProgram.associate({
+  Farm,
   Staff
 })
 
