@@ -109,5 +109,6 @@ router.use('/ovary-symptom', auth.required, require('./OvarySymptom'))
 router.use('/vagina-symptom', auth.required, require('./VaginaSymptom'))
 router.use('/other-symptom', auth.required, require('./OtherSymptom'))
 router.use('/cure-vitamin', auth.required, require('./CureVitamin'))
+router.use('/cure-antibiotic', auth.required, require('./CureAntibiotic'))
 
 module.exports = router

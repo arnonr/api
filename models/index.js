@@ -133,6 +133,8 @@ const OtherSymptom = require("./OtherSymptom")
 // 
 const CureVitaminToAnimalType = require("./CureVitaminToAnimalType");
 const CureVitamin = require("./CureVitamin");
+const CureAntibioticToAnimalType = require("./CureAntibioticToAnimalType");
+const CureAntibiotic = require("./CureAntibiotic");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -225,6 +227,8 @@ AnimalType.associate({
   Disease,
   CureVitaminToAnimalType,
   CureVitamin,
+  CureAntibioticToAnimalType,
+  CureAntibiotic
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -483,6 +487,11 @@ DewormActivity.associate({
   DewormMedicine,
   Organization,
   Staff
+})
+
+CureAntibiotic.associate({
+  CureAntibioticToAnimalType,
+  AnimalType
 })
 
 
