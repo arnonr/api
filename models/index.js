@@ -16,6 +16,7 @@ const Amphur = require("./Amphur");
 const Tumbol = require("./Tumbol");
 const Region = require("./Region");
 const AIZone = require("./AIZone");
+const Country = require("./Country");
 const OrganizationType = require("./OrganizationType");
 const OrganizationZone = require("./OrganizationZone");
 const Organization = require("./Organization");
@@ -107,6 +108,9 @@ const FeedProgramDetail = require("./FeedProgramDetail");
 const FeedProgramProgress = require("./FeedProgramProgress");
 const FeedPPToRoughages = require("./FeedPPToRoughages");
 const FeedPPToConcentrate = require("./FeedPPToConcentrate");
+
+const Semen = require("./Semen");
+const Embryo = require("./Embryo");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -384,10 +388,33 @@ FeedProgramProgress.associate({
   Concentrate
 });
 
+Semen.associate({
+  Animal,
+  Staff,
+  Country,
+  SourceType,
+  AnimalBreed,
+  AnimalType,
+  Organization
+})
+
+Embryo.associate({
+  Animal,
+  Staff,
+  Country,
+  SourceType,
+  AnimalBreed,
+  AnimalType,
+  Organization,
+  EmbryoStage,
+  Semen
+})
+
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
+
 
 //
 

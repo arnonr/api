@@ -91,5 +91,7 @@ router.use('/tmr-formula', auth.required, require('./TMRFormula'))
 router.use('/feed-program', auth.required, require('./FeedProgram'))
 router.use('/feed-program-detail', auth.required, require('./FeedProgramDetail'))
 router.use('/feed-program-progress', auth.required, require('./FeedProgramProgress'))
+router.use('/semen', auth.required, require('./Semen'))
+router.use('/embryo', auth.required, require('./Embryo'))
 
 module.exports = router

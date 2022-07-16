@@ -10,6 +10,7 @@ const Menu = require("../models/Menu");
 const checkPermission = (resource, action) => {
   return async (req, res, next) => {
     let permission = false;
+    
     const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
     const user = await User.findByPk(decoded.id);
 

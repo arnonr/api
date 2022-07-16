@@ -44,7 +44,8 @@ router.get(
   "/",
   auth.required,
   checkPermission(resource, "read"),
-  controllers.onGetAll
+  controllers.onGetAll,
+ 
 );
 
 router.get(
@@ -65,7 +66,7 @@ router.put(
   "/:id",
   auth.required,
   checkPermission(resource, "update"),
-  controllers.onUpdate
+  controllers.onUpdate,
 );
 
 router.delete(
