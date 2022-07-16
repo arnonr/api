@@ -112,6 +112,17 @@ const FeedPPToConcentrate = require("./FeedPPToConcentrate");
 const Semen = require("./Semen");
 const Embryo = require("./Embryo");
 
+const DMToAnimalType = require("./DMToAnimalType");
+const DewormMedicine = require("./DewormMedicine");
+const VcToAnimalType = require("./VcToAnimalType");
+const Vaccine = require("./Vaccine");
+const DsToAnimalType = require("./DsToAnimalType");
+const Disease = require("./Disease");
+const VaccineObjective = require("./VaccineObjective");
+const DiseaseResult = require("./DiseaseResult");
+const DiseaseMethod = require("./DiseaseMethod");
+const DiseaseActivity = require("./DiseaseActivity");
+
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
@@ -195,6 +206,12 @@ AnimalType.associate({
   DistributionReason,
   AnnualGoalToAnimalType,
   AnnualGoal,
+  DMToAnimalType,
+  DewormMedicine,
+  VcToAnimalType,
+  Vaccine,
+  DsToAnimalType,
+  Disease
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -280,7 +297,7 @@ WeanMilk.associate({
 Preset.associate({
   Organization,
   Staff,
-  AnimalType
+  AnimalType,
 });
 
 PresetDetail.associate({
@@ -351,14 +368,14 @@ Concentrate.associate({
   TMRFormulaToConcentrate,
   TMRFormula,
   FeedPPToConcentrate,
-  FeedProgramProgress
+  FeedProgramProgress,
 });
 
 Roughages.associate({
   TMRFormulaToRoughages,
   TMRFormula,
   FeedPPToRoughages,
-  FeedProgramProgress
+  FeedProgramProgress,
 });
 
 TMRFormula.associate({
@@ -386,7 +403,7 @@ FeedProgramProgress.associate({
   FeedPPToRoughages,
   Roughages,
   FeedPPToConcentrate,
-  Concentrate
+  Concentrate,
 });
 
 Semen.associate({
@@ -396,8 +413,8 @@ Semen.associate({
   SourceType,
   AnimalBreed,
   AnimalType,
-  Organization
-})
+  Organization,
+});
 
 Embryo.associate({
   Animal,
@@ -408,16 +425,38 @@ Embryo.associate({
   AnimalType,
   Organization,
   EmbryoStage,
-  Semen
+  Semen,
+});
+
+DewormMedicine.associate({
+  DMToAnimalType,
+  AnimalType,
+});
+
+Vaccine.associate({
+  VcToAnimalType,
+  AnimalType
 })
+
+Disease.associate({
+  DsToAnimalType,
+  AnimalType
+})
+
+DiseaseActivity.associate({
+  Animal,
+  Disease,
+  DiseaseMethod,
+  DiseaseResult,
+  Organization,
+  Staff
+})
+
 
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
-
-
-//
 
 // เคย error เรื่องของลำดับด้วย
 

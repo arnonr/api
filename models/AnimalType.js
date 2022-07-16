@@ -40,6 +40,21 @@ class AnimalType extends Model {
       foreignKey: "AnimalTypeID",
     });
 
+    this.belongsToMany(models.DewormMedicine, {
+      through: models.DMToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
+    this.belongsToMany(models.Vaccine, {
+      through: models.VcToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
+    this.belongsToMany(models.Disease, {
+      through: models.DsToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
     this.belongsToMany(models.AnnualGoal, {
       through: models.AnnualGoalToAnimalType,
       foreignKey: "AnimalTypeID",

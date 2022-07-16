@@ -93,5 +93,12 @@ router.use('/feed-program-detail', auth.required, require('./FeedProgramDetail')
 router.use('/feed-program-progress', auth.required, require('./FeedProgramProgress'))
 router.use('/semen', auth.required, require('./Semen'))
 router.use('/embryo', auth.required, require('./Embryo'))
+router.use('/deworm-medicine', auth.required, require('./DewormMedicine'))
+router.use('/vaccine', auth.required, require('./Vaccine'))
+router.use('/disease', auth.required, require('./Disease'))
+router.use('/vaccine-objective', auth.required, require('./VaccineObjective'))
+router.use('/disease-result', auth.required, require('./DiseaseResult'))
+router.use('/disease-method', auth.required, require('./DiseaseMethod'))
+router.use('/disease-activity', auth.required, require('./DiseaseActivity'))
 
 module.exports = router
