@@ -2016,9 +2016,13 @@ const methods = {
   GenerateBreed(AnimalFatherID, AnimalMotherID) {
     return new Promise(async (resolve, reject) => {
       try {
-        let Father = db.findByPk(AnimalFatherID);
-        let Mother = db.findByPk(AnimalMotherID);
+        console.log("FREEDOOM");
 
+        let Father = await db.findByPk(AnimalFatherID);
+
+
+        let Mother = await db.findByPk(AnimalMotherID);
+        
         // let Father = {
         //   AnimalBreedID1: 1,
         //   AnimalBreedPercent1: 25,
@@ -2159,7 +2163,7 @@ const methods = {
 
           const found = HF.find((element) => {
             return Math.abs(element - b.AnimalBreedPercent) < 0.01220703125;
-          })
+          });
 
           b.AnimalBreedPercent = found.toFixed(4);
           return b;
