@@ -13,6 +13,10 @@ class Preset extends Model {
       foreignKey: "RemoveByStaffID",
       as: "RemoveBy",
     });
+    this.belongsTo(models.AnimalType, {
+      foreignKey: "AnimalTypeID",
+      as: "AnimalType",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -79,6 +83,11 @@ Preset.init(
       type: DataTypes.ENUM("D", "R", "D,R"),
       allowNull: false,
       comment: "โปรแกรมเหนี่ยวนำการเป็นสัดสำหรับตัวให้หรือตัวรับ",
+    },
+    AnimalTypeID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสชนิดสัตว์",
     },
     OrganizationID: {
       type: DataTypes.INTEGER(11),

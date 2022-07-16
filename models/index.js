@@ -280,6 +280,7 @@ WeanMilk.associate({
 Preset.associate({
   Organization,
   Staff,
+  AnimalType
 });
 
 PresetDetail.associate({

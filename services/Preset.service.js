@@ -26,6 +26,9 @@ const methods = {
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
+    if (req.query.AnimalTypeID)
+      $where["AnimalTypeID"] = req.query.AnimalTypeID;
+
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
 
