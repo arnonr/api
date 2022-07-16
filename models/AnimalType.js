@@ -59,6 +59,11 @@ class AnimalType extends Model {
       through: models.AnnualGoalToAnimalType,
       foreignKey: "AnimalTypeID",
     });
+
+    this.belongsToMany(models.CureVitamin, {
+      through: models.CureVitaminToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
     
   }
 

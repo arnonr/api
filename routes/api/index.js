@@ -102,5 +102,12 @@ router.use('/disease-method', auth.required, require('./DiseaseMethod'))
 router.use('/disease-activity', auth.required, require('./DiseaseActivity'))
 router.use('/vaccine-activity', auth.required, require('./VaccineActivity'))
 router.use('/deworm-activity', auth.required, require('./DewormActivity'))
+router.use('/reproduce-suggestion', auth.required, require('./ReproduceSuggestion'))
+router.use('/heat-type', auth.required, require('./HeatType'))
+router.use('/heat-circle', auth.required, require('./HeatCircle'))
+router.use('/ovary-symptom', auth.required, require('./OvarySymptom'))
+router.use('/vagina-symptom', auth.required, require('./VaginaSymptom'))
+router.use('/other-symptom', auth.required, require('./OtherSymptom'))
+router.use('/cure-vitamin', auth.required, require('./CureVitamin'))
 
 module.exports = router

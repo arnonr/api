@@ -124,7 +124,15 @@ const DiseaseMethod = require("./DiseaseMethod");
 const DiseaseActivity = require("./DiseaseActivity");
 const VaccineActivity = require("./VaccineActivity");
 const DewormActivity = require("./DewormActivity");
-
+const ReproduceSuggestion = require("./ReproduceSuggestion")
+const HeatType = require("./HeatType")
+const HeatCircle = require("./HeatCircle")
+const OvarySymptom = require("./OvarySymptom")
+const VaginaSymptom = require("./VaginaSymptom")
+const OtherSymptom = require("./OtherSymptom")
+// 
+const CureVitaminToAnimalType = require("./CureVitaminToAnimalType");
+const CureVitamin = require("./CureVitamin");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -214,7 +222,9 @@ AnimalType.associate({
   VcToAnimalType,
   Vaccine,
   DsToAnimalType,
-  Disease
+  Disease,
+  CureVitaminToAnimalType,
+  CureVitamin,
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -461,6 +471,11 @@ VaccineActivity.associate({
   VaccineObjective,
   Organization,
   Staff
+})
+
+CureVitamin.associate({
+  CureVitaminToAnimalType,
+  AnimalType
 })
 
 DewormActivity.associate({
