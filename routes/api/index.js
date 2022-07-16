@@ -100,5 +100,7 @@ router.use('/vaccine-objective', auth.required, require('./VaccineObjective'))
 router.use('/disease-result', auth.required, require('./DiseaseResult'))
 router.use('/disease-method', auth.required, require('./DiseaseMethod'))
 router.use('/disease-activity', auth.required, require('./DiseaseActivity'))
+router.use('/vaccine-activity', auth.required, require('./VaccineActivity'))
+router.use('/deworm-activity', auth.required, require('./DewormActivity'))
 
 module.exports = router

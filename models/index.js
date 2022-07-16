@@ -122,6 +122,9 @@ const VaccineObjective = require("./VaccineObjective");
 const DiseaseResult = require("./DiseaseResult");
 const DiseaseMethod = require("./DiseaseMethod");
 const DiseaseActivity = require("./DiseaseActivity");
+const VaccineActivity = require("./VaccineActivity");
+const DewormActivity = require("./DewormActivity");
+
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -451,6 +454,22 @@ DiseaseActivity.associate({
   Organization,
   Staff
 })
+
+VaccineActivity.associate({
+  Animal,
+  Vaccine,
+  VaccineObjective,
+  Organization,
+  Staff
+})
+
+DewormActivity.associate({
+  Animal,
+  DewormMedicine,
+  Organization,
+  Staff
+})
+
 
 
 PresetActivity.associate({
