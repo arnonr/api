@@ -2016,8 +2016,8 @@ const methods = {
   GenerateBreed(AnimalFatherID, AnimalMotherID) {
     return new Promise(async (resolve, reject) => {
       try {
-        // let Father = db.findByPk(AnimalFatherID);
-        // let Mother = db.findByPk(AnimalMotherID);
+        let Father = db.findByPk(AnimalFatherID);
+        let Mother = db.findByPk(AnimalMotherID);
 
         // let Father = {
         //   AnimalBreedID1: 1,
