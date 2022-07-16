@@ -40,18 +40,19 @@ const upload = multer({
   limits: { fieldSize: 10 * 1024 * 1024 }, //10MB
 });
 
-router.get(
-  "/generate-number",
-  auth.required,
-  checkPermission(resource, "read"),
-  controllers.onGenerateNumber
-);
 
 router.get(
   "/generate-breed",
   auth.required,
   checkPermission(resource, "read"),
   controllers.onGenerateBreed
+);
+
+router.get(
+  "/generate-number",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGenerateNumber
 );
 
 router.get(
