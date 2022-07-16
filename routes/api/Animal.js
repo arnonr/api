@@ -48,6 +48,13 @@ router.get(
 );
 
 router.get(
+  "/generate-breed",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGenerateBreed
+);
+
+router.get(
   "/",
   auth.required,
   checkPermission(resource, "read"),

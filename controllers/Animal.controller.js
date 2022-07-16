@@ -63,7 +63,17 @@ const methods = {
       res.error(error);
     }
   },
-
+  async onGenerateBreed(req, res) {
+    try {
+      let result = await Service.GenerateBreed(
+        req.query.AnimalFatherID,
+        req.query.AnimalMotherID
+      );
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
   async onPhoto(req, res) {
     try {
       const result = await Service.photo(req.params.id, req.file.filename);
