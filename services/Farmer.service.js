@@ -14,7 +14,6 @@ const methods = {
         [Op.like]: "%" + req.query.IdentificationNumber + "%",
       };
 
-    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
     if (req.query.TitleID) $where["TitleID"] = req.query.TitleID;
 
     if (req.query.GivenName)

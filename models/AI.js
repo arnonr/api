@@ -108,7 +108,7 @@ AI.init(
     },
     Dose: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "โด๊ส",
     },
     BirthDate: {

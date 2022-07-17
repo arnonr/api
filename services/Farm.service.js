@@ -6,7 +6,6 @@ const config = require("../configs/app"),
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
-const Farmer = require("../models/Farmer");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -14,6 +13,8 @@ const methods = {
     $where = {};
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
+    if (req.query.FarmerID) $where["FarmerID"] = req.query.FarmerID;
 
     if (req.query.FarmIdentificationNumber)
       $where["FarmIdentificationNumber"] = {
@@ -30,7 +31,6 @@ const methods = {
     if (req.query.FarmProvinceID)
       $where["FarmProvinceID"] = req.query.FarmProvinceID;
 
-    // if (req.query.FarmProvinceID) $where["ResidenceLatitude"] = req.query.ResidenceLatitude;
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
     if (req.query.OrganizationZoneID)
@@ -116,27 +116,9 @@ const methods = {
                   ProjectID: JSON.parse(data.toJSON().ProjectID),
                 };
 
-                data.Farmer = await Farmer.findOne({
-                  where: {
-                    FarmID: 2,
-                  },
-                });
-
                 return data;
               })
             );
-            //
-
-            // rows = rows.map((data) => {
-            //   let farmer = Farmer.findOne({
-            //     where: {
-            //       FarmID: 2,
-            //     },
-            //   });
-
-            //   data.Farmer = farmer;
-            //   return data;
-            // });
 
             resolve({
               total: count,
@@ -168,16 +150,9 @@ const methods = {
           projectArray.push(element.ProjectName);
         });
 
-        let farmer = await Farmer.findOne({
-          where: {
-            FarmID: obj.FarmID,
-          },
-        });
-
         obj = {
           ...obj.toJSON(),
           Projects: projectArray,
-          Farmer: farmer,
           ProjectID: JSON.parse(obj.toJSON().ProjectID),
         };
 
@@ -230,7 +205,6 @@ const methods = {
 
         // Update
         data.FarmID = parseInt(id);
-        console.log("Freedom");
 
         if (data.ProjectID) {
           if (!Array.isArray(data.ProjectID)) {

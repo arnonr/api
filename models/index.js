@@ -145,6 +145,18 @@ const CauseEnvToAnimalType = require("./CauseEnvToAnimalType");
 const CauseEnvironment = require("./CauseEnvironment");
 const CauseAnimalToAnimalType = require("./CauseAnimalToAnimalType");
 const CauseAnimal = require("./CauseAnimal");
+// const Reproduce = require("./Reproduce");
+// const RpToCauseAnimal = require("./RpToCauseAnimal");
+// const RpToCauseEnvironment = require("./RpToCauseEnvironment");
+// const RpToCauseFeeder = require("./RpToCauseFeeder");
+// const RpToCauseHealth = require("./RpToCauseHealth");
+// const RpToCureAntibiotic = require("./RpToCureAntibiotic");
+// const RpToCureHormone = require("./RpToCureHormone");
+// const RpToCureVitamin = require("./RpToCureVitamin");
+// const RpToOtherSymptom = require("./RpToOtherSymptom");
+// const RpToOvarySymptom = require("./RpToOvarySymptom");
+// const RpToRpSuggestion = require("./RpToRpSuggestion");
+// const RpToVaginaSymptom = require("./RpToVaginaSymptom");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -198,10 +210,10 @@ Farm.associate({
   AIZone,
   FarmToProject,
   Project,
+  Farmer,
 });
 
 Farmer.associate({
-  Farm,
   Amphur,
   Province,
   Tumbol,
@@ -538,6 +550,23 @@ CauseAnimal.associate({
   CauseAnimalToAnimalType,
   AnimalType
 })
+
+// Reproduce.associate({
+//   Animal,
+//   HeatType,
+//   HeatCircle,
+//   // RpToCauseAnimal,
+//   // RpToCauseEnvironment,
+//   // RpToCauseFeeder,
+//   // RpToCauseHealth,
+//   // RpToCureAntibiotic,
+//   // RpToCureHormone,
+//   // RpToCureVitamin,
+//   // RpToOtherSymptom,
+//   // RpToOvarySymptom,
+//   // RpToRpSuggestion,
+
+// })
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

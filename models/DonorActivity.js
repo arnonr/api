@@ -122,7 +122,7 @@ DonorActivity.init(
     GoatAIMethodID: {
       type: DataTypes.ENUM("NI", "Buck", "VAI", "LAI"),
       allowNull: true,
-      comment: "วิธีการผสม NI , Buck, V-AI, L-AI",
+      comment: "วิธีการผสม NI, Buck, V-AI, L-AI",
     },
     BreederAnimalID: {
       type: DataTypes.INTEGER(11),

@@ -38,13 +38,18 @@ class Farm extends Model {
       through: models.FarmToProject,
       foreignKey: "FarmID",
     });
+
+    this.belongsTo(models.Farmer, {
+      foreignKey: "FarmerID",
+      as: "Farmer",
+    });
   }
 
   // Custom JSON Response
   toJSON() {
     return {
       ...this.get(),
-      FarmToProject: undefined
+      FarmToProject: undefined,
     };
   }
 }
@@ -107,6 +112,11 @@ Farm.init(
       type: DataTypes.STRING(500),
       allowNull: true,
       comment: "ที่ตั้ง",
+    },
+    FarmerID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "เกษตรกร",
     },
     FarmMoo: {
       type: DataTypes.STRING(255),

@@ -3,10 +3,6 @@ const { Model, DataTypes } = require("sequelize"),
 
 class Farmer extends Model {
   static associate(models) {
-    this.belongsTo(models.Farm, {
-      foreignKey: "FarmID",
-      as: "Farm",
-    });
     this.belongsTo(models.Title, {
       foreignKey: "TitleID",
       as: "Title",
@@ -69,11 +65,6 @@ Farmer.init(
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง ฟาร์ม",
-    },
-    FarmID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "รหัสฟาร์ม",
     },
     IdentificationNumber: {
       type: DataTypes.STRING(255),
