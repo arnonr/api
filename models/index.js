@@ -135,6 +135,8 @@ const CureVitaminToAnimalType = require("./CureVitaminToAnimalType");
 const CureVitamin = require("./CureVitamin");
 const CureAntibioticToAnimalType = require("./CureAntibioticToAnimalType");
 const CureAntibiotic = require("./CureAntibiotic");
+const CureHormoneToAnimalType = require("./CureHormoneToAnimalType");
+const CureHormone = require("./CureHormone");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -228,7 +230,9 @@ AnimalType.associate({
   CureVitaminToAnimalType,
   CureVitamin,
   CureAntibioticToAnimalType,
-  CureAntibiotic
+  CureAntibiotic,
+  CureHormoneToAnimalType,
+  CureHormone
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -494,7 +498,10 @@ CureAntibiotic.associate({
   AnimalType
 })
 
-
+CureHormone.associate({
+  CureHormoneToAnimalType,
+  AnimalType
+})
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

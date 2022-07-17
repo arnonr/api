@@ -1,14 +1,9 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class CureVitamin extends Model {
+class CureHormoneToAnimalType extends Model {
   static associate(models) {
-    this.belongsToMany(models.AnimalType, {
-      through: models.CureVitaminToAnimalType,
-      foreignKey: "CureVitaminID",
-    });
   }
-
   // Custom JSON Response
   toJSON() {
     return {
@@ -17,66 +12,25 @@ class CureVitamin extends Model {
   }
 }
 
-CureVitamin.init(
+CureHormoneToAnimalType.init(
   {
-    CureVitaminID: {
+    CureHormoneToAnimalTypeID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
     },
-    CureVitaminCode: {
-      type: DataTypes.STRING(255),
+    CureHormoneID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "รหัสอ้างอิงวิตามินที่ใช้รักษา",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          CureVitamin.findOne({
-            where: { CureVitaminCode: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.CureVitaminID !== data.CureVitaminID) {
-                throw new Error("CureVitamin Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "รหัสอ้างอิงฮอร์โมนที่ใช้รักษา",
     },
-    CureVitaminName: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "คำอธิบาย",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          CureVitamin.findOne({
-            where: { CureVitaminName: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.CureVitaminID !== data.CureVitaminID) {
-                throw new Error("CureVitamin Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
-    },
-
     AnimalTypeID: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "ชนิดสัตว์ (Array)",
+      comment: "รหัสชนิดสัตว์",
     },
-
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
@@ -116,8 +70,8 @@ CureVitamin.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "CureVitamin",
+    modelName: "CureHormoneToAnimalType",
   }
 );
 
-module.exports = CureVitamin;
+module.exports = CureHormoneToAnimalType;

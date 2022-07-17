@@ -1,11 +1,11 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class CureVitamin extends Model {
+class CureHormone extends Model {
   static associate(models) {
     this.belongsToMany(models.AnimalType, {
-      through: models.CureVitaminToAnimalType,
-      foreignKey: "CureVitaminID",
+      through: models.CureHormoneToAnimalType,
+      foreignKey: "CureHormoneID",
     });
   }
 
@@ -17,28 +17,28 @@ class CureVitamin extends Model {
   }
 }
 
-CureVitamin.init(
+CureHormone.init(
   {
-    CureVitaminID: {
+    CureHormoneID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
     },
-    CureVitaminCode: {
+    CureHormoneCode: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "รหัสอ้างอิงวิตามินที่ใช้รักษา",
+      comment: "รหัสอ้างอิงฮอร์โมนที่ใช้รักษา",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          CureVitamin.findOne({
-            where: { CureVitaminCode: value, isRemove: 0 },
+          CureHormone.findOne({
+            where: { CureHormoneCode: value, isRemove: 0 },
           })
             .then(function (data) {
-              if (data && self.CureVitaminID !== data.CureVitaminID) {
-                throw new Error("CureVitamin Name already in use!");
+              if (data && self.CureHormoneID !== data.CureHormoneID) {
+                throw new Error("CureHormone Name already in use!");
               }
               return next();
             })
@@ -48,19 +48,19 @@ CureVitamin.init(
         },
       },
     },
-    CureVitaminName: {
+    CureHormoneName: {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "คำอธิบาย",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          CureVitamin.findOne({
-            where: { CureVitaminName: value, isRemove: 0 },
+          CureHormone.findOne({
+            where: { CureHormoneName: value, isRemove: 0 },
           })
             .then(function (data) {
-              if (data && self.CureVitaminID !== data.CureVitaminID) {
-                throw new Error("CureVitamin Name already in use!");
+              if (data && self.CureHormoneID !== data.CureHormoneID) {
+                throw new Error("CureHormone Name already in use!");
               }
               return next();
             })
@@ -116,8 +116,8 @@ CureVitamin.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "CureVitamin",
+    modelName: "CureHormone",
   }
 );
 
-module.exports = CureVitamin;
+module.exports = CureHormone;

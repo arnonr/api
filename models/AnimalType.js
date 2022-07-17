@@ -69,6 +69,11 @@ class AnimalType extends Model {
       through: models.CureAntibioticToAnimalType,
       foreignKey: "AnimalTypeID",
     });
+
+    this.belongsToMany(models.CureHormone, {
+      through: models.CureHormoneToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
     
   }
 
