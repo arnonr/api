@@ -124,19 +124,27 @@ const DiseaseMethod = require("./DiseaseMethod");
 const DiseaseActivity = require("./DiseaseActivity");
 const VaccineActivity = require("./VaccineActivity");
 const DewormActivity = require("./DewormActivity");
-const ReproduceSuggestion = require("./ReproduceSuggestion")
-const HeatType = require("./HeatType")
-const HeatCircle = require("./HeatCircle")
-const OvarySymptom = require("./OvarySymptom")
-const VaginaSymptom = require("./VaginaSymptom")
-const OtherSymptom = require("./OtherSymptom")
-// 
+const ReproduceSuggestion = require("./ReproduceSuggestion");
+const HeatType = require("./HeatType");
+const HeatCircle = require("./HeatCircle");
+const OvarySymptom = require("./OvarySymptom");
+const VaginaSymptom = require("./VaginaSymptom");
+const OtherSymptom = require("./OtherSymptom");
+//
 const CureVitaminToAnimalType = require("./CureVitaminToAnimalType");
 const CureVitamin = require("./CureVitamin");
 const CureAntibioticToAnimalType = require("./CureAntibioticToAnimalType");
 const CureAntibiotic = require("./CureAntibiotic");
 const CureHormoneToAnimalType = require("./CureHormoneToAnimalType");
 const CureHormone = require("./CureHormone");
+const CauseHealthToAnimalType = require("./CauseHealthToAnimalType");
+const CauseHealth = require("./CauseHealth");
+const CauseFeederToAnimalType = require("./CauseFeederToAnimalType");
+const CauseFeeder = require("./CauseFeeder");
+const CauseEnvToAnimalType = require("./CauseEnvToAnimalType");
+const CauseEnvironment = require("./CauseEnvironment");
+const CauseAnimalToAnimalType = require("./CauseAnimalToAnimalType");
+const CauseAnimal = require("./CauseAnimal");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -232,7 +240,15 @@ AnimalType.associate({
   CureAntibioticToAnimalType,
   CureAntibiotic,
   CureHormoneToAnimalType,
-  CureHormone
+  CureHormone,
+  CauseHealthToAnimalType,
+  CauseHealth,
+  CauseFeederToAnimalType,
+  CauseFeeder,
+  CauseEnvToAnimalType,
+  CauseEnvironment,
+  CauseAnimalToAnimalType,
+  CauseAnimal
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -456,13 +472,13 @@ DewormMedicine.associate({
 
 Vaccine.associate({
   VcToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 Disease.associate({
   DsToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 DiseaseActivity.associate({
   Animal,
@@ -470,36 +486,56 @@ DiseaseActivity.associate({
   DiseaseMethod,
   DiseaseResult,
   Organization,
-  Staff
-})
+  Staff,
+});
 
 VaccineActivity.associate({
   Animal,
   Vaccine,
   VaccineObjective,
   Organization,
-  Staff
-})
+  Staff,
+});
 
 CureVitamin.associate({
   CureVitaminToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 DewormActivity.associate({
   Animal,
   DewormMedicine,
   Organization,
-  Staff
-})
+  Staff,
+});
 
 CureAntibiotic.associate({
   CureAntibioticToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 CureHormone.associate({
   CureHormoneToAnimalType,
+  AnimalType,
+});
+
+CauseHealth.associate({
+  CauseHealthToAnimalType,
+  AnimalType,
+});
+
+CauseFeeder.associate({
+  CauseFeederToAnimalType,
+  AnimalType,
+});
+
+CauseEnvironment.associate({
+  CauseEnvToAnimalType,
+  AnimalType,
+});
+
+CauseAnimal.associate({
+  CauseAnimalToAnimalType,
   AnimalType
 })
 

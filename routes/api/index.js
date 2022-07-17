@@ -111,5 +111,9 @@ router.use('/other-symptom', auth.required, require('./OtherSymptom'))
 router.use('/cure-vitamin', auth.required, require('./CureVitamin'))
 router.use('/cure-antibiotic', auth.required, require('./CureAntibiotic'))
 router.use('/cure-hormone', auth.required, require('./CureHormone'))
+router.use('/cause-health', auth.required, require('./CauseHealth'))
+router.use('/cause-feeder', auth.required, require('./CauseFeeder'))
+router.use('/cause-environment', auth.required, require('./CauseEnvironment'))
+router.use('/cause-animal', auth.required, require('./CauseAnimal'))
 
 module.exports = router

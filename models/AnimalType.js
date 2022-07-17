@@ -74,6 +74,26 @@ class AnimalType extends Model {
       through: models.CureHormoneToAnimalType,
       foreignKey: "AnimalTypeID",
     });
+
+    this.belongsToMany(models.CauseHealth, {
+      through: models.CauseHealthToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
+    this.belongsToMany(models.CauseFeeder, {
+      through: models.CauseFeederToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
+    this.belongsToMany(models.CauseEnvironment, {
+      through: models.CauseEnvToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
+
+    this.belongsToMany(models.CauseAnimal, {
+      through: models.CauseAnimalToAnimalType,
+      foreignKey: "AnimalTypeID",
+    });
     
   }
 
