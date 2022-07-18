@@ -7,6 +7,8 @@ const { count } = require("../models/Animal");
 const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
 const Farm = require("../models/Farm");
+const AnimalType = require("../models/AnimalType");
+const AnimalGroupType = require("../models/AnimalGroupType");
 
 const HF = [
   0.0, 0.01220703125, 0.0244140625, 0.03662109375, 0.048828125, 0.06103515625,
@@ -1971,9 +1973,12 @@ const methods = {
         if (BirthDate) {
           date = new Date(BirthDate);
         }
-        year = date.getFullYear();
+        let year = date.getFullYear();
 
-        let farm = await Farm.findByPk(FarmID);
+        let farm = await Farm.findByPk(FarmID, {
+          include: { all: true, required: false },
+        });
+
         if (farm) {
           let animal = await db.max("AnimalIdentificationID", {
             where: {
@@ -2002,11 +2007,58 @@ const methods = {
             AnimalNumberGenerate =
               year + farm.FarmIdentificationNumber + "00001";
           }
+          
+          //
+          let AnimalTypeID = 1;
+          let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
+          let AnimalGroupTypeRes = await AnimalGroupType.findByPk(AnimalTypeRes.AnimalGroupTypeID);
+          let GroupTypeCode = AnimalGroupTypeRes.AnimalGroupTypeCode;
+        
+          if(GroupTypeCode.length < 2){
+            GroupTypeCode = "0" + AnimalGroupTypeRes.AnimalGroupTypeCode
+          }
+          let TypeCode = GroupTypeCode + "" + AnimalTypeRes.AnimalTypeCode.slice(AnimalTypeRes.AnimalTypeCode.length-1);
+          
+          
+
+          let date2 = new Date();
+          let year2 = date2.getFullYear();
+          year2 = String(year2).slice(2);
+        
+          let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
+
+          let animal2 = await db.max("AnimalEarID", {
+            where: {
+              AnimalEarID: {
+                [Op.startsWith]: year2 + ProvinceAndAmphur + TypeCode,
+              },
+            },
+          });
+          
+          if (animal2) {
+            let codeLastest = animal.substr(-5);
+            codeLastest = parseInt(codeLastest) + 1;
+            let number = 5 - parseInt(String(codeLastest).length);
+
+            if (number != 0) {
+              codeLastest = String(codeLastest);
+              for (let i = 1; i <= number; i++) {
+                codeLastest = "0" + codeLastest;
+              }
+            }
+
+            AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + codeLastest;
+          } else {
+            AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + "00001";
+          }
         } else {
           reject(ErrorNotFound("Farm ID: not found"));
         }
 
-        resolve({ AnimalNumberGenerate: AnimalNumberGenerate });
+        resolve({
+          AnimalNumberGenerate: AnimalNumberGenerate,
+          AnimalEarGenerate: AnimalEarGenerate,
+        });
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -2020,9 +2072,8 @@ const methods = {
 
         let Father = await db.findByPk(AnimalFatherID);
 
-
         let Mother = await db.findByPk(AnimalMotherID);
-        
+
         // let Father = {
         //   AnimalBreedID1: 1,
         //   AnimalBreedPercent1: 25,
