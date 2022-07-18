@@ -39,11 +39,11 @@ class Reproduce extends Model {
       as: "CauseAnimal",
     });
 
-    this.belongsToMany(models.CauseEnvironment, {
-      through: models.RpToCauseEnvironment,
-      foreignKey: "CauseEnvironmentID",
-      as: "CauseEnvironment",
-    });
+    // this.belongsToMany(models.CauseEnvironment, {
+    //   through: models.RpToCauseEnvironment,
+    //   foreignKey: "CauseEnvironmentID",
+    //   as: "CauseEnvironment",
+    // });
 
     this.belongsToMany(models.CauseFeeder, {
       through: models.RpToCauseFeeder,
