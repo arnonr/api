@@ -57,13 +57,10 @@ router.get(
 );
 
 router.post(
-  "/generate-breed1",
+  "/generate-breed",
   auth.required,
   checkPermission(resource, "read"),
-  () => {
-    console.log("Freedom")
-  }
-  // controllers.onGenerateBreed
+  controllers.onGenerateBreed
 );
 
 router.get(

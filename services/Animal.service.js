@@ -2067,7 +2067,7 @@ const methods = {
   GenerateBreed(AnimalFatherID, AnimalMotherID) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("FREEDOOM");
+        console.log("FREEDOM2");
 
         let Father = await db.findByPk(AnimalFatherID);
 
