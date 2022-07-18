@@ -40,11 +40,13 @@ const upload = multer({
   limits: { fieldSize: 10 * 1024 * 1024 }, //10MB
 });
 
+
+
 router.get(
-  "/generate-breed",
+  "/",
   auth.required,
   checkPermission(resource, "read"),
-  controllers.onGenerateBreed
+  controllers.onGetAll
 );
 
 router.get(
@@ -55,11 +57,12 @@ router.get(
 );
 
 router.get(
-  "/",
+  "/generate-breed",
   auth.required,
   checkPermission(resource, "read"),
-  controllers.onGetAll
+  controllers.onGenerateBreed
 );
+
 router.get(
   "/:id",
   auth.required,
@@ -71,7 +74,7 @@ router.post(
   "/",
   auth.required,
   checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(
