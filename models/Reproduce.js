@@ -63,23 +63,23 @@ class Reproduce extends Model {
       as: "CureHormone",
     });
 
-    this.belongsToMany(models.CureAntibiotic, {
-      through: models.RpToCureAntibiotic,
-      foreignKey: "CureAntibioticID",
-      as: "CureAntibiotic",
-    });
+    // this.belongsToMany(models.CureAntibiotic, {
+    //   through: models.RpToCureAntibiotic,
+    //   foreignKey: "CureAntibioticID",
+    //   as: "CureAntibiotic",
+    // });
 
-    this.belongsToMany(models.CureVitamin, {
-      through: models.RpToCureVitamin,
-      foreignKey: "CureVitaminID",
-      as: "CureVitamin",
-    });
+    // this.belongsToMany(models.CureVitamin, {
+    //   through: models.RpToCureVitamin,
+    //   foreignKey: "CureVitaminID",
+    //   as: "CureVitamin",
+    // });
 
-    this.belongsToMany(models.ReproduceSuggestion, {
-      through: models.RpToRpSuggestion,
-      foreignKey: "ReproduceSuggestionID",
-      as: "ReproduceSuggestion",
-    });
+    // this.belongsToMany(models.ReproduceSuggestion, {
+    //   through: models.RpToRpSuggestion,
+    //   foreignKey: "ReproduceSuggestionID",
+    //   as: "ReproduceSuggestion",
+    // });
 
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",

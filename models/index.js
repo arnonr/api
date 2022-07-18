@@ -573,12 +573,12 @@ Reproduce.associate({
   CauseFeeder,
   RpToCauseHealth,
   CauseHealth,
-  RpToCureAntibiotic,
-  CureAntibiotic,
+  // RpToCureAntibiotic,
+  // CureAntibiotic,
   RpToCureHormone,
   CureHormone,
-  RpToCureVitamin,
-  CureVitamin,
+  // RpToCureVitamin,
+  // CureVitamin,
   RpToOtherSymptom,
   OtherSymptom,
   RpToVaginaSymptom,
@@ -586,8 +586,8 @@ Reproduce.associate({
   RpToLeftOvarySymptom,
   RpToRightOvarySymptom,
   OvarySymptom,
-  RpToRpSuggestion,
-  ReproduceSuggestion
+  // RpToRpSuggestion,
+  // ReproduceSuggestion
 
 })
 
