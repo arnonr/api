@@ -2214,19 +2214,24 @@ const methods = {
           }
         }
         console.log("FREEDOM14")
-        Breed = Breed.map((b) => {
+        // 
+        let Breed2 = Breed.map((b) => {
+          console.log("FREEDOM14")
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
-
+          console.log("FREEDOM15")
           const found = HF.find((element) => {
             return Math.abs(element - b.AnimalBreedPercent) < 0.01220703125;
           });
+          console.log(typeof b.AnimalBreedPercent)
+          console.log(b.AnimalBreedPercent)
 
           b.AnimalBreedPercent = found.toFixed(4);
+
           return b;
         });
         console.log("FREEDOM15")
 
-        resolve(Breed);
+        resolve(Breed2);
       } catch (error) {
         reject(ErrorNotFound(error));
         // reject(ErrorNotFound("id: not found"));
