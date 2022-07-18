@@ -12,32 +12,32 @@ class Reproduce extends Model {
     this.belongsTo(models.HeatCircle, {
       foreignKey: "HeatCircleID",
     });
-    this.belongsToMany(models.OvarySymptom, {
-      through: models.RpToLeftOvarySymptom,
-      foreignKey: "LeftOvarySymptomID",
-      as: "LeftOvarySymptom",
-    });
-    this.belongsToMany(models.OvarySymptom, {
-      through: models.RpToRightOvarySymptom,
-      foreignKey: "RightOvarySymptomID",
-      as: "RightOvarySymptom",
-    });
-    this.belongsToMany(models.VaginaSymptom, {
-      through: models.RpToVaginaSymptom,
-      foreignKey: "VaginaSymptomID",
-      as: "VaginaSymptom",
-    });
-    this.belongsToMany(models.OtherSymptom, {
-      through: models.RpToOtherSymptom,
-      foreignKey: "OtherSymptomID",
-      as: "OtherSymptom",
-    });
+    // this.belongsToMany(models.OvarySymptom, {
+    //   through: models.RpToLeftOvarySymptom,
+    //   foreignKey: "LeftOvarySymptomID",
+    //   as: "LeftOvarySymptom",
+    // });
+    // this.belongsToMany(models.OvarySymptom, {
+    //   through: models.RpToRightOvarySymptom,
+    //   foreignKey: "RightOvarySymptomID",
+    //   as: "RightOvarySymptom",
+    // });
+    // this.belongsToMany(models.VaginaSymptom, {
+    //   through: models.RpToVaginaSymptom,
+    //   foreignKey: "VaginaSymptomID",
+    //   as: "VaginaSymptom",
+    // });
+    // this.belongsToMany(models.OtherSymptom, {
+    //   through: models.RpToOtherSymptom,
+    //   foreignKey: "OtherSymptomID",
+    //   as: "OtherSymptom",
+    // });
 
-    this.belongsToMany(models.CauseAnimal, {
-      through: models.RpToCauseAnimal,
-      foreignKey: "CauseAnimalID",
-      as: "CauseAnimal",
-    });
+    // this.belongsToMany(models.CauseAnimal, {
+    //   through: models.RpToCauseAnimal,
+    //   foreignKey: "CauseAnimalID",
+    //   as: "CauseAnimal",
+    // });
 
     // this.belongsToMany(models.CauseEnvironment, {
     //   through: models.RpToCauseEnvironment,
@@ -45,23 +45,23 @@ class Reproduce extends Model {
     //   as: "CauseEnvironment",
     // });
 
-    this.belongsToMany(models.CauseFeeder, {
-      through: models.RpToCauseFeeder,
-      foreignKey: "CauseFeederID",
-      as: "CauseFeeder",
-    });
+    // this.belongsToMany(models.CauseFeeder, {
+    //   through: models.RpToCauseFeeder,
+    //   foreignKey: "CauseFeederID",
+    //   as: "CauseFeeder",
+    // });
 
-    this.belongsToMany(models.CauseHealth, {
-      through: models.RpToCauseHealth,
-      foreignKey: "CauseHealthID",
-      as: "CauseHealth",
-    });
+    // this.belongsToMany(models.CauseHealth, {
+    //   through: models.RpToCauseHealth,
+    //   foreignKey: "CauseHealthID",
+    //   as: "CauseHealth",
+    // });
 
-    this.belongsToMany(models.CureHormone, {
-      through: models.RpToCureHormone,
-      foreignKey: "CureHormoneID",
-      as: "CureHormone",
-    });
+    // this.belongsToMany(models.CureHormone, {
+    //   through: models.RpToCureHormone,
+    //   foreignKey: "CureHormoneID",
+    //   as: "CureHormone",
+    // });
 
     // this.belongsToMany(models.CureAntibiotic, {
     //   through: models.RpToCureAntibiotic,
