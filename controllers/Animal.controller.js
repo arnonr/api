@@ -56,7 +56,8 @@ const methods = {
     try {
       let result = await Service.GenerateNumber(
         req.query.FarmID,
-        req.query.BirthDate
+        req.query.BirthDate,
+        req.query.AnimalTypeID
       );
       res.success(result);
     } catch (error) {

@@ -1965,7 +1965,7 @@ const methods = {
     });
   },
 
-  GenerateNumber(FarmID, BirthDate) {
+  GenerateNumber(FarmID, BirthDate, AnimalTypeID) {
     // หมายเลขประจำตัวสัตว์ ระบบ auto generate ให้ มี FORMAT ตามปีเกิด + เลขทะเบียนฟาร์ม + running number 5 หลัก เช่น ปีเกิดคือ 2022 เลขทะเบียนฟาร์มคือ 101010-0001 เลขที่ได้จะเป็น 1022101010-0001-00001 กรณีที่ไม่ทราบปีเกิดให้ใช้ปีที่บันทึกข้อมูล
     return new Promise(async (resolve, reject) => {
       try {
@@ -2009,7 +2009,6 @@ const methods = {
           }
           
           //
-          let AnimalTypeID = 1;
           let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
           let AnimalGroupTypeRes = await AnimalGroupType.findByPk(AnimalTypeRes.AnimalGroupTypeID);
           let GroupTypeCode = AnimalGroupTypeRes.AnimalGroupTypeCode;
