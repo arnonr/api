@@ -56,7 +56,7 @@ router.get(
   controllers.onGenerateNumber
 );
 
-router.get(
+router.post(
   "/generate-breed1",
   auth.required,
   checkPermission(resource, "read"),
