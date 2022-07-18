@@ -66,7 +66,6 @@ const methods = {
   },
   async onGenerateBreed(req, res) {
     try {
-      console.log("FREEDOM1")
       let result = await Service.GenerateBreed(
         req.query.AnimalFatherID,
         req.query.AnimalMotherID

@@ -2067,7 +2067,6 @@ const methods = {
   GenerateBreed(AnimalFatherID, AnimalMotherID) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("FREEDOM2");
 
         let Father = await db.findByPk(AnimalFatherID);
 
@@ -2085,29 +2084,31 @@ const methods = {
         //   AnimalBreedID2: 3,
         //   AnimalBreedPercent2: 60,
         // };
-
+        console.log(Father)
+        console.log(Mother)
         let Breed = [];
-
+        console.log("FREEDOM4")
         if (Father.AnimalBreedID1) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID1,
             AnimalBreedPercent: Father.AnimalBreedPercent1,
           });
         }
-
+        console.log("FREEDOM5")
         if (Father.AnimalBreedID2) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID2,
             AnimalBreedPercent: Father.AnimalBreedPercent2,
           });
         }
-
+        console.log("FREEDOM6")
         if (Father.AnimalBreedID3) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID3,
             AnimalBreedPercent: Father.AnimalBreedPercent3,
           });
         }
+        console.log("FREEDOM7")
 
         if (Father.AnimalBreedID4) {
           Breed.push({
@@ -2115,6 +2116,7 @@ const methods = {
             AnimalBreedPercent: Father.AnimalBreedPercent4,
           });
         }
+        console.log("FREEDOM8")
 
         if (Father.AnimalBreedID5) {
           Breed.push({
@@ -2122,6 +2124,7 @@ const methods = {
             AnimalBreedPercent: Father.AnimalBreedPercent5,
           });
         }
+        console.log("FREEDOM9")
 
         if (Mother.AnimalBreedID1) {
           const getBreedIndex1 = Breed.findIndex(
@@ -2139,6 +2142,7 @@ const methods = {
             });
           }
         }
+        console.log("FREEDOM10")
 
         if (Mother.AnimalBreedID2) {
           const getBreedIndex2 = Breed.findIndex(
@@ -2156,7 +2160,7 @@ const methods = {
             });
           }
         }
-
+        console.log("FREEDOM11")
         if (Mother.AnimalBreedID3) {
           const getBreedIndex3 = Breed.findIndex(
             (breed) => breed.AnimalBreedID === Mother.AnimalBreedID3
@@ -2173,6 +2177,7 @@ const methods = {
             });
           }
         }
+        console.log("FREEDOM12")
 
         if (Mother.AnimalBreedID4) {
           const getBreedIndex4 = Breed.findIndex(
@@ -2190,6 +2195,7 @@ const methods = {
             });
           }
         }
+        console.log("FREEDOM13")
 
         if (Mother.AnimalBreedID5) {
           const getBreedIndex5 = Breed.findIndex(
@@ -2221,7 +2227,8 @@ const methods = {
 
         resolve(Breed);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
+        // reject(ErrorNotFound("id: not found"));
       }
     });
   },
