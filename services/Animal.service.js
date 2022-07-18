@@ -2072,43 +2072,28 @@ const methods = {
 
         let Mother = await db.findByPk(AnimalMotherID);
 
-        // let Father = {
-        //   AnimalBreedID1: 1,
-        //   AnimalBreedPercent1: 25,
-        //   AnimalBreedID2: 2,
-        //   AnimalBreedPercent2: 75,
-        // };
-        // let Mother = {
-        //   AnimalBreedID1: 2,
-        //   AnimalBreedPercent1: 40,
-        //   AnimalBreedID2: 3,
-        //   AnimalBreedPercent2: 60,
-        // };
-        console.log(Father)
-        console.log(Mother)
         let Breed = [];
-        console.log("FREEDOM4")
+
         if (Father.AnimalBreedID1) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID1,
             AnimalBreedPercent: Father.AnimalBreedPercent1,
           });
         }
-        console.log("FREEDOM5")
+
         if (Father.AnimalBreedID2) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID2,
             AnimalBreedPercent: Father.AnimalBreedPercent2,
           });
         }
-        console.log("FREEDOM6")
+
         if (Father.AnimalBreedID3) {
           Breed.push({
             AnimalBreedID: Father.AnimalBreedID3,
             AnimalBreedPercent: Father.AnimalBreedPercent3,
           });
         }
-        console.log("FREEDOM7")
 
         if (Father.AnimalBreedID4) {
           Breed.push({
@@ -2116,7 +2101,6 @@ const methods = {
             AnimalBreedPercent: Father.AnimalBreedPercent4,
           });
         }
-        console.log("FREEDOM8")
 
         if (Father.AnimalBreedID5) {
           Breed.push({
@@ -2124,7 +2108,6 @@ const methods = {
             AnimalBreedPercent: Father.AnimalBreedPercent5,
           });
         }
-        console.log("FREEDOM9")
 
         if (Mother.AnimalBreedID1) {
           const getBreedIndex1 = Breed.findIndex(
@@ -2133,8 +2116,8 @@ const methods = {
 
           if (getBreedIndex1 != -1) {
             Breed[getBreedIndex1].AnimalBreedPercent =
-              Breed[getBreedIndex1].AnimalBreedPercent +
-              Mother.AnimalBreedPercent1;
+              parseFloat(Breed[getBreedIndex1].AnimalBreedPercent) +
+              parseFloat(Mother.AnimalBreedPercent1);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID1,
@@ -2142,7 +2125,6 @@ const methods = {
             });
           }
         }
-        console.log("FREEDOM10")
 
         if (Mother.AnimalBreedID2) {
           const getBreedIndex2 = Breed.findIndex(
@@ -2151,8 +2133,8 @@ const methods = {
 
           if (getBreedIndex2 != -1) {
             Breed[getBreedIndex2].AnimalBreedPercent =
-              Breed[getBreedIndex2].Animal.BreedPercent +
-              Mother.AnimalBreedPercent2;
+              parseFloat(Breed[getBreedIndex2].AnimalBreedPercent) +
+              parseFloat(Mother.AnimalBreedPercent2);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID2,
@@ -2160,7 +2142,7 @@ const methods = {
             });
           }
         }
-        console.log("FREEDOM11")
+
         if (Mother.AnimalBreedID3) {
           const getBreedIndex3 = Breed.findIndex(
             (breed) => breed.AnimalBreedID === Mother.AnimalBreedID3
@@ -2168,8 +2150,8 @@ const methods = {
 
           if (getBreedIndex3 != -1) {
             Breed[getBreedIndex3].AnimalBreedPercent =
-              Breed[getBreedIndex3].Animal.BreedPercent +
-              Mother.AnimalBreedPercent3;
+              parseFloat(Breed[getBreedIndex3].AnimalBreedPercent) +
+              parseFloat(Mother.AnimalBreedPercent3);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID3,
@@ -2177,7 +2159,6 @@ const methods = {
             });
           }
         }
-        console.log("FREEDOM12")
 
         if (Mother.AnimalBreedID4) {
           const getBreedIndex4 = Breed.findIndex(
@@ -2186,8 +2167,8 @@ const methods = {
 
           if (getBreedIndex4 != -1) {
             Breed[getBreedIndex4].AnimalBreedPercent =
-              Breed[getBreedIndex4].Animal.BreedPercent +
-              Mother.AnimalBreedPercent4;
+            parseFloat(Breed[getBreedIndex4].AnimalBreedPercent) +
+            parseFloat(Mother.AnimalBreedPercent4);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID4,
@@ -2195,7 +2176,6 @@ const methods = {
             });
           }
         }
-        console.log("FREEDOM13")
 
         if (Mother.AnimalBreedID5) {
           const getBreedIndex5 = Breed.findIndex(
@@ -2204,8 +2184,8 @@ const methods = {
 
           if (getBreedIndex5 != -1) {
             Breed[getBreedIndex5].AnimalBreedPercent =
-              Breed[getBreedIndex5].Animal.BreedPercent +
-              Mother.AnimalBreedPercent5;
+              parseFloat(Breed[getBreedIndex5].AnimalBreedPercent) +
+              parseFloat(Mother.AnimalBreedPercent5);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID5,
@@ -2213,23 +2193,18 @@ const methods = {
             });
           }
         }
-        console.log("FREEDOM14")
-        // 
+
         let Breed2 = Breed.map((b) => {
-          console.log("FREEDOM14")
+          console.log(b.AnimalBreedPercent)
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
-          console.log("FREEDOM15")
+
           const found = HF.find((element) => {
             return Math.abs(element - b.AnimalBreedPercent) < 0.01220703125;
           });
-          console.log(typeof b.AnimalBreedPercent)
-          console.log(b.AnimalBreedPercent)
 
           b.AnimalBreedPercent = found.toFixed(4);
-
           return b;
         });
-        console.log("FREEDOM15")
 
         resolve(Breed2);
       } catch (error) {
