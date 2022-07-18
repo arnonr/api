@@ -54,7 +54,7 @@ PresetActivity.init(
       comment: "กิจกรรมสำหรับตัวให้,ตัวรับ",
     },
     AnimalTypeID: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.STRING,
       allowNull: true,
       comment: "รหัสอ้างอิงชนิดสัตว์ (Array)",
     },
