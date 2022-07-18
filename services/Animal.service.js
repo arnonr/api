@@ -2213,7 +2213,7 @@ const methods = {
             });
           }
         }
-
+        console.log("FREEDOM14")
         Breed = Breed.map((b) => {
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
 
@@ -2224,6 +2224,7 @@ const methods = {
           b.AnimalBreedPercent = found.toFixed(4);
           return b;
         });
+        console.log("FREEDOM15")
 
         resolve(Breed);
       } catch (error) {
