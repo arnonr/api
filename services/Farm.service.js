@@ -6,6 +6,7 @@ const config = require("../configs/app"),
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
+const Organization = require("../models/Organization");
 
 const methods = {
   scopeSearch(req, limit, offset) {
