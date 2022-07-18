@@ -160,6 +160,7 @@ const RpToLeftOvarySymptom = require("./RpToLeftOvarySymptom");
 const RpToRightOvarySymptom = require("./RpToLeftOvarySymptom");
 
 const RedGoat = require("./RedGoat");
+const Thaiblack = require("./Thaiblack");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
