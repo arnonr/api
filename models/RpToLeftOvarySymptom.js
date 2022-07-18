@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class RpToOvarySymptom extends Model {
+class RpToLeftOvarySymptom extends Model {
   static associate(models) {
   }
   // Custom JSON Response
@@ -12,9 +12,9 @@ class RpToOvarySymptom extends Model {
   }
 }
 
-RpToOvarySymptom.init(
+RpToLeftOvarySymptom.init(
   {
-    RpToOvarySymptomID: {
+    RpToLeftOvarySymptomID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
@@ -74,4 +74,4 @@ RpToOvarySymptom.init(
   }
 );
 
-module.exports = RpToOvarySymptom;
+module.exports = RpToLeftOvarySymptom;

@@ -3,92 +3,92 @@ const { Model, DataTypes } = require("sequelize"),
 
 class Reproduce extends Model {
   static associate(models) {
-    // this.belongsTo(models.Animal, {
-    //   foreignKey: "AnimalID",
-    // });
-    // this.belongsTo(models.HeatType, {
-    //   foreignKey: "HeatTypeID",
-    // });
-    // this.belongsTo(models.HeatCircle, {
-    //   foreignKey: "HeatCircleID",
-    // });
-    // this.belongsToMany(models.OvarySymptom, {
-    //   through: models.RpToOvarySymptom,
-    //   foreignKey: "LeftOvarySymptomID",
-    //   as: "LeftOvarySymptom",
-    // });
-    // this.belongsToMany(models.OvarySymptom, {
-    //   through: models.RpToOvarySymptom,
-    //   foreignKey: "RightOvarySymptomID",
-    //   as: "RightOvarySymptom",
-    // });
-    // this.belongsToMany(models.VaginaSymptom, {
-    //   through: models.RpToVaginaSymptom,
-    //   foreignKey: "VaginaSymptomID",
-    //   as: "VaginaSymptom",
-    // });
-    // this.belongsToMany(models.OtherSymptom, {
-    //   through: models.RpToOtherSymptom,
-    //   foreignKey: "OtherSymptomID",
-    //   as: "OtherSymptom",
-    // });
+    this.belongsTo(models.Animal, {
+      foreignKey: "AnimalID",
+    });
+    this.belongsTo(models.HeatType, {
+      foreignKey: "HeatTypeID",
+    });
+    this.belongsTo(models.HeatCircle, {
+      foreignKey: "HeatCircleID",
+    });
+    this.belongsToMany(models.OvarySymptom, {
+      through: models.RpToLeftOvarySymptom,
+      foreignKey: "LeftOvarySymptomID",
+      as: "LeftOvarySymptom",
+    });
+    this.belongsToMany(models.OvarySymptom, {
+      through: models.RpToRightOvarySymptom,
+      foreignKey: "RightOvarySymptomID",
+      as: "RightOvarySymptom",
+    });
+    this.belongsToMany(models.VaginaSymptom, {
+      through: models.RpToVaginaSymptom,
+      foreignKey: "VaginaSymptomID",
+      as: "VaginaSymptom",
+    });
+    this.belongsToMany(models.OtherSymptom, {
+      through: models.RpToOtherSymptom,
+      foreignKey: "OtherSymptomID",
+      as: "OtherSymptom",
+    });
 
-    // this.belongsToMany(models.CauseAnimal, {
-    //   through: models.RpToCauseAnimal,
-    //   foreignKey: "CauseAnimalID",
-    //   as: "CauseAnimal",
-    // });
+    this.belongsToMany(models.CauseAnimal, {
+      through: models.RpToCauseAnimal,
+      foreignKey: "CauseAnimalID",
+      as: "CauseAnimal",
+    });
 
-    // this.belongsToMany(models.CauseEnvironment, {
-    //   through: models.RpToCauseEnvironment,
-    //   foreignKey: "CauseEnvironmentID",
-    //   as: "CauseEnvironment",
-    // });
+    this.belongsToMany(models.CauseEnvironment, {
+      through: models.RpToCauseEnvironment,
+      foreignKey: "CauseEnvironmentID",
+      as: "CauseEnvironment",
+    });
 
-    // this.belongsToMany(models.CauseFeeder, {
-    //   through: models.RpToCauseFeeder,
-    //   foreignKey: "CauseFeederID",
-    //   as: "CauseFeeder",
-    // });
+    this.belongsToMany(models.CauseFeeder, {
+      through: models.RpToCauseFeeder,
+      foreignKey: "CauseFeederID",
+      as: "CauseFeeder",
+    });
 
-    // this.belongsToMany(models.CauseHealth, {
-    //   through: models.RpToCauseHealth,
-    //   foreignKey: "CauseHealthID",
-    //   as: "CauseHealth",
-    // });
+    this.belongsToMany(models.CauseHealth, {
+      through: models.RpToCauseHealth,
+      foreignKey: "CauseHealthID",
+      as: "CauseHealth",
+    });
 
-    // this.belongsToMany(models.CureHormone, {
-    //   through: models.RpToCureHormone,
-    //   foreignKey: "CureHormoneID",
-    //   as: "CureHormone",
-    // });
+    this.belongsToMany(models.CureHormone, {
+      through: models.RpToCureHormone,
+      foreignKey: "CureHormoneID",
+      as: "CureHormone",
+    });
 
-    // this.belongsToMany(models.CureAntibiotic, {
-    //   through: models.RpToCureAntibiotic,
-    //   foreignKey: "CureAntibioticID",
-    //   as: "CureAntibiotic",
-    // });
+    this.belongsToMany(models.CureAntibiotic, {
+      through: models.RpToCureAntibiotic,
+      foreignKey: "CureAntibioticID",
+      as: "CureAntibiotic",
+    });
 
-    // this.belongsToMany(models.CureVitamin, {
-    //   through: models.RpToCureVitamin,
-    //   foreignKey: "CureVitaminID",
-    //   as: "CureByVitamin",
-    // });
+    this.belongsToMany(models.CureVitamin, {
+      through: models.RpToCureVitamin,
+      foreignKey: "CureVitaminID",
+      as: "CureVitamin",
+    });
 
-    // this.belongsToMany(models.ReproduceSuggestion, {
-    //   through: models.RpToRpSuggestion,
-    //   foreignKey: "ReproduceSuggestionID",
-    //   as: "ReproduceSuggestion",
-    // });
+    this.belongsToMany(models.ReproduceSuggestion, {
+      through: models.RpToRpSuggestion,
+      foreignKey: "ReproduceSuggestionID",
+      as: "ReproduceSuggestion",
+    });
 
-    // this.belongsTo(models.Staff, {
-    //   foreignKey: "ResponsibilityStaffID",
-    // });
+    this.belongsTo(models.Staff, {
+      foreignKey: "ResponsibilityStaffID",
+    });
 
-    // this.belongsTo(models.Staff, {
-    //   foreignKey: "RemoveByStaffID",
-    //   as: "RemoveBy",
-    // });
+    this.belongsTo(models.Staff, {
+      foreignKey: "RemoveByStaffID",
+      as: "RemoveBy",
+    });
   }
   // Custom JSON Response
   toJSON() {

@@ -1,9 +1,8 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class ReproduceSuggestion extends Model {
+class RpToRightOvarySymptom extends Model {
   static associate(models) {
-  
   }
   // Custom JSON Response
   toJSON() {
@@ -13,36 +12,25 @@ class ReproduceSuggestion extends Model {
   }
 }
 
-ReproduceSuggestion.init(
+RpToRightOvarySymptom.init(
   {
-    ReproduceSuggestionID: {
+    RpToRightOvarySymptomID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
     },
-    ReproduceSuggestionName: {
-      type: DataTypes.STRING(255),
+    ReproduceID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "คำอธิบาย",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          ReproduceSuggestion.findOne({ where: { ReproduceSuggestionName: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.ReproduceSuggestionID !== data.ReproduceSuggestionID) {
-                throw new Error("ReproduceSuggestion Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      comment: "รหัสกระบวนการ",
     },
-
+    OvarySymptomID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงปัญหาที่พบของรังไข่",
+    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
@@ -82,8 +70,8 @@ ReproduceSuggestion.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "ReproduceSuggestion",
+    modelName: "RpToOvarySymptom",
   }
 );
 
-module.exports = ReproduceSuggestion;
+module.exports = RpToRightOvarySymptom;
