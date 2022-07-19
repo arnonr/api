@@ -3,6 +3,9 @@ const config = require("../configs/app"),
   db = require("../models/Donor"),
   { Op } = require("sequelize");
 
+const DonorActivity = require("../models/DonorActivity");
+const Animal = require("../models/Animal");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -12,9 +15,9 @@ const methods = {
     if (req.query.StartDate) $where["StartDate"] = req.query.StartDate;
     if (req.query.PresetID) $where["PresetID"] = req.query.PresetID;
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
-    if (req.query.ResponsibilityStaffID) $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+    if (req.query.ResponsibilityStaffID)
+      $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
 
-      
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -39,9 +42,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false, },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -75,12 +76,31 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
+        let obj = await db.findByPk(id, {
           include: { all: true, required: false },
         });
 
-        if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+        let donorAnimal = [];
+        let donorActivity = DonorActivity.findAll({
+          // group: ["AnimalID"],
+          where: { DonorID: id },
+          include: [
+            { all: true, nested: false },
+            {
+              model: Animal,
+            },
+          ],
+        });
+
+        (await donorActivity).forEach((da) => {
+          donorAnimal.push(da.Animal);
+        });
+
+        let obj1 = obj.toJSON();
+        obj1.Animals = donorAnimal;
+
+        if (!obj1) reject(ErrorNotFound("id: not found"));
+        resolve(obj1);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

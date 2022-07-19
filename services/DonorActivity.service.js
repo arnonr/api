@@ -62,7 +62,7 @@ const methods = {
 
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
-    const offset = +(ßlimit * ((req.query.page || 1) - 1));
+    const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
@@ -75,9 +75,7 @@ const methods = {
             const rows = result[0],
               count = result[2];
 
-              // Rows จะแมพตรงนี้
-
-
+            // Rows จะแมพตรงนี้
 
             resolve({
               total: count,
