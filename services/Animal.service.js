@@ -1690,7 +1690,7 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalName + "%",
       };
 
-    if (req.query.FarmID) $where["AnimalSexID"] = req.query.FarmID;
+    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
     if (req.query.AnimalFirstBreed)
       $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
     if (req.query.AnimalFatherID)

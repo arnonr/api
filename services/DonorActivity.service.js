@@ -164,3 +164,12 @@ const methods = {
 };
 
 module.exports = { ...methods };
+
+// query ทุก donor activity แล้วมากรุ๊ปจาก animalID กับ donorID
+// เอา donorID มากสุดเรียงขึ้นก่อน ต่อด้วยการเรียง AnimalID
+  
+// สร้างตัวแปรใหม่มาเก็บผลลัพธ์ donor
+// วนรอปผลที่ได้จากด้านบน และค้นหา donoractivity ทั้งหมด อีกทีจาก DonorID และ animalID
+// CIR-B มีกี่อันวันไหนบ้าง ให้ค้นหาจาก array find
+// FSH มีกี่อันวันไหนบ้างใ ห้ค้นหาจาก array find ได้มาแล้วให้เก็บใน [{animalID: 1, donorID:1,CIDR-B }]
+// ได้แล้วมาเก็บไว้เป็น array ประกอบด้วยหมายเลขโค CIR-B
