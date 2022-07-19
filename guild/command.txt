@@ -13,3 +13,6 @@ docker logs -f a18
 
 git reset --hard
 git pull
+
+
+truncate -s 0 /var/lib/docker/containers/*/*-json.log

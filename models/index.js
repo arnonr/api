@@ -597,6 +597,11 @@ RedGoat.associate({
   Staff
 })
 
+Thaiblack.associate({
+  Animal,
+  Staff
+})
+
 PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
