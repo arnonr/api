@@ -52,10 +52,10 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
+      {
+        model: Donor,
+        include: { all: true, required: false },
+      },
     ];
 
     return { query: query };
