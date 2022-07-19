@@ -382,6 +382,7 @@ DonorCollectEmbryoDetail.associate({
 Donor.associate({
   Preset,
   Farm,
+  Staff
 });
 
 Recipient.associate({

@@ -9,6 +9,9 @@ class Donor extends Model {
     this.belongsTo(models.Farm, {
       foreignKey: "FarmID",
     });
+    this.belongsTo(models.Staff, {
+      foreignKey: "ResponsibilityStaffID",
+    });
   }
   // Custom JSON Response
   toJSON() {

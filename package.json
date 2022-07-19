@@ -7,6 +7,7 @@
     "accesscontrol": "^2.2.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.3",
     "dotenv": "^8.2.0",
     "express": "^4.18.0",
     "express-jwt": "^5.3.1",

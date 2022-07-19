@@ -11,6 +11,14 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
+router.get(
+  "/find-donor",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGetAllDonor
+);
+
 router.get(
   "/:id",
   auth.required,

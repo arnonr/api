@@ -51,6 +51,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetAllDonor(req, res) {
+    try {
+      let result = await Service.findDonor(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

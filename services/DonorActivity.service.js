@@ -2,6 +2,19 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/DonorActivity"),
   { Op } = require("sequelize");
+const Animal = require("../models/Animal");
+const Donor = require("../models/Donor");
+const dayjs = require('dayjs');
+const locale = require('dayjs/locale/th');
+const buddhistEra = require('dayjs/plugin/buddhistEra');
+dayjs.extend(buddhistEra)
+{/* <script src="https://unpkg.com/dayjs@1.8.21/locale/th.js"></script>
+// const locale = require('dayjs/locale/th');
+const buddhistEra = require('dayjs/plugin/buddhistEra'); */}
+
+
+// dayjs.extend(buddhistEra)
+// data.start_week = dayjs(data.start_week).locale('th').format('DD MMM BB')
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -41,7 +54,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["DonorActivityID", "ASC"]];
+    $order = [["DonorID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -161,15 +174,221 @@ const methods = {
       }
     });
   },
+
+  scopeSearch1(req, limit, offset) {
+    // Where
+    $where = {};
+
+    if (req.query.DonorActivityID)
+      $where["DonorActivityID"] = req.query.DonorActivityID;
+
+    if (req.query.DonorID) $where["DonorID"] = req.query.DonorID;
+    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+    if (req.query.ActivityDate) $where["ActivityDate"] = req.query.ActivityDate;
+    if (req.query.Day) $where["Day"] = req.query.Day;
+    if (req.query.Time) $where["Time"] = req.query.Time;
+    if (req.query.PresetActivityID)
+      $where["PresetActivityID"] = req.query.PresetActivityID;
+    if (req.query.ResponsibilityStaffID)
+      $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+    if (req.query.SemenID) $where["SemenID"] = req.query.SemenID;
+    if (req.query.IsExclude) $where["IsExclude"] = req.query.IsExclude;
+    if (req.query.ExcludeDate) $where["ExcludeDate"] = req.query.ExcludeDate;
+    if (req.query.ExcludeResponsibilityStaffID)
+      $where["ExcludeResponsibilityStaffID"] =
+        req.query.ExcludeResponsibilityStaffID;
+    if (req.query.GoatAIMethodID)
+      $where["GoatAIMethodID"] = req.query.GoatAIMethodID;
+    if (req.query.BreederAnimalID)
+      $where["BreederAnimalID"] = req.query.BreederAnimalID;
+
+    if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    if (req.query.CreatedUserID)
+      $where["CreatedUserID"] = req.query.CreatedUserID;
+    if (req.query.UpdatedUserID)
+      $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+    $where["isRemove"] = 0;
+    const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+    // Order
+    $order = [["DonorID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy)
+      $order = [
+        [
+          req.query.orderByField,
+          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+        ],
+      ];
+    query["order"] = $order;
+
+    if (!isNaN(limit)) query["limit"] = limit;
+
+    if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [
+      {
+        model: Animal,
+      },
+    ];
+    query["attributes"] = ["DonorID", "AnimalID"];
+    query["group"] = ["DonorID", "AnimalID"];
+
+    return { query: query };
+  },
+
+  findDonor(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch1(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
+          .then(async (result) => {
+            const rows = result[0],
+            count = rows.length;
+
+            const getWithPromiseAll = async () => {
+              let data = await Promise.all(
+                rows.map(async (d) => {
+
+                  let da = await db.findAll({
+                    where: {
+                      DonorID: d.DonorID,
+                      AnimalID: d.AnimalID,
+                    },
+                  });
+
+                  let FindDonor = await Donor.findByPk(d.DonorID,{
+                    include: {all: true, required: false}
+                  });
+
+                  console.log(FindDonor)
+
+                  let PresetActivity1 = da
+                    .filter((d) => d.PresetActivityID == 1)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let PresetActivity2 = da
+                    .filter((d) => d.PresetActivityID == 2)
+                    .map((d) => {
+                      return (
+                        dayjs(d.ActivityDate).locale('th').format('DD MMM BB') +
+                        " " +
+                        d.Time +
+                        " (" +
+                        d.Description +
+                        ")"
+                      );
+                    });
+
+                  let PresetActivity3 = da
+                    .filter((d) => d.PresetActivityID == 3)
+                    .map((d) => {
+                      return (
+                        dayjs(d.ActivityDate).locale('th').format('DD MMM BB') +
+                        " " +
+                        d.Time +
+                        " (" +
+                        d.Description +
+                        ")"
+                      );
+                    });
+
+                  let PresetActivity4 = da
+                    .filter((d) => d.PresetActivityID == 5)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let PresetActivity5 = da
+                    .filter((d) => d.PresetActivityID == 4)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB');
+                    });
+
+                  let PresetActivity6 = da
+                    .filter((d) => d.PresetActivityID == 6)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let PresetActivity7 = da
+                    .filter((d) => d.PresetActivityID == 7)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let PresetActivity8 = da
+                    .filter((d) => d.PresetActivityID == 8)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let PresetActivity9 = da
+                    .filter((d) => d.PresetActivityID == 9)
+                    .map((d) => {
+                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                    });
+
+                  let dn = {
+                    AnimalID: d.AnimalID,
+                    AnimalEarID: d.Animal.AnimalEarID,
+                    DonorID: FindDonor.DonorID,
+                    Staff: FindDonor.Staff.StaffGivenName+" "+FindDonor.Staff.StaffSurname,
+                    PresetActivity1:
+                      PresetActivity1.length != 0 ? PresetActivity1 : null,
+                    PresetActivity2:
+                      PresetActivity2 != 0 ? PresetActivity2 : null,
+                    PresetActivity3:
+                      PresetActivity3 != 0 ? PresetActivity3 : null,
+                    PresetActivity4:
+                      PresetActivity4 != 0 ? PresetActivity4 : null,
+                    PresetActivity5:
+                      PresetActivity5 != 0 ? PresetActivity5 : null,
+                    PresetActivity6:
+                      PresetActivity6 != 0 ? PresetActivity6 : null,
+                    PresetActivity7:
+                      PresetActivity7 != 0 ? PresetActivity7 : null,
+                    PresetActivity8:
+                      PresetActivity8 != 0 ? PresetActivity8 : null,
+                    PresetActivity9:
+                      PresetActivity9 != 0 ? PresetActivity9 : null,
+                  };
+
+                  return dn;
+                })
+              );
+
+              console.log(data);
+              return data;
+            };
+
+            let donor = await getWithPromiseAll();
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: donor,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  //
 };
 
 module.exports = { ...methods };
-
-// query ทุก donor activity แล้วมากรุ๊ปจาก animalID กับ donorID
-// เอา donorID มากสุดเรียงขึ้นก่อน ต่อด้วยการเรียง AnimalID
-  
-// สร้างตัวแปรใหม่มาเก็บผลลัพธ์ donor
-// วนรอปผลที่ได้จากด้านบน และค้นหา donoractivity ทั้งหมด อีกทีจาก DonorID และ animalID
-// CIR-B มีกี่อันวันไหนบ้าง ให้ค้นหาจาก array find
-// FSH มีกี่อันวันไหนบ้างใ ห้ค้นหาจาก array find ได้มาแล้วให้เก็บใน [{animalID: 1, donorID:1,CIDR-B }]
-// ได้แล้วมาเก็บไว้เป็น array ประกอบด้วยหมายเลขโค CIR-B
