@@ -4,6 +4,8 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const RecipientActivity = require("../models/RecipientActivity");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -47,10 +49,6 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
     ];
 
     return { query: query };
@@ -64,12 +62,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             const rows = result[0],
-              count = result[2];
+              count = result[1];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -93,8 +90,30 @@ const methods = {
           include: { all: true, required: false },
         });
 
-        if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let recipientAnimal = [];
+        let recipientActivity = RecipientActivity.findAll({
+          where: { RecipientID: id },
+          attributes: ['RecipientActivity.AnimalID'],
+          group: "RecipientActivity.AnimalID",
+          include: [
+            {
+              model: Animal,
+            },
+          ],
+        });
+
+        (await recipientActivity).forEach((ra) => {
+          recipientAnimal.push(ra.Animal);
+        });
+
+        let obj1 = obj.toJSON();
+        obj1.Animals = recipientAnimal;
+
+
+
+        if (!obj1) reject(ErrorNotFound("id: not found"));
+        resolve(obj1);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

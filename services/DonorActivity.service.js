@@ -2,19 +2,13 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/DonorActivity"),
   { Op } = require("sequelize");
+
 const Animal = require("../models/Animal");
 const Donor = require("../models/Donor");
 const dayjs = require('dayjs');
 const locale = require('dayjs/locale/th');
 const buddhistEra = require('dayjs/plugin/buddhistEra');
 dayjs.extend(buddhistEra)
-{/* <script src="https://unpkg.com/dayjs@1.8.21/locale/th.js"></script>
-// const locale = require('dayjs/locale/th');
-const buddhistEra = require('dayjs/plugin/buddhistEra'); */}
-
-
-// dayjs.extend(buddhistEra)
-// data.start_week = dayjs(data.start_week).locale('th').format('DD MMM BB')
 
 const methods = {
   scopeSearch(req, limit, offset) {

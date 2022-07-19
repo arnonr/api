@@ -11,6 +11,14 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
+router.get(
+  "/find-recipient",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGetAllRecipient
+);
+
 router.get(
   "/:id",
   auth.required,

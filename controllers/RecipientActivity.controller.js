@@ -51,6 +51,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetAllRecipient(req, res) {
+    try {
+      let result = await Service.findRecipient(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };
