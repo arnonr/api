@@ -1983,7 +1983,7 @@ const methods = {
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
-
+        
         if (farm) {
           let animal = await db.max("AnimalIdentificationID", {
             where: {
@@ -2017,18 +2017,16 @@ const methods = {
           let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
           let AnimalGroupTypeRes = await AnimalGroupType.findByPk(AnimalTypeRes.AnimalGroupTypeID);
           let GroupTypeCode = AnimalGroupTypeRes.AnimalGroupTypeCode;
-        
+          
           if(GroupTypeCode.length < 2){
             GroupTypeCode = "0" + AnimalGroupTypeRes.AnimalGroupTypeCode
           }
           let TypeCode = GroupTypeCode + "" + AnimalTypeRes.AnimalTypeCode.slice(AnimalTypeRes.AnimalTypeCode.length-1);
           
-          
-
           let date2 = new Date();
           let year2 = date2.getFullYear();
           year2 = String(year2).slice(2);
-        
+         
           let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
 
           let animal2 = await db.max("AnimalEarID", {
@@ -2038,19 +2036,20 @@ const methods = {
               },
             },
           });
-          
+           //
+           
           if (animal2) {
-            let codeLastest = animal.substr(-5);
+            let codeLastest = animal2.substr(-5);
             codeLastest = parseInt(codeLastest) + 1;
             let number = 5 - parseInt(String(codeLastest).length);
-
+            
             if (number != 0) {
               codeLastest = String(codeLastest);
               for (let i = 1; i <= number; i++) {
                 codeLastest = "0" + codeLastest;
               }
             }
-
+         
             AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + codeLastest;
           } else {
             AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + "00001";
@@ -2058,6 +2057,8 @@ const methods = {
         } else {
           reject(ErrorNotFound("Farm ID: not found"));
         }
+
+        
 
         resolve({
           AnimalNumberGenerate: AnimalNumberGenerate,
