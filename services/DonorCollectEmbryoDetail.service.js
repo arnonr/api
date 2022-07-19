@@ -14,10 +14,14 @@ const methods = {
       $where["DonorCollectEmbryoDetailID"] =
         req.query.DonorCollectEmbryoDetailID;
 
+    if (req.query.DonorCollectEmbryoID)
+      $where["DonorCollectEmbryoID"] = req.query.DonorCollectEmbryoID;
+
     if (req.query.DonorID) $where["DonorID"] = req.query.DonorID;
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
-    if (req.query.EmbryoStageID) $where["EmbryoStageID"] = req.query.EmbryoStageID;
+    if (req.query.EmbryoStageID)
+      $where["EmbryoStageID"] = req.query.EmbryoStageID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)

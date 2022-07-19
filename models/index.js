@@ -376,6 +376,7 @@ DonorCollectEmbryoDetail.associate({
   Donor,
   Animal,
   EmbryoStage,
+  DonorCollectEmbryo
 });
 
 Donor.associate({

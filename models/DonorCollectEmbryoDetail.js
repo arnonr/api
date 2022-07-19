@@ -14,6 +14,10 @@ class DonorCollectEmbryoDetail extends Model {
     this.belongsTo(models.EmbryoStage, {
       foreignKey: "EmbryoStageID",
     });
+
+    this.belongsTo(models.DonorCollectEmbryo, {
+      foreignKey: "DonorCollectEmbryoID",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -31,6 +35,11 @@ DonorCollectEmbryoDetail.init(
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
+    },
+    DonorCollectEmbryoID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิง DonorCollectEmbryo",
     },
     DonorID: {
       type: DataTypes.INTEGER(11),
