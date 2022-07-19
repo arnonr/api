@@ -378,6 +378,11 @@ DonorCollectEmbryoDetail.associate({
   EmbryoStage,
 });
 
+Donor.associate({
+  Preset,
+  Farm,
+});
+
 Recipient.associate({
   Preset,
   Farm,

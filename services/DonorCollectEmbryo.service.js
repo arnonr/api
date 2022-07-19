@@ -5,6 +5,8 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 
+const Donor = require("../models/Donor");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -93,7 +95,13 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          include: [
+            { all: true, required: false },
+            {
+              model: Donor,
+              include: { all: true, required: false },
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));

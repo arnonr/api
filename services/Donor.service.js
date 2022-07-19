@@ -39,6 +39,10 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    query["include"] = [
+      { all: true, required: false, },
+    ];
+
     return { query: query };
   },
 
@@ -71,7 +75,9 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id);
+        const obj = await db.findByPk(id, {
+          include: { all: true, required: false },
+        });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
         resolve(obj.toJSON());
