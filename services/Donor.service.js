@@ -82,10 +82,10 @@ const methods = {
 
         let donorAnimal = [];
         let donorActivity = DonorActivity.findAll({
-          // group: ["AnimalID"],
           where: { DonorID: id },
+          attributes: ['DonorActivity.AnimalID'],
+          group: "DonorActivity.AnimalID",
           include: [
-            { all: true, nested: false },
             {
               model: Animal,
             },
