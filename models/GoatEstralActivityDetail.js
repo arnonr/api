@@ -3,13 +3,13 @@ const { Model, DataTypes } = require("sequelize"),
 
 class GoatEstralActivityDetail extends Model {
   static associate(models) {
+    this.belongsTo(models.PresetGoat, {
+      foreignKey: "PresetGoatID",
+      as: "PresetGoat",
+    });
     this.belongsTo(models.GoatEstralActivity, {
       foreignKey: "GoatEstralActivityID",
       as: "GoatEstralActivity",
-    });
-    this.belongsTo(models.PresetActivity, {
-      foreignKey: "PresetActivityID",
-      as: "PresetActivity",
     });
   }
   
@@ -33,9 +33,8 @@ GoatEstralActivityDetail.init(
     GoatEstralActivityID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "รหัสอ้างอิงโปรแกรมเหนี่ยวนำการเป็นสัด",
+      comment: "รหัสอ้างอิงโปรแกรม",
     },
-
     Day: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -51,7 +50,7 @@ GoatEstralActivityDetail.init(
       allowNull: true,
       comment: "รายละเอียดกิจกรรม",
     },
-    PresetActivityID: {
+    PresetGoatID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "กิจกรรม",

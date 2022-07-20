@@ -10,21 +10,24 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.PresettGoatID) $where["PresettGoatID"] = req.query.PresettGoatID;
+    if (req.query.PresetGoatID) $where["PresetGoatID"] = req.query.PresetGoatID;
 
-    if (req.query.PresettGoatCode)
+    if (req.query.PresetGoatCode)
       $where["PresetGoatCode"] = {
-        [Op.like]: "%" + req.query.PresettGoatCode + "%",
+        [Op.like]: "%" + req.query.PresetGoatCode + "%",
       };
 
-    if (req.query.PresettGoatName)
-      $where["PresetName"] = {
-        [Op.like]: "%" + req.query.PresettGoatName + "%",
+    if (req.query.PresetGoatName)
+      $where["PresetGoatName"] = {
+        [Op.like]: "%" + req.query.PresetGoatName + "%",
       };
 
+    // if (req.query.PresetFor) $where["PresetFor"] = req.query.PresetFor;
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
+    // if (req.query.AnimalTypeID)
+    //   $where["AnimalTypeID"] = req.query.AnimalTypeID;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -55,6 +58,10 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
+      //   {
+      //     model: Staff,
+      //     attributes: ['StaffGivenName', 'StaffSurname']
+      //   },
     ];
 
     return { query: query };

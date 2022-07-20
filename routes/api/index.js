@@ -118,5 +118,6 @@ router.use('/cause-animal', auth.required, require('./CauseAnimal'))
 router.use('/reproduce', auth.required, require('./Reproduce'))
 router.use('/red-goat', auth.required, require('./RedGoat'))
 router.use('/thaiblack', auth.required, require('./Thaiblack'))
+router.use('/preset-goat', auth.required, require('./PresetGoat'))
 
 module.exports = router
