@@ -64,6 +64,13 @@ router.post(
 );
 
 router.get(
+  "/get-by-farm-id",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGetByFarmID
+);
+
+router.get(
   "/:id",
   auth.required,
   checkPermission(resource, "read"),

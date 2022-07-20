@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Animal"),
-  { Op } = require("sequelize");
+  { Op, fn, col } = require("sequelize");
 const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
@@ -9,6 +9,17 @@ const Project = require("../models/Project");
 const Farm = require("../models/Farm");
 const AnimalType = require("../models/AnimalType");
 const AnimalGroupType = require("../models/AnimalGroupType");
+const AI = require("../models/AI");
+const TransferEmbryo = require("../models/TransferEmbryo");
+const PregnancyCheckup = require("../models/PregnancyCheckup");
+const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
+
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+// var isBefore = require('dayjs/plugin/isBefore')
+// dayjs.extend(isBefore)
+dayjs.extend(buddhistEra);
 
 const HF = [
   0.0, 0.01220703125, 0.0244140625, 0.03662109375, 0.048828125, 0.06103515625,
@@ -1680,10 +1691,10 @@ const methods = {
 
     if (req.query.AnimalSexID) $where["AnimalSexID"] = req.query.AnimalSexID;
 
-      
-    if (req.query.AnimalTypeID) $where["AnimalTypeID"] = {
-      [Op.in]:  JSON.parse(req.query.AnimalTypeID),
-    };
+    if (req.query.AnimalTypeID)
+      $where["AnimalTypeID"] = {
+        [Op.in]: JSON.parse(req.query.AnimalTypeID),
+      };
 
     if (req.query.AnimalName)
       $where["AnimalName"] = {
@@ -1983,7 +1994,7 @@ const methods = {
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
-        
+
         if (farm) {
           let animal = await db.max("AnimalIdentificationID", {
             where: {
@@ -2012,21 +2023,28 @@ const methods = {
             AnimalNumberGenerate =
               year + farm.FarmIdentificationNumber + "00001";
           }
-          
+
           //
           let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
-          let AnimalGroupTypeRes = await AnimalGroupType.findByPk(AnimalTypeRes.AnimalGroupTypeID);
+          let AnimalGroupTypeRes = await AnimalGroupType.findByPk(
+            AnimalTypeRes.AnimalGroupTypeID
+          );
           let GroupTypeCode = AnimalGroupTypeRes.AnimalGroupTypeCode;
-          
-          if(GroupTypeCode.length < 2){
-            GroupTypeCode = "0" + AnimalGroupTypeRes.AnimalGroupTypeCode
+
+          if (GroupTypeCode.length < 2) {
+            GroupTypeCode = "0" + AnimalGroupTypeRes.AnimalGroupTypeCode;
           }
-          let TypeCode = GroupTypeCode + "" + AnimalTypeRes.AnimalTypeCode.slice(AnimalTypeRes.AnimalTypeCode.length-1);
-          
+          let TypeCode =
+            GroupTypeCode +
+            "" +
+            AnimalTypeRes.AnimalTypeCode.slice(
+              AnimalTypeRes.AnimalTypeCode.length - 1
+            );
+
           let date2 = new Date();
           let year2 = date2.getFullYear();
           year2 = String(year2).slice(2);
-         
+
           let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
 
           let animal2 = await db.max("AnimalEarID", {
@@ -2036,29 +2054,28 @@ const methods = {
               },
             },
           });
-           //
-           
+          //
+
           if (animal2) {
             let codeLastest = animal2.substr(-5);
             codeLastest = parseInt(codeLastest) + 1;
             let number = 5 - parseInt(String(codeLastest).length);
-            
+
             if (number != 0) {
               codeLastest = String(codeLastest);
               for (let i = 1; i <= number; i++) {
                 codeLastest = "0" + codeLastest;
               }
             }
-         
-            AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + codeLastest;
+
+            AnimalEarGenerate =
+              year2 + ProvinceAndAmphur + TypeCode + codeLastest;
           } else {
             AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + "00001";
           }
         } else {
           reject(ErrorNotFound("Farm ID: not found"));
         }
-
-        
 
         resolve({
           AnimalNumberGenerate: AnimalNumberGenerate,
@@ -2073,7 +2090,6 @@ const methods = {
   GenerateBreed(AnimalFatherID, AnimalMotherID) {
     return new Promise(async (resolve, reject) => {
       try {
-
         let Father = await db.findByPk(AnimalFatherID);
 
         let Mother = await db.findByPk(AnimalMotherID);
@@ -2173,8 +2189,8 @@ const methods = {
 
           if (getBreedIndex4 != -1) {
             Breed[getBreedIndex4].AnimalBreedPercent =
-            parseFloat(Breed[getBreedIndex4].AnimalBreedPercent) +
-            parseFloat(Mother.AnimalBreedPercent4);
+              parseFloat(Breed[getBreedIndex4].AnimalBreedPercent) +
+              parseFloat(Mother.AnimalBreedPercent4);
           } else {
             Breed.push({
               AnimalBreedID: Mother.AnimalBreedID4,
@@ -2201,7 +2217,7 @@ const methods = {
         }
 
         let Breed2 = Breed.map((b) => {
-          console.log(b.AnimalBreedPercent)
+          console.log(b.AnimalBreedPercent);
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
 
           const found = HF.find((element) => {
@@ -2237,6 +2253,367 @@ const methods = {
         resolve();
       } catch (error) {
         reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
+  scopeSearch1(req, limit, offset) {
+    // Where
+    $where = {};
+
+    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
+    if (req.query.AnimalIdentificationID)
+      $where["AnimalIdentificationID"] = {
+        [Op.like]: "%" + req.query.AnimalIdentificationID + "%",
+      };
+
+    if (req.query.AnimalNationalID)
+      $where["AnimalNationalID"] = {
+        [Op.like]: "%" + req.query.AnimalNationalID + "%",
+      };
+
+    if (req.query.AnimalEarID)
+      $where["AnimalEarID"] = {
+        [Op.like]: "%" + req.query.AnimalEarID + "%",
+      };
+
+    if (req.query.AnimalMicrochip)
+      $where["AnimalMicrochip"] = {
+        [Op.like]: "%" + req.query.AnimalMicrochip + "%",
+      };
+
+    if (req.query.AnimalSexID) $where["AnimalSexID"] = req.query.AnimalSexID;
+
+    if (req.query.AnimalTypeID)
+      $where["AnimalTypeID"] = {
+        [Op.in]: JSON.parse(req.query.AnimalTypeID),
+      };
+
+    if (req.query.AnimalName)
+      $where["AnimalName"] = {
+        [Op.like]: "%" + req.query.AnimalName + "%",
+      };
+
+    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+    if (req.query.AnimalFirstBreed)
+      $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
+    if (req.query.AnimalFatherID)
+      $where["AnimalFatherID"] = req.query.AnimalFatherID;
+    if (req.query.AnimalMotherID)
+      $where["AnimalMotherID"] = req.query.AnimalMotherID;
+
+    if (req.query.AnimalBornType)
+      $where["AnimalBornType"] = req.query.AnimalBornType;
+    if (req.query.AnimalBornTypeID)
+      $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
+    if (req.query.AnimalSource)
+      $where["AnimalBornTypeID"] = req.query.AnimalSource;
+    if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
+    if (req.query.OrganizationID)
+      $where["OrganizationID"] = req.query.OrganizationID;
+    if (req.query.OrganizationZoneID)
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+    // Breed
+
+    // ช่วงวันเกิด
+    if (req.query.AnimalBirthDateStart) {
+      $where["AnimalBirthDate"] = {
+        [Op.between]: [
+          req.query.AnimalBirthDateStart,
+          req.query.AnimalBirthDateEnd,
+        ],
+      };
+    }
+
+    // ProjectID
+    let WhereProject = null;
+    if (req.query.ProjectID) {
+      WhereProject = {
+        ProjectID: {
+          [Op.in]: JSON.parse(req.query.ProjectID),
+        },
+      };
+    }
+
+    if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    if (req.query.CreatedUserID)
+      $where["CreatedUserID"] = req.query.CreatedUserID;
+    if (req.query.UpdatedUserID)
+      $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+    $where["isRemove"] = 0;
+    const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+    // Order
+    $order = [["AnimalID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy)
+      $order = [
+        [
+          req.query.orderByField,
+          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+        ],
+      ];
+    query["order"] = $order;
+
+    if (!isNaN(limit)) query["limit"] = limit;
+
+    if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: Project,
+        where: WhereProject,
+      },
+    ];
+
+    return { query: query };
+  },
+
+  findByFarmID(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch1(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+          .then(async (result) => {
+            let rows = result[0],
+              count = rows.length;
+
+            //
+
+            const getWithPromiseAll = async () => {
+              let data = await Promise.all(
+                rows.map(async (data) => {
+                  let projectArray = [];
+                  data.Projects.forEach((element) => {
+                    projectArray.push(element.ProjectName);
+                  });
+
+                  //   // วันผสมล่าสุด
+                  //   // สถานะสัตว์(CO, PG)
+                  //   // สถานะตรวจท้องจากการผสมล่าสุด
+                  //   // แจ้งเตือน
+                  //   // ส่งกิจกรรมไปว่าทำอะไรได้่บ้าง
+                  //   // ส่งอายุปีกับเดือน
+                  //   // เจ้าหน้าที่เอาออก
+
+                  let ai = await AI.findOne({
+                    order: [
+                      ["PAR", "DESC"],
+                      ["TimeNo", "DESC"],
+                    ],
+                    where: {
+                      AnimalID: data.AnimalID,
+                    },
+                  });
+
+                  let embryo = await TransferEmbryo.findOne({
+                    order: [
+                      ["PAR", "DESC"],
+                      // ["TimeNo", "DESC"],
+                    ],
+                    where: {
+                      AnimalID: data.AnimalID,
+                    },
+                  });
+
+                  let animalJson = data.toJSON();
+                  let age = null;
+
+                  if (animalJson.AnimalBirthDate) {
+                    let ageMonth = dayjs().diff(
+                      animalJson.AnimalBirthDate,
+                      "month"
+                    );
+
+                    const year = ageMonth / 12;
+                    const month = ageMonth % 12;
+                    age = Math.floor(year) + "-" + month;
+                  }
+
+                  if (ai && embryo) {
+                    if (
+                      dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
+                      true
+                    ) {
+                      let preg = await PregnancyCheckup.findOne({
+                        order: [["TimeNo", "DESC"]],
+                        where: {
+                          AnimalID: animalJson.AnimalID,
+                          TransferEmbryoID: embryo.TransferEmbryoID,
+                        },
+                        include: {
+                          model: PregnancyCheckStatus,
+                        },
+                      });
+                      let pregResult = "";
+                      if (preg) {
+                        pregResult =
+                          preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+                      }
+
+                      var data1 = {
+                        AnimalID: animalJson.AnimalID,
+                        AnimalEarID: animalJson.AnimalEarID,
+                        AnimalName: animalJson.AnimalName,
+                        AnimalSecretStatus: animalJson.AnimalSecretStatus,
+                        AnimalAge: age,
+                        AIID: null,
+                        TransferEmbryoID: embryo.TransferEmbryoID,
+                        PAR: embryo.PAR,
+                        TimeNo: 1,
+                        AIDate: null,
+                        EmbryoDate: dayjs(embryo.TransferDate)
+                          .locale("th")
+                          .format("DD MMM BB"),
+                        PregnancyStatus: pregResult,
+                        Notification: ["dsdsdsd", "dssdsdsd"],
+                      };
+                    } else {
+                      let preg = await PregnancyCheckup.findOne({
+                        order: [["TimeNo", "DESC"]],
+                        where: {
+                          AnimalID: animalJson.AnimalID,
+                          AIID: ai.AIID,
+                        },
+                        include: {
+                          model: PregnancyCheckStatus,
+                        },
+                      });
+                      let pregResult = "";
+                      if (preg) {
+                        pregResult =
+                          preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+                      }
+
+                      var data1 = {
+                        AnimalID: animalJson.AnimalID,
+                        AnimalEarID: animalJson.AnimalEarID,
+                        AnimalName: animalJson.AnimalName,
+                        AnimalSecretStatus: animalJson.AnimalSecretStatus,
+                        AnimalAge: age,
+                        AIID: ai.AIID,
+                        TransferEmbryoID: null,
+                        PAR: ai.PAR,
+                        TimeNo: ai.TimeNo,
+                        AIDate: dayjs(ai.AIDate)
+                          .locale("th")
+                          .format("DD MMM BB"),
+                        EmbryoDate: null,
+                        PregnancyStatus: pregResult,
+                        Notification: ["dsdsdsd", "dssdsdsd"],
+                      };
+                    }
+                    // CheckDate เอาอันล่าสุด
+                  } else if (ai) {
+                    let preg = await PregnancyCheckup.findOne({
+                      order: [["TimeNo", "DESC"]],
+                      where: {
+                        AnimalID: animalJson.AnimalID,
+                        AIID: ai.AIID,
+                      },
+                      include: {
+                        model: PregnancyCheckStatus,
+                      },
+                    });
+                    let pregResult = "";
+                    if (preg) {
+                      pregResult =
+                        preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+                    }
+
+                    var data1 = {
+                      AnimalID: animalJson.AnimalID,
+                      AnimalEarID: animalJson.AnimalEarID,
+                      AnimalName: animalJson.AnimalName,
+                      AnimalSecretStatus: animalJson.AnimalSecretStatus,
+                      AnimalAge: age,
+                      AIID: ai.AIID,
+                      TransferEmbryoID: null,
+                      PAR: ai.PAR,
+                      TimeNo: ai.TimeNo,
+                      AIDate: dayjs(ai.AIDate).locale("th").format("DD MMM BB"),
+                      EmbryoDate: null,
+                      PregnancyStatus: pregResult,
+                      Notification: ["dsdsdsd", "dssdsdsd"],
+                    };
+                  } else if (embryo) {
+                    let preg = await PregnancyCheckup.findOne({
+                      order: [["TimeNo", "DESC"]],
+                      where: {
+                        AnimalID: animalJson.AnimalID,
+                        TransferEmbryoID: embryo.TransferEmbryoID,
+                      },
+                      include: {
+                        model: PregnancyCheckStatus,
+                      },
+                    });
+                    let pregResult = "";
+                    if (preg) {
+                      pregResult =
+                        preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+                    }
+
+                    var data1 = {
+                      AnimalID: animalJson.AnimalID,
+                      AnimalEarID: animalJson.AnimalEarID,
+                      AnimalName: animalJson.AnimalName,
+                      AnimalSecretStatus: animalJson.AnimalSecretStatus,
+                      AnimalAge: age,
+                      AIID: null,
+                      TransferEmbryoID: embryo.TransferEmbryoID,
+                      PAR: embryo.PAR,
+                      TimeNo: 1,
+                      AIDate: null,
+                      EmbryoDate: dayjs(embryo.TransferDate)
+                        .locale("th")
+                        .format("DD MMM BB"),
+                      PregnancyStatus: pregResult,
+                      Notification: ["dsdsdsd", "dssdsdsd"],
+                    };
+                  } else {
+                    var data1 = {
+                      AnimalID: animalJson.AnimalID,
+                      AnimalEarID: animalJson.AnimalEarID,
+                      AnimalName: animalJson.AnimalName,
+                      AnimalStatus: 1,
+                      AnimalAge: age,
+                      AIID: null,
+                      TransferEmbryoID: null,
+                      PAR: null,
+                      TimeNo: null,
+                      AIDate: null,
+                      EmbryoDate: null,
+                      PregnancyStatus: null,
+                      Notification: ["dsdsdsd", "dssdsdsd"],
+                    };
+                  }
+
+                  return data1;
+                })
+              );
+
+              return data;
+            };
+
+            let animal = await getWithPromiseAll();
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: animal,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
       }
     });
   },

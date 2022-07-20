@@ -75,6 +75,16 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetByFarmID(req, res) {
+    try {
+      let result = await Service.findByFarmID(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onPhoto(req, res) {
     try {
       const result = await Service.photo(req.params.id, req.file.filename);

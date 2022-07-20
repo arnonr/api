@@ -376,6 +376,11 @@ Animal.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    AnimalSecretStatus: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "Secret Status",
+    },
   },
   {
     sequelize,

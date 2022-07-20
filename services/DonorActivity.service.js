@@ -260,8 +260,7 @@ const methods = {
                   let FindDonor = await Donor.findByPk(d.DonorID,{
                     include: {all: true, required: false}
                   });
-
-                  console.log(FindDonor)
+                  
 
                   let PresetActivity1 = da
                     .filter((d) => d.PresetActivityID == 1)
