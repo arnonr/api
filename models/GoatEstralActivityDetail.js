@@ -3,9 +3,9 @@ const { Model, DataTypes } = require("sequelize"),
 
 class GoatEstralActivityDetail extends Model {
   static associate(models) {
-    this.belongsTo(models.PresetGoat, {
-      foreignKey: "PresetGoatID",
-      as: "PresetGoat",
+    this.belongsTo(models.PresetActivity, {
+      foreignKey: "PresetActivityID",
+      as: "PresetActivity",
     });
     this.belongsTo(models.GoatEstralActivity, {
       foreignKey: "GoatEstralActivityID",
@@ -50,12 +50,11 @@ GoatEstralActivityDetail.init(
       allowNull: true,
       comment: "รายละเอียดกิจกรรม",
     },
-    PresetGoatID: {
+    PresetActivityID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "กิจกรรม",
     },
-
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

@@ -19,7 +19,7 @@ GoatEstralActivity.init(
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง การเป็นสัดของแพะ",
+      comment: "เลขไอดีอ้างอิง รหัสโปรแกรมการเป็นสัดของแพะ",
     },
     GoatEstralActivityCode: {
       type: DataTypes.STRING(255),
@@ -47,7 +47,7 @@ GoatEstralActivity.init(
     GoatEstralActivityName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "คำอธิบายการเป็นสัด",
+      comment: "ชื่อโปรแกรมการเป็นสัดของแพะ",
     },
     Remark: {
       type: DataTypes.STRING,

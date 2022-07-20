@@ -161,7 +161,6 @@ const RpToRightOvarySymptom = require("./RpToLeftOvarySymptom");
 
 const RedGoat = require("./RedGoat");
 const Thaiblack = require("./Thaiblack");
-const PresetGoat = require("./PresetGoat");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -291,7 +290,7 @@ Animal.associate({
 });
 
 GoatEstralActivityDetail.associate({
-  PresetGoat,
+  PresetActivity,
   GoatEstralActivity,
 });
 
@@ -607,11 +606,6 @@ RedGoat.associate({
 
 Thaiblack.associate({
   Animal,
-  Staff
-})
-
-PresetGoat.associate({
-  Organization,
   Staff
 })
 

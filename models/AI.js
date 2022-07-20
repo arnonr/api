@@ -124,7 +124,12 @@ AI.init(
     GoatEstralActivityID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "การเป็นสัด (เฉพาะแพะ)",
+      comment: "โปรแกรมการเป็นสัด (เฉพาะแพะ)",
+    },
+    PresetGoatID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "โปรแกรมการเป็นสัด (เฉพาะแพะ)",
     },
     BreederAnimalID: {
       type: DataTypes.INTEGER(11),
