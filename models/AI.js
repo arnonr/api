@@ -126,11 +126,11 @@ AI.init(
       allowNull: true,
       comment: "โปรแกรมการเป็นสัด (เฉพาะแพะ)",
     },
-    PresetGoatID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "โปรแกรมการเป็นสัด (เฉพาะแพะ)",
-    },
+    // PresetActivityID: {
+    //   type: DataTypes.INTEGER(11),
+    //   allowNull: true,
+    //   comment: "โปรแกรมการเป็นสัด (เฉพาะแพะ)",
+    // },
     BreederAnimalID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
