@@ -77,7 +77,7 @@ AI.init(
     },
     AIDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       comment: "วันที่ผสม (เฉพาะโค กระบือ)",
     },
     ResponsibilityStaffID: {
