@@ -1,5 +1,17 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
+const AI = require("./AI");
+const TransferEmbryo = require("./TransferEmbryo");
+const PregnancyCheckup = require("./PregnancyCheckup");
+const GiveBirth = require("./GiveBirth");
+const Yearling = require("./Yearling");
+const Reproduce = require("./Reproduce");
+
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
 
 class Animal extends Model {
   static associate(models) {
@@ -76,11 +88,302 @@ class Animal extends Model {
       as: "AnimalType",
     });
   }
+
+  async Notification() {
+    let noti = [];
+    if (this.ProductionStatusID == 6) {
+      let day = null;
+
+      let pregnancyCheckup = await PregnancyCheckup.findOne({
+        order: [["PregnancyCheckupID", "DESC"]],
+        where: {
+          AnimalID: this.AnimalID,
+        },
+      });
+
+      // let giveBirth = await GiveBirth.findOne({
+      //   where: {
+      //     AnimalID: this.AnimalID,
+      //     PAR: this.AnimalPar,
+      //   },
+      // });
+
+      if (pregnancyCheckup.AIID != null) {
+        let ai = await AI.findByPk(pregnancyCheckup.AIID);
+        day = ai.AIDate;
+      } else if (pregnancyCheckup.TransferEmbryoID != null) {
+        let te = await TransferEmbryo.findByPk(
+          pregnancyCheckup.TransferEmbryoID
+        );
+        day = te.TransferDate;
+      } else {
+        day = CheckupDate;
+      }
+
+      if (day) {
+        day = dayjs().diff(dayjs(day), "day");
+        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+          if (day >= 287) {
+            noti.push(`เลยกําหนดคลอด ${day - 280} วัน`);
+          } else if (day >= 280) {
+            noti.push("ครบกำหนดคลอด");
+          } else {
+          }
+        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+          if (day >= 317) {
+            noti.push(`เลยกําหนดคลอด ${day - 310} วัน`);
+          } else if (day >= 310) {
+            noti.push("ครบกำหนดคลอด");
+          } else {
+          }
+        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+          if (day >= 157) {
+            noti.push(`เลยกําหนดคลอด ${day - 157} วัน`);
+          } else if (day >= 150) {
+            noti.push("ครบกำหนดคลอด");
+          } else {
+          }
+        } else {
+        }
+      }
+    }
+
+    // ครบกำหนดตรวจท้อง
+    if (this.ProductionStatusID == 4) {
+      let day = null;
+
+      let ai = await AI.findOne({
+        order: [["AIID", "DESC"]],
+        where: {
+          AnimalID: this.AnimalID,
+        },
+      });
+
+      let embryo = await TransferEmbryo.findOne({
+        order: [["TransferEmbryoID", "DESC"]],
+        where: {
+          AnimalID: this.AnimalID,
+        },
+      });
+      let method = null;
+      if (ai && embryo) {
+        if (dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) == true) {
+          // embryo.TransferEmbryoID,
+          method = "embryo";
+        } else {
+          // ai
+          method = "ai";
+        }
+      } else if (ai) {
+        method = "ai";
+      } else {
+        method = "embryo";
+      }
+
+      // if (method == "ai") {
+      //   var pregnancyCheckup2 = await PregnancyCheckup.findOne({
+      //     order: [["TimeNo", "DESC"]],
+      //     where: {
+      //       AIID: ai.AIID,
+      //       AnimalID: this.AnimalID,
+      //     },
+      //   });
+      // } else {
+      //   var pregnancyCheckup2 = await PregnancyCheckup.findOne({
+      //     order: [["TimeNo", "DESC"]],
+      //     where: {
+      //       TransferEmbryoID: embryo.TransferEmbryoID,
+      //       AnimalID: this.AnimalID,
+      //     },
+      //   });
+      // }
+
+      if (method == "ai") {
+        day = ai.AIDate;
+      } else if (method == "embryo") {
+        day = embryo.TransferDate;
+      } else {
+        day = 1;
+      }
+
+      if (day) {
+        day = dayjs().diff(dayjs(day), "day");
+        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+          if (day >= 60) {
+            noti.push(`ครบกําหนดตรวจท้อง`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+          if (day >= 60) {
+            noti.push(`ครบกําหนดตรวจท้อง`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+          if (day >= 45) {
+            noti.push(`ครบกําหนดตรวจท้อง`);
+          } else {
+          }
+        } else {
+        }
+      }
+    }
+
+    // ครบกำหนดติดตามลูกโคหลังคลอด
+    if (this.ProductionStatusID == 2) {
+      let day = null;
+
+      let giveBirth = await GiveBirth.findOne({
+        where: {
+          AnimalID: this.AnimalID,
+          PAR: this.AnimalPar - 1,
+        },
+      });
+
+      day = giveBirth.GiveBirthDate;
+
+      // yearling
+      let yearling = Yearling.findOne({
+        where: {
+          MotherAnimalID: this.AnimalID,
+          FollowDate: {
+            $gte: giveBirth.GiveBirthDate,
+          },
+        },
+      });
+
+      // GiveBirthDate
+      if (yearling) {
+        day = null;
+      }
+
+      if (day) {
+        day = dayjs().diff(dayjs(day), "day");
+        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          } else {
+          }
+        } else {
+        }
+      }
+    }
+
+    // ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+    if (this.ProductionStatusID == 2) {
+      let day = null;
+
+      let giveBirth = await GiveBirth.findOne({
+        where: {
+          AnimalID: this.AnimalID,
+          PAR: this.AnimalPar - 1,
+        },
+      });
+
+      day = giveBirth.GiveBirthDate;
+
+      // Reproduce
+      let reproduce = Reproduce.findOne({
+        where: {
+          AnimalID: this.AnimalID,
+          StandingHeatDate: {
+            $gte: giveBirth.GiveBirthDate,
+          },
+        },
+      });
+
+      // GiveBirthDate
+      if (reproduce) {
+        day = null;
+      }
+
+      if (day) {
+        day = dayjs().diff(dayjs(day), "day");
+        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+          } else {
+          }
+        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+          } else {
+          }
+        } else {
+        }
+      }
+    }
+
+    // อายุมากกว่ากําหนดแล้วยังไม่ได้ผสม
+    if (
+      this.ProductionStatusID == null &&
+      this.AnimalPar == 0 &&
+      [3, 8, 13].includes(this.AnimalStatusID)
+    ) {
+      if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+        const age = this.AnimalAge.split("-");
+        let month = parseInt(age[1]);
+
+        if (age[0] != 0) {
+          month = parseInt(age[0]) / 12;
+          month = month + parseInt(age[1]);
+        }
+
+        if (month >= 18) {
+          noti.push(`อายุมากกว่ากําหนด`);
+        } else {
+        }
+      } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+        if (month >= 30) {
+          noti.push(`อายุมากกว่ากําหนด`);
+        } else {
+        }
+      } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+        if (month >= 12) {
+          noti.push(`อายุมากกว่ากําหนด`);
+        } else {
+        }
+      } else {
+      }
+    }
+
+    // this.AnimalPar
+    // find AI max ถ้า Timeno มากกว่า 3 ให้แจ้งเตือนได้เลย
+    if ((this.ProductionStatusID == 4) || (this.ProductionStatusID == 2) || (this.ProductionStatusID == 5)) {
+      let ai = await AI.findOne({
+        order: [["AIID", "DESC"]],
+        where: {
+          AnimalID: this.AnimalID,
+          PAR: this.AnimalPar
+        },
+      });
+
+      if(ai.TimeNo > 3){
+        noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
+      }
+    }
+
+    return noti;
+  }
   // Custom JSON Response
   toJSON() {
     return {
       ...this.get(),
-      AnimalToProject: undefined
+      AnimalToProject: undefined,
     };
   }
 }
@@ -127,7 +430,11 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalNationalID: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.AnimalNationalID != null && self.AnimalID !== data.AnimalID) {
+              if (
+                data &&
+                self.AnimalNationalID != null &&
+                self.AnimalID !== data.AnimalID
+              ) {
                 throw new Error("Animal National ID already in use!");
               }
               return next();
@@ -148,8 +455,11 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalEarID: value, isRemove: 0 } })
             .then(function (data) {
-
-              if (data && self.AnimalEarID != null && self.AnimalID !== data.AnimalID) {
+              if (
+                data &&
+                self.AnimalEarID != null &&
+                self.AnimalID !== data.AnimalID
+              ) {
                 throw new Error("Animal Ear ID already in use!");
               }
               return next();
@@ -170,7 +480,11 @@ Animal.init(
           let self = this;
           Animal.findOne({ where: { AnimalMicrochip: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.AnimalMicrochip != null && self.AnimalID !== data.AnimalID) {
+              if (
+                data &&
+                self.AnimalMicrochip != null &&
+                self.AnimalID !== data.AnimalID
+              ) {
                 throw new Error("Animal Microchip already in use!");
               }
               return next();
@@ -231,7 +545,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 1",
     },
     AnimalBreedPercent1: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 1",
     },
@@ -241,7 +555,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 2",
     },
     AnimalBreedPercent2: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 2",
     },
@@ -251,7 +565,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 3",
     },
     AnimalBreedPercent3: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 3",
     },
@@ -261,7 +575,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 4",
     },
     AnimalBreedPercent4: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 4",
     },
@@ -271,7 +585,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 5",
     },
     AnimalBreedPercent5: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 5",
     },
@@ -281,7 +595,7 @@ Animal.init(
       comment: "url ภาพประจำตัวสัตว์",
     },
     AnimalBornWeight: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(10, 4),
       allowNull: true,
       comment: "น้ำหนักแรกเกิด",
     },
@@ -376,10 +690,68 @@ Animal.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
-    AnimalSecretStatus: {
-      type: DataTypes.STRING(255),
+    ProductionStatusID: {
+      type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "Secret Status",
+      comment: "สถานภาพการผลิต",
+    },
+    AnimalSecretStatus: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let status = null;
+
+        const status1 = [1, 2, 4, 6, 7, 9, 11, 12, 14];
+
+        // const MenuEvent = {
+        //   A: ["การคัดจำหน่าย"], //ตัวผู้ และลูกโค
+        //   B: [
+        //     "ผสมเทียม",
+        //     "ย้ายฝากตัวอ่อน",
+        //     "ตรวจการต้องท้อง",
+        //     "แท้ง",
+        //     "คลอด",
+        //     "ตรวจระบบสืบพันธุ",
+        //     "การคัดจำหน่าย",
+        //   ], //โคสาว //โคแม่พันธุ์
+        //   C: ["ผสมเทียม", "ย้ายฝากตัวอ่อน", "ตรวจการต้องท้อง", "การคัดจำหน่าย"], // อยู่ระหว่างการผสมหรือย้ายฝาก MA DU
+        //   D: ["ตรวจการต้องท้อง", "แท้ง", "คลอด", "การคัดจำหน่าย"], // อยู่ระหว่างการท้องแต่ยังไม่คลอด PG
+        //   E: ["ผสมเทียม", "ย้ายฝากตัวอ่อน", "ตรวจการต้องท้อง","คลอด","ตรวจระบบสืบพันธุ์","การคัดจำหน่าย"], // ท้องและแท้งแล้ว AB
+        //   F: ["ผสมเทียม", "ย้ายฝากตัวอ่อน", "ตรวจการต้องท้อง","แท้ง","คลอด","ตรวจระบบสืบพันธุ์","ติดตามลูกโค","หย่านม", "การคัดจำหน่าย"], // ท้องและคลอดแล้ว CV
+        // };
+
+        if (status1.includes(this.AnimalStatusID)) {
+          status = "A";
+        } else if (
+          this.ProductionStatusID == 4 ||
+          this.ProductionStatusID == 3
+        ) {
+          status = "C";
+        } else if (this.ProductionStatusID == 6) {
+          status = "D";
+        } else if (this.ProductionStatusID == 1) {
+          status = "E";
+        } else if (this.ProductionStatusID == 2) {
+          status = "F";
+        } else {
+          status = "B";
+        }
+        return status;
+      },
+    },
+    AnimalAge: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let age = null;
+
+        if (this.AnimalBirthDate) {
+          let ageMonth = dayjs().diff(this.AnimalBirthDate, "month");
+          const year = ageMonth / 12;
+          const month = ageMonth % 12;
+          age = Math.floor(year) + "-" + month;
+        }
+
+        return age;
+      },
     },
   },
   {

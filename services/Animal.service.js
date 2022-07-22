@@ -2378,7 +2378,7 @@ const methods = {
     const _q = methods.scopeSearch1(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
           .then(async (result) => {
             let rows = result[0],
               count = rows.length;
@@ -2399,7 +2399,7 @@ const methods = {
                   //   // แจ้งเตือน
                   //   // ส่งกิจกรรมไปว่าทำอะไรได้่บ้าง
                   //   // ส่งอายุปีกับเดือน
-                  //   // เจ้าหน้าที่เอาออก
+                  //   // เจ้าหน้าที่เอาออกz
 
                   let ai = await AI.findOne({
                     order: [
@@ -2422,18 +2422,7 @@ const methods = {
                   });
 
                   let animalJson = data.toJSON();
-                  let age = null;
-
-                  if (animalJson.AnimalBirthDate) {
-                    let ageMonth = dayjs().diff(
-                      animalJson.AnimalBirthDate,
-                      "month"
-                    );
-
-                    const year = ageMonth / 12;
-                    const month = ageMonth % 12;
-                    age = Math.floor(year) + "-" + month;
-                  }
+                  let age = animalJson.AnimalAge;
 
                   if (ai && embryo) {
                     if (
@@ -2450,6 +2439,7 @@ const methods = {
                           model: PregnancyCheckStatus,
                         },
                       });
+                      
                       let pregResult = "";
                       if (preg) {
                         pregResult =
@@ -2471,7 +2461,7 @@ const methods = {
                           .locale("th")
                           .format("DD MMM BB"),
                         PregnancyStatus: pregResult,
-                        Notification: ["dsdsdsd", "dssdsdsd"],
+                        Notification: await data.Notification(),
                       };
                     } else {
                       let preg = await PregnancyCheckup.findOne({
@@ -2505,7 +2495,7 @@ const methods = {
                           .format("DD MMM BB"),
                         EmbryoDate: null,
                         PregnancyStatus: pregResult,
-                        Notification: ["dsdsdsd", "dssdsdsd"],
+                        Notification: await data.Notification(),
                       };
                     }
                     // CheckDate เอาอันล่าสุด
@@ -2539,7 +2529,7 @@ const methods = {
                       AIDate: dayjs(ai.AIDate).locale("th").format("DD MMM BB"),
                       EmbryoDate: null,
                       PregnancyStatus: pregResult,
-                      Notification: ["dsdsdsd", "dssdsdsd"],
+                      Notification: await data.Notification(),
                     };
                   } else if (embryo) {
                     let preg = await PregnancyCheckup.findOne({
@@ -2573,7 +2563,7 @@ const methods = {
                         .locale("th")
                         .format("DD MMM BB"),
                       PregnancyStatus: pregResult,
-                      Notification: ["dsdsdsd", "dssdsdsd"],
+                      Notification: await data.Notification(),
                     };
                   } else {
                     var data1 = {
@@ -2589,7 +2579,7 @@ const methods = {
                       AIDate: null,
                       EmbryoDate: null,
                       PregnancyStatus: null,
-                      Notification: ["dsdsdsd", "dssdsdsd"],
+                      Notification: await data.Notification(),
                     };
                   }
 
