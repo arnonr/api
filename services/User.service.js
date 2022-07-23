@@ -363,7 +363,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         let user = db.findByPk(id);
-        
+
         const obj = await GroupAuthorize.findAll({
           where: {
             GroupID: 1,
@@ -374,6 +374,54 @@ const methods = {
         resolve({
           total: obj.length,
           rows: obj,
+        });
+      } catch (error) {
+        reject(ErrorNotFound("id: not found1"));
+      }
+    });
+  },
+
+  CheckPermission(id, menuID, ActionName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let user = await db.findByPk(id);
+
+        let $where = {
+          GroupID: user.GroupID,
+          MenuID: menuID,
+        };
+
+        if (ActionName == "IsAdd") {
+          $where = { ...$where, IsAdd: 1 };
+        }
+
+        if (ActionName == "IsUpdate") {
+          $where = { ...$where, IsUpdate: 1 };
+        }
+
+        if (ActionName == "IsDelete") {
+          $where = { ...$where, IsDelete: 1 };
+        }
+
+        if (ActionName == "IsPreview") {
+          $where = { ...$where, IsPreview: 1 };
+        }
+
+        const obj = await GroupAuthorize.findOne({
+          where: $where,
+        });
+
+        if (!obj)
+          resolve({
+            GroupID: user.GroupID,
+            MenuID: menuID,
+            permission: false,
+          });
+
+        resolve({
+          GroupID: user.GroupID,
+          MenuID: menuID,
+          permission: true,
         });
       } catch (error) {
         reject(ErrorNotFound("id: not found1"));

@@ -21,6 +21,20 @@ const methods = {
     }
   },
 
+  async onCheckPermission(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      let result = await Service.CheckPermission(
+        decoded.id,
+        req.query.MenuID,
+        req.query.ActionName
+      );
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetById(req, res) {
     try {
       let result = await Service.findById(req.params.id);

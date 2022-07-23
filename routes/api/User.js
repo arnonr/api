@@ -20,6 +20,13 @@ router.get(
 );
 
 router.get(
+  "/check-permission",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onCheckPermission
+);
+
+router.get(
   "/:id",
   auth.required,
   checkPermission(resource, "read"),
