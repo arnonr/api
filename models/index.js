@@ -265,7 +265,7 @@ AnimalType.associate({
   CauseEnvToAnimalType,
   CauseEnvironment,
   CauseAnimalToAnimalType,
-  CauseAnimal
+  CauseAnimal,
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -288,7 +288,7 @@ Animal.associate({
   AnimalStatus,
   AnimalType,
   Project,
-  ProductionStatus
+  ProductionStatus,
 });
 
 GoatEstralActivityDetail.associate({
@@ -378,13 +378,13 @@ DonorCollectEmbryoDetail.associate({
   Donor,
   Animal,
   EmbryoStage,
-  DonorCollectEmbryo
+  DonorCollectEmbryo,
 });
 
 Donor.associate({
   Preset,
   Farm,
-  Staff
+  Staff,
 });
 
 Recipient.associate({
@@ -561,14 +561,14 @@ CauseEnvironment.associate({
 
 CauseAnimal.associate({
   CauseAnimalToAnimalType,
-  AnimalType
-})
+  AnimalType,
+});
 
 OvarySymptom.associate({
   RpToLeftOvarySymptom,
   RpToRightOvarySymptom,
-  Reproduce
-})
+  Reproduce,
+});
 
 Reproduce.associate({
   Animal,
@@ -593,24 +593,23 @@ Reproduce.associate({
   // OtherSymptom,
   // RpToVaginaSymptom,
   // VaginaSymptom,
-  // RpToLeftOvarySymptom,
+  OvarySymptom,
+  RpToLeftOvarySymptom,
   // RpToRightOvarySymptom,
   // OvarySymptom,
   // // RpToRpSuggestion,
   // // ReproduceSuggestion
-
-})
+});
 
 RedGoat.associate({
   Animal,
-  Staff
-})
+  Staff,
+});
 
 Thaiblack.associate({
   Animal,
-  Staff
-})
-
+  Staff,
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

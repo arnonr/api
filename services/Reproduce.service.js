@@ -39,14 +39,14 @@ const methods = {
     }
 
     // AnimalTypeID
-    let WhereVaginaSymptom = null;
-    if (req.query.VaginaSymptomID) {
-      WhereVaginaSymptom = {
-        VaginaSymptomID: {
-          [Op.in]: JSON.parse(req.query.VaginaSymptomID),
-        },
-      };
-    }
+    // let WhereVaginaSymptom = null;
+    // if (req.query.VaginaSymptomID) {
+    //   WhereVaginaSymptom = {
+    //     VaginaSymptomID: {
+    //       [Op.in]: JSON.parse(req.query.VaginaSymptomID),
+    //     },
+    //   };
+    // }
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -78,10 +78,10 @@ const methods = {
         model: OvarySymptom,
         where: WhereLeftOvarySymptom,
       },
-      {
-        model: VaginaSymptom,
-        where: WhereVaginaSymptom,
-      },
+      // {
+      //   model: VaginaSymptom,
+      //   where: WhereVaginaSymptom,
+      // },
     ];
 
     return { query: query };
@@ -105,10 +105,10 @@ const methods = {
                 leftOvarySymptomArray.push(element.OvarySymptomName);
               });
 
-              let vaginaSymptomArray = [];
-              data.VaginaSymptom.forEach((element) => {
-                vaginaSymptomArray.push(element.VaginaSymptomName);
-              });
+              // let vaginaSymptomArray = [];
+              // data.VaginaSymptom.forEach((element) => {
+              //   vaginaSymptomArray.push(element.VaginaSymptomName);
+              // });
 
               data = {
                 ...data.toJSON(),
@@ -116,8 +116,8 @@ const methods = {
                 LeftOvarySymptomID: JSON.parse(
                   data.toJSON().LeftOvarySymptomID
                 ),
-                VaginaSymptom: vaginaSymptomArray,
-                VaginaSymptomID: JSON.parse(data.toJSON().VaginaSymptomID),
+                // VaginaSymptom: vaginaSymptomArray,
+                // VaginaSymptomID: JSON.parse(data.toJSON().VaginaSymptomID),
               };
               return data;
             });

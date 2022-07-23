@@ -12,11 +12,11 @@ class Reproduce extends Model {
     this.belongsTo(models.HeatCircle, {
       foreignKey: "HeatCircleID",
     });
-    // this.belongsToMany(models.OvarySymptom, {
-    //   through: models.RpToLeftOvarySymptom,
-    //   foreignKey: "LeftOvarySymptomID",
-    //   as: "LeftOvarySymptom",
-    // });
+    this.belongsToMany(models.OvarySymptom, {
+      through: models.RpToLeftOvarySymptom,
+      foreignKey: "LeftOvarySymptomID",
+      // as: "LeftOvarySymptom",
+    });
     // this.belongsToMany(models.OvarySymptom, {
     //   through: models.RpToRightOvarySymptom,
     //   foreignKey: "RightOvarySymptomID",

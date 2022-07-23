@@ -10,6 +10,7 @@ const config = require("../configs/app"),
 
 const UserToAnimalType = require("../models/UserToAnimalType");
 const AnimalType = require("../models/AnimalType");
+const GroupAuthorize = require("../models/GroupAuthorize");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -354,6 +355,28 @@ const methods = {
         resolve({ accessToken: obj.generateJWT(obj), userData: obj });
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  authorize(id) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let user = db.findByPk(id);
+        
+        const obj = await GroupAuthorize.findAll({
+          where: {
+            GroupID: 1,
+          },
+          include: { all: true, required: false },
+        });
+        if (!obj) reject(ErrorNotFound("id: not found"));
+        resolve({
+          total: obj.length,
+          rows: obj,
+        });
+      } catch (error) {
+        reject(ErrorNotFound("id: not found1"));
       }
     });
   },
