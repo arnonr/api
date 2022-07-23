@@ -2,11 +2,14 @@ const e = require("express");
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farm"),
-  { Op } = require("sequelize");
+  { Op, col, fn, where } = require("sequelize");
+const Sequelize = require("sequelize");
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
 const Organization = require("../models/Organization");
+const Farm = require("../models/Farm");
+const Farmer = require("../models/Farmer");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -59,6 +62,22 @@ const methods = {
       };
     }
 
+    let WhereFullName = null;
+    
+    if (req.query.FullName) {
+      WhereFullName = Sequelize.where(
+        Sequelize.fn(
+          "concat",
+          Sequelize.col("GivenName"),
+          " ",
+          Sequelize.col("Surname")
+        ),
+        {
+          [Op.like]: "%" + req.query.FullName.trim() + "%",
+        }
+      );
+    }
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -88,6 +107,11 @@ const methods = {
       {
         model: Project,
         where: WhereProject,
+      },
+      {
+        model: Farmer,
+        as: "Farmer",
+        where: WhereFullName,
       },
     ];
 

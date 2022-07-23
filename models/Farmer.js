@@ -344,6 +344,13 @@ Farmer.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    FullName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let fullname = this.GivenName + " " + this.Surname;
+        return fullname.trim();
+      },
+    },
   },
   {
     sequelize,

@@ -33,15 +33,15 @@ class Farm extends Model {
       as: "AIZone",
     });
 
+    this.belongsTo(models.Farmer, {
+      foreignKey: "FarmerID",
+      as: "Farmer",
+    });
+
     // Project
     this.belongsToMany(models.Project, {
       through: models.FarmToProject,
       foreignKey: "FarmID",
-    });
-
-    this.belongsTo(models.Farmer, {
-      foreignKey: "FarmerID",
-      as: "Farmer",
     });
   }
 

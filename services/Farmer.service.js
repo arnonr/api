@@ -9,6 +9,7 @@ const methods = {
     $where = {};
 
     if (req.query.FarmerID) $where["FarmerID"] = req.query.FarmerID;
+    
     if (req.query.IdentificationNumber)
       $where["IdentificationNumber"] = {
         [Op.like]: "%" + req.query.IdentificationNumber + "%",
