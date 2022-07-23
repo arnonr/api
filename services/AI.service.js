@@ -3,6 +3,8 @@ const config = require("../configs/app"),
   db = require("../models/AI"),
   { Op } = require("sequelize");
 
+const Animal = require("../models/Animal");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -120,6 +122,8 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+        
+        await Animal.update({ProductionStatusID: 4}, { where: { AnimalID: inserted.AnimalID } });
 
         let res = methods.findById(inserted.AIID);
 

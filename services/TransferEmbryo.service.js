@@ -4,6 +4,7 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -18,8 +19,10 @@ const methods = {
     if (req.query.TransferDate) $where["TransferDate"] = req.query.TransferDate;
 
     if (req.query.EmbryoNumber) $where["EmbryoNumber"] = req.query.EmbryoNumber;
-    if (req.query.TransferMethodID) $where["TransferMethodID"] = req.query.TransferMethodID;
-    if (req.query.StandingHeatDate) $where["StandingHeatDate"] = req.query.StandingHeatDate;
+    if (req.query.TransferMethodID)
+      $where["TransferMethodID"] = req.query.TransferMethodID;
+    if (req.query.StandingHeatDate)
+      $where["StandingHeatDate"] = req.query.StandingHeatDate;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -112,6 +115,11 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+
+        await Animal.update(
+          { ProductionStatusID: 4 },
+          { where: { AnimalID: inserted.AnimalID } }
+        );
 
         let res = methods.findById(inserted.TransferEmbryoID);
 

@@ -4,6 +4,7 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
   const Staff = require("../models/Staff");
+  const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -116,6 +117,17 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+        
+        let productionStatusID = null;
+        if(inserted.PregnancyCheckStatusID == 1){
+          productionStatusID = 6;
+        }else if(inserted.PregnancyCheckStatusID == 2){
+          productionStatusID = 5;
+        }else{
+          productionStatusID = 3;
+        }
+      
+        await Animal.update({ProductionStatusID: productionStatusID}, { where: { AnimalID: inserted.AnimalID } });
 
         let res = methods.findById(inserted.PregnancyCheckupID);
 
