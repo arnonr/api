@@ -2424,6 +2424,16 @@ const methods = {
                   let animalJson = data.toJSON();
                   let age = animalJson.AnimalAge;
 
+                  var data1 = {
+                    AnimalID: animalJson.AnimalID,
+                    AnimalEarID: animalJson.AnimalEarID,
+                    AnimalName: animalJson.AnimalName,
+                    AnimalSecretStatus: animalJson.AnimalSecretStatus,
+                    AnimalAge: age,
+                    AnimalBreedAll: animalJson.AnimalBreedAll,
+                    AnimalStatus: animalJson.AnimalStatus.AnimalStatusName,
+                  };
+
                   if (ai && embryo) {
                     if (
                       dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
@@ -2439,19 +2449,15 @@ const methods = {
                           model: PregnancyCheckStatus,
                         },
                       });
-                      
+
                       let pregResult = "";
                       if (preg) {
                         pregResult =
                           preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
                       }
 
-                      var data1 = {
-                        AnimalID: animalJson.AnimalID,
-                        AnimalEarID: animalJson.AnimalEarID,
-                        AnimalName: animalJson.AnimalName,
-                        AnimalSecretStatus: animalJson.AnimalSecretStatus,
-                        AnimalAge: age,
+                      data1 = {
+                        ...data1,
                         AIID: null,
                         TransferEmbryoID: embryo.TransferEmbryoID,
                         PAR: embryo.PAR,
@@ -2479,14 +2485,10 @@ const methods = {
                         pregResult =
                           preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
                       }
-                      
+
                       // console.log(ai.TimeNo+"FREEDOM")
                       var data1 = {
-                        AnimalID: animalJson.AnimalID,
-                        AnimalEarID: animalJson.AnimalEarID,
-                        AnimalName: animalJson.AnimalName,
-                        AnimalSecretStatus: animalJson.AnimalSecretStatus,
-                        AnimalAge: age,
+                        ...data1,
                         AIID: ai.AIID,
                         TransferEmbryoID: null,
                         PAR: ai.PAR,
@@ -2498,7 +2500,6 @@ const methods = {
                         PregnancyStatus: pregResult,
                         Notification: await data.Notification(),
                       };
-                      
                     }
                     // CheckDate เอาอันล่าสุด
                   } else if (ai) {
@@ -2519,11 +2520,7 @@ const methods = {
                     }
 
                     var data1 = {
-                      AnimalID: animalJson.AnimalID,
-                      AnimalEarID: animalJson.AnimalEarID,
-                      AnimalName: animalJson.AnimalName,
-                      AnimalSecretStatus: animalJson.AnimalSecretStatus,
-                      AnimalAge: age,
+                      ...data1,
                       AIID: ai.AIID,
                       TransferEmbryoID: null,
                       PAR: ai.PAR,
@@ -2551,11 +2548,7 @@ const methods = {
                     }
 
                     var data1 = {
-                      AnimalID: animalJson.AnimalID,
-                      AnimalEarID: animalJson.AnimalEarID,
-                      AnimalName: animalJson.AnimalName,
-                      AnimalSecretStatus: animalJson.AnimalSecretStatus,
-                      AnimalAge: age,
+                      ...data1,
                       AIID: null,
                       TransferEmbryoID: embryo.TransferEmbryoID,
                       PAR: embryo.PAR,
@@ -2569,11 +2562,7 @@ const methods = {
                     };
                   } else {
                     var data1 = {
-                      AnimalID: animalJson.AnimalID,
-                      AnimalEarID: animalJson.AnimalEarID,
-                      AnimalName: animalJson.AnimalName,
-                      AnimalStatus: 1,
-                      AnimalAge: age,
+                      ...data1,
                       AIID: null,
                       TransferEmbryoID: null,
                       PAR: null,
