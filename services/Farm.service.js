@@ -14,7 +14,7 @@ const Farmer = require("../models/Farmer");
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
-    $where = {};
+    var $where = {};
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 

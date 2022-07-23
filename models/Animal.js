@@ -705,7 +705,18 @@ Animal.init(
         let status = null;
 
         const status1 = [1, 2, 4, 6, 7, 9, 11, 12, 14];
+        
 
+        // 1 คัดจำหน่าย
+        // 2 ผสมเทียม
+        // 3 ย้ายฝากตัวอ่อน
+        // 4 ตรวจการตั้งท้อง
+        // 5 แท้ง
+        // 6 คลอด
+        // 7 ตรวจระบบสืบพันธุ์
+        // 8 ติดตามลูกโคหลังคลอด
+        // 9 หย่านม
+  
         // const MenuEvent = {
         //   A: ["การคัดจำหน่าย"], //ตัวผู้ และลูกโค
         //   B: [
@@ -724,20 +735,20 @@ Animal.init(
         // };
 
         if (status1.includes(this.AnimalStatusID)) {
-          status = "A";
+          status = [1];
         } else if (
           this.ProductionStatusID == 4 ||
           this.ProductionStatusID == 3
         ) {
-          status = "C";
+          status = [1,2,3,4,5,6,7];
         } else if (this.ProductionStatusID == 6) {
-          status = "D";
+          status = [1,4,5,6];
         } else if (this.ProductionStatusID == 1) {
-          status = "E";
+          status = [1,2,3,4,6,7];
         } else if (this.ProductionStatusID == 2) {
-          status = "F";
+          status = [1,2,3,4,5,6,7,8,9];
         } else {
-          status = "B";
+          status = [1,2,3,4,5,6,7];
         }
         return status;
       },
