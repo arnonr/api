@@ -388,7 +388,7 @@ const methods = {
 
         let $where = {
           GroupID: user.GroupID,
-          MenuID: menuID,
+          MenuID: parseInt(menuID),
         };
 
         if (ActionName == "IsAdd") {
@@ -414,13 +414,13 @@ const methods = {
         if (!obj)
           resolve({
             GroupID: user.GroupID,
-            MenuID: menuID,
+            MenuID: parseInt(menuID),
             permission: false,
           });
 
         resolve({
           GroupID: user.GroupID,
-          MenuID: menuID,
+          MenuID: parseInt(menuID),
           permission: true,
         });
       } catch (error) {
