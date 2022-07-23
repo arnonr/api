@@ -363,16 +363,20 @@ class Animal extends Model {
 
     // this.AnimalPar
     // find AI max ถ้า Timeno มากกว่า 3 ให้แจ้งเตือนได้เลย
-    if ((this.ProductionStatusID == 4) || (this.ProductionStatusID == 2) || (this.ProductionStatusID == 5)) {
+    if (
+      this.ProductionStatusID == 4 ||
+      this.ProductionStatusID == 2 ||
+      this.ProductionStatusID == 5
+    ) {
       let ai = await AI.findOne({
         order: [["AIID", "DESC"]],
         where: {
           AnimalID: this.AnimalID,
-          PAR: this.AnimalPar
+          PAR: this.AnimalPar,
         },
       });
 
-      if(ai.TimeNo > 3){
+      if (ai.TimeNo > 3) {
         noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
       }
     }
@@ -751,6 +755,44 @@ Animal.init(
         }
 
         return age;
+      },
+    },
+    AnimalBreedAll: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let animalBreed = "";
+        if ((this.AnimalBreedID1 != null) && (this.AnimalBreed1 != undefined)) {
+          let breed = this.AnimalBreed1.toJSON();
+          animalBreed =
+            animalBreed + this.AnimalBreedPercent1 + breed.AnimalBreedShortName + " ";
+        }
+
+        if ((this.AnimalBreedID2 != null) && (this.AnimalBreed2 != undefined)) {
+          let breed = this.AnimalBreed2.toJSON();
+          animalBreed =
+            animalBreed + this.AnimalBreedPercent2 + breed.AnimalBreedShortName + " ";
+        }
+
+        if ((this.AnimalBreedID3 != null) && (this.AnimalBreed3 != undefined)) {
+          let breed = this.AnimalBreed3.toJSON();
+          animalBreed =
+            animalBreed + this.AnimalBreedPercent3 + breed.AnimalBreedShortName + " ";
+        }
+
+        if ((this.AnimalBreedID4 != null) && (this.AnimalBreed4 != undefined)) {
+          let breed = this.AnimalBreed4.toJSON();
+          animalBreed =
+            animalBreed + this.AnimalBreedPercent4 + breed.AnimalBreedShortName + " ";
+        }
+
+        if ((this.AnimalBreedID5 != null) && (this.AnimalBreed5 != undefined)) {
+          let breed = this.AnimalBreed5.toJSON();
+          animalBreed =
+            animalBreed + this.AnimalBreedPercent5 + breed.AnimalBreedShortName + " ";
+        }
+        
+
+        return animalBreed.trim();
       },
     },
   },
