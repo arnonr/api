@@ -20,6 +20,11 @@ class Distribution extends Model {
       foreignKey: "DestinationOrganizationID",
       as: "Organization",
     });
+
+    this.belongsTo(models.Staff, {
+      foreignKey: "ResponsibilityStaffID",
+      // as: "Staff",
+    });
   }
   // Custom JSON Response
   toJSON() {
