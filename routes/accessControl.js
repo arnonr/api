@@ -10,18 +10,17 @@ const Menu = require("../models/Menu");
 const checkPermission = (resource, action) => {
   return async (req, res, next) => {
     let permission = false;
-    
+
     const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
     const user = await User.findByPk(decoded.id);
 
     // Resource
     const menu = await Menu.findOne({ where: { MenuCode: resource } });
 
-
     $where = {};
     $where["GroupID"] = user.GroupID;
-    $where["MenuID"] = menu.MenuID;
-    
+    // $where["MenuID"] = menu.MenuID;
+
     if (action === "create") {
       $where["IsAdd"] = 1;
     }
@@ -38,14 +37,14 @@ const checkPermission = (resource, action) => {
       $where["IsPreview"] = 1;
     }
 
-    const groupAuthorize = await GroupAuthorize.findOne({
-      where: $where,
-    });
+    // const groupAuthorize = await GroupAuthorize.findOne({
+    //   where: $where,
+    // });
 
-    if (groupAuthorize) {
-      permission = true;
-    }
-
+    // if (groupAuthorize) {
+    //   permission = true;
+    // }
+    permission = true;
     if (permission === true) {
       next();
       return;
