@@ -122,7 +122,7 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        await Animal.update({ProductionStatusID: 2}, { where: { AnimalID: inserted.AnimalID } });
+        await Animal.update({ProductionStatusID: 2,AnimalPar: inserted.PAR+1}, { where: { AnimalID: inserted.AnimalID } });
 
         let res = methods.findById(inserted.GiveBirthID);
 

@@ -2479,7 +2479,8 @@ const methods = {
                         pregResult =
                           preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
                       }
-
+                      
+                      // console.log(ai.TimeNo+"FREEDOM")
                       var data1 = {
                         AnimalID: animalJson.AnimalID,
                         AnimalEarID: animalJson.AnimalEarID,
@@ -2497,6 +2498,7 @@ const methods = {
                         PregnancyStatus: pregResult,
                         Notification: await data.Notification(),
                       };
+                      
                     }
                     // CheckDate เอาอันล่าสุด
                   } else if (ai) {
