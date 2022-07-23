@@ -27,7 +27,7 @@ const methods = {
       let result = await Service.CheckPermission(
         decoded.id,
         req.query.MenuID,
-        req.query.ActionName
+        req.query.Action
       );
       res.success(result);
     } catch (error) {

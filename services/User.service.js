@@ -381,7 +381,7 @@ const methods = {
     });
   },
 
-  CheckPermission(id, menuID, ActionName) {
+  CheckPermission(id, menuID, Action) {
     return new Promise(async (resolve, reject) => {
       try {
         let user = await db.findByPk(id);
@@ -391,19 +391,19 @@ const methods = {
           MenuID: parseInt(menuID),
         };
 
-        if (ActionName == "IsAdd") {
+        if (Action == "IsAdd") {
           $where = { ...$where, IsAdd: 1 };
         }
 
-        if (ActionName == "IsUpdate") {
+        if (Action == "IsUpdate") {
           $where = { ...$where, IsUpdate: 1 };
         }
 
-        if (ActionName == "IsDelete") {
+        if (Action == "IsDelete") {
           $where = { ...$where, IsDelete: 1 };
         }
 
-        if (ActionName == "IsPreview") {
+        if (Action == "IsPreview") {
           $where = { ...$where, IsPreview: 1 };
         }
 
