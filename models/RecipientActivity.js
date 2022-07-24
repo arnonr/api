@@ -68,6 +68,16 @@ RecipientActivity.init(
       allowNull: false,
       comment: "กิจกรรม",
     },
+    WorkActivityDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      comment: "วันที่ปฏิบัติงานจริง",
+    },
+    WorkTime: {
+      type: DataTypes.TIME,
+      allowNull: true,
+      comment: "เวลาปฏิบัติงานจริง",
+    },
     Description: {
       type: DataTypes.STRING,
       allowNull: true,
