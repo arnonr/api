@@ -3,10 +3,29 @@ const config = require("../configs/app"),
   db = require("../models/Reproduce"),
   { Op } = require("sequelize");
 
-const RpToOvarySymptom = require("../models/RpToLeftOvarySymptom");
-const RpToVaginaSymptom = require("../models/RpToVaginaSymptom");
+const RpToLeftOvarySymptom = require("../models/RpToLeftOvarySymptom");
+const RpToRightOvarySymptom = require("../models/RpToRightOvarySymptom");
 const OvarySymptom = require("../models/OvarySymptom");
 const VaginaSymptom = require("../models/VaginaSymptom");
+const RpToVaginaSymptom = require("../models/RpToVaginaSymptom");
+const OtherSymptom = require("../models/OtherSymptom");
+const RpToOtherSymptom = require("../models/RpToOtherSymptom");
+const CauseAnimal = require("../models/CauseAnimal");
+const RpToCauseAnimal = require("../models/RpToCauseAnimal");
+const CauseEnvironment = require("../models/CauseEnvironment");
+const RpToCauseEnvironment = require("../models/RpToCauseEnvironment");
+const CauseFeeder = require("../models/CauseFeeder");
+const RpToCauseFeeder = require("../models/RpToCauseFeeder");
+const CauseHealth = require("../models/CauseHealth");
+const RpToCauseHealth = require("../models/RpToCauseHealth");
+const CureHormone = require("../models/CureHormone");
+const RpToCureHormone = require("../models/RpToCureHormone");
+const CureAntibiotic = require("../models/CureAntibiotic");
+const RpToCureAntibiotic = require("../models/RpToCureAntibiotic");
+const CureVitamin = require("../models/CureVitamin");
+const RpToCureVitamin = require("../models/RpToCureVitamin");
+const ReproduceSuggestion = require("../models/ReproduceSuggestion");
+const RpToRpSuggestion = require("../models/RpToRpSuggestion");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -39,14 +58,14 @@ const methods = {
     }
 
     // AnimalTypeID
-    // let WhereVaginaSymptom = null;
-    // if (req.query.VaginaSymptomID) {
-    //   WhereVaginaSymptom = {
-    //     VaginaSymptomID: {
-    //       [Op.in]: JSON.parse(req.query.VaginaSymptomID),
-    //     },
-    //   };
-    // }
+    let WhereVaginaSymptom = null;
+    if (req.query.VaginaSymptomID) {
+      WhereVaginaSymptom = {
+        VaginaSymptomID: {
+          [Op.in]: JSON.parse(req.query.VaginaSymptomID),
+        },
+      };
+    }
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -76,12 +95,56 @@ const methods = {
       { all: true, required: false },
       {
         model: OvarySymptom,
+        as: "LeftOvarySymptom",
         where: WhereLeftOvarySymptom,
       },
-      // {
-      //   model: VaginaSymptom,
-      //   where: WhereVaginaSymptom,
-      // },
+      {
+        model: OvarySymptom,
+        as: "RightOvarySymptom",
+        where: WhereRightOvarySymptom,
+      },
+      {
+        model: VaginaSymptom,
+        where: WhereVaginaSymptom,
+        as: "VaginaSymptom",
+      },
+      {
+        model: OtherSymptom,
+        // where: WhereVOtherSymptom,
+        as: "OtherSymptom",
+      },
+      {
+        model: CauseAnimal,
+        as: "CauseAnimal",
+      },
+      {
+        model: CauseEnvironment,
+        as: "CauseEnvironment",
+      },
+      {
+        model: CauseFeeder,
+        as: "CauseFeeder",
+      },
+      {
+        model: CauseHealth,
+        as: "CauseHealth",
+      },
+      {
+        model: CureAntibiotic,
+        as: "CureAntibiotic",
+      },
+      {
+        model: CureHormone,
+        as: "CureHormone",
+      },
+      {
+        model: CureVitamin,
+        as: "CureVitamin",
+      },
+      {
+        model: ReproduceSuggestion,
+        as: "ReproduceSuggestion",
+      },
     ];
 
     return { query: query };
@@ -98,26 +161,122 @@ const methods = {
             let rows = result[0],
               count = rows.length;
 
-            //
             rows = rows.map((data) => {
               let leftOvarySymptomArray = [];
               data.LeftOvarySymptom.forEach((element) => {
                 leftOvarySymptomArray.push(element.OvarySymptomName);
               });
 
-              // let vaginaSymptomArray = [];
-              // data.VaginaSymptom.forEach((element) => {
-              //   vaginaSymptomArray.push(element.VaginaSymptomName);
-              // });
+              let rightOvarySymptomArray = [];
+              data.RightOvarySymptom.forEach((element) => {
+                rightOvarySymptomArray.push(element.OvarySymptomName);
+              });
+
+              let vaginaSymptomArray = [];
+              data.VaginaSymptom.forEach((element) => {
+                vaginaSymptomArray.push(element.VaginaSymptomName);
+              });
+
+              let otherSymptomArray = [];
+              data.OtherSymptom.forEach((element) => {
+                otherSymptomArray.push(element.OtherSymptomName);
+              });
+
+              let causeAnimalArray = [];
+              data.CauseAnimal.forEach((element) => {
+                causeAnimalArray.push(element.CauseAnimalName);
+              });
+
+              let causeEnvironmentArray = [];
+              data.CauseEnvironment.forEach((element) => {
+                causeEnvironmentArray.push(element.CauseEnvironmentName);
+              });
+
+              let causeFeederArray = [];
+              data.CauseFeeder.forEach((element) => {
+                causeFeederArray.push(element.CauseFeedertName);
+              });
+
+              let causeHealthArray = [];
+              data.CauseHealth.forEach((element) => {
+                causeHealthArray.push(element.CauseHealthtName);
+              });
+
+              let cureAntibioticArray = [];
+              data.CureAntibiotic.forEach((element) => {
+                cureAntibioticArray.push(element.CureAntibioticName);
+              });
+
+              let cureHormoneArray = [];
+              data.CureHormone.forEach((element) => {
+                cureHormoneArray.push(element.CureHormoneName);
+              });
+
+              let cureVitaminArray = [];
+              data.CureVitamin.forEach((element) => {
+                cureVitaminArray.push(element.CureVitaminName);
+              });
+
+              let reproduceSuggestionArray = [];
+              data.ReproduceSuggestion.forEach((element) => {
+                reproduceSuggestionArray.push(element.ReproduceSuggestionName);
+              });
 
               data = {
                 ...data.toJSON(),
+                LeftOvarySymptom: undefined,
                 LeftOvarySymptomArray: leftOvarySymptomArray,
                 LeftOvarySymptomID: JSON.parse(
                   data.toJSON().LeftOvarySymptomID
                 ),
-                // VaginaSymptom: vaginaSymptomArray,
-                // VaginaSymptomID: JSON.parse(data.toJSON().VaginaSymptomID),
+                RightOvarySymptom: undefined,
+                RightOvarySymptomArray: rightOvarySymptomArray,
+                RightOvarySymptomID: JSON.parse(
+                  data.toJSON().RightOvarySymptomID
+                ),
+                VaginaSymptom: undefined,
+                VaginaSymptom: vaginaSymptomArray,
+                VaginaSymptomID: JSON.parse(data.toJSON().VaginaSymptomID),
+
+                OtherSymptom: undefined,
+                OtherSymptom: otherSymptomArray,
+                OtherSymptomID: JSON.parse(data.toJSON().OtherSymptomID),
+
+                CauseAnimal: undefined,
+                CauseAnimal: causeAnimalArray,
+                CauseAnimalID: JSON.parse(data.toJSON().CauseAnimalID),
+
+                CauseEnvironment: undefined,
+                CauseEnvironment: causeEnvironmentArray,
+                CauseEnvironmentID: JSON.parse(
+                  data.toJSON().CauseEnvironmentID
+                ),
+
+                CauseFeeder: undefined,
+                CauseFeeder: causeFeederArray,
+                CauseFeederID: JSON.parse(data.toJSON().CauseFeederID),
+
+                CauseHealth: undefined,
+                CauseHealth: causeHealthArray,
+                CauseHealthID: JSON.parse(data.toJSON().CauseHealthID),
+
+                CureAntibiotic: undefined,
+                CureAntibiotic: cureAntibioticArray,
+                CureAntibioticID: JSON.parse(data.toJSON().CureAntibioticID),
+
+                CureHormone: undefined,
+                CureHormone: cureHormoneArray,
+                CureHormoneID: JSON.parse(data.toJSON().CureHormoneID),
+
+                CureVitamin: undefined,
+                CureVitamin: cureVitaminArray,
+                CureVitaminID: JSON.parse(data.toJSON().CureVitaminID),
+
+                ReproduceSuggestion: undefined,
+                ReproduceSuggestion: reproduceSuggestionArray,
+                ReproduceSuggestionID: JSON.parse(
+                  data.toJSON().ReproduceSuggestionID
+                ),
               };
               return data;
             });
@@ -147,18 +306,65 @@ const methods = {
             { all: true, required: false },
             {
               model: OvarySymptom,
+              as: "RightOvarySymptom",
+            },
+            {
+              model: OvarySymptom,
+              as: "LeftOvarySymptom",
             },
             {
               model: VaginaSymptom,
+              as: "VaginaSymptom",
+            },
+            {
+              model: OtherSymptom,
+              as: "OtherSymptom",
+            },
+            {
+              model: CauseAnimal,
+              as: "CauseAnimal",
+            },
+            {
+              model: CauseEnvironment,
+              as: "CauseEnvironment",
+            },
+            {
+              model: CauseFeeder,
+              as: "CauseFeeder",
+            },
+            {
+              model: CauseHealth,
+              as: "CauseHealth",
+            },
+            {
+              model: CureAntibiotic,
+              as: "CureAntibiotic",
+            },
+            {
+              model: CureHormone,
+              as: "CureHormone",
+            },
+            {
+              model: CureVitamin,
+              as: "CureVitamin",
+            },
+            {
+              model: ReproduceSuggestion,
+              as: "ReproduceSuggestion",
             },
           ],
         });
-
+        
         if (!obj) reject(ErrorNotFound("id: not found"));
-
+       
         let leftOvarySymptomArray = [];
         obj.toJSON().LeftOvarySymptom.forEach((element) => {
           leftOvarySymptomArray.push(element.OvarySymptomName);
+        });
+
+        let rightOvarySymptomArray = [];
+        obj.toJSON().RightOvarySymptom.forEach((element) => {
+          rightOvarySymptomArray.push(element.OvarySymptomName);
         });
 
         let vaginaSymptomArray = [];
@@ -166,12 +372,77 @@ const methods = {
           vaginaSymptomArray.push(element.VaginaSymptomName);
         });
 
+        let otherSymptomArray = [];
+        obj.toJSON().OtherSymptom.forEach((element) => {
+          otherSymptomArray.push(element.OtherSymptomName);
+        });
+
+        let causeAnimalArray = [];
+        obj.toJSON().CauseAnimal.forEach((element) => {
+          causeAnimalArray.push(element.CauseAnimalName);
+        });
+
+        let causeEnvironmentArray = [];
+        obj.toJSON().CauseEnvironment.forEach((element) => {
+          causeEnvironmentArray.push(element.CauseEnvironmentName);
+        });
+
+        let causeFeederArray = [];
+        obj.toJSON().CauseFeeder.forEach((element) => {
+          causeFeederArray.push(element.CauseFeederName);
+        });
+
+        let causeHealthArray = [];
+        obj.toJSON().CauseHealth.forEach((element) => {
+          causeHealthArray.push(element.CauseHealthName);
+        });
+
+        let cureAntibioticArray = [];
+        obj.toJSON().CureAntibiotic.forEach((element) => {
+          cureAntibioticArray.push(element.CureAntibioticName);
+        });
+
+        let cureHormoneArray = [];
+        obj.toJSON().CureHormone.forEach((element) => {
+          cureHormoneArray.push(element.CureHormoneName);
+        });
+
+        let cureVitaminArray = [];
+        obj.toJSON().CureVitamin.forEach((element) => {
+          cureVitaminArray.push(element.CureVitaminName);
+        });
+
+        let reproduceSuggestionArray = [];
+        obj.toJSON().ReproduceSuggestion.forEach((element) => {
+          reproduceSuggestionArray.push(element.ReproduceSuggestionName);
+        });
+
         obj = {
           ...obj.toJSON(),
           LeftOvarySymptom: leftOvarySymptomArray,
-          VaginaSymptom: vaginaSymptomArray,
           LeftOvarySymptomID: JSON.parse(obj.toJSON().LeftOvarySymptomID),
+          RightOvarySymptom: rightOvarySymptomArray,
+          RightOvarySymptomID: JSON.parse(obj.toJSON().RightOvarySymptomID),
+          VaginaSymptom: vaginaSymptomArray,
           VaginaSymptomID: JSON.parse(obj.toJSON().VaginaSymptomID),
+          OtherSymptom: otherSymptomArray,
+          OtherSymptomID: JSON.parse(obj.toJSON().OtherSymptomID),
+          CauseAnimal: causeAnimalArray,
+          CauseAnimalID: JSON.parse(obj.toJSON().CauseAnimalID),
+          CauseEnvironment: causeEnvironmentArray,
+          CauseEnvironmentID: JSON.parse(obj.toJSON().CauseEnvironmentID),
+          CauseFeeder: causeFeederArray,
+          CauseFeederID: JSON.parse(obj.toJSON().CauseFeederID),
+          CauseHealth: causeHealthArray,
+          CauseHealthID: JSON.parse(obj.toJSON().CauseHealthID),
+          CureAntibiotic: cureAntibioticArray,
+          CureAntibioticID: JSON.parse(obj.toJSON().CureAntibioticID),
+          CureHormone: cureHormoneArray,
+          CureHormoneID: JSON.parse(obj.toJSON().CureHormoneID),
+          CureVitamin: cureVitaminArray,
+          CureVitaminID: JSON.parse(obj.toJSON().CureVitaminID),
+          ReproduceSuggestion: reproduceSuggestionArray,
+          ReproduceSuggestionID: JSON.parse(obj.toJSON().ReproduceSuggestionID),
         };
 
         resolve(obj);
@@ -196,6 +467,17 @@ const methods = {
           data.LeftOvarySymptomID = JSON.stringify(data.LeftOvarySymptomID);
         }
 
+        if (data.RightOvarySymptomID) {
+          if (!Array.isArray(data.RightOvarySymptomID)) {
+            reject(
+              ErrorBadRequest("RightOvarySymptom ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var RightOvarySymptomIDList = [...data.RightOvarySymptomID];
+          data.RightOvarySymptomID = JSON.stringify(data.RightOvarySymptomID);
+        }
+
         if (data.VaginaSymptomID) {
           if (!Array.isArray(data.VaginaSymptomID)) {
             reject(ErrorBadRequest("VaginaSymptom ID ต้องอยู่ในรูปแบบ Array"));
@@ -205,13 +487,105 @@ const methods = {
           data.VaginaSymptomID = JSON.stringify(data.VaginaSymptomID);
         }
 
+        if (data.OtherSymptomID) {
+          if (!Array.isArray(data.OtherSymptomID)) {
+            reject(ErrorBadRequest("OtherSymptom ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var OtherSymptomIDList = [...data.OtherSymptomID];
+          data.OtherSymptomID = JSON.stringify(data.OtherSymptomID);
+        }
+
+        if (data.CauseAnimalID) {
+          if (!Array.isArray(data.CauseAnimalID)) {
+            reject(ErrorBadRequest("CauseAnimal ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseAnimalIDList = [...data.CauseAnimalID];
+          data.CauseAnimalID = JSON.stringify(data.CauseAnimalID);
+        }
+
+        if (data.CauseEnvironmentID) {
+          if (!Array.isArray(data.CauseEnvironmentID)) {
+            reject(
+              ErrorBadRequest("Cause Environment ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var CauseEnvironmentIDList = [...data.CauseEnvironmentID];
+          data.CauseEnvironmentID = JSON.stringify(data.CauseEnvironmentID);
+        }
+
+        if (data.CauseFeederID) {
+          if (!Array.isArray(data.CauseFeederID)) {
+            reject(ErrorBadRequest("Caus Feeder ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseFeederIDList = [...data.CauseFeederID];
+          data.CauseFeederID = JSON.stringify(data.CauseFeederID);
+        }
+
+        if (data.CauseHealthID) {
+          if (!Array.isArray(data.CauseHealthID)) {
+            reject(ErrorBadRequest("Cause Health ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseHealthIDList = [...data.CauseHealthID];
+          data.CauseHealthID = JSON.stringify(data.CauseHealthID);
+        }
+
+        if (data.CureAntibioticID) {
+          if (!Array.isArray(data.CureAntibioticID)) {
+            reject(
+              ErrorBadRequest("Cure Antibiotic ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var CureAntibioticIDList = [...data.CureAntibioticID];
+          data.CureAntibioticID = JSON.stringify(data.CureAntibioticID);
+        }
+
+        if (data.CureHormoneID) {
+          if (!Array.isArray(data.CureHormoneID)) {
+            reject(ErrorBadRequest("Cure Hormone ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CureHormoneIDList = [...data.CureHormoneID];
+          data.CureHormoneID = JSON.stringify(data.CureHormoneID);
+        }
+
+        if (data.CureVitaminID) {
+          if (!Array.isArray(data.CureVitaminID)) {
+            reject(ErrorBadRequest("Cure Vitamin ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CureVitaminIDList = [...data.CureVitaminID];
+          data.CureVitaminID = JSON.stringify(data.CureVitaminID);
+        }
+
+        if (data.ReproduceSuggestionID) {
+          if (!Array.isArray(data.ReproduceSuggestionID)) {
+            reject(
+              ErrorBadRequest("ReproduceSuggestion ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var ReproduceSuggestionIDList = [...data.ReproduceSuggestionID];
+          data.ReproduceSuggestionID = JSON.stringify(
+            data.ReproduceSuggestionID
+          );
+        }
+
+        // return
         const obj = new db(data);
         const inserted = await obj.save();
 
+        // return
+
         if (data.LeftOvarySymptomID) {
-          // insert ReproduceToAnimalType
+          // insert RpToAnimalType
           LeftOvarySymptomIDList.forEach((LeftOvarySymptomID) => {
-            const obj1 = RpToOvarySymptom.create({
+            const obj1 = RpToLeftOvarySymptom.create({
               ReproduceID: inserted.ReproduceID,
               OvarySymptomID: LeftOvarySymptomID,
               CreatedUserID: data.CreatedUserID,
@@ -219,12 +593,115 @@ const methods = {
           });
         }
 
+        if (data.RightOvarySymptomID) {
+          // insert RpToAnimalType
+          RightOvarySymptomIDList.forEach((RightOvarySymptomID) => {
+            const obj1 = RpToRightOvarySymptom.create({
+              ReproduceID: inserted.ReproduceID,
+              OvarySymptomID: RightOvarySymptomID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.OtherSymptomID) {
+          // insert RpToAnimalType
+          OtherSymptomIDList.forEach((OtherSymptomID) => {
+            const obj1 = RpToOtherSymptom.create({
+              ReproduceID: inserted.ReproduceID,
+              OtherSymptomID: OtherSymptomID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
         if (data.VaginaSymptomID) {
-          // insert ReproduceToAnimalSex
+          // insert RpToAnimalSex
           VaginaSymptomIDList.forEach((VaginaSymptomID) => {
             const obj1 = RpToVaginaSymptom.create({
               ReproduceID: inserted.ReproduceID,
               VaginaSymptomID: VaginaSymptomID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CauseAnimalID) {
+          // insert RpToAnimalSex
+          CauseAnimalIDList.forEach((CauseAnimalID) => {
+            const obj1 = RpToCauseAnimal.create({
+              ReproduceID: inserted.ReproduceID,
+              CauseAnimalID: CauseAnimalID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CauseEnvironmentID) {
+          CauseEnvironmentIDList.forEach((CauseEnvironmentID) => {
+            const obj1 = RpToCauseEnvironment.create({
+              ReproduceID: inserted.ReproduceID,
+              CauseEnvironmentID: CauseEnvironmentID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CauseFeederID) {
+          CauseFeederIDList.forEach((CauseFeederID) => {
+            const obj1 = RpToCauseFeeder.create({
+              ReproduceID: inserted.ReproduceID,
+              CauseFeederID: CauseFeederID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CauseHealthID) {
+          CauseHealthIDList.forEach((CauseHealthID) => {
+            const obj1 = RpToCauseHealth.create({
+              ReproduceID: inserted.ReproduceID,
+              CauseHealthID: CauseHealthID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CureAntibioticID) {
+          CureAntibioticIDList.forEach((CureAntibioticID) => {
+            const obj1 = RpToCureAntibiotic.create({
+              ReproduceID: inserted.ReproduceID,
+              CureAntibioticID: CureAntibioticID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CureHormoneID) {
+          CureHormoneIDList.forEach((CureHormoneID) => {
+            const obj1 = RpToCureHormone.create({
+              ReproduceID: inserted.ReproduceID,
+              CureHormoneID: CureHormoneID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.CureVitaminID) {
+          CureVitaminIDList.forEach((CureVitaminID) => {
+            const obj1 = RpToCureVitamin.create({
+              ReproduceID: inserted.ReproduceID,
+              CureVitaminID: CureVitaminID,
+              CreatedUserID: data.CreatedUserID,
+            });
+          });
+        }
+
+        if (data.ReproduceSuggestionID) {
+          ReproduceSuggestionIDList.forEach((ReproduceSuggestionID) => {
+            const obj1 = RpToRpSuggestion.create({
+              ReproduceID: inserted.ReproduceID,
+              ReproduceSuggestionID: ReproduceSuggestionID,
               CreatedUserID: data.CreatedUserID,
             });
           });
@@ -249,90 +726,540 @@ const methods = {
         // Update
         data.ReproduceID = parseInt(id);
 
+        //check เงื่อนไขตรงนี้ได้
         if (data.LeftOvarySymptomID) {
+          if (!Array.isArray(data.LeftOvarySymptomID)) {
+            reject(
+              ErrorBadRequest("LeftOvarySymptom ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
           var LeftOvarySymptomIDList = [...data.LeftOvarySymptomID];
           data.LeftOvarySymptomID = JSON.stringify(data.LeftOvarySymptomID);
         }
 
+        if (data.RightOvarySymptomID) {
+          if (!Array.isArray(data.RightOvarySymptomID)) {
+            reject(
+              ErrorBadRequest("RightOvarySymptom ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var RightOvarySymptomIDList = [...data.RightOvarySymptomID];
+          data.RightOvarySymptomID = JSON.stringify(data.RightOvarySymptomID);
+        }
+
         if (data.VaginaSymptomID) {
+          if (!Array.isArray(data.VaginaSymptomID)) {
+            reject(ErrorBadRequest("VaginaSymptom ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
           var VaginaSymptomIDList = [...data.VaginaSymptomID];
           data.VaginaSymptomID = JSON.stringify(data.VaginaSymptomID);
+        }
+
+        if (data.OtherSymptomID) {
+          if (!Array.isArray(data.OtherSymptomID)) {
+            reject(ErrorBadRequest("OtherSymptom ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var OtherSymptomIDList = [...data.OtherSymptomID];
+          data.OtherSymptomID = JSON.stringify(data.OtherSymptomID);
+        }
+
+        if (data.CauseAnimalID) {
+          if (!Array.isArray(data.CauseAnimalID)) {
+            reject(ErrorBadRequest("CauseAnimal ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseAnimalIDList = [...data.CauseAnimalID];
+          data.CauseAnimalID = JSON.stringify(data.CauseAnimalID);
+        }
+
+        if (data.CauseEnvironmentID) {
+          if (!Array.isArray(data.CauseEnvironmentID)) {
+            reject(
+              ErrorBadRequest("Cause Environment ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var CauseEnvironmentIDList = [...data.CauseEnvironmentID];
+          data.CauseEnvironmentID = JSON.stringify(data.CauseEnvironmentID);
+        }
+
+        if (data.CauseFeederID) {
+          if (!Array.isArray(data.CauseFeederID)) {
+            reject(ErrorBadRequest("Caus Feeder ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseFeederIDList = [...data.CauseFeederID];
+          data.CauseFeederID = JSON.stringify(data.CauseFeederID);
+        }
+
+        if (data.CauseHealthID) {
+          if (!Array.isArray(data.CauseHealthID)) {
+            reject(ErrorBadRequest("Cause Health ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CauseHealthIDList = [...data.CauseHealthID];
+          data.CauseHealthID = JSON.stringify(data.CauseHealthID);
+        }
+
+        if (data.CureAntibioticID) {
+          if (!Array.isArray(data.CureAntibioticID)) {
+            reject(
+              ErrorBadRequest("Cure Antibiotic ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var CureAntibioticIDList = [...data.CureAntibioticID];
+          data.CureAntibioticID = JSON.stringify(data.CureAntibioticID);
+        }
+
+        if (data.CureHormoneID) {
+          if (!Array.isArray(data.CureHormoneID)) {
+            reject(ErrorBadRequest("Cure Hormone ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CureHormoneIDList = [...data.CureHormoneID];
+          data.CureHormoneID = JSON.stringify(data.CureHormoneID);
+        }
+
+        if (data.CureVitaminID) {
+          if (!Array.isArray(data.CureVitaminID)) {
+            reject(ErrorBadRequest("Cure Vitamin ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          var CureVitaminIDList = [...data.CureVitaminID];
+          data.CureVitaminID = JSON.stringify(data.CureVitaminID);
+        }
+
+        if (data.ReproduceSuggestionID) {
+          if (!Array.isArray(data.ReproduceSuggestionID)) {
+            reject(
+              ErrorBadRequest("ReproduceSuggestion ID ต้องอยู่ในรูปแบบ Array")
+            );
+            return;
+          }
+          var ReproduceSuggestionIDList = [...data.ReproduceSuggestionID];
+          data.ReproduceSuggestionID = JSON.stringify(
+            data.ReproduceSuggestionID
+          );
         }
 
         await db.update(data, { where: { ReproduceID: id } });
 
         if (data.LeftOvarySymptomID) {
           // insert ProjectToAnimalType
-          const searchATA = await RpToOvarySymptom.findAll({
+          const search = await RpToLeftOvarySymptom.findAll({
             where: { ReproduceID: obj.ReproduceID },
           });
           // loop pta ของทั้งหมดที่มาจาก DB
-          searchATA.forEach((ata) => {
-            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-            if (!LeftOvarySymptomIDList.includes(ata.LefOvarySymptomID)) {
-              ReproduceToAnimalType.destroy({
+          search.forEach((s) => {
+            if (!LeftOvarySymptomIDList.includes(s.OvarySymptomID)) {
+              RpToLeftOvarySymptom.destroy({
                 where: {
-                  ReproduceToAnimalTypeID: ata.ReproduceToAnimalTypeID,
+                  RpToLeftOvarySymptomID: s.RpToLeftOvarySymptomID,
                 },
               });
             }
           });
 
-          AnimalTypeIDList.forEach(async (AnimalTypeID) => {
-            const searchATAOne = await ReproduceToAnimalType.findOne({
+          LeftOvarySymptomIDList.forEach(async (ID) => {
+            const search = await RpToLeftOvarySymptom.findOne({
               where: {
                 ReproduceID: obj.ReproduceID,
-                AnimalTypeID: AnimalTypeID,
+                OvarySymptomID: ID,
               },
             });
 
-            if (!searchATAOne) {
-              const obj1 = ReproduceToAnimalType.create({
+            if (!search) {
+              const obj1 = RpToLeftOvarySymptom.create({
                 ReproduceID: obj.ReproduceID,
-                AnimalTypeID: AnimalTypeID,
+                OvarySymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
               });
             }
           });
         }
         //
-
-        if (data.AnimalSexID) {
+        if (data.RightOvarySymptomID) {
           // insert ProjectToAnimalType
-          const searchATS = await ReproduceToAnimalSex.findAll({
+          const search = await RpToRightOvarySymptom.findAll({
             where: { ReproduceID: obj.ReproduceID },
           });
-
-          // loop ats ของทั้งหมดที่มาจาก DB
-          searchATS.forEach((ats) => {
-            // ตรวจสอบ array ที่ส่งมา กับ pta DB แต่ละตัวถ้าไม่มี แปลว่าโดนลบ
-            if (!AnimalSexIDList.includes(ats.AnimalSexID)) {
-              ReproduceToAnimalSex.destroy({
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!RightOvarySymptomIDList.includes(s.OvarySymptomID)) {
+              RpToRightOvarySymptom.destroy({
                 where: {
-                  ReproduceToAnimalSexID: ats.ReproduceToAnimalSexID,
+                  RpToRightOvarySymptomID: s.RpToRightOvarySymptomID,
                 },
               });
             }
           });
 
-          AnimalSexIDList.forEach(async (AnimalSexID) => {
-            const searchATSOne = await ReproduceToAnimalSex.findOne({
+          RightOvarySymptomIDList.forEach(async (ID) => {
+            const search = await RpToRightOvarySymptom.findOne({
               where: {
                 ReproduceID: obj.ReproduceID,
-                AnimalSexID: AnimalSexID,
+                OvarySymptomID: ID,
               },
             });
 
-            if (!searchATSOne) {
-              const obj1 = ReproduceToAnimalSex.create({
+            if (!search) {
+              const obj1 = RpToRightOvarySymptom.create({
                 ReproduceID: obj.ReproduceID,
-                AnimalSexID: AnimalSexID,
+                OvarySymptomID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        if (data.VaginaSymptomID) {
+          // insert ProjectToAnimalType
+          const search = await RpToVaginaSymptom.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!VaginaSymptomIDList.includes(s.VaginaSymptomID)) {
+              RpToVaginaSymptom.destroy({
+                where: {
+                  RpToVaginaSymptomID: s.RpToVaginaSymptomID,
+                },
+              });
+            }
+          });
+
+          VaginaSymptomIDList.forEach(async (ID) => {
+            const search = await RpToVaginaSymptom.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                VaginaSymptomID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToVaginaSymptom.create({
+                ReproduceID: obj.ReproduceID,
+                VaginaSymptomID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        if (data.OtherSymptomID) {
+          // insert ProjectToAnimalType
+          const search = await RpToOtherSymptom.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!OtherSymptomIDList.includes(s.OtherSymptomID)) {
+              RpToOtherSymptom.destroy({
+                where: {
+                  RpToOtherSymptomID: s.RpToOtherSymptomID,
+                },
+              });
+            }
+          });
+
+          OtherSymptomIDList.forEach(async (ID) => {
+            const search = await RpToOtherSymptom.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                OtherSymptomID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToOtherSymptom.create({
+                ReproduceID: obj.ReproduceID,
+                OtherSymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
               });
             }
           });
         }
         //
+        if (data.CauseAnimalID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCauseAnimal.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CauseAnimalIDList.includes(s.CauseAnimalID)) {
+              RpToCauseAnimal.destroy({
+                where: {
+                  RpToCauseAnimalID: s.RpToCauseAnimalID,
+                },
+              });
+            }
+          });
+
+          CauseAnimalIDList.forEach(async (ID) => {
+            const search = await RpToCauseAnimal.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CauseAnimalID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCauseAnimal.create({
+                ReproduceID: obj.ReproduceID,
+                CauseAnimalID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+        //
+        if (data.CauseEnvironmentID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCauseEnvironment.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CauseEnvironmentIDList.includes(s.CauseEnvironmentID)) {
+              RpToCauseEnvironment.destroy({
+                where: {
+                  RpToCauseEnvironmentID: s.RpToCauseEnvironmentID,
+                },
+              });
+            }
+          });
+
+          CauseEnvironmentIDList.forEach(async (ID) => {
+            const search = await RpToCauseEnvironment.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CauseEnvironmentID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCauseEnvironment.create({
+                ReproduceID: obj.ReproduceID,
+                CauseEnvironmentID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+        //
+        if (data.CauseFeederID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCauseFeeder.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CauseFeederIDList.includes(s.CauseFeederID)) {
+              RpToCauseFeeder.destroy({
+                where: {
+                  RpToCauseFeederID: s.RpToCauseFeederID,
+                },
+              });
+            }
+          });
+
+          CauseFeederIDList.forEach(async (ID) => {
+            const search = await RpToCauseFeeder.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CauseFeederID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCauseFeeder.create({
+                ReproduceID: obj.ReproduceID,
+                CauseFeederID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+        //
+        if (data.CauseHealthID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCauseHealth.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CauseHealthIDList.includes(s.CauseHealthID)) {
+              RpToCauseHealth.destroy({
+                where: {
+                  RpToCauseHealthID: s.RpToCauseHealthID,
+                },
+              });
+            }
+          });
+
+          CauseHealthIDList.forEach(async (ID) => {
+            const search = await RpToCauseHealth.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CauseHealthID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCauseHealth.create({
+                ReproduceID: obj.ReproduceID,
+                CauseHealthID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        //
+        if (data.CureAntibioticID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCureAntibiotic.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CureAntibioticIDList.includes(s.CureAntibioticID)) {
+              RpToCureAntibiotic.destroy({
+                where: {
+                  RpToCureAntibioticID: s.RpToCureAntibioticID,
+                },
+              });
+            }
+          });
+
+          CureAntibioticIDList.forEach(async (ID) => {
+            const search = await RpToCureAntibiotic.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CureAntibioticID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCureAntibiotic.create({
+                ReproduceID: obj.ReproduceID,
+                CureAntibioticID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        //
+        if (data.CureHormoneID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCureHormone.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CureHormoneIDList.includes(s.CureHormoneID)) {
+              RpToCureHormone.destroy({
+                where: {
+                  RpToCureHormoneID: s.RpToCureHormoneID,
+                },
+              });
+            }
+          });
+
+          CureHormoneIDList.forEach(async (ID) => {
+            const search = await RpToCureHormone.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CureHormoneID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCureHormone.create({
+                ReproduceID: obj.ReproduceID,
+                CureHormoneID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        //
+        if (data.CureVitaminID) {
+          // insert ProjectToAnimalType
+          const search = await RpToCureVitamin.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!CureVitaminIDList.includes(s.CureVitaminID)) {
+              RpToCureVitamin.destroy({
+                where: {
+                  RpToCureVitaminID: s.RpToCureVitaminID,
+                },
+              });
+            }
+          });
+
+          CureVitaminIDList.forEach(async (ID) => {
+            const search = await RpToCureVitamin.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                CureVitaminID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToCureVitamin.create({
+                ReproduceID: obj.ReproduceID,
+                CureVitaminID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
+
+        //
+        if (data.ReproduceSuggestionID) {
+          // insert ProjectToAnimalType
+          const search = await RpToRpSuggestion.findAll({
+            where: { ReproduceID: obj.ReproduceID },
+          });
+          // loop pta ของทั้งหมดที่มาจาก DB
+          search.forEach((s) => {
+            if (!ReproduceSuggestionIDList.includes(s.ReproduceSuggestionID)) {
+              RpToRpSuggestion.destroy({
+                where: {
+                  RpToRpSuggestionID: s.RpToRpSuggestionID,
+                },
+              });
+            }
+          });
+
+          ReproduceSuggestionIDList.forEach(async (ID) => {
+            const search = await RpToRpSuggestion.findOne({
+              where: {
+                ReproduceID: obj.ReproduceID,
+                ReproduceSuggestionID: ID,
+              },
+            });
+
+            if (!search) {
+              const obj1 = RpToRpSuggestion.create({
+                ReproduceID: obj.ReproduceID,
+                ReproduceSuggestionID: ID,
+                CreatedUserID: data.UpdatedUserID,
+              });
+            }
+          });
+        }
 
         let res = methods.findById(data.ReproduceID);
 

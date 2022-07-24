@@ -7,6 +7,7 @@ class OvarySymptom extends Model {
       through: models.RpToLeftOvarySymptom,
       foreignKey: "OvarySymptomID",
     });
+    
     this.belongsToMany(models.Reproduce, {
       through: models.RpToRightOvarySymptom,
       foreignKey: "OvarySymptomID",

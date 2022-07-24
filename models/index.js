@@ -127,8 +127,8 @@ const DewormActivity = require("./DewormActivity");
 const ReproduceSuggestion = require("./ReproduceSuggestion");
 const HeatType = require("./HeatType");
 const HeatCircle = require("./HeatCircle");
-const OvarySymptom = require("./OvarySymptom");
 const VaginaSymptom = require("./VaginaSymptom");
+const OvarySymptom = require("./OvarySymptom");
 const OtherSymptom = require("./OtherSymptom");
 //
 const CureVitaminToAnimalType = require("./CureVitaminToAnimalType");
@@ -157,7 +157,7 @@ const RpToOtherSymptom = require("./RpToOtherSymptom");
 const RpToRpSuggestion = require("./RpToRpSuggestion");
 const RpToVaginaSymptom = require("./RpToVaginaSymptom");
 const RpToLeftOvarySymptom = require("./RpToLeftOvarySymptom");
-const RpToRightOvarySymptom = require("./RpToLeftOvarySymptom");
+const RpToRightOvarySymptom = require("./RpToRightOvarySymptom");
 
 const RedGoat = require("./RedGoat");
 const Thaiblack = require("./Thaiblack");
@@ -525,6 +525,8 @@ VaccineActivity.associate({
 CureVitamin.associate({
   CureVitaminToAnimalType,
   AnimalType,
+  RpToCureVitamin,
+  Reproduce,
 });
 
 DewormActivity.associate({
@@ -537,36 +539,47 @@ DewormActivity.associate({
 CureAntibiotic.associate({
   CureAntibioticToAnimalType,
   AnimalType,
+  RpToCureAntibiotic,
+  Reproduce,
 });
 
 CureHormone.associate({
   CureHormoneToAnimalType,
   AnimalType,
+  RpToCureHormone,
+  Reproduce,
 });
 
 CauseHealth.associate({
   CauseHealthToAnimalType,
   AnimalType,
+  RpToCauseHealth,
+  Reproduce,
 });
 
 CauseFeeder.associate({
   CauseFeederToAnimalType,
   AnimalType,
+  RpToCauseFeeder,
+  Reproduce,
 });
 
 CauseEnvironment.associate({
   CauseEnvToAnimalType,
   AnimalType,
+  RpToCauseEnvironment,
+  Reproduce,
 });
 
 CauseAnimal.associate({
   CauseAnimalToAnimalType,
   AnimalType,
+  RpToCauseAnimal,
+  Reproduce,
 });
 
-OvarySymptom.associate({
-  RpToLeftOvarySymptom,
-  RpToRightOvarySymptom,
+VaginaSymptom.associate({
+  RpToVaginaSymptom,
   Reproduce,
 });
 
@@ -575,30 +588,45 @@ Reproduce.associate({
   HeatType,
   HeatCircle,
   Staff,
-  // RpToCauseAnimal,
-  // CauseAnimal,
-  // // RpToCauseEnvironment,
-  // // CauseEnvironment,
-  // RpToCauseFeeder,
-  // CauseFeeder,
-  // RpToCauseHealth,
-  // CauseHealth,
-  // // RpToCureAntibiotic,
-  // // CureAntibiotic,
-  // RpToCureHormone,
-  // CureHormone,
-  // // RpToCureVitamin,
-  // // CureVitamin,
-  // RpToOtherSymptom,
-  // OtherSymptom,
-  // RpToVaginaSymptom,
-  // VaginaSymptom,
+  RpToCauseAnimal,
+  CauseAnimal,
+  RpToCauseEnvironment,
+  CauseEnvironment,
+  RpToCauseFeeder,
+  CauseFeeder,
+  RpToCauseHealth,
+  CauseHealth,
+  RpToCureAntibiotic,
+  CureAntibiotic,
+  RpToCureHormone,
+  CureHormone,
+  RpToCureVitamin,
+  CureVitamin,
+  RpToOtherSymptom,
+  OtherSymptom,
+  RpToVaginaSymptom,
+  VaginaSymptom,
   OvarySymptom,
   RpToLeftOvarySymptom,
-  // RpToRightOvarySymptom,
-  // OvarySymptom,
-  // // RpToRpSuggestion,
-  // // ReproduceSuggestion
+  RpToRightOvarySymptom,
+  RpToRpSuggestion,
+  ReproduceSuggestion,
+});
+
+OvarySymptom.associate({
+  Reproduce,
+  RpToLeftOvarySymptom,
+  RpToRightOvarySymptom,
+});
+
+OtherSymptom.associate({
+  RpToOtherSymptom,
+  Reproduce,
+});
+
+ReproduceSuggestion.associate({
+  RpToRpSuggestion,
+  Reproduce,
 });
 
 RedGoat.associate({

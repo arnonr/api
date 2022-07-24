@@ -2,6 +2,12 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class OtherSymptom extends Model {
+  static associate(models) {
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToOtherSymptom,
+      foreignKey: "OtherSymptomID",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {

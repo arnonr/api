@@ -7,6 +7,11 @@ class CureAntibiotic extends Model {
       through: models.CureAntibioticToAnimalType,
       foreignKey: "CureAntibioticID",
     });
+
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCureAntibiotic,
+      foreignKey: "CureAntibioticID",
+    });
   }
 
   // Custom JSON Response

@@ -7,6 +7,11 @@ class CauseHealth extends Model {
       through: models.CauseHealthToAnimalType,
       foreignKey: "CauseHealthID",
     });
+
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCauseHealth,
+      foreignKey: "CauseHealthID",
+    });
   }
 
   // Custom JSON Response

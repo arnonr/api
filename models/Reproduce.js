@@ -12,74 +12,77 @@ class Reproduce extends Model {
     this.belongsTo(models.HeatCircle, {
       foreignKey: "HeatCircleID",
     });
+
+    this.belongsToMany(models.OvarySymptom, {
+      through: models.RpToRightOvarySymptom,
+      foreignKey: "ReproduceID",
+      as: "RightOvarySymptom",
+    });
+
     this.belongsToMany(models.OvarySymptom, {
       through: models.RpToLeftOvarySymptom,
-      foreignKey: "LeftOvarySymptomID",
-      // as: "LeftOvarySymptom",
+      foreignKey: "ReproduceID",
+      as: "LeftOvarySymptom",
     });
-    // this.belongsToMany(models.OvarySymptom, {
-    //   through: models.RpToRightOvarySymptom,
-    //   foreignKey: "RightOvarySymptomID",
-    //   as: "RightOvarySymptom",
-    // });
-    // this.belongsToMany(models.VaginaSymptom, {
-    //   through: models.RpToVaginaSymptom,
-    //   foreignKey: "VaginaSymptomID",
-    //   as: "VaginaSymptom",
-    // });
-    // this.belongsToMany(models.OtherSymptom, {
-    //   through: models.RpToOtherSymptom,
-    //   foreignKey: "OtherSymptomID",
-    //   as: "OtherSymptom",
-    // });
+    
+    this.belongsToMany(models.VaginaSymptom, {
+      through: models.RpToVaginaSymptom,
+      foreignKey: "ReproduceID",
+      as: "VaginaSymptom",
+    });
+    this.belongsToMany(models.OtherSymptom, {
+      through: models.RpToOtherSymptom,
+      foreignKey: "ReproduceID",
+      as: "OtherSymptom",
+    });
 
-    // this.belongsToMany(models.CauseAnimal, {
-    //   through: models.RpToCauseAnimal,
-    //   foreignKey: "CauseAnimalID",
-    //   as: "CauseAnimal",
-    // });
+    this.belongsToMany(models.CauseAnimal, {
+      through: models.RpToCauseAnimal,
+      foreignKey: "ReproduceID",
+      as: "CauseAnimal",
+    });
 
-    // this.belongsToMany(models.CauseEnvironment, {
-    //   through: models.RpToCauseEnvironment,
-    //   foreignKey: "CauseEnvironmentID",
-    //   as: "CauseEnvironment",
-    // });
+    this.belongsToMany(models.CauseEnvironment, {
+      through: models.RpToCauseEnvironment,
+      foreignKey: "ReproduceID",
+      as: "CauseEnvironment",
+    });
 
-    // this.belongsToMany(models.CauseFeeder, {
-    //   through: models.RpToCauseFeeder,
-    //   foreignKey: "CauseFeederID",
-    //   as: "CauseFeeder",
-    // });
+    this.belongsToMany(models.CauseFeeder, {
+      through: models.RpToCauseFeeder,
+      foreignKey: "ReproduceID",
+      as: "CauseFeeder",
+    });
 
-    // this.belongsToMany(models.CauseHealth, {
-    //   through: models.RpToCauseHealth,
-    //   foreignKey: "CauseHealthID",
-    //   as: "CauseHealth",
-    // });
+    this.belongsToMany(models.CauseHealth, {
+      through: models.RpToCauseHealth,
+      foreignKey: "ReproduceID",
+      as: "CauseHealth",
+    });
 
-    // this.belongsToMany(models.CureHormone, {
-    //   through: models.RpToCureHormone,
-    //   foreignKey: "CureHormoneID",
-    //   as: "CureHormone",
-    // });
+    this.belongsToMany(models.CureHormone, {
+      through: models.RpToCureHormone,
+      foreignKey: "ReproduceID",
+      as: "CureHormone",
+    });
 
-    // this.belongsToMany(models.CureAntibiotic, {
-    //   through: models.RpToCureAntibiotic,
-    //   foreignKey: "CureAntibioticID",
-    //   as: "CureAntibiotic",
-    // });
+    this.belongsToMany(models.CureAntibiotic, {
+      through: models.RpToCureAntibiotic,
+      foreignKey: "ReproduceID",
+      as: "CureAntibiotic",
+    });
 
-    // this.belongsToMany(models.CureVitamin, {
-    //   through: models.RpToCureVitamin,
-    //   foreignKey: "CureVitaminID",
-    //   as: "CureVitamin",
-    // });
+    this.belongsToMany(models.CureVitamin, {
+      through: models.RpToCureVitamin,
+      foreignKey: "ReproduceID",
+      as: "CureVitamin",
+    });
 
-    // this.belongsToMany(models.ReproduceSuggestion, {
-    //   through: models.RpToRpSuggestion,
-    //   foreignKey: "ReproduceSuggestionID",
-    //   as: "ReproduceSuggestion",
-    // });
+    this.belongsToMany(models.ReproduceSuggestion, {
+      through: models.RpToRpSuggestion,
+      foreignKey: "ReproduceID",
+      as: "ReproduceSuggestion",
+    });
 
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",

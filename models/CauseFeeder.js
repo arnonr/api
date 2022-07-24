@@ -7,6 +7,10 @@ class CauseFeeder extends Model {
       through: models.CauseFeederToAnimalType,
       foreignKey: "CauseFeederID",
     });
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCauseFeeder,
+      foreignKey: "CauseFeederID",
+    });
   }
 
   // Custom JSON Response

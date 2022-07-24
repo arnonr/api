@@ -3,6 +3,7 @@ const { Model, DataTypes } = require("sequelize"),
 
 class RpToLeftOvarySymptom extends Model {
   static associate(models) {
+    
   }
   // Custom JSON Response
   toJSON() {
@@ -70,7 +71,7 @@ RpToLeftOvarySymptom.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "RpToOvarySymptom",
+    modelName: "RpToLeftOvarySymptom",
   }
 );
 

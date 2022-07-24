@@ -70,7 +70,7 @@ RpToRightOvarySymptom.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "RpToOvarySymptom",
+    modelName: "RpToRightOvarySymptom",
   }
 );
 

@@ -26,10 +26,10 @@ RpToVaginaSymptom.init(
       allowNull: false,
       comment: "รหัสกระบวนการ",
     },
-    OvarySymtomID: {
+    VaginaSymptomID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "รหัสอ้างอิงปัญหาที่พบของมดลูก/ช่องคลอด",
+      comment: "รหัสลักษณะมดลูก/ช่องคลอด",
     },
     isActive: {
       type: DataTypes.TINYINT(1),

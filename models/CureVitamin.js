@@ -7,6 +7,11 @@ class CureVitamin extends Model {
       through: models.CureVitaminToAnimalType,
       foreignKey: "CureVitaminID",
     });
+
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCureVitamin,
+      foreignKey: "CureVitaminID",
+    });
   }
 
   // Custom JSON Response

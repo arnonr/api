@@ -7,6 +7,11 @@ class CureHormone extends Model {
       through: models.CureHormoneToAnimalType,
       foreignKey: "CureHormoneID",
     });
+
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCureHormone,
+      foreignKey: "CureHormoneID",
+    });
   }
 
   // Custom JSON Response

@@ -3,7 +3,10 @@ const { Model, DataTypes } = require("sequelize"),
 
 class ReproduceSuggestion extends Model {
   static associate(models) {
-  
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToRpSuggestion,
+      foreignKey: "ReproduceSuggestionID",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -29,9 +32,14 @@ ReproduceSuggestion.init(
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          ReproduceSuggestion.findOne({ where: { ReproduceSuggestionName: value, isRemove: 0 } })
+          ReproduceSuggestion.findOne({
+            where: { ReproduceSuggestionName: value, isRemove: 0 },
+          })
             .then(function (data) {
-              if (data && self.ReproduceSuggestionID !== data.ReproduceSuggestionID) {
+              if (
+                data &&
+                self.ReproduceSuggestionID !== data.ReproduceSuggestionID
+              ) {
                 throw new Error("ReproduceSuggestion Name already in use!");
               }
               return next();

@@ -7,6 +7,10 @@ class CauseEnvironment extends Model {
       through: models.CauseEnvToAnimalType,
       foreignKey: "CauseEnvironmentID",
     });
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToCauseEnvironment,
+      foreignKey: "CauseEnvironmentID",
+    });
   }
 
   // Custom JSON Response

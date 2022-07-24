@@ -2,7 +2,14 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class VaginaSymptom extends Model {
+  static associate(models) {
+    this.belongsToMany(models.Reproduce, {
+      through: models.RpToVaginaSymptom,
+      foreignKey: "VaginaSymptomID",
+    });
+  }
   // Custom JSON Response
+
   toJSON() {
     return {
       ...this.get(),
