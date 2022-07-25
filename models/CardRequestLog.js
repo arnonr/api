@@ -54,6 +54,10 @@ CardRequestLog.init(
       allowNull: false,
       defaultValue: 0,
       comment: "สถานะการอนุมัติใช้งาน 0=รออนุมัติ 1=อนุมัติ 2=ไม่อนุมัติ",
+      get() {
+        let text = ["รออนุมัติ", "อนุมัติ", "ไม่อนุมัติ"];
+        return text[this.getDataValue("IsApprove")];
+      },
     },
     ApproveDatetime: {
       type: DataTypes.DATE,

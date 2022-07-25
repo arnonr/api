@@ -433,6 +433,13 @@ Staff.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    StaffFullName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let fullname = this.StaffGivenName + " " + this.StaffSurname;
+        return fullname.trim();
+      },
+    },
   },
   {
     sequelize,

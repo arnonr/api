@@ -3,6 +3,8 @@ const config = require("../configs/app"),
   db = require("../models/Staff"),
   { Op } = require("sequelize");
 
+const CardRequestLog = require("../models/CardRequestLog");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -91,7 +93,18 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: CardRequestLog,
+        as: "CardRequestLog",
+        limit: 1,
+        order: [
+          ["RequestDate", "DESC"],
+          ["CardRequestID", "DESC"],
+        ],
+      },
+    ];
     return { query: query };
   },
 
@@ -129,7 +142,18 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: [{ all: true, required: false }],
+          include: [
+            { all: true, required: false },
+            {
+              model: CardRequestLog,
+              as: "CardRequestLog",
+              limit: 1,
+              order: [
+                ["RequestDate", "DESC"],
+                ["CardRequestID", "DESC"],
+              ],
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -145,7 +169,7 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
-        const inserted = await obj.save({individualHooks: true});
+        const inserted = await obj.save({ individualHooks: true });
 
         let res = methods.findById(inserted.StaffID);
 

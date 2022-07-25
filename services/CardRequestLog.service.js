@@ -3,6 +3,11 @@ const config = require("../configs/app"),
   db = require("../models/CardRequestLog"),
   { Op } = require("sequelize");
 
+const Staff = require("../models/Staff"),
+  Organization = require("../models/Organization"),
+  Position = require("../models/Position"),
+  PositionType = require("../models/PositionType");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -74,12 +79,45 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: [{ all: true, required: false }],
+        let obj = await db.findByPk(id, {
+          include: [
+            { all: true, required: false },
+            {
+              model: Staff,
+              as: "Staff",
+              include: [
+                {
+                  model: Position,
+                  as: "Position",
+                },
+                {
+                  model: PositionType,
+                  as: "PositionType",
+                },
+                {
+                  model: Organization,
+                  as: "Organization"
+                }
+              ],
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        // let obj1 = { ...obj.toJSON() };
+        // console.log(obj1.Staff)
+        // obj1.StaffFullName =
+        //   obj1.Staff.StaffGivenName + " " + obj1.Staff.StaffSurname;
+        // obj1.PositionName = obj1.Staff.Position.PositionName;
+
+        // obj1.PositionTypeName = obj1.Staff.PositionType.PositionTypeName;
+
+        // obj1.Position = undefined;
+        // obj1.PositionType = undefined;
+        // obj1.Staff = undefined;
+
+        resolve(obj);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
