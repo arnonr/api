@@ -45,7 +45,27 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [{ all: true, required: false }];
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: Staff,
+        as: "Staff",
+        include: [
+          {
+            model: Position,
+            as: "Position",
+          },
+          {
+            model: PositionType,
+            as: "PositionType",
+          },
+          {
+            model: Organization,
+            as: "Organization",
+          },
+        ],
+      },
+    ];
 
     return { query: query };
   },
@@ -96,8 +116,8 @@ const methods = {
                 },
                 {
                   model: Organization,
-                  as: "Organization"
-                }
+                  as: "Organization",
+                },
               ],
             },
           ],
