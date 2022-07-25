@@ -382,76 +382,77 @@ class Animal extends Model {
   }
 
   async EventLatest() {
-    let event = {
-      EventType: null,
-      Date: null,
-      ID: null,
-      PAR: null,
-      TimeNo: null,
-      Status: null,
-      PregnancyStatus: null,
-      AIStatus: null,
-    };
+    // let event = {
+    //   EventType: null,
+    //   Date: null,
+    //   ID: null,
+    //   PAR: null,
+    //   TimeNo: null,
+    //   Status: null,
+    //   PregnancyStatus: null,
+    //   AIStatus: null,
+    // };
 
-    let ai = await AI.findOne({
-      order: [
-        ["PAR", "DESC"],
-        ["TimeNo", "DESC"],
-      ],
-      where: {
-        AnimalID: this.AnimalID,
-      },
-    });
+    // let ai = await AI.findOne({
+    //   order: [
+    //     ["PAR", "DESC"],
+    //     ["TimeNo", "DESC"],
+    //   ],
+    //   where: {
+    //     AnimalID: this.AnimalID,
+    //   },
+    // });
 
-    let transferEmbryo = await TransferEmbryo.findOne({
-      order: [
-        ["PAR", "DESC"],
-        ["TimeNo", "DESC"],
-      ],
-      where: {
-        AnimalID: this.AnimalID,
-      },
-    });
+    // let transferEmbryo = await TransferEmbryo.findOne({
+    //   order: [
+    //     ["PAR", "DESC"],
+    //     ["TimeNo", "DESC"],
+    //   ],
+    //   where: {
+    //     AnimalID: this.AnimalID,
+    //   },
+    // });
 
-    if (ai && transferEmbryo) {
-      if (ai.PAR == transferEmbryo.PAR) {
-        if (ai.TimeNo > transferEmbryo.TimeNo) {
-          event.EventType = "AI";
-        } else {
-          event.EventType = "TransferEmbryo";
-        }
-      } else if (ai.PAR > transferEmbryo.PAR) {
-        event.EventType = "AI";
-      } else {
-        event.EventType = "TransferEmbryo";
-      }
-    }
+    // if (ai && transferEmbryo) {
+    //   if (ai.PAR == transferEmbryo.PAR) {
+    //     if (ai.TimeNo > transferEmbryo.TimeNo) {
+    //       event.EventType = "AI";
+    //     } else {
+    //       event.EventType = "TransferEmbryo";
+    //     }
+    //   } else if (ai.PAR > transferEmbryo.PAR) {
+    //     event.EventType = "AI";
+    //   } else {
+    //     event.EventType = "TransferEmbryo";
+    //   }
+    // }
 
-    if (event.EventType == "AI") {
-      event = {
-        EventType: "AI",
-        Date: dayjs(ai.AIDate).locale("th").format("DD MMM BB"),
-        ID: ai.AIID,
-        PAR: ai.PAR,
-        TimeNo: ai.TimeNo,
-        Status: null,
-        PregnancyStatus: null,
-      };
-    }
+    // if (event.EventType == "AI") {
+    //   event = {
+    //     EventType: "AI",
+    //     Date: dayjs(ai.AIDate).locale("th").format("DD MMM BB"),
+    //     ID: ai.AIID,
+    //     PAR: ai.PAR,
+    //     TimeNo: ai.TimeNo,
+    //     Status: null,
+    //     PregnancyStatus: null,
+    //   };
+    // }
 
-    if (event.EventType == "TransferEmbryo") {
-      event = {
-        EventType: "TransferEmbryo",
-        Date: dayjs(transferEmbryo.TransferDate).locale("th").format("DD MMM BB"),
-        ID: transferEmbryo.TransferEmbryoID,
-        PAR: transferEmbryo.PAR,
-        TimeNo: transferEmbryo.TimeNo,
-        Status: null,
-        PregnancyStatus: null,
-      };
-    }
+    // if (event.EventType == "TransferEmbryo") {
+    //   event = {
+    //     EventType: "TransferEmbryo",
+    //     Date: dayjs(transferEmbryo.TransferDate).locale("th").format("DD MMM BB"),
+    //     ID: transferEmbryo.TransferEmbryoID,
+    //     PAR: transferEmbryo.PAR,
+    //     TimeNo: transferEmbryo.TimeNo,
+    //     Status: null,
+    //     PregnancyStatus: null,
+    //   };
+    // }
 
-    return { EventLatest: event };
+    // return { EventLatest: event };
+    return {};
   }
 
   // Custom JSON Response
