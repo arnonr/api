@@ -120,13 +120,23 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            let rows1 = rows.map((data) => {
+              data = {
+                ...data.toJSON(),
+                CardRequestLog: data.toJSON().CardRequestLog[0],
+              };
+
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
               currPage: +req.query.page || 1,
-              rows: rows,
+              rows: rows1,
             });
           })
           .catch((error) => {
@@ -157,7 +167,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let res = { ...obj.toJSON() };
+        res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+        resolve(res);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
