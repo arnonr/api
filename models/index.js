@@ -189,12 +189,12 @@ Staff.associate({
   Tumbol,
   Education,
   Major,
-  CardRequestLog
+  CardRequestLog,
 });
 
 CardRequestLog.associate({
-  Staff
-})
+  Staff,
+});
 
 User.associate({ Staff, Group, UserToAnimalType, AnimalType });
 Group.associate({ User, GroupAuthorize });
@@ -309,6 +309,9 @@ AI.associate({
   GunDepth,
   BCS,
   GoatEstralActivity,
+  Semen,
+  PregnancyCheckup,
+  GiveBirth,
 });
 
 PregnancyCheckup.associate({
@@ -521,7 +524,8 @@ DiseaseActivity.associate({
 });
 
 VaccineActivity.associate({
-  Animal,
+  // Animal,
+  Farm,
   Vaccine,
   VaccineObjective,
   Organization,

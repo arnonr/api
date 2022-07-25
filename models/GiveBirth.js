@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class GiveBirth extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -68,7 +74,7 @@ GiveBirth.init(
       comment: "จำนวนที่คลอด (ตัว)",
     },
     GiveBirthState: {
-      type: DataTypes.ENUM("NORMAL","DIFFICULT ","SLINK"),
+      type: DataTypes.ENUM("NORMAL", "DIFFICULT ", "SLINK"),
       // type: DataTypes.ENUM("NORMAL","DIFFICULT ","SLINK"),
       allowNull: true,
       comment:
@@ -85,9 +91,9 @@ GiveBirth.init(
       comment: "ระยะการตั้งท้อง (วัน)",
     },
     PAR: {
-        type: DataTypes.INTEGER(11),
-        allowNull: true,
-        comment: "ท้องที่",
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "ท้องที่",
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
@@ -107,7 +113,7 @@ GiveBirth.init(
     PAR: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "ท้องที่",  
+      comment: "ท้องที่",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -152,6 +158,14 @@ GiveBirth.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiGiveBirthDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.GiveBirthDate != null
+          ? dayjs(this.GiveBirthDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

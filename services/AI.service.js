@@ -2,8 +2,11 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/AI"),
   { Op } = require("sequelize");
+const AI = require("../models/AI");
 
 const Animal = require("../models/Animal");
+const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
+const PregnancyCheckup = require("../models/PregnancyCheckup");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -66,7 +69,18 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: PregnancyCheckup,
+        limit: 1,
+        include: { model: PregnancyCheckStatus },
+        order: [
+          ["CheckupDate", "DESC"],
+          ["PregnancyCheckupID", "DESC"],
+        ],
+      },
+    ];
 
     return { query: query, required: false };
   },
@@ -83,8 +97,40 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              let dataJson = data.toJSON();
+              data = {
+                AnimalID: dataJson.AnimalID,
+                AIID: dataJson.AIID,
+                PAR: dataJson.PAR,
+                TimeNo: dataJson.TimeNo,
+                ThaiAIDate: dataJson.ThaiAIDate,
+                BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+                SemenNumber:
+                  dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
+                Dose: data.Dose,
+                AIStatusName: dataJson.AIStatusName,
+                PregnancyCheckup: dataJson.PregnancyCheckups
+                  ? dataJson.PregnancyCheckups[0]
+                    ? dataJson.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
+                        .PregnancyCheckStatusName
+                    : null
+                  : null,
+                ThaiGiveBirthDate: dataJson.GiveBirth
+                  ? dataJson.GiveBirth.ThaiGiveBirthDate
+                  : null,
+                ResponsibilityStaffName: dataJson.Staff
+                  ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+                  : null,
+
+                ...dataJson,
+              };
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -122,8 +168,11 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
-        
-        await Animal.update({ProductionStatusID: 4}, { where: { AnimalID: inserted.AnimalID } });
+
+        await Animal.update(
+          { ProductionStatusID: 4 },
+          { where: { AnimalID: inserted.AnimalID } }
+        );
 
         let res = methods.findById(inserted.AIID);
 

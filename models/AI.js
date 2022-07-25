@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class AI extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -12,9 +18,9 @@ class AI extends Model {
     this.belongsTo(models.Project, {
       foreignKey: "ProjectID",
     });
-    // this.belongsTo(models.Semen, {
-    //     foreignKey: "ProjectID",
-    //   });
+    this.belongsTo(models.Semen, {
+      foreignKey: "SemenID",
+    });
     this.belongsTo(models.GoatEstralActivity, {
       foreignKey: "GoatEstralActivityID",
     });
@@ -44,7 +50,15 @@ class AI extends Model {
     });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
-      as: "BCS"
+      as: "BCS",
+    });
+
+    this.hasMany(models.PregnancyCheckup, {
+      foreignKey: "AIID",
+    });
+
+    this.hasOne(models.GiveBirth, {
+      foreignKey: "AIID",
     });
   }
 
@@ -366,6 +380,19 @@ AI.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiAIDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return dayjs(this.AIDate).locale("th").format("DD/MM/BBBB");
+      },
+    },
+    AIStatusName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let text = ["รอผล", "สำเร็จ", "ไม่สำเร็จ"];
+        return text[this.AIStatus]
+      },
     },
   },
   {
