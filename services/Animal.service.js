@@ -2500,7 +2500,7 @@ const methods = {
                         EmbryoDate: null,
                         PregnancyStatus: pregResult,
                         Notification: await data.Notification(),
-                        EventLatest: (await data.EventLatest()).EventLatest,
+                        // EventLatest: (await data.EventLatest()).EventLatest,
                       };
                     }
                     // CheckDate เอาอันล่าสุด
