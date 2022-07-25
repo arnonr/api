@@ -145,7 +145,7 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
-        const inserted = await obj.save();
+        const inserted = await obj.save({individualHooks: true});
 
         let res = methods.findById(inserted.StaffID);
 
