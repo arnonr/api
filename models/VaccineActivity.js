@@ -3,8 +3,12 @@ const { Model, DataTypes } = require("sequelize"),
 
 class VaccineActivity extends Model {
   static associate(models) {
-    this.belongsTo(models.Animal, {
-      foreignKey: "AnimalID",
+    // this.belongsTo(models.Animal, {
+    //   foreignKey: "AnimalID",
+    // });
+
+    this.belongsTo(models.Farm, {
+      foreignKey: "FarmID",
     });
 
     this.belongsTo(models.Vaccine, {
@@ -53,11 +57,15 @@ VaccineActivity.init(
     },
 
     AnimalID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
       comment: "รหัสสัตว์",
     },
-
+    FarmID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสฟาร์ม",
+    },
     VaccineID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
