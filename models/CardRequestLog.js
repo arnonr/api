@@ -132,6 +132,14 @@ CardRequestLog.init(
           : null;
       },
     },
+    ThaiApproveDatetime: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ApproveDatetime
+          ? dayjs(this.ApproveDatetime).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
   },
   {
     sequelize,
