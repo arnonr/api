@@ -22,6 +22,7 @@ const OrganizationZone = require("./OrganizationZone");
 const Organization = require("./Organization");
 
 const Staff = require("./Staff");
+const CardRequestLog = require("./CardRequestLog");
 const Title = require("./Title");
 const Gender = require("./Gender");
 const MarriedStatus = require("./MarriedStatus");
@@ -188,7 +189,12 @@ Staff.associate({
   Tumbol,
   Education,
   Major,
+  CardRequestLog
 });
+
+CardRequestLog.associate({
+  Staff
+})
 
 User.associate({ Staff, Group, UserToAnimalType, AnimalType });
 Group.associate({ User, GroupAuthorize });

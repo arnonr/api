@@ -1,7 +1,17 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
 class CardRequestLog extends Model {
+  static associate(models) {
+    this.belongsTo(models.Staff, {
+      foreignKey: "StaffID",
+      as: "Staff",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {
@@ -56,9 +66,9 @@ CardRequestLog.init(
       comment: "ผู้อนุมัติ",
     },
     Remark: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        comment: "หมายเหตุ (ถ้ามี)",
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "หมายเหตุ (ถ้ามี)",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -93,6 +103,30 @@ CardRequestLog.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiRequestDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.RequestDate
+          ? dayjs(this.RequestDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiCardStartDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.CardStartDate
+          ? dayjs(this.CardStartDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiCardEndDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.CardEndDate
+          ? dayjs(this.CardEndDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

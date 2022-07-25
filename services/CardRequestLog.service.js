@@ -8,11 +8,13 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.CardRequestID) $where["CardRequestID"] = req.query.CardRequestID;
-    
+    if (req.query.CardRequestID)
+      $where["CardRequestID"] = req.query.CardRequestID;
+
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
     if (req.query.IsApprove) $where["IsApprove"] = req.query.IsApprove;
-    if (req.query.ApproveByStaffID) $where["IsApprove"] = req.query.ApproveByStaffID;
+    if (req.query.ApproveByStaffID)
+      $where["IsApprove"] = req.query.ApproveByStaffID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -37,6 +39,8 @@ const methods = {
     if (!isNaN(limit)) query["limit"] = limit;
 
     if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -70,7 +74,9 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id);
+        const obj = await db.findByPk(id, {
+          include: [{ all: true, required: false }],
+        });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
         resolve(obj.toJSON());

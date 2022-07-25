@@ -47,6 +47,11 @@ class Staff extends Model {
       foreignKey: "StaffEducationID",
       as: "Education",
     });
+
+    this.hasMany(models.CardRequestLog, {
+      foreignKey: "StaffID",
+      as: "CardRequestLog",
+    });
   }
 
   // Custom JSON Response
