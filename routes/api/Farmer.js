@@ -5,12 +5,22 @@ const { checkPermission } = require("../accessControl");
 
 let resource = "user";
 
+
 router.get(
   "/",
   auth.required,
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
+router.get(
+  "/fetch-api-farmer",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onfetchAPIFarmer
+);
+
+
 router.get(
   "/:id",
   auth.required,

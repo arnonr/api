@@ -1,5 +1,8 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
 
 class Staff extends Model {
   static associate(models) {
@@ -251,6 +254,41 @@ Staff.init(
       allowNull: true,
       comment: "วันที่สิ้นสุดการทำงาน",
     },
+
+    CardStartDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วันที่ออกบัตร",
+    },
+    CardExpireDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วันที่หมดอายุบัตร",
+    },
+    CardStatus: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment:
+        "0 = ยกเลิกใช้งาน , 1 = ใช้งานอยู่, 2 = เจ้าหน้าที่ใหม่รอยื่นเรื่อง, 3 = หมดอายุ",
+      get() {
+        let text = ["ยกเลิกใช้งาน", "ใช้งานอยู่", "เจ้าหน้าที่ใหม่รอยื่นเรื่อง", "หมดอายุ"];
+
+        if (this.getDataValue("CardStatus") == null) {
+          return text[1];
+        }
+
+        return text[this.getDataValue("CardStatus")];
+      },
+      // set() {
+
+      // },
+    },
+    StaffStatus: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "สถานะบุคลากร",
+    },
+
     StaffAddress: {
       type: DataTypes.STRING(255),
       allowNull: true,
@@ -403,5 +441,35 @@ Staff.init(
     modelName: "Staff",
   }
 );
+
+Staff.addHook("beforeUpdate", (staff, options) => {
+  let status = staff.CardStatus;
+  if (staff.StaffStatus == "ลาออก") {
+    status = 0;
+  } else if (staff.CardStartDate == null || staff.CardExpireDate == null) {
+    status = 2;
+  } else if (dayjs(staff.CardExpireDate).isBefore(dayjs()) == true) {
+    status = 3;
+  } else {
+    console.log(dayjs(staff.CardExpireDate).isBefore(dayjs()));
+    status = 1;
+  }
+  staff.CardStatus = status;
+});
+
+Staff.addHook("beforeCreate", (staff, options) => {
+  let status = staff.CardStatus;
+  if (staff.StaffStatus == "ลาออก") {
+    status = 0;
+  } else if (staff.CardStartDate == null || staff.CardExpireDate == null) {
+    status = 2;
+  } else if (dayjs(staff.CardExpireDate).isBefore(dayjs()) == true) {
+    status = 3;
+  } else {
+    console.log(dayjs(staff.CardExpireDate).isBefore(dayjs()));
+    status = 1;
+  }
+  staff.CardStatus = status;
+});
 
 module.exports = Staff;

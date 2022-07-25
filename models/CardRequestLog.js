@@ -120,11 +120,11 @@ CardRequestLog.init(
           : null;
       },
     },
-    ThaiCardEndDate: {
+    ThaiCardExpireDate: {
       type: DataTypes.VIRTUAL,
       get() {
-        return this.CardEndDate
-          ? dayjs(this.CardEndDate).locale("th").format("DD/MM/BBBB")
+        return this.CardExpireDate
+          ? dayjs(this.CardExpireDate).locale("th").format("DD/MM/BBBB")
           : null;
       },
     },

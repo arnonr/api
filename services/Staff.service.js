@@ -129,7 +129,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          // include: [{ all: true, required: false }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -166,7 +166,10 @@ const methods = {
         // Update
         data.StaffID = parseInt(id);
 
-        await db.update(data, { where: { StaffID: id } });
+        await db.update(data, {
+          where: { StaffID: id },
+          individualHooks: true,
+        });
 
         let res = methods.findById(data.StaffID);
 

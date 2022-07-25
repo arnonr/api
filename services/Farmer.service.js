@@ -2,6 +2,7 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farmer"),
   { Op } = require("sequelize");
+const axios = require("axios").default;
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -9,7 +10,7 @@ const methods = {
     $where = {};
 
     if (req.query.FarmerID) $where["FarmerID"] = req.query.FarmerID;
-    
+
     if (req.query.IdentificationNumber)
       $where["IdentificationNumber"] = {
         [Op.like]: "%" + req.query.IdentificationNumber + "%",
@@ -185,6 +186,39 @@ const methods = {
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  fetchAPIFarmer() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // axios
+        let AccessToken = null;
+        var username = "zealtech";
+        var password = "zeal1tech";
+        var credentials = btoa(username + ":" + password);
+        var basicAuth = "Basic " + credentials;
+        axios
+          .post(
+            "https://service-eregist.dld.go.th/regislives_authen/oauth/token", {
+              auth: {
+                username: 'zealtech',
+                password: 'zeal1tech'
+              },
+              username: 'biotech',
+              password: '!Q@WeRegist',
+              grant_type: 'password'
+            }
+          )
+          .then(function (response) {
+            console.log(response);
+            AccessToken = response.access_token;
+          });
+
+        resolve({});
+      } catch (error) {
+        reject(ErrorNotFound("id: not found"));
       }
     });
   },

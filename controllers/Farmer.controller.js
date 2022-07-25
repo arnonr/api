@@ -2,6 +2,15 @@ const Service = require("../services/Farmer.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+  async onfetchAPIFarmer(req, res) {
+    try {
+      let result = await Service.fetchAPIFarmer();
+      res.success(result, 201);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
