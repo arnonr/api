@@ -17,7 +17,21 @@ const methods = {
     if (req.query.VaccineActivityDate)
       $where["VaccineActivityDate"] = req.query.VaccineActivityDate;
 
-    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+    console.log(req.query.AnimalID+"FREEDOM")
+
+    if (req.query.AnimalID) {
+      $where["AnimalID"] = {
+        [Op.or]: [
+          { [Op.like]: "%," + req.query.AnimalID + ",%" },
+          { [Op.like]: "[" + req.query.AnimalID + ",%" },
+          { [Op.like]: "%," + req.query.AnimalID + "]" },
+          { [Op.like]: "[" + req.query.AnimalID + "]" },
+        ],
+      };
+    }
+    
+    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
     if (req.query.VaccineID) $where["VaccineID"] = req.query.VaccineID;
 
     if (req.query.VaccineObjectiveID)
@@ -67,6 +81,32 @@ const methods = {
     return { query: query };
   },
 
+  async getData(data) {
+    let dataJson = data.toJSON();
+    dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
+    let animal = await Animal.findAll({
+      where: { AnimalID: dataJson.AnimalID },
+    });
+    dataJson.Animal = animal;
+
+    data = {
+      VaccineActivityID: dataJson.VaccineActivityID,
+      ThaiVaccineActivityDate: dataJson.ThaiVaccineActivityDate,
+      VaccineName: dataJson.Vaccine ? dataJson.Vaccine.VaccineName : null,
+      Lot: dataJson.Lot,
+      VaccineObjectiveName: dataJson.VaccineObjective
+        ? dataJson.VaccineObjective.VaccineObjectiveName
+        : null,
+      ThaiVaccineNextDate: dataJson.ThaiVaccineNextDate,
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+      ...dataJson,
+    };
+
+    return data;
+  },
+
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
@@ -84,16 +124,8 @@ const methods = {
 
             rows = await Promise.all(
               rows.map(async (data) => {
-                let dataJson = data.toJSON();
-
-                dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
-
-                let animal = await Animal.findAll({
-                  where: { AnimalID: dataJson.AnimalID },
-                });
-                
-                dataJson.Animal = animal;
-                return dataJson;
+                data = this.getData(data);
+                return data;
               })
             );
 
@@ -122,19 +154,9 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let dataJson = obj.toJSON();
-        let animalArray = [];
+        let data = this.getData(obj);
 
-        dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
-
-        for (const d of dataJson.AnimalID) {
-          let animal = await Animal.findByPk(d);
-          animalArray.push(animal);
-        }
-
-        dataJson.Animal = animalArray;
-
-        resolve(dataJson);
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
