@@ -417,6 +417,7 @@ TransferEmbryo.associate({
   Animal,
   BCS,
   Staff,
+  TransferMethod
 });
 
 DistributionReason.associate({

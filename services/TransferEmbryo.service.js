@@ -64,6 +64,31 @@ const methods = {
     return { query: query };
   },
 
+  getData(data) {
+    let dataJson = data.toJSON();
+    data = {
+      AnimalID: dataJson.AnimalID,
+      TransferEmbryoID: dataJson.TransferEmbryoID,
+      PAR: dataJson.PAR,
+      TimeNo: dataJson.TimeNo,
+      ThaiTransferDate: dataJson.ThaiTransferDate,
+      EmbryoNumber:
+        dataJson.EmbryoNumber != null ? dataJson.EmbryoNumber : null,
+      TransferMethodName:
+        dataJson.TransferMethod != null ? (dataJson.TransferMethod.TransferMethodName == 'Direct Transfer')? 'ย้ายฝากสด':'ย้ายฝากแช่แข็ง' : null,
+      BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+
+
+
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+    return data;
+  },
+
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
@@ -76,8 +101,14 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              data = this.getData(data);
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -102,7 +133,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+        
+        let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

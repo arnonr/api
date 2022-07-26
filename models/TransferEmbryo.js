@@ -14,6 +14,9 @@ class TransferEmbryo extends Model {
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
     });
+    this.belongsTo(models.TransferMethod, {
+      foreignKey: "TransferMethodID",
+    });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
       as: "BCS",
