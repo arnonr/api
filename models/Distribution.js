@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class Distribution extends Model {
   static associate(models) {
     this.belongsTo(models.Farm, {
@@ -122,6 +128,14 @@ Distribution.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiDistributionDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.DistributionDate
+          ? dayjs(this.DistributionDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

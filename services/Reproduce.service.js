@@ -315,6 +315,9 @@ const methods = {
       CureVitaminID: JSON.parse(obj.toJSON().CureVitaminID),
       ReproduceSuggestion: reproduceSuggestionArray,
       ReproduceSuggestionID: JSON.parse(obj.toJSON().ReproduceSuggestionID),
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
     };
 
     return obj;

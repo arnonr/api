@@ -22,21 +22,19 @@ const methods = {
     if (req.query.DistributionType)
       $where["DistributionType"] = req.query.DistributionType;
 
-
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.DistributionReasonID)
       $where["DistributionReasonID"] = req.query.DistributionReasonID;
 
-      if (req.query.DestinationFarmID)
+    if (req.query.DestinationFarmID)
       $where["DestinationFarmID"] = req.query.DestinationFarmID;
 
-      if (req.query.DestinationOrganizationID)
+    if (req.query.DestinationOrganizationID)
       $where["DestinationOrganizationID"] = req.query.DestinationOrganizationID;
 
-      if (req.query.ResponsibilityStaffID)
+    if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
-
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -72,6 +70,50 @@ const methods = {
 
     return { query: query };
   },
+  getData(data) {
+    let dataJson = data.toJSON();
+    data = {
+      AnimalID: dataJson.AnimalID,
+      FarmID: dataJson.FarmID,
+      ThaiDistributionDate: dataJson.ThaiDistributionDate,
+      DistributionTypeName: !dataJson.DistributionType
+        ? null
+        : dataJson.DistributionType == "DEATH"
+        ? "ตาย"
+        : dataJson.DistributionType == "SALE"
+        ? "ขาย"
+        : dataJson.DistributionType == "DROP"
+        ? "คัดทิ้ง"
+        : dataJson.DistributionType == "TRANSFER"
+        ? "ย้าย"
+        : null,
+
+      DistributionReasonName: dataJson.DistributionReason
+        ? dataJson.DistributionReason.DistributionReasonName
+        : null,
+
+      DistributionReasonName: dataJson.DistributionReason
+        ? dataJson.DistributionReason.DistributionReasonName
+        : null,
+
+      DestinationFarmName: dataJson.DestinationFarm
+        ? dataJson.DestinationFarm.FarmName
+        : null,
+
+      DestinationOrganizationName: dataJson.Organization
+        ? dataJson.Organization.OrganizationName
+        : null,
+
+      DestinationPlace: dataJson.DestinationPlace,
+
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+    return data;
+  },
 
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
@@ -85,8 +127,14 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              data = this.getData(data);
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -111,7 +159,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
