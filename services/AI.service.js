@@ -85,6 +85,36 @@ const methods = {
     return { query: query, required: false };
   },
 
+  getData(data) {
+    let dataJson = data.toJSON();
+    data = {
+      AnimalID: dataJson.AnimalID,
+      AIID: dataJson.AIID,
+      PAR: dataJson.PAR,
+      TimeNo: dataJson.TimeNo,
+      ThaiAIDate: dataJson.ThaiAIDate,
+      BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+      SemenNumber: dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
+      Dose: dataJson.Dose,
+      AIStatusName: dataJson.AIStatusName,
+      PregnancyCheckup: dataJson.PregnancyCheckups
+        ? dataJson.PregnancyCheckups[0]
+          ? dataJson.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
+              .PregnancyCheckStatusName
+          : null
+        : null,
+      ThaiGiveBirthDate: dataJson.GiveBirth
+        ? dataJson.GiveBirth.ThaiGiveBirthDate
+        : null,
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+    return data;
+  },
+
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
@@ -101,33 +131,7 @@ const methods = {
               count = result[2];
 
             rows = rows.map((data) => {
-              let dataJson = data.toJSON();
-              data = {
-                AnimalID: dataJson.AnimalID,
-                AIID: dataJson.AIID,
-                PAR: dataJson.PAR,
-                TimeNo: dataJson.TimeNo,
-                ThaiAIDate: dataJson.ThaiAIDate,
-                BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
-                SemenNumber:
-                  dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
-                Dose: dataJson.Dose,
-                AIStatusName: dataJson.AIStatusName,
-                PregnancyCheckup: dataJson.PregnancyCheckups
-                  ? dataJson.PregnancyCheckups[0]
-                    ? dataJson.PregnancyCheckups[0].toJSON()
-                        .PregnancyCheckStatus.PregnancyCheckStatusName
-                    : null
-                  : null,
-                ThaiGiveBirthDate: dataJson.GiveBirth
-                  ? dataJson.GiveBirth.ThaiGiveBirthDate
-                  : null,
-                ResponsibilityStaffName: dataJson.Staff
-                  ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
-                  : null,
-
-                ...dataJson,
-              };
+              data = this.getData(data);
               return data;
             });
 
@@ -167,34 +171,7 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let dataJson = obj.toJSON();
-
-        let data = {
-          AnimalID: dataJson.AnimalID,
-          AIID: dataJson.AIID,
-          PAR: dataJson.PAR,
-          TimeNo: dataJson.TimeNo,
-          ThaiAIDate: dataJson.ThaiAIDate,
-          BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
-          SemenNumber:
-            dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
-          Dose: dataJson.Dose,
-          AIStatusName: dataJson.AIStatusName,
-          PregnancyCheckup: dataJson.PregnancyCheckups
-            ? dataJson.PregnancyCheckups[0]
-              ? dataJson.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
-                  .PregnancyCheckStatusName
-              : null
-            : null,
-          ThaiGiveBirthDate: dataJson.GiveBirth
-            ? dataJson.GiveBirth.ThaiGiveBirthDate
-            : null,
-          ResponsibilityStaffName: dataJson.Staff
-            ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
-            : null,
-
-          ...dataJson,
-        };
+        let data = this.getData(obj);
 
         resolve(data);
       } catch (error) {
