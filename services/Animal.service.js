@@ -2461,7 +2461,7 @@ const methods = {
                         AIID: null,
                         TransferEmbryoID: embryo.TransferEmbryoID,
                         PAR: embryo.PAR,
-                        TimeNo: 1,
+                        TimeNo: embryo.TimeNo,
                         AIDate: null,
                         EmbryoDate: dayjs(embryo.TransferDate)
                           .locale("th")
@@ -2554,7 +2554,7 @@ const methods = {
                       AIID: null,
                       TransferEmbryoID: embryo.TransferEmbryoID,
                       PAR: embryo.PAR,
-                      TimeNo: 1,
+                      TimeNo: embryo.TimeNo,
                       AIDate: null,
                       EmbryoDate: dayjs(embryo.TransferDate)
                         .locale("th")
