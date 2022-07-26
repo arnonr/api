@@ -96,8 +96,10 @@ const methods = {
         ? dataJson.DistributionReason.DistributionReasonName
         : null,
 
+      SourceFarmName: dataJson.Farm ? `[${dataJson.Farm.FarmIdentificationNumber}] ${dataJson.Farm.FarmName}` : null,
+
       DestinationFarmName: dataJson.DestinationFarm
-        ? dataJson.DestinationFarm.FarmName
+        ? `[${dataJson.DestinationFarm.FarmIdentificationNumber}] ${dataJson.DestinationFarm.FarmName}`
         : null,
 
       DestinationOrganizationName: dataJson.Organization
