@@ -626,6 +626,7 @@ Reproduce.associate({
   RpToRightOvarySymptom,
   RpToRpSuggestion,
   ReproduceSuggestion,
+  BCS
 });
 
 OvarySymptom.associate({

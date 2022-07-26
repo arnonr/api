@@ -150,6 +150,176 @@ const methods = {
     return { query: query };
   },
 
+  getData(obj) {
+    let dataJson = obj.toJSON();
+
+    let leftOvarySymptomArray = [];
+    dataJson.LeftOvarySymptom.forEach((element) => {
+      leftOvarySymptomArray.push(element.OvarySymptomName);
+    });
+
+    let rightOvarySymptomArray = [];
+    obj.toJSON().RightOvarySymptom.forEach((element) => {
+      rightOvarySymptomArray.push(element.OvarySymptomName);
+    });
+
+    let vaginaSymptomArray = [];
+    obj.toJSON().VaginaSymptom.forEach((element) => {
+      vaginaSymptomArray.push(element.VaginaSymptomName);
+    });
+
+    let otherSymptomArray = [];
+    obj.toJSON().OtherSymptom.forEach((element) => {
+      otherSymptomArray.push(element.OtherSymptomName);
+    });
+
+    let causeAnimalArray = [];
+    obj.toJSON().CauseAnimal.forEach((element) => {
+      causeAnimalArray.push(element.CauseAnimalName);
+    });
+
+    let causeEnvironmentArray = [];
+    obj.toJSON().CauseEnvironment.forEach((element) => {
+      causeEnvironmentArray.push(element.CauseEnvironmentName);
+    });
+
+    let causeFeederArray = [];
+    obj.toJSON().CauseFeeder.forEach((element) => {
+      causeFeederArray.push(element.CauseFeederName);
+    });
+
+    let causeHealthArray = [];
+    obj.toJSON().CauseHealth.forEach((element) => {
+      causeHealthArray.push(element.CauseHealthName);
+    });
+
+    let cureAntibioticArray = [];
+    obj.toJSON().CureAntibiotic.forEach((element) => {
+      cureAntibioticArray.push(element.CureAntibioticName);
+    });
+
+    let cureHormoneArray = [];
+    obj.toJSON().CureHormone.forEach((element) => {
+      cureHormoneArray.push(element.CureHormoneName);
+    });
+
+    let cureVitaminArray = [];
+    obj.toJSON().CureVitamin.forEach((element) => {
+      cureVitaminArray.push(element.CureVitaminName);
+    });
+
+    let reproduceSuggestionArray = [];
+    obj.toJSON().ReproduceSuggestion.forEach((element) => {
+      reproduceSuggestionArray.push(element.ReproduceSuggestionName);
+    });
+
+    obj = {
+      AnimalID: dataJson.AnimalID,
+      ThaiReproduceDate: dataJson.ThaiReproduceDate,
+      ThaiStandingHeatDate: dataJson.ThaiStandingHeatDate,
+      BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+      HeatTypeName: dataJson.HeatType ? dataJson.HeatType.HeatTypeName : null,
+      HeatCircleName: dataJson.HeatCircle
+        ? dataJson.HeatCircle.HeatCircleName
+        : null,
+      FarmerRemark: dataJson.FarmerRemark,
+      DiagnoseVulvaName: dataJson.DiagnoseVulva
+        ? dataJson.DiagnoseVulva == "INTUMESCE"
+          ? "บวม"
+          : "ไม่บวม"
+        : null,
+
+      DiagnoseVaginaName: dataJson.DiagnoseVulva
+        ? dataJson.DiagnoseVulva == "INTUMESCE"
+          ? "บวม"
+          : "ไม่บวม"
+        : null,
+
+      DiagnoseVaginaMucilageName: dataJson.DiagnoseVaginaMucilage
+        ? dataJson.DiagnoseVaginaMucilage == "YES"
+          ? "มีเมือก"
+          : "ไม่มีเมือก"
+        : null,
+
+      CervixTypeName: dataJson.CervixType
+        ? dataJson.CervixType == "CURVE"
+          ? "คด"
+          : "ไม่คด"
+        : null,
+
+      CervicalName: dataJson.Cervical
+        ? dataJson.Cervical == "CLOSE"
+          ? "ปิด"
+          : "เปิด"
+        : null,
+
+      AdnexaTypeName: dataJson.AdnexaType
+        ? dataJson.AdnexaType == "EQUAL"
+          ? "เท่ากัน"
+          : "ไม่เท่ากัน"
+        : null,
+
+      AdnexaToneName: !dataJson.AdnexaType
+        ? null
+        : dataJson.AdnexaType == 1
+        ? "+"
+        : dataJson.AdnexaType == 2
+        ? "++"
+        : dataJson.AdnexaType == 3
+        ? "+++"
+        : dataJson.AdnexaType == 4
+        ? "++++"
+        : null,
+
+      CureByHormoneName: dataJson.CureByHormone
+        ? dataJson.CureByHormone == 1
+          ? "checked"
+          : "unchecked"
+        : null,
+
+      CureByAntibioticName: dataJson.CureByAntibiotic
+        ? dataJson.CureByAntibiotic == 1
+          ? "checked"
+          : "unchecked"
+        : null,
+
+      CureByVitaminName: dataJson.CureByVitamin
+        ? dataJson.CureByVitamin == 1
+          ? "checked"
+          : "unchecked"
+        : null,
+
+      ...dataJson,
+
+      LeftOvarySymptom: leftOvarySymptomArray,
+      LeftOvarySymptomID: JSON.parse(obj.toJSON().LeftOvarySymptomID),
+      RightOvarySymptom: rightOvarySymptomArray,
+      RightOvarySymptomID: JSON.parse(obj.toJSON().RightOvarySymptomID),
+      VaginaSymptom: vaginaSymptomArray,
+      VaginaSymptomID: JSON.parse(obj.toJSON().VaginaSymptomID),
+      OtherSymptom: otherSymptomArray,
+      OtherSymptomID: JSON.parse(obj.toJSON().OtherSymptomID),
+      CauseAnimal: causeAnimalArray,
+      CauseAnimalID: JSON.parse(obj.toJSON().CauseAnimalID),
+      CauseEnvironment: causeEnvironmentArray,
+      CauseEnvironmentID: JSON.parse(obj.toJSON().CauseEnvironmentID),
+      CauseFeeder: causeFeederArray,
+      CauseFeederID: JSON.parse(obj.toJSON().CauseFeederID),
+      CauseHealth: causeHealthArray,
+      CauseHealthID: JSON.parse(obj.toJSON().CauseHealthID),
+      CureAntibiotic: cureAntibioticArray,
+      CureAntibioticID: JSON.parse(obj.toJSON().CureAntibioticID),
+      CureHormone: cureHormoneArray,
+      CureHormoneID: JSON.parse(obj.toJSON().CureHormoneID),
+      CureVitamin: cureVitaminArray,
+      CureVitaminID: JSON.parse(obj.toJSON().CureVitaminID),
+      ReproduceSuggestion: reproduceSuggestionArray,
+      ReproduceSuggestionID: JSON.parse(obj.toJSON().ReproduceSuggestionID),
+    };
+
+    return obj;
+  },
+
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
@@ -162,122 +332,7 @@ const methods = {
               count = rows.length;
 
             rows = rows.map((data) => {
-              let leftOvarySymptomArray = [];
-              data.LeftOvarySymptom.forEach((element) => {
-                leftOvarySymptomArray.push(element.OvarySymptomName);
-              });
-
-              let rightOvarySymptomArray = [];
-              data.RightOvarySymptom.forEach((element) => {
-                rightOvarySymptomArray.push(element.OvarySymptomName);
-              });
-
-              let vaginaSymptomArray = [];
-              data.VaginaSymptom.forEach((element) => {
-                vaginaSymptomArray.push(element.VaginaSymptomName);
-              });
-
-              let otherSymptomArray = [];
-              data.OtherSymptom.forEach((element) => {
-                otherSymptomArray.push(element.OtherSymptomName);
-              });
-
-              let causeAnimalArray = [];
-              data.CauseAnimal.forEach((element) => {
-                causeAnimalArray.push(element.CauseAnimalName);
-              });
-
-              let causeEnvironmentArray = [];
-              data.CauseEnvironment.forEach((element) => {
-                causeEnvironmentArray.push(element.CauseEnvironmentName);
-              });
-
-              let causeFeederArray = [];
-              data.CauseFeeder.forEach((element) => {
-                causeFeederArray.push(element.CauseFeedertName);
-              });
-
-              let causeHealthArray = [];
-              data.CauseHealth.forEach((element) => {
-                causeHealthArray.push(element.CauseHealthtName);
-              });
-
-              let cureAntibioticArray = [];
-              data.CureAntibiotic.forEach((element) => {
-                cureAntibioticArray.push(element.CureAntibioticName);
-              });
-
-              let cureHormoneArray = [];
-              data.CureHormone.forEach((element) => {
-                cureHormoneArray.push(element.CureHormoneName);
-              });
-
-              let cureVitaminArray = [];
-              data.CureVitamin.forEach((element) => {
-                cureVitaminArray.push(element.CureVitaminName);
-              });
-
-              let reproduceSuggestionArray = [];
-              data.ReproduceSuggestion.forEach((element) => {
-                reproduceSuggestionArray.push(element.ReproduceSuggestionName);
-              });
-
-              data = {
-                ...data.toJSON(),
-                LeftOvarySymptom: undefined,
-                LeftOvarySymptomArray: leftOvarySymptomArray,
-                LeftOvarySymptomID: JSON.parse(
-                  data.toJSON().LeftOvarySymptomID
-                ),
-                RightOvarySymptom: undefined,
-                RightOvarySymptomArray: rightOvarySymptomArray,
-                RightOvarySymptomID: JSON.parse(
-                  data.toJSON().RightOvarySymptomID
-                ),
-                VaginaSymptom: undefined,
-                VaginaSymptom: vaginaSymptomArray,
-                VaginaSymptomID: JSON.parse(data.toJSON().VaginaSymptomID),
-
-                OtherSymptom: undefined,
-                OtherSymptom: otherSymptomArray,
-                OtherSymptomID: JSON.parse(data.toJSON().OtherSymptomID),
-
-                CauseAnimal: undefined,
-                CauseAnimal: causeAnimalArray,
-                CauseAnimalID: JSON.parse(data.toJSON().CauseAnimalID),
-
-                CauseEnvironment: undefined,
-                CauseEnvironment: causeEnvironmentArray,
-                CauseEnvironmentID: JSON.parse(
-                  data.toJSON().CauseEnvironmentID
-                ),
-
-                CauseFeeder: undefined,
-                CauseFeeder: causeFeederArray,
-                CauseFeederID: JSON.parse(data.toJSON().CauseFeederID),
-
-                CauseHealth: undefined,
-                CauseHealth: causeHealthArray,
-                CauseHealthID: JSON.parse(data.toJSON().CauseHealthID),
-
-                CureAntibiotic: undefined,
-                CureAntibiotic: cureAntibioticArray,
-                CureAntibioticID: JSON.parse(data.toJSON().CureAntibioticID),
-
-                CureHormone: undefined,
-                CureHormone: cureHormoneArray,
-                CureHormoneID: JSON.parse(data.toJSON().CureHormoneID),
-
-                CureVitamin: undefined,
-                CureVitamin: cureVitaminArray,
-                CureVitaminID: JSON.parse(data.toJSON().CureVitaminID),
-
-                ReproduceSuggestion: undefined,
-                ReproduceSuggestion: reproduceSuggestionArray,
-                ReproduceSuggestionID: JSON.parse(
-                  data.toJSON().ReproduceSuggestionID
-                ),
-              };
+              data = this.getData(data);
               return data;
             });
             //
@@ -354,98 +409,12 @@ const methods = {
             },
           ],
         });
-        
+
         if (!obj) reject(ErrorNotFound("id: not found"));
-       
-        let leftOvarySymptomArray = [];
-        obj.toJSON().LeftOvarySymptom.forEach((element) => {
-          leftOvarySymptomArray.push(element.OvarySymptomName);
-        });
 
-        let rightOvarySymptomArray = [];
-        obj.toJSON().RightOvarySymptom.forEach((element) => {
-          rightOvarySymptomArray.push(element.OvarySymptomName);
-        });
+        let data = this.getData(obj);
 
-        let vaginaSymptomArray = [];
-        obj.toJSON().VaginaSymptom.forEach((element) => {
-          vaginaSymptomArray.push(element.VaginaSymptomName);
-        });
-
-        let otherSymptomArray = [];
-        obj.toJSON().OtherSymptom.forEach((element) => {
-          otherSymptomArray.push(element.OtherSymptomName);
-        });
-
-        let causeAnimalArray = [];
-        obj.toJSON().CauseAnimal.forEach((element) => {
-          causeAnimalArray.push(element.CauseAnimalName);
-        });
-
-        let causeEnvironmentArray = [];
-        obj.toJSON().CauseEnvironment.forEach((element) => {
-          causeEnvironmentArray.push(element.CauseEnvironmentName);
-        });
-
-        let causeFeederArray = [];
-        obj.toJSON().CauseFeeder.forEach((element) => {
-          causeFeederArray.push(element.CauseFeederName);
-        });
-
-        let causeHealthArray = [];
-        obj.toJSON().CauseHealth.forEach((element) => {
-          causeHealthArray.push(element.CauseHealthName);
-        });
-
-        let cureAntibioticArray = [];
-        obj.toJSON().CureAntibiotic.forEach((element) => {
-          cureAntibioticArray.push(element.CureAntibioticName);
-        });
-
-        let cureHormoneArray = [];
-        obj.toJSON().CureHormone.forEach((element) => {
-          cureHormoneArray.push(element.CureHormoneName);
-        });
-
-        let cureVitaminArray = [];
-        obj.toJSON().CureVitamin.forEach((element) => {
-          cureVitaminArray.push(element.CureVitaminName);
-        });
-
-        let reproduceSuggestionArray = [];
-        obj.toJSON().ReproduceSuggestion.forEach((element) => {
-          reproduceSuggestionArray.push(element.ReproduceSuggestionName);
-        });
-
-        obj = {
-          ...obj.toJSON(),
-          LeftOvarySymptom: leftOvarySymptomArray,
-          LeftOvarySymptomID: JSON.parse(obj.toJSON().LeftOvarySymptomID),
-          RightOvarySymptom: rightOvarySymptomArray,
-          RightOvarySymptomID: JSON.parse(obj.toJSON().RightOvarySymptomID),
-          VaginaSymptom: vaginaSymptomArray,
-          VaginaSymptomID: JSON.parse(obj.toJSON().VaginaSymptomID),
-          OtherSymptom: otherSymptomArray,
-          OtherSymptomID: JSON.parse(obj.toJSON().OtherSymptomID),
-          CauseAnimal: causeAnimalArray,
-          CauseAnimalID: JSON.parse(obj.toJSON().CauseAnimalID),
-          CauseEnvironment: causeEnvironmentArray,
-          CauseEnvironmentID: JSON.parse(obj.toJSON().CauseEnvironmentID),
-          CauseFeeder: causeFeederArray,
-          CauseFeederID: JSON.parse(obj.toJSON().CauseFeederID),
-          CauseHealth: causeHealthArray,
-          CauseHealthID: JSON.parse(obj.toJSON().CauseHealthID),
-          CureAntibiotic: cureAntibioticArray,
-          CureAntibioticID: JSON.parse(obj.toJSON().CureAntibioticID),
-          CureHormone: cureHormoneArray,
-          CureHormoneID: JSON.parse(obj.toJSON().CureHormoneID),
-          CureVitamin: cureVitaminArray,
-          CureVitaminID: JSON.parse(obj.toJSON().CureVitaminID),
-          ReproduceSuggestion: reproduceSuggestionArray,
-          ReproduceSuggestionID: JSON.parse(obj.toJSON().ReproduceSuggestionID),
-        };
-
-        resolve(obj);
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

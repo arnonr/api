@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class Reproduce extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -24,7 +30,7 @@ class Reproduce extends Model {
       foreignKey: "ReproduceID",
       as: "LeftOvarySymptom",
     });
-    
+
     this.belongsToMany(models.VaginaSymptom, {
       through: models.RpToVaginaSymptom,
       foreignKey: "ReproduceID",
@@ -92,6 +98,10 @@ class Reproduce extends Model {
       foreignKey: "RemoveByStaffID",
       as: "RemoveBy",
     });
+    this.belongsTo(models.BCS, {
+      foreignKey: "BCSID",
+      as: "BCS",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -117,8 +127,18 @@ Reproduce.init(
     },
     StandingHeatDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       comment: "วันที่เป็นสัด (ในรอบปัจจุบัน)",
+    },
+    ReproduceDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      comment: "วันที่ตรวจ",
+    },
+    BCSID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงคะแนนร่างกาย",
     },
     HeatTypeID: {
       type: DataTypes.INTEGER(11),
@@ -387,6 +407,22 @@ Reproduce.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiStandingHeatDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.StandingHeatDate
+          ? dayjs(this.StandingHeatDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiReproduceDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ReproduceDate
+          ? dayjs(this.ReproduceDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {
