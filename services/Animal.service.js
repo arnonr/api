@@ -2408,6 +2408,7 @@ const methods = {
                     ],
                     where: {
                       AnimalID: data.AnimalID,
+                      isRemove: 0,
                     },
                   });
 
@@ -2418,6 +2419,7 @@ const methods = {
                     ],
                     where: {
                       AnimalID: data.AnimalID,
+                      isRemove: 0,
                     },
                   });
 
