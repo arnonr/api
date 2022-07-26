@@ -111,12 +111,12 @@ const methods = {
                 BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
                 SemenNumber:
                   dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
-                Dose: data.Dose,
+                Dose: dataJson.Dose,
                 AIStatusName: dataJson.AIStatusName,
                 PregnancyCheckup: dataJson.PregnancyCheckups
                   ? dataJson.PregnancyCheckups[0]
-                    ? dataJson.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
-                        .PregnancyCheckStatusName
+                    ? dataJson.PregnancyCheckups[0].toJSON()
+                        .PregnancyCheckStatus.PregnancyCheckStatusName
                     : null
                   : null,
                 ThaiGiveBirthDate: dataJson.GiveBirth
@@ -151,13 +151,54 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          include: [
+            { all: true, required: false },
+            {
+              model: PregnancyCheckup,
+              limit: 1,
+              include: { model: PregnancyCheckStatus },
+              order: [
+                ["CheckupDate", "DESC"],
+                ["PregnancyCheckupID", "DESC"],
+              ],
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let dataJson = obj.toJSON();
+
+        let data = {
+          AnimalID: dataJson.AnimalID,
+          AIID: dataJson.AIID,
+          PAR: dataJson.PAR,
+          TimeNo: dataJson.TimeNo,
+          ThaiAIDate: dataJson.ThaiAIDate,
+          BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+          SemenNumber:
+            dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
+          Dose: dataJson.Dose,
+          AIStatusName: dataJson.AIStatusName,
+          PregnancyCheckup: dataJson.PregnancyCheckups
+            ? dataJson.PregnancyCheckups[0]
+              ? dataJson.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
+                  .PregnancyCheckStatusName
+              : null
+            : null,
+          ThaiGiveBirthDate: dataJson.GiveBirth
+            ? dataJson.GiveBirth.ThaiGiveBirthDate
+            : null,
+          ResponsibilityStaffName: dataJson.Staff
+            ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+            : null,
+
+          ...dataJson,
+        };
+
+        resolve(data);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },

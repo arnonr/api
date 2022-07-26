@@ -25,6 +25,10 @@ class GiveBirth extends Model {
       foreignKey: "RemoveByStaffID",
       as: "RemoveBy",
     });
+    this.belongsTo(models.BCS, {
+      foreignKey: "BCSID",
+      as: "BCS",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -115,6 +119,11 @@ GiveBirth.init(
       allowNull: true,
       comment: "ท้องที่",
     },
+    BCSID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงคะแนนร่างกาย",
+    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
@@ -162,9 +171,27 @@ GiveBirth.init(
     ThaiGiveBirthDate: {
       type: DataTypes.VIRTUAL,
       get() {
-        return this.GiveBirthDate != null
+        return this.GiveBirthDate
           ? dayjs(this.GiveBirthDate).locale("th").format("DD/MM/BBBB")
           : null;
+      },
+    },
+    ThaiGiveBirthState: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let text = ["คลอดปกติ", "คลอดยาก", "คลอดก่อนกำหนด"];
+        let number = null;
+        if (!this.GiveBirthState) {
+          number = null;
+        } else if (this.GiveBirthState == "NORMAL") {
+          number = 0;
+        } else if (this.GiveBirthState == "DIFFICULT") {
+          number = 1;
+        } else {
+          number = 2;
+        }
+
+        return text[number];
       },
     },
   },

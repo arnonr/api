@@ -1,5 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
 
 class PregnancyCheckup extends Model {
   static associate(models) {
@@ -12,6 +17,9 @@ class PregnancyCheckup extends Model {
     this.belongsTo(models.AI, {
       foreignKey: "AIID",
     });
+    this.belongsTo(models.TransferEmbryo, {
+      foreignKey: "TransferEmbryoID",
+    });
     this.belongsTo(models.PregnancyCheckMethod, {
       foreignKey: "PregnancyCheckMethodID",
     });
@@ -20,7 +28,11 @@ class PregnancyCheckup extends Model {
     });
     this.belongsTo(models.Staff, {
       foreignKey: "RemoveByStaffID",
-      as: "RemoveBy"
+      as: "RemoveBy",
+    });
+    this.belongsTo(models.BCS, {
+      foreignKey: "BCSID",
+      as: "BCS",
     });
   }
   // Custom JSON Response
@@ -80,6 +92,11 @@ PregnancyCheckup.init(
       allowNull: false,
       comment: "ผลการตรวจการตั้งท้อง",
     },
+    BCSID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงคะแนนร่างกาย",
+    },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -133,6 +150,14 @@ PregnancyCheckup.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiCheckupDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.CheckupDate
+          ? dayjs(this.CheckupDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

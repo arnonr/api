@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class AbortCheckup extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -18,6 +24,10 @@ class AbortCheckup extends Model {
     this.belongsTo(models.Staff, {
       foreignKey: "RemoveByStaffID",
       as: "RemoveBy",
+    });
+    this.belongsTo(models.BCS, {
+      foreignKey: "BCSID",
+      as: "BCS",
     });
   }
   // Custom JSON Response
@@ -69,7 +79,11 @@ AbortCheckup.init(
       allowNull: false,
       comment: "รหัสลักษณะการแท้ง",
     },
-
+    BCSID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงคะแนนร่างกาย",
+    },  
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -81,14 +95,14 @@ AbortCheckup.init(
       comment: "หมายเหตุ (ถ้ามี)",
     },
     AbortDay: {
-        type: DataTypes.INTEGER(11),
-        allowNull: true,
-        comment: "ระยะการแท้ง (วัน)",
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "ระยะการแท้ง (วัน)",
     },
     PAR: {
-        type: DataTypes.INTEGER(11),
-        allowNull: true,
-        comment: "ท้องที่",
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "ท้องที่",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -133,6 +147,14 @@ AbortCheckup.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiAbortDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.AbortDate
+          ? dayjs(this.AbortDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

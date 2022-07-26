@@ -11,8 +11,7 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.GiveBirthID)
-      $where["GiveBirthID"] = req.query.GiveBirthID;
+    if (req.query.GiveBirthID) $where["GiveBirthID"] = req.query.GiveBirthID;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
@@ -22,10 +21,11 @@ const methods = {
     if (req.query.NormalBreedingID)
       $where["NormalBreedingID"] = req.query.NormalBreedingID;
 
-    if (req.query.GiveBirthDate) $where["GiveBirthDate"] = req.query.GiveBirthDate;
+    if (req.query.GiveBirthDate)
+      $where["GiveBirthDate"] = req.query.GiveBirthDate;
 
     if (req.query.GiveBirthState)
-    $where["GiveBirthState"] = req.query.GiveBirthState;
+      $where["GiveBirthState"] = req.query.GiveBirthState;
 
     if (req.query.GiveBirthHelpID)
       $where["GiveBirthHelpID"] = req.query.GiveBirthHelpID;
@@ -82,8 +82,75 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              let dataJson = data.toJSON();
+              if (dataJson.AI) {
+                data = {
+                  GiveBirthID: dataJson.GiveBirthID,
+                  AnimalID: dataJson.AnimalID,
+                  AIID: dataJson.AI.AIID,
+                  PAR: dataJson.AI.PAR,
+                  TimeNo: dataJson.AI.TimeNo,
+                  ThaiAIDate: dataJson.AI.ThaiAIDate,
+                  // Type
+                  Type: "AI",
+                  ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+                  Amount: dataJson.Amount,
+                  ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+                  PregnancyDay: dataJson.PregnancyDay,
+                  BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+                  ResponsibilityStaffName: dataJson.Staff
+                    ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+                    : null,
+
+                  ...dataJson,
+                };
+              } else if (dataJson.TransferEmbryo) {
+                data = {
+                  GiveBirthID: dataJson.GiveBirthID,
+                  AnimalID: dataJson.AnimalID,
+                  TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
+                  PAR: dataJson.TransferEmbryo.PAR,
+                  // TimeNo: dataJson.TransferEmbryo.TimeNo,
+                  ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+                  Type: "Embryo",
+                  ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+                  Amount: dataJson.Amount,
+                  ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+                  PregnancyDay: dataJson.PregnancyDay,
+                  BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+                  ResponsibilityStaffName: dataJson.Staff
+                    ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+                    : null,
+
+                  ...dataJson,
+                };
+              } else {
+                data = {
+                  GiveBirthID: dataJson.GiveBirthID,
+                  AnimalID: dataJson.AnimalID,
+                  AIID: null,
+                  // PAR: dataJson.PAR,
+                  Type: "NI",
+                  ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+                  Amount: dataJson.Amount,
+                  ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+                  PregnancyDay: dataJson.PregnancyDay,
+                  BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+                  ResponsibilityStaffName: dataJson.Staff
+                    ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+                    : null,
+
+                  ...dataJson,
+                };
+              }
+
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -108,9 +175,74 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let dataJson = obj.toJSON();
+        let data = null;
+
+        if (dataJson.AI) {
+          data = {
+            GiveBirthID: dataJson.GiveBirthID,
+            AnimalID: dataJson.AnimalID,
+            AIID: dataJson.AI.AIID,
+            PAR: dataJson.AI.PAR,
+            TimeNo: dataJson.AI.TimeNo,
+            ThaiAIDate: dataJson.AI.ThaiAIDate,
+            // Type
+            Type: "AI",
+            ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+            Amount: dataJson.Amount,
+            ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+            PregnancyDay: dataJson.PregnancyDay,
+            BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+            ResponsibilityStaffName: dataJson.Staff
+              ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+              : null,
+
+            ...dataJson,
+          };
+        } else if (dataJson.TransferEmbryo) {
+          data = {
+            GiveBirthID: dataJson.GiveBirthID,
+            AnimalID: dataJson.AnimalID,
+            TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
+            PAR: dataJson.TransferEmbryo.PAR,
+            // TimeNo: dataJson.TransferEmbryo.TimeNo,
+            ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+            Type: "Embryo",
+            ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+            Amount: dataJson.Amount,
+            ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+            PregnancyDay: dataJson.PregnancyDay,
+            BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+            ResponsibilityStaffName: dataJson.Staff
+              ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+              : null,
+
+            ...dataJson,
+          };
+        } else {
+          data = {
+            GiveBirthID: dataJson.GiveBirthID,
+            AnimalID: dataJson.AnimalID,
+            AIID: null,
+            PAR: dataJson.PAR,
+            Type: "NI",
+            ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+            Amount: dataJson.Amount,
+            ThaiGiveBirthState: dataJson.ThaiGiveBirthState,
+            PregnancyDay: dataJson.PregnancyDay,
+            BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+            ResponsibilityStaffName: dataJson.Staff
+              ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+              : null,
+
+            ...dataJson,
+          };
+        }
+
+        resolve(data);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
@@ -122,7 +254,10 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        await Animal.update({ProductionStatusID: 2,AnimalPar: inserted.PAR+1}, { where: { AnimalID: inserted.AnimalID } });
+        await Animal.update(
+          { ProductionStatusID: 2, AnimalPar: inserted.PAR + 1 },
+          { where: { AnimalID: inserted.AnimalID } }
+        );
 
         let res = methods.findById(inserted.GiveBirthID);
 

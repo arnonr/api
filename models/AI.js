@@ -384,14 +384,16 @@ AI.init(
     ThaiAIDate: {
       type: DataTypes.VIRTUAL,
       get() {
-        return dayjs(this.AIDate).locale("th").format("DD/MM/BBBB");
+        return this.AIDate
+          ? dayjs(this.AIDate).locale("th").format("DD/MM/BBBB")
+          : null;
       },
     },
     AIStatusName: {
       type: DataTypes.VIRTUAL,
       get() {
         let text = ["รอผล", "สำเร็จ", "ไม่สำเร็จ"];
-        return text[this.AIStatus]
+        return text[this.AIStatus];
       },
     },
   },

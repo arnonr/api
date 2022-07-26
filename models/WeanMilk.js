@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class WeanMilk extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -39,6 +45,21 @@ WeanMilk.init(
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสสัตว์",
+    },
+    AIID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงการผสมเทียม",
+    },
+    TransferEmbryoID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงการย้ายฝากตัวอ่อน",
+    },
+    NormalBreedingID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสอ้างอิงกรณีผสมพันธุ์ตามธรรมชาติ",
     },
     WeanMilkDate: {
       type: DataTypes.DATEONLY,
@@ -103,6 +124,14 @@ WeanMilk.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiWeanMilkDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.WeanMilkDate
+          ? dayjs(this.WeanMilkDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

@@ -3,8 +3,8 @@ const config = require("../configs/app"),
   db = require("../models/PregnancyCheckup"),
   { Op } = require("sequelize");
 
-  const Staff = require("../models/Staff");
-  const Animal = require("../models/Animal");
+const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -22,8 +22,7 @@ const methods = {
     if (req.query.NormalBreedingID)
       $where["NormalBreedingID"] = req.query.NormalBreedingID;
     if (req.query.TimeNo) $where["NormalBreedingID"] = req.query.TimeNo;
-    if (req.query.CheckupDate)
-      $where["CheckupDate"] = req.query.CheckupDate;
+    if (req.query.CheckupDate) $where["CheckupDate"] = req.query.CheckupDate;
     if (req.query.PregnancyCheckMethodID)
       $where["PregnancyCheckMethodID"] = req.query.PregnancyCheckMethodID;
     if (req.query.PregnancyCheckStatusID)
@@ -57,13 +56,83 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-    //   {
-    //     model: Staff,
-    //     attributes: ['StaffGivenName', 'StaffSurname']
-    //   },
+      //   {
+      //     model: Staff,
+      //     attributes: ['StaffGivenName', 'StaffSurname']
+      //   },
     ];
 
     return { query: query };
+  },
+
+  getData(data) {
+    let dataJson = data.toJSON();
+    if (dataJson.AI) {
+      data = {
+        PregnancyCheckupID: dataJson.PregnancyCheckupID,
+        AnimalID: dataJson.AnimalID,
+        AIID: dataJson.AI.AIID,
+        PAR: dataJson.AI.PAR,
+        TimeNo: dataJson.AI.TimeNo,
+        ThaiAIDate: dataJson.AI.ThaiAIDate,
+        // Type
+        Type: "AI",
+
+        ThaiCheckupDate: dataJson.ThaiCheckupDate,
+        PregnancyCheckupTimeNo: dataJson.TimeNo,
+        PregnancyCheckStatusName: dataJson.PregnancyCheckStatus
+          ? dataJson.PregnancyCheckStatus.PregnancyCheckStatusName
+          : null,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    } else if (dataJson.TransferEmbryo) {
+      data = {
+        PregnancyCheckupID: dataJson.PregnancyCheckupID,
+        AnimalID: dataJson.AnimalID,
+        TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
+        PAR: dataJson.TransferEmbryo.PAR,
+        TimeNo: dataJson.TransferEmbryo.TimeNo,
+        ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+        Type: "Embryo",
+        ThaiCheckupDate: dataJson.ThaiCheckupDate,
+        PregnancyCheckupTimeNo: dataJson.TimeNo,
+        PregnancyCheckStatusName: dataJson.PregnancyCheckStatus
+          ? dataJson.PregnancyCheckStatus.PregnancyCheckStatusName
+          : null,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    } else {
+      data = {
+        PregnancyCheckupID: dataJson.PregnancyCheckupID,
+        AnimalID: dataJson.AnimalID,
+        AIID: null,
+        // PAR: dataJson.PAR,
+        Type: "NI",
+        ThaiCheckupDate: dataJson.ThaiCheckupDate,
+        PregnancyCheckupTimeNo: dataJson.TimeNo,
+        PregnancyCheckStatusName: dataJson.PregnancyCheckStatus
+          ? dataJson.PregnancyCheckStatus.PregnancyCheckStatusName
+          : null,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    }
+
+    return data;
   },
 
   find(req) {
@@ -78,8 +147,14 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              data = this.getData(data);
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -104,9 +179,12 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+       let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
@@ -117,17 +195,20 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
-        
+
         let productionStatusID = null;
-        if(inserted.PregnancyCheckStatusID == 1){
+        if (inserted.PregnancyCheckStatusID == 1) {
           productionStatusID = 6;
-        }else if(inserted.PregnancyCheckStatusID == 2){
+        } else if (inserted.PregnancyCheckStatusID == 2) {
           productionStatusID = 5;
-        }else{
+        } else {
           productionStatusID = 3;
         }
-      
-        await Animal.update({ProductionStatusID: productionStatusID}, { where: { AnimalID: inserted.AnimalID } });
+
+        await Animal.update(
+          { ProductionStatusID: productionStatusID },
+          { where: { AnimalID: inserted.AnimalID } }
+        );
 
         let res = methods.findById(inserted.PregnancyCheckupID);
 

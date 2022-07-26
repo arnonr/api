@@ -1,5 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
 
 class TransferEmbryo extends Model {
   static associate(models) {
@@ -11,7 +16,7 @@ class TransferEmbryo extends Model {
     });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
-      as: "BCS"
+      as: "BCS",
     });
   }
   // Custom JSON Response
@@ -43,7 +48,7 @@ TransferEmbryo.init(
     },
     BCSID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสอ้างอิงคะแนนร่างกาย",
     },
     CLType: {
@@ -89,39 +94,44 @@ TransferEmbryo.init(
       comment: "รหัสเจ้าหน้าที่ที่ดำเนินการ",
     },
     EstimateBirthDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        comment: "ประมาณการวันคลอด",
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "ประมาณการวันคลอด",
     },
     BirthDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        comment: "วันคลอด",
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วันคลอด",
     },
     LeftOvaryAmount: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะแพะ จำนวนรังไข่ข้างซ้าย",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะแพะ จำนวนรังไข่ข้างซ้าย",
     },
     RightOvaryAmount: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะแพะ จำนวนรังไข่ข้างขวา",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะแพะ จำนวนรังไข่ข้างขวา",
     },
     LeftOvaryGrade: {
-        type: DataTypes.ENUM('A', 'B', 'C'),
-        allowNull: true,
-        comment: "เฉพาะแพะ เกรดรังไข่ข้างซ้าย",
+      type: DataTypes.ENUM("A", "B", "C"),
+      allowNull: true,
+      comment: "เฉพาะแพะ เกรดรังไข่ข้างซ้าย",
     },
     RightOvaryGrade: {
-        type: DataTypes.ENUM('A', 'B', 'C'),
-        allowNull: true,
-        comment: "เฉพาะแพะ เกรดรังไข่ข้างขวา",
+      type: DataTypes.ENUM("A", "B", "C"),
+      allowNull: true,
+      comment: "เฉพาะแพะ เกรดรังไข่ข้างขวา",
     },
     PAR: {
-        type: DataTypes.INTEGER(11),
-        allowNull: false,
-        comment: "ท้องที่",
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "ท้องที่",
+    },
+    TimeNo: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "ครั้งที่ผสม",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -156,6 +166,14 @@ TransferEmbryo.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiTransferDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.TransferDate
+          ? dayjs(this.TransferDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

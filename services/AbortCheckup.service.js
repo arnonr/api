@@ -55,15 +55,81 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
+  },
+
+  getData(data) {
+    let dataJson = data.toJSON();
+    if (dataJson.AI) {
+      data = {
+        AbortCheckupID: dataJson.AbortCheckupID,
+        AnimalID: dataJson.AnimalID,
+        AIID: dataJson.AI.AIID,
+        PAR: dataJson.AI.PAR,
+        TimeNo: dataJson.AI.TimeNo,
+        ThaiAIDate: dataJson.AI.ThaiAIDate,
+        // Type
+        Type: "AI",
+
+        ThaiAbortDate: dataJson.ThaiAbortDate,
+
+        AbortResultName: dataJson.AbortResult
+          ? dataJson.AbortResult.AbortResultName
+          : null,
+        AbortDay: dataJson.AbortDay,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    } else if (dataJson.TransferEmbryo) {
+      data = {
+        AbortCheckupID: dataJson.AbortCheckupID,
+        AnimalID: dataJson.AnimalID,
+        TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
+        PAR: dataJson.TransferEmbryo.PAR,
+        // TimeNo: dataJson.TransferEmbryo.TimeNo,
+        ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+        Type: "Embryo",
+        ThaiAbortDate: dataJson.ThaiAbortDate,
+
+        AbortResultName: dataJson.AbortResult
+          ? dataJson.AbortResult.AbortResultName
+          : null,
+        AbortDay: dataJson.AbortDay,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    } else {
+      data = {
+        AbortCheckupID: dataJson.AbortCheckupID,
+        AnimalID: dataJson.AnimalID,
+        AIID: null,
+        // PAR: dataJson.PAR,
+        Type: "NI",
+        ThaiAbortDate: dataJson.ThaiAbortDate,
+        AbortResultName: dataJson.AbortResult
+          ? dataJson.AbortResult.AbortResultName
+          : null,
+        AbortDay: dataJson.AbortDay,
+        BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
+        ResponsibilityStaffName: dataJson.Staff
+          ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+          : null,
+
+        ...dataJson,
+      };
+    }
+
+    return data;
   },
 
   find(req) {
@@ -78,8 +144,14 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((data) => {
+              data = this.getData(data);
+              return data;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -104,7 +176,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -118,7 +193,10 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        await Animal.update({ProductionStatusID: 1}, { where: { AnimalID: inserted.AnimalID } });
+        await Animal.update(
+          { ProductionStatusID: 1 },
+          { where: { AnimalID: inserted.AnimalID } }
+        );
 
         let res = methods.findById(inserted.AbortCheckupID);
 

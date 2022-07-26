@@ -1,6 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
 class VaccineActivity extends Model {
   static associate(models) {
     // this.belongsTo(models.Animal, {
@@ -72,9 +76,9 @@ VaccineActivity.init(
       comment: "รหัสอ้างอิงวัคซีน",
     },
     Lot: {
-        type: DataTypes.INTEGER(11),
-        allowNull: false,
-        comment: "รหัสอ้างอิงวัคซีน",
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงวัคซีน",
     },
 
     VaccineNextDate: {
@@ -88,7 +92,7 @@ VaccineActivity.init(
       allowNull: true,
       comment: "รหัสอ้างอิงวิธีการตรวจ",
     },
-    
+
     OrganizationID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
@@ -148,6 +152,22 @@ VaccineActivity.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiVaccineActivityDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.VaccineActivityDate
+          ? dayjs(this.VaccineActivityDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiVaccineNextDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.VaccineNextDate
+          ? dayjs(this.VaccineNextDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

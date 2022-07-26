@@ -318,8 +318,10 @@ PregnancyCheckup.associate({
   Animal,
   Staff,
   AI,
+  TransferEmbryo,
   PregnancyCheckMethod,
   PregnancyCheckStatus,
+  BCS
 });
 
 AbortCheckup.associate({
@@ -327,6 +329,7 @@ AbortCheckup.associate({
   Staff,
   AI,
   AbortResult,
+  BCS
 });
 
 GiveBirth.associate({
@@ -334,6 +337,7 @@ GiveBirth.associate({
   Staff,
   AI,
   GiveBirthHelp,
+  BCS
 });
 
 Yearling.associate({
