@@ -1,6 +1,10 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
 class DewormActivity extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
