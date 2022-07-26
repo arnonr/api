@@ -66,9 +66,31 @@ Farmer.init(
       allowNull: false,
       comment: "เลขไอดีอ้างอิง ฟาร์ม",
     },
+    FarmerNumber: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "เลขทะเบียนเกษตรกร",
+      validate: {
+        isUnique: function (value, next) {
+          let self = this;
+          Farmer.findOne({
+            where: { FarmerNumber: value, isRemove: 0 },
+          })
+            .then(function (data) {
+              if (data && self.FarmerID !== data.FarmerID) {
+                throw new Error("FarmerNumber Code already in use!");
+              }
+              return next();
+            })
+            .catch(function (err) {
+              return next(err);
+            });
+        },
+      },
+    },
     IdentificationNumber: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "เลขประจำตัวบุคคล",
       validate: {
         isUnique: function (value, next) {
@@ -77,7 +99,6 @@ Farmer.init(
             where: { IdentificationNumber: value, isRemove: 0 },
           })
             .then(function (data) {
-              console.log(self);
               if (data && self.FarmerID !== data.FarmerID) {
                 throw new Error("IdentificationNumber Code already in use!");
               }

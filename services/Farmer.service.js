@@ -16,6 +16,11 @@ const methods = {
         [Op.like]: "%" + req.query.IdentificationNumber + "%",
       };
 
+    if (req.query.FarmerNumber)
+      $where["FarmerNumber"] = {
+        [Op.like]: "%" + req.query.FarmerNumber + "%",
+      };
+
     if (req.query.TitleID) $where["TitleID"] = req.query.TitleID;
 
     if (req.query.GivenName)
@@ -201,14 +206,15 @@ const methods = {
         var basicAuth = "Basic " + credentials;
         axios
           .post(
-            "https://service-eregist.dld.go.th/regislives_authen/oauth/token", {
+            "https://service-eregist.dld.go.th/regislives_authen/oauth/token",
+            {
               auth: {
-                username: 'zealtech',
-                password: 'zeal1tech'
+                username: "zealtech",
+                password: "zeal1tech",
               },
-              username: 'biotech',
-              password: '!Q@WeRegist',
-              grant_type: 'password'
+              username: "biotech",
+              password: "!Q@WeRegist",
+              grant_type: "password",
             }
           )
           .then(function (response) {
