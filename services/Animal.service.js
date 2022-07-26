@@ -2414,7 +2414,7 @@ const methods = {
                   let embryo = await TransferEmbryo.findOne({
                     order: [
                       ["PAR", "DESC"],
-                      // ["TimeNo", "DESC"],
+                      ["TimeNo", "DESC"],
                     ],
                     where: {
                       AnimalID: data.AnimalID,
