@@ -2462,6 +2462,7 @@ const methods = {
                         TransferEmbryoID: embryo.TransferEmbryoID,
                         PAR: embryo.PAR,
                         TimeNo: embryo.TimeNo,
+                        AI: ai,
                         AIDate: null,
                         EmbryoDate: dayjs(embryo.TransferDate)
                           .locale("th")
