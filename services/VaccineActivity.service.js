@@ -86,15 +86,13 @@ const methods = {
               rows.map(async (data) => {
                 let dataJson = data.toJSON();
 
-                let animalArray = [];
                 dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
 
-                for (const d of dataJson.AnimalID) {
-                  let animal = await Animal.findByPk(d);
-                  animalArray.push(animal);
-                }
-
-                dataJson.Animal = animalArray;
+                let animal = await Animal.findAll({
+                  where: { AnimalID: dataJson.AnimalID },
+                });
+                
+                dataJson.Animal = animal;
                 return dataJson;
               })
             );
@@ -152,7 +150,7 @@ const methods = {
           return;
         }
         data.AnimalID = JSON.stringify(data.AnimalID);
-        
+
         const obj = new db(data);
         const inserted = await obj.save();
 

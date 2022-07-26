@@ -84,15 +84,14 @@ const methods = {
               rows.map(async (data) => {
                 let dataJson = data.toJSON();
 
-                let animalArray = [];
                 dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
 
-                for (const d of dataJson.AnimalID) {
-                  let animal = await Animal.findByPk(d);
-                  animalArray.push(animal);
-                }
+                let animal = await Animal.findAll({
+                  where: { AnimalID: dataJson.AnimalID },
+                });
 
-                dataJson.Animal = animalArray;
+                dataJson.Animal = animal;
+
                 return dataJson;
               })
             );
