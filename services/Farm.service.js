@@ -198,7 +198,7 @@ const methods = {
             reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          let ProjectIDList = [...data.ProjectID];
+          var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
 
