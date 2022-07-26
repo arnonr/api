@@ -2437,9 +2437,9 @@ const methods = {
                   };
 
                   if (ai && embryo) {
-                    if (
-                      dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
-                      true
+                    if (embryo.TimeNo > ai.TimeNo
+                      // dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
+                      // true
                     ) {
                       let preg = await PregnancyCheckup.findOne({
                         order: [["TimeNo", "DESC"]],
