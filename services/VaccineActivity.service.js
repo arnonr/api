@@ -4,6 +4,7 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -77,9 +78,27 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                let dataJson = data.toJSON();
+
+                let animalArray = [];
+                dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
+
+                for (const d of dataJson.AnimalID) {
+                  let animal = await Animal.findByPk(d);
+                  animalArray.push(animal);
+                }
+
+                dataJson.Animal = animalArray;
+                return dataJson;
+              })
+            );
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -104,7 +123,20 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let dataJson = obj.toJSON();
+        let animalArray = [];
+
+        dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
+
+        for (const d of dataJson.AnimalID) {
+          let animal = await Animal.findByPk(d);
+          animalArray.push(animal);
+        }
+
+        dataJson.Animal = animalArray;
+
+        resolve(dataJson);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

@@ -11,8 +11,7 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.VaccineID)
-      $where["VaccineID"] = req.query.VaccineID;
+    if (req.query.VaccineID) $where["VaccineID"] = req.query.VaccineID;
 
     if (req.query.VaccineCode)
       $where["VaccineCode"] = {
@@ -119,9 +118,9 @@ const methods = {
           include: [{ all: true, required: false }],
         });
 
-        console.log( obj.toJSON())
+        console.log(obj.toJSON());
         if (!obj) reject(ErrorNotFound("id: not found"));
-        console
+        console;
         let animalTypeArray = [];
 
         obj.toJSON().AnimalTypes.forEach((element) => {
