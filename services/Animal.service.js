@@ -2393,14 +2393,6 @@ const methods = {
                     projectArray.push(element.ProjectName);
                   });
 
-                  //   // วันผสมล่าสุด
-                  //   // สถานะสัตว์(CO, PG)
-                  //   // สถานะตรวจท้องจากการผสมล่าสุด
-                  //   // แจ้งเตือน
-                  //   // ส่งกิจกรรมไปว่าทำอะไรได้่บ้าง
-                  //   // ส่งอายุปีกับเดือน
-                  //   // เจ้าหน้าที่เอาออกz
-
                   let ai = await AI.findOne({
                     order: [
                       ["PAR", "DESC"],
@@ -2437,7 +2429,8 @@ const methods = {
                   };
 
                   if (ai && embryo) {
-                    if (embryo.TimeNo > ai.TimeNo
+                    if (
+                      embryo.TimeNo > ai.TimeNo
                       // dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
                       // true
                     ) {
@@ -2464,12 +2457,11 @@ const methods = {
                         TransferEmbryoID: embryo.TransferEmbryoID,
                         PAR: embryo.PAR,
                         TimeNo: embryo.TimeNo,
-                        AI: ai,
-                        Embryo: embryo,
                         AIDate: null,
-                        EmbryoDate: dayjs(embryo.TransferDate)
+                        EmbryoDate: embryo.TransferDate,
+                        ThaiEmbryoDate: dayjs(embryo.TransferDate)
                           .locale("th")
-                          .format("DD MMM BB"),
+                          .format("DD/MM/BBBB"),
                         PregnancyStatus: pregResult,
                         Notification: await data.Notification(),
                       };
@@ -2491,18 +2483,17 @@ const methods = {
                       }
 
                       // console.log(ai.TimeNo+"FREEDOM")
-              
+
                       var data1 = {
                         ...data1,
                         AIID: ai.AIID,
                         TransferEmbryoID: null,
-                        AI: ai,
-                        Embryo: embryo,
                         PAR: ai.PAR,
                         TimeNo: ai.TimeNo,
-                        AIDate: dayjs(ai.AIDate)
+                        AIDate: ai.AIDate,
+                        ThaiAIDate: dayjs(ai.AIDate)
                           .locale("th")
-                          .format("DD MMM BB"),
+                          .format("DD/MM/BBBB"),
                         EmbryoDate: null,
                         PregnancyStatus: pregResult,
                         Notification: await data.Notification(),
@@ -2533,7 +2524,10 @@ const methods = {
                       TransferEmbryoID: null,
                       PAR: ai.PAR,
                       TimeNo: ai.TimeNo,
-                      AIDate: dayjs(ai.AIDate).locale("th").format("DD MMM BB"),
+                      AIDate: ai.AIDate,
+                      ThaiAIDate: dayjs(ai.AIDate)
+                        .locale("th")
+                        .format("DD/MM/BBBB"),
                       EmbryoDate: null,
                       PregnancyStatus: pregResult,
                       Notification: await data.Notification(),
@@ -2562,9 +2556,10 @@ const methods = {
                       PAR: embryo.PAR,
                       TimeNo: embryo.TimeNo,
                       AIDate: null,
-                      EmbryoDate: dayjs(embryo.TransferDate)
+                      EmbryoDate: embryo.TransferDate,
+                      ThaiEmbryoDate: dayjs(embryo.TransferDate)
                         .locale("th")
-                        .format("DD MMM BB"),
+                        .format("DD/MM/BBBB"),
                       PregnancyStatus: pregResult,
                       Notification: await data.Notification(),
                     };
