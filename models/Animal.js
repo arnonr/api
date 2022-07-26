@@ -607,7 +607,7 @@ Animal.init(
     AnimalPar: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      defaultValue: 1,
+      defaultValue: 0,
       comment: "ท้องที่",
     },
     AnimalBirthDate: {
