@@ -192,7 +192,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-
+        //
         if (data.ProjectID) {
           if (!Array.isArray(data.ProjectID)) {
             reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
