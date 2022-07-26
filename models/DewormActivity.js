@@ -49,9 +49,14 @@ DewormActivity.init(
     },
 
     AnimalID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
       comment: "รหัสสัตว์",
+    },
+    FarmID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสฟาร์ม",
     },
 
     DewormMedicineID: {
@@ -65,7 +70,7 @@ DewormActivity.init(
       allowNull: false,
       comment: "วันที่ถ่ายพยาธิครั้งถัดไป",
     },
-    
+
     OrganizationID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
@@ -125,6 +130,22 @@ DewormActivity.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiDewormActivityDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.DewormActivityDate
+          ? dayjs(this.DewormActivityDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiDewormNextDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.DewormNextDate
+          ? dayjs(this.DewormNextDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

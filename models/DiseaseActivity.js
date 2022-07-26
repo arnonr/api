@@ -57,9 +57,14 @@ DiseaseActivity.init(
     },
 
     AnimalID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
       comment: "รหัสสัตว์",
+    },
+    FarmID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสฟาร์ม",
     },
 
     DiseaseID: {
@@ -145,6 +150,22 @@ DiseaseActivity.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiDiseaseActivityDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.DiseaseActivityDate
+          ? dayjs(this.DiseaseActivityDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiDiseaseNextDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.DiseaseNextDate
+          ? dayjs(this.DiseaseNextDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

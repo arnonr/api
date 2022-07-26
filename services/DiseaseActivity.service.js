@@ -4,6 +4,7 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -21,17 +22,16 @@ const methods = {
     if (req.query.DiseaseID) $where["DiseaseID"] = req.query.DiseaseID;
 
     if (req.query.DiseaseNextDate)
-    $where["DiseaseNextDate"] = req.query.DiseaseNextDate;
+      $where["DiseaseNextDate"] = req.query.DiseaseNextDate;
 
     if (req.query.DiseaseMethodID)
-    $where["DiseaseMethodID"] = req.query.DiseaseMethodID;
+      $where["DiseaseMethodID"] = req.query.DiseaseMethodID;
 
     if (req.query.DiseaseResultID)
-    $where["DiseaseResultID"] = req.query.DiseaseResultID;
+      $where["DiseaseResultID"] = req.query.DiseaseResultID;
 
     if (req.query.OrganizationID)
-    $where["OrganizationID"] = req.query.OrganizationID;
-
+      $where["OrganizationID"] = req.query.OrganizationID;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -84,9 +84,27 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                let dataJson = data.toJSON();
+
+                let animalArray = [];
+                dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
+
+                for (const d of dataJson.AnimalID) {
+                  let animal = await Animal.findByPk(d);
+                  animalArray.push(animal);
+                }
+
+                dataJson.Animal = animalArray;
+                return dataJson;
+              })
+            );
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -111,7 +129,20 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let dataJson = obj.toJSON();
+        let animalArray = [];
+
+        dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
+
+        for (const d of dataJson.AnimalID) {
+          let animal = await Animal.findByPk(d);
+          animalArray.push(animal);
+        }
+
+        dataJson.Animal = animalArray;
+
+        resolve(dataJson);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
@@ -122,8 +153,22 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalID)) {
+          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+        data.AnimalID = JSON.stringify(data.AnimalID);
+
         const obj = new db(data);
         const inserted = await obj.save();
+
+        if (data.AnimalID) {
+          if (!Array.isArray(data.AnimalID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          data.AnimalID = JSON.stringify(data.AnimalID);
+        }
 
         let res = methods.findById(inserted.DiseaseActivityID);
 

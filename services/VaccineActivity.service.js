@@ -147,7 +147,12 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalID)) {
+          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
         data.AnimalID = JSON.stringify(data.AnimalID);
+        
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -171,6 +176,10 @@ const methods = {
         data.VaccineActivityID = parseInt(id);
 
         if (data.AnimalID) {
+          if (!Array.isArray(data.AnimalID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
 
