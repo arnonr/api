@@ -115,6 +115,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+        data.AnimalID = JSON.stringify(data.AnimalID);
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -136,6 +137,10 @@ const methods = {
 
         // Update
         data.VaccineActivityID = parseInt(id);
+
+        if (data.AnimalID) {
+          data.AnimalID = JSON.stringify(data.AnimalID);
+        }
 
         await db.update(data, { where: { VaccineActivityID: id } });
 
