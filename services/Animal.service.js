@@ -1787,29 +1787,32 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
-          .then((result) => {
+          .then(async (result) => {
             let rows = result[0],
               count = rows.length;
 
             //
-            rows = rows.map((data) => {
-              let projectArray = [];
-              data.Projects.forEach((element) => {
-                projectArray.push(element.ProjectName);
-              });
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                let projectArray = [];
+                data.Projects.forEach((element) => {
+                  projectArray.push(element.ProjectName);
+                });
 
-              if (data.GiveBirthSelfID != null) {
-                data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
-              }
+                if (data.GiveBirthSelfID != null) {
+                  data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
+                }
 
-              data = {
-                ...data.toJSON(),
-                Projects: projectArray,
-                ProjectID: JSON.parse(data.toJSON().ProjectID),
-              };
+                data = {
+                  ...data.toJSON(),
+                  Projects: projectArray,
+                  ProjectID: JSON.parse(data.toJSON().ProjectID),
+                  EventLatest: await data.EventLatest(),
+                };
 
-              return data;
-            });
+                return data;
+              })
+            );
             //
 
             resolve({
@@ -1852,10 +1855,11 @@ const methods = {
           Projects: projectArray,
           ProjectID: JSON.parse(obj.toJSON().ProjectID),
           GiveBirthSelf: GiveBirthSelf,
+          EventLatest: await obj.EventLatest(),
         };
         resolve(obj);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
@@ -1884,7 +1888,7 @@ const methods = {
         }
         const inserted = await obj.save();
 
-        if (obj.GiveBirthSelfID) {  
+        if (obj.GiveBirthSelfID) {
           data = {
             MotherAnimalID: obj.AnimalMotherID,
             AnimalID: inserted.AnimalID,
@@ -1893,7 +1897,7 @@ const methods = {
             ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
           };
-          var yearling = new Yearling(data)
+          var yearling = new Yearling(data);
           const inserted1 = await yearling.save();
         }
 
@@ -2243,7 +2247,6 @@ const methods = {
         }
 
         let Breed2 = Breed.map((b) => {
-          console.log(b.AnimalBreedPercent);
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
 
           const found = HF.find((element) => {
@@ -2476,190 +2479,9 @@ const methods = {
                     projectArray.push(element.ProjectName);
                   });
 
-                  let ai = await AI.findOne({
-                    order: [
-                      ["PAR", "DESC"],
-                      ["TimeNo", "DESC"],
-                    ],
-                    where: {
-                      AnimalID: data.AnimalID,
-                      isRemove: 0,
-                    },
-                  });
+                  let data1 = await data.EventLatest();
 
-                  let embryo = await TransferEmbryo.findOne({
-                    order: [
-                      ["PAR", "DESC"],
-                      ["TimeNo", "DESC"],
-                    ],
-                    where: {
-                      AnimalID: data.AnimalID,
-                      isRemove: 0,
-                    },
-                  });
-
-                  let animalJson = data.toJSON();
-                  let age = animalJson.AnimalAge;
-
-                  var data1 = {
-                    AnimalID: animalJson.AnimalID,
-                    AnimalEarID: animalJson.AnimalEarID,
-                    AnimalName: animalJson.AnimalName,
-                    AnimalTypeID: animalJson.AnimalTypeID,
-                    AnimalSecretStatus: animalJson.AnimalSecretStatus,
-                    AnimalAge: age,
-                    AnimalBreedAll: animalJson.AnimalBreedAll,
-                    AnimalStatus: animalJson.AnimalStatus.AnimalStatusName,
-                  };
-
-                  if (ai && embryo) {
-                    if (
-                      embryo.TimeNo > ai.TimeNo
-                      // dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) ==
-                      // true
-                    ) {
-                      let preg = await PregnancyCheckup.findOne({
-                        order: [["TimeNo", "DESC"]],
-                        where: {
-                          AnimalID: animalJson.AnimalID,
-                          TransferEmbryoID: embryo.TransferEmbryoID,
-                        },
-                        include: {
-                          model: PregnancyCheckStatus,
-                        },
-                      });
-
-                      let pregResult = "";
-                      if (preg) {
-                        pregResult =
-                          preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
-                      }
-
-                      data1 = {
-                        ...data1,
-                        AIID: null,
-                        TransferEmbryoID: embryo.TransferEmbryoID,
-                        PAR: embryo.PAR,
-                        TimeNo: embryo.TimeNo,
-                        AIDate: null,
-                        EmbryoDate: embryo.TransferDate,
-                        ThaiEmbryoDate: dayjs(embryo.TransferDate)
-                          .locale("th")
-                          .format("DD/MM/BBBB"),
-                        PregnancyStatus: pregResult,
-                        Notification: await data.Notification(),
-                      };
-                    } else {
-                      let preg = await PregnancyCheckup.findOne({
-                        order: [["TimeNo", "DESC"]],
-                        where: {
-                          AnimalID: animalJson.AnimalID,
-                          AIID: ai.AIID,
-                        },
-                        include: {
-                          model: PregnancyCheckStatus,
-                        },
-                      });
-                      let pregResult = "";
-                      if (preg) {
-                        pregResult =
-                          preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
-                      }
-
-                      // console.log(ai.TimeNo+"FREEDOM")
-
-                      var data1 = {
-                        ...data1,
-                        AIID: ai.AIID,
-                        TransferEmbryoID: null,
-                        PAR: ai.PAR,
-                        TimeNo: ai.TimeNo,
-                        AIDate: ai.AIDate,
-                        ThaiAIDate: dayjs(ai.AIDate)
-                          .locale("th")
-                          .format("DD/MM/BBBB"),
-                        EmbryoDate: null,
-                        PregnancyStatus: pregResult,
-                        Notification: await data.Notification(),
-                        // EventLatest: (await data.EventLatest()).EventLatest,
-                      };
-                    }
-                    // CheckDate เอาอันล่าสุด
-                  } else if (ai) {
-                    let preg = await PregnancyCheckup.findOne({
-                      order: [["TimeNo", "DESC"]],
-                      where: {
-                        AnimalID: animalJson.AnimalID,
-                        AIID: ai.AIID,
-                      },
-                      include: {
-                        model: PregnancyCheckStatus,
-                      },
-                    });
-                    let pregResult = "";
-                    if (preg) {
-                      pregResult =
-                        preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
-                    }
-
-                    var data1 = {
-                      ...data1,
-                      AIID: ai.AIID,
-                      TransferEmbryoID: null,
-                      PAR: ai.PAR,
-                      TimeNo: ai.TimeNo,
-                      AIDate: ai.AIDate,
-                      ThaiAIDate: dayjs(ai.AIDate)
-                        .locale("th")
-                        .format("DD/MM/BBBB"),
-                      EmbryoDate: null,
-                      PregnancyStatus: pregResult,
-                      Notification: await data.Notification(),
-                    };
-                  } else if (embryo) {
-                    let preg = await PregnancyCheckup.findOne({
-                      order: [["TimeNo", "DESC"]],
-                      where: {
-                        AnimalID: animalJson.AnimalID,
-                        TransferEmbryoID: embryo.TransferEmbryoID,
-                      },
-                      include: {
-                        model: PregnancyCheckStatus,
-                      },
-                    });
-                    let pregResult = "";
-                    if (preg) {
-                      pregResult =
-                        preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
-                    }
-
-                    var data1 = {
-                      ...data1,
-                      AIID: null,
-                      TransferEmbryoID: embryo.TransferEmbryoID,
-                      PAR: embryo.PAR,
-                      TimeNo: embryo.TimeNo,
-                      AIDate: null,
-                      EmbryoDate: embryo.TransferDate,
-                      ThaiEmbryoDate: dayjs(embryo.TransferDate)
-                        .locale("th")
-                        .format("DD/MM/BBBB"),
-                      PregnancyStatus: pregResult,
-                      Notification: await data.Notification(),
-                    };
-                  } else {
-                    var data1 = {
-                      ...data1,
-                      AIID: null,
-                      TransferEmbryoID: null,
-                      PAR: null,
-                      TimeNo: null,
-                      AIDate: null,
-                      EmbryoDate: null,
-                      PregnancyStatus: null,
-                      Notification: await data.Notification(),
-                    };
-                  }
+                  data1.Notification = await data.Notification();
 
                   return data1;
                 })
