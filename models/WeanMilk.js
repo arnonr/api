@@ -15,6 +15,12 @@ class WeanMilk extends Model {
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
     });
+    this.belongsTo(models.AI, {
+      foreignKey: "AIID",
+    });
+    this.belongsTo(models.TransferEmbryo, {
+      foreignKey: "TransferEmbryoID",
+    });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
       as: "BCS",

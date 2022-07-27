@@ -322,7 +322,7 @@ PregnancyCheckup.associate({
   TransferEmbryo,
   PregnancyCheckMethod,
   PregnancyCheckStatus,
-  BCS
+  BCS,
 });
 
 AbortCheckup.associate({
@@ -331,7 +331,7 @@ AbortCheckup.associate({
   AI,
   TransferEmbryo,
   AbortResult,
-  BCS
+  BCS,
 });
 
 GiveBirth.associate({
@@ -339,7 +339,7 @@ GiveBirth.associate({
   Staff,
   AI,
   GiveBirthHelp,
-  BCS
+  BCS,
 });
 
 Yearling.associate({
@@ -362,6 +362,8 @@ WeanMilk.associate({
   Animal,
   Staff,
   BCS,
+  AI,
+  TransferEmbryo,
 });
 
 Preset.associate({
@@ -419,7 +421,7 @@ TransferEmbryo.associate({
   Animal,
   BCS,
   Staff,
-  TransferMethod
+  TransferMethod,
 });
 
 DistributionReason.associate({
@@ -528,7 +530,7 @@ DiseaseActivity.associate({
   DiseaseResult,
   Organization,
   Staff,
-  Farm
+  Farm,
 });
 
 VaccineActivity.associate({
@@ -552,7 +554,7 @@ DewormActivity.associate({
   DewormMedicine,
   Organization,
   Staff,
-  Farm
+  Farm,
 });
 
 CureAntibiotic.associate({
@@ -630,7 +632,7 @@ Reproduce.associate({
   RpToRightOvarySymptom,
   RpToRpSuggestion,
   ReproduceSuggestion,
-  BCS
+  BCS,
 });
 
 OvarySymptom.associate({

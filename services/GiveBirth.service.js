@@ -97,6 +97,7 @@ const methods = {
         PAR: dataJson.AI.PAR,
         TimeNo: dataJson.AI.TimeNo,
         ThaiAIDate: dataJson.AI.ThaiAIDate,
+        ThaiDate: dataJson.AI.ThaiAIDate,
         // Type
         Type: "AI",
         ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
@@ -116,8 +117,9 @@ const methods = {
         AnimalID: dataJson.AnimalID,
         TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
         PAR: dataJson.TransferEmbryo.PAR,
-        // TimeNo: dataJson.TransferEmbryo.TimeNo,
+        TimeNo: dataJson.TransferEmbryo.TimeNo,
         ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+        ThaiDate: dataJson.TransferEmbryo.ThaiTransferDate,
         Type: "Embryo",
         ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
         Amount: dataJson.Amount,

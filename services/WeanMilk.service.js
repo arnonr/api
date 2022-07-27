@@ -69,6 +69,7 @@ const methods = {
         PAR: dataJson.AI.PAR,
         TimeNo: dataJson.AI.TimeNo,
         ThaiAIDate: dataJson.AI.ThaiAIDate,
+        ThaiDate: dataJson.AI.ThaiAIDate,
         // Type
         Type: "AI",
 
@@ -89,9 +90,9 @@ const methods = {
         PAR: dataJson.TransferEmbryo.PAR,
         TimeNo: dataJson.TransferEmbryo.TimeNo,
         ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+        ThaiDate: dataJson.TransferEmbryo.ThaiTransferDate,
         Type: "Embryo",
         ThaiWeanMilkDate: dataJson.ThaiWeanMilkDate,
-
         BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
         ResponsibilityStaffName: dataJson.Staff
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
