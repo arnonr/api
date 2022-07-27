@@ -130,7 +130,7 @@ const methods = {
 
             rows = await Promise.all(
               rows.map(async (data) => {
-                return this.getData(data)
+                return this.getData(data);
               })
             );
 
@@ -159,7 +159,7 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let data = this.getData(obj)
+        let data = this.getData(obj);
 
         resolve(data);
       } catch (error) {
@@ -179,7 +179,7 @@ const methods = {
           }
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
-
+        
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -201,6 +201,14 @@ const methods = {
 
         // Update
         data.DiseaseActivityID = parseInt(id);
+
+        if (data.AnimalID) {
+          if (!Array.isArray(data.AnimalID)) {
+            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          data.AnimalID = JSON.stringify(data.AnimalID);
+        }
 
         await db.update(data, { where: { DiseaseActivityID: id } });
 
