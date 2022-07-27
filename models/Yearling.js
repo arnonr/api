@@ -59,7 +59,7 @@ Yearling.init(
       comment: "วันที่ติดตาม",
     },
     Weight: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10.2),
       allowNull: true,
       comment: "น้ำหนัก",
     },

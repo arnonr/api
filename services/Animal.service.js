@@ -1884,12 +1884,12 @@ const methods = {
         }
         const inserted = await obj.save();
 
-        if (obj.GiveBirthSelfID) {
+        if (obj.GiveBirthSelfID) {  
           data = {
             MotherAnimalID: obj.AnimalMotherID,
             AnimalID: inserted.AnimalID,
-            FollowDate: null,
-            Weigth: null,
+            // FollowDate: null,
+            // Weigth: null,
             ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
           };
