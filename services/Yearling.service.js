@@ -4,6 +4,9 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
+const GiveBirth = require("../models/GiveBirth");
+const AnimalSex = require("../models/AnimalSex");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -14,13 +17,12 @@ const methods = {
 
     if (req.query.MotherAnimalID)
       $where["MotherAnimalID"] = req.query.MotherAnimalID;
-      
+
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.FollowDate) $where["FollowDate"] = req.query.FollowDate;
 
-    if (req.query.Weight)
-      $where["Weight"] = req.query.Weight;
+    if (req.query.Weight) $where["Weight"] = req.query.Weight;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -51,13 +53,56 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
+      {
+        model: Animal,
+        as: "ChildAnimal",
+        include: [{ model: AnimalSex, as: "AnimalSex" }],
+      },
     ];
 
     return { query: query };
+  },
+
+  getData(data) {
+    let dataJson = data.toJSON();
+
+    // ;วันที่คลอด
+    // ท้องที่ givebirth
+    // ชื่อลูก animal
+    // เพศ
+    // หมาเลขพ่อ
+
+    data = {
+      YearlingID: dataJson.YearlingID,
+      AnimalID: dataJson.AnimalID,
+      MotherAnimalID: dataJson.MotherAnimalID,
+
+      MotherAnimalEarID: dataJson.ChildAnimal.AnimalMother
+        ? dataJson.ChildAnimal.AnimalMother.AnimalEarID
+        : null,
+      FatherAnimalEarID: dataJson.ChildAnimal.AnimalFather
+        ? dataJson.ChildAnimal.AnimalFather.AnimalEarID
+        : null,
+      AnimalEarID: dataJson.ChildAnimal.AnimalEarID,
+
+      ThaiGiveBirthDate: dataJson.ThaiGiveBirthDate,
+      PAR: dataJson.ChildAnimal.GiveBirth
+        ? dataJson.ChildAnimal.GiveBirth.PAR
+        : null,
+      AnimalName: dataJson.ChildAnimal.AnimalName,
+      AnimalSexName: dataJson.ChildAnimal.AnimalSex
+        ? dataJson.ChildAnimal.AnimalSex.AnimalSexName
+        : null,
+
+      Weight: dataJson.Weight,
+      ThaiFollowDate: dataJson.ThaiFollowDate,
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+    return data;
   },
 
   find(req) {
@@ -71,9 +116,27 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                data = await this.getData(data);
+
+                if (data.ChildAnimal.GiveBirthSelfID != null) {
+                  let giveBirth = await GiveBirth.findByPk(
+                    data.ChildAnimal.GiveBirthSelfID
+                  );
+
+                  data.PAR = giveBirth.PAR;
+                  data.GiveBirthSelf = giveBirth;
+                }
+
+                return data;
+              })
+            );
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -94,11 +157,34 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          include: [
+            { all: true, required: false },
+            {
+              model: Animal,
+              as: "ChildAnimal",
+              include: [
+                { model: AnimalSex, as: "AnimalSex" },
+                { model: Animal, as: "AnimalFather" },
+                { model: Animal, as: "AnimalMother" },
+              ],
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let data = this.getData(obj);
+
+        if (data.ChildAnimal.GiveBirthSelfID) {
+          let giveBirth = await GiveBirth.findByPk(
+            data.ChildAnimal.GiveBirthSelfID
+          );
+
+          data.ThaiGiveBirthDate = giveBirth.ThaiGiveBirthDate;
+          data.PAR = giveBirth.PAR;
+        }
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

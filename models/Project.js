@@ -15,6 +15,13 @@ class Project extends Model {
       through: models.AnimalToProject,
       foreignKey: "ProjectID",
     });
+
+    // this.belongsToMany(models.AI, {
+    //   through: models.AI,
+    //   foreignKey: "ProjectID",
+    // });
+
+
     this.belongsToMany(models.Farm, {
       through: models.FarmToProject,
       foreignKey: "ProjectID",

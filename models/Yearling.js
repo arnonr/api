@@ -10,11 +10,13 @@ dayjs.extend(buddhistEra);
 class Yearling extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
+      foreignKey: "AnimalID",
+      as: "ChildAnimal",
+    });
+
+    this.belongsTo(models.Animal, {
       foreignKey: "MotherAnimalID",
       as: "MotherAnimal",
-    });
-    this.belongsTo(models.Animal, {
-      foreignKey: "AnimalID",
     });
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
