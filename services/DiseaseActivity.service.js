@@ -172,22 +172,16 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        if (!Array.isArray(data.AnimalID)) {
-          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
-          return;
-        }
-        data.AnimalID = JSON.stringify(data.AnimalID);
-
-        const obj = new db(data);
-        const inserted = await obj.save();
-
         if (data.AnimalID) {
           if (!Array.isArray(data.AnimalID)) {
-            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
+
+        const obj = new db(data);
+        const inserted = await obj.save();
 
         let res = methods.findById(inserted.DiseaseActivityID);
 
