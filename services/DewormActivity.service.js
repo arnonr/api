@@ -123,7 +123,7 @@ const methods = {
 
             rows = await Promise.all(
               rows.map(async (data) => {
-                return this.getData(data);
+                return await this.getData(data);
               })
             );
 
@@ -152,7 +152,7 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let data = this.getData(obj);
+        let data = await this.getData(obj);
 
         resolve(data);
       } catch (error) {

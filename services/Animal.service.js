@@ -1671,6 +1671,8 @@ const methods = {
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
+    if (req.query.ProductionStatusID) $where["ProductionStatusID"] = req.query.ProductionStatusID;
+
     if (req.query.AnimalIdentificationID)
       $where["AnimalIdentificationID"] = {
         [Op.like]: "%" + req.query.AnimalIdentificationID + "%",
@@ -2291,6 +2293,8 @@ const methods = {
     $where = {};
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
+    if (req.query.ProductionStatusID) $where["ProductionStatusID"] = req.query.ProductionStatusID;
 
     if (req.query.AnimalIdentificationID)
       $where["AnimalIdentificationID"] = {

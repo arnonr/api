@@ -98,186 +98,107 @@ class Animal extends Model {
   async Notification() {
     let noti = [];
     // ท้อง PG แต่ยังไม่คลอด
+    let eventLatest = await this.EventLatest();
+
+    let day = dayjs();
+    if (eventLatest.AIID != null) {
+      day = dayjs(eventLatest.AIDate);
+    } else if (eventLatest.TransferEmbryoID != null) {
+      day = dayjs(eventLatest.EmbryoDate);
+    } else {
+      day = dayjs();
+    }
+
+    day = dayjs().diff(day, "day");
+
+    // ครบกำหนดคลอด และเลบกำหนดคลอด
     if (this.ProductionStatusID == 6) {
-      let day = null;
-
-      // ค้นหาการตรวจท้องล่าสุด จากกิจกรรรมปัจจุบัน และ TimeNo ล่าสุด
-      let pregnancyCheckup = await PregnancyCheckup.findOne({
-        order: [["PregnancyCheckupID", "DESC"]],
-        where: {
-          AnimalID: this.AnimalID,
-        },
-      });
-
-      if (pregnancyCheckup.AIID != null) {
-        let ai = await AI.findByPk(pregnancyCheckup.AIID);
-        day = ai.AIDate;
-      } else if (pregnancyCheckup.TransferEmbryoID != null) {
-        let te = await TransferEmbryo.findByPk(
-          pregnancyCheckup.TransferEmbryoID
-        );
-        day = te.TransferDate;
-      } else {
-        day = CheckupDate;
-      }
-
-      if (day) {
-        day = dayjs().diff(dayjs(day), "day");
-        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-          if (day >= 287) {
-            noti.push(`เลยกําหนดคลอด ${day - 280} วัน`);
-          } else if (day >= 280) {
-            noti.push("ครบกำหนดคลอด");
-          } else {
-          }
-        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-          if (day >= 317) {
-            noti.push(`เลยกําหนดคลอด ${day - 310} วัน`);
-          } else if (day >= 310) {
-            noti.push("ครบกำหนดคลอด");
-          } else {
-          }
-        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-          if (day >= 157) {
-            noti.push(`เลยกําหนดคลอด ${day - 157} วัน`);
-          } else if (day >= 150) {
-            noti.push("ครบกำหนดคลอด");
-          } else {
-          }
+      if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+        if (day >= 287) {
+          noti.push(`เลยกําหนดคลอด ${day - 280} วัน`);
+        } else if (day >= 280) {
+          noti.push("ครบกำหนดคลอด");
         } else {
         }
+      } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+        if (day >= 317) {
+          noti.push(`เลยกําหนดคลอด ${day - 310} วัน`);
+        } else if (day >= 310) {
+          noti.push("ครบกำหนดคลอด");
+        } else {
+        }
+      } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+        if (day >= 157) {
+          noti.push(`เลยกําหนดคลอด ${day - 157} วัน`);
+        } else if (day >= 150) {
+          noti.push("ครบกำหนดคลอด");
+        } else {
+        }
+      } else {
       }
     }
 
-    // // ครบกำหนดตรวจท้อง
-    // if (this.ProductionStatusID == 4) {
-    //   let day = null;
+    // ครบกำหนดตรวจท้อง
+    if (this.ProductionStatusID == 4) {
+      if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+        if (day >= 60) {
+          noti.push(`ครบกําหนดตรวจท้อง`);
+        }
+      } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+        if (day >= 60) {
+          noti.push(`ครบกําหนดตรวจท้อง`);
+        }
+      } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+        if (day >= 45) {
+          noti.push(`ครบกําหนดตรวจท้อง`);
+        }
+      } else {
+      }
+    }
 
-    //   let ai = await AI.findOne({
-    //     order: [["AIID", "DESC"]],
-    //     where: {
-    //       AnimalID: this.AnimalID,
-    //     },
-    //   });
+    // ครบกำหนดติดตามลูกโคหลังคลอด
+    if (this.ProductionStatusID == 2) {
+      let day = dayjs();
 
-    //   let embryo = await TransferEmbryo.findOne({
-    //     order: [["TransferEmbryoID", "DESC"]],
-    //     where: {
-    //       AnimalID: this.AnimalID,
-    //     },
-    //   });
-    //   let method = null;
-    //   if (ai && embryo) {
-    //     if (dayjs(embryo.TransferDate).isAfter(dayjs(ai.AIDate)) == true) {
-    //       // embryo.TransferEmbryoID,
-    //       method = "embryo";
-    //     } else {
-    //       // ai
-    //       method = "ai";
-    //     }
-    //   } else if (ai) {
-    //     method = "ai";
-    //   } else {
-    //     method = "embryo";
-    //   }
+      let giveBirth = await GiveBirth.findOne({
+        where: {
+          AnimalID: this.AnimalID,
+          PAR: this.AnimalPar - 1,
+        },
+      });
 
-    //   // if (method == "ai") {
-    //   //   var pregnancyCheckup2 = await PregnancyCheckup.findOne({
-    //   //     order: [["TimeNo", "DESC"]],
-    //   //     where: {
-    //   //       AIID: ai.AIID,
-    //   //       AnimalID: this.AnimalID,
-    //   //     },
-    //   //   });
-    //   // } else {
-    //   //   var pregnancyCheckup2 = await PregnancyCheckup.findOne({
-    //   //     order: [["TimeNo", "DESC"]],
-    //   //     where: {
-    //   //       TransferEmbryoID: embryo.TransferEmbryoID,
-    //   //       AnimalID: this.AnimalID,
-    //   //     },
-    //   //   });
-    //   // }
+      day = giveBirth.GiveBirthDate;
 
-    //   if (method == "ai") {
-    //     day = ai.AIDate;
-    //   } else if (method == "embryo") {
-    //     day = embryo.TransferDate;
-    //   } else {
-    //     day = 1;
-    //   }
+      // yearling
+      let yearling = await Yearling.findOne({
+        where: {
+          MotherAnimalID: this.AnimalID,
+          FollowDate: {
+            $gte: giveBirth.GiveBirthDate,
+          },
+        },
+      });
 
-    //   if (day) {
-    //     day = dayjs().diff(dayjs(day), "day");
-    //     if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-    //       if (day >= 60) {
-    //         noti.push(`ครบกําหนดตรวจท้อง`);
-    //       } else {
-    //       }
-    //     } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-    //       if (day >= 60) {
-    //         noti.push(`ครบกําหนดตรวจท้อง`);
-    //       } else {
-    //       }
-    //     } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-    //       if (day >= 45) {
-    //         noti.push(`ครบกําหนดตรวจท้อง`);
-    //       } else {
-    //       }
-    //     } else {
-    //     }
-    //   }
-    // }
-
-    // // ครบกำหนดติดตามลูกโคหลังคลอด
-    // if (this.ProductionStatusID == 2) {
-    //   let day = null;
-
-    //   let giveBirth = await GiveBirth.findOne({
-    //     where: {
-    //       AnimalID: this.AnimalID,
-    //       PAR: this.AnimalPar - 1,
-    //     },
-    //   });
-
-    //   day = giveBirth.GiveBirthDate;
-
-    //   // yearling
-    //   let yearling = Yearling.findOne({
-    //     where: {
-    //       MotherAnimalID: this.AnimalID,
-    //       FollowDate: {
-    //         $gte: giveBirth.GiveBirthDate,
-    //       },
-    //     },
-    //   });
-
-    //   // GiveBirthDate
-    //   if (yearling) {
-    //     day = null;
-    //   }
-
-    //   if (day) {
-    //     day = dayjs().diff(dayjs(day), "day");
-    //     if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-    //       if (day >= 30) {
-    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-    //       } else {
-    //       }
-    //     } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-    //       if (day >= 30) {
-    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-    //       } else {
-    //       }
-    //     } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-    //       if (day >= 30) {
-    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-    //       } else {
-    //       }
-    //     } else {
-    //     }
-    //   }
-    // }
+      // GiveBirthDate
+      if (yearling.FollowDate != null) {
+        day = dayjs().diff(day, "day");
+        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+          if (day >= 1) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          }
+        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          }
+        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+          if (day >= 30) {
+            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+          }
+        } else {
+          noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+        }
+      }
+    }
 
     // // ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
     // if (this.ProductionStatusID == 2) {
@@ -468,6 +389,9 @@ class Animal extends Model {
           ThaiEmbryoDate: dayjs(embryo.TransferDate)
             .locale("th")
             .format("DD/MM/BBBB"),
+          ThaiEventLatest: dayjs(embryo.TransferDate)
+            .locale("th")
+            .format("DD/MM/BBBB"),
           PregnancyStatus: pregResult,
           PregnancyTimeNo: pregnancyTimeNo,
         };
@@ -498,6 +422,7 @@ class Animal extends Model {
           TimeNo: ai.TimeNo,
           AIDate: ai.AIDate,
           ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
+          ThaiEventLatest: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
           EmbryoDate: null,
           PregnancyStatus: pregResult,
           PregnancyTimeNo: pregnancyTimeNo,
@@ -531,6 +456,7 @@ class Animal extends Model {
         TimeNo: ai.TimeNo,
         AIDate: ai.AIDate,
         ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
+        ThaiEventLatest: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
         EmbryoDate: null,
         PregnancyStatus: pregResult,
         PregnancyTimeNo: pregnancyTimeNo,
@@ -563,6 +489,9 @@ class Animal extends Model {
         AIDate: null,
         EmbryoDate: embryo.TransferDate,
         ThaiEmbryoDate: dayjs(embryo.TransferDate)
+          .locale("th")
+          .format("DD/MM/BBBB"),
+        ThaiEventLatest: dayjs(embryo.TransferDate)
           .locale("th")
           .format("DD/MM/BBBB"),
         PregnancyStatus: pregResult,
