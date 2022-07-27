@@ -113,17 +113,17 @@ Province.init(
     },
     RegionID: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "รหัสอ้างอิงภาค",
     },
     OrganizationZoneID: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "รหัสอ้างอิงเขตพื้นที่",
     },
     AIZoneID: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "รหัสอ้างอิงศูนย์วิจัย",
     },
     isActive: {

@@ -22,7 +22,7 @@ const methods = {
     if (req.query.UpdatedUserID)
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
-    $where["IsRemove"] = 0;
+    $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
@@ -134,7 +134,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { IsRemove: 1, IsActive: 0 },
+          { isRemove: 1, isActive: 0 },
           { where: { GroupAuthorizeID: id } }
         );
         resolve();

@@ -106,7 +106,7 @@ Amphur.init(
     },
     ProvinceID: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "รหัสอ้างอิงจังหวัด",
     },
     isActive: {

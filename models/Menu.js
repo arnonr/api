@@ -37,7 +37,7 @@ Menu.init(
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Menu.findOne({ where: { MenuCode: value, IsActive: 1 } })
+          Menu.findOne({ where: { MenuCode: value, isActive: 1 } })
             .then(function (menu) {
               if (menu && self.MenuID !== menu.MenuID) {
                 throw new Error("Menu already in use!");
@@ -60,7 +60,7 @@ Menu.init(
       allowNull: false,
       comment: "การเรียงลำดับ",
     },
-    IsActive: {
+    isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 1,

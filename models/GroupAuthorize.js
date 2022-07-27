@@ -43,7 +43,7 @@ GroupAuthorize.init(
         isUnique: function (value, next) {
           let self = this;
           GroupAuthorize.findOne({
-            where: { GroupID: value, MenuID: self.MenuID, IsRemove: 0 },
+            where: { GroupID: value, MenuID: self.MenuID, isRemove: 0 },
           })
             .then(function (groupAuthorize) {
               if (
@@ -89,7 +89,7 @@ GroupAuthorize.init(
       defaultValue: 1,
       comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
     },
-    IsRemove: {
+    isRemove: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 0,

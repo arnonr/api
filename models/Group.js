@@ -37,7 +37,7 @@ Group.init(
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Group.findOne({ where: { GroupCode: value, IsRemove: 0 } })
+          Group.findOne({ where: { GroupCode: value, isRemove: 0 } })
             .then(function (group) {
               if (group && self.GroupID !== group.GroupID) {
                 throw new Error("Group Code already in use!");
@@ -57,7 +57,7 @@ Group.init(
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Group.findOne({ where: { GroupName: value, IsRemove: 0 } })
+          Group.findOne({ where: { GroupName: value, isRemove: 0 } })
             .then(function (group) {
               if (group && self.GroupID !== group.GroupID) {
                 throw new Error("Group Name already in use!");
@@ -80,13 +80,13 @@ Group.init(
       allowNull: false,
       comment: "เลขไอดีอ้างอิง ระดับการเข้าถึงข้อมูล",
     },
-    IsActive: {
+    isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 1,
       comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
     },
-    IsRemove: {
+    isRemove: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 0,
