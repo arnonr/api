@@ -157,48 +157,48 @@ class Animal extends Model {
     }
 
     // ครบกำหนดติดตามลูกโคหลังคลอด
-    if (this.ProductionStatusID == 2) {
-      let day = dayjs();
+    // if (this.ProductionStatusID == 2) {
+    //   let day = dayjs();
 
-      let giveBirth = await GiveBirth.findOne({
-        where: {
-          AnimalID: this.AnimalID,
-          PAR: this.AnimalPar - 1,
-        },
-      });
+    //   let giveBirth = await GiveBirth.findOne({
+    //     where: {
+    //       AnimalID: this.AnimalID,
+    //       PAR: this.AnimalPar - 1,
+    //     },
+    //   });
 
-      day = giveBirth.GiveBirthDate;
+    //   day = giveBirth.GiveBirthDate;
 
-      // yearling
-      let yearling = await Yearling.findOne({
-        where: {
-          MotherAnimalID: this.AnimalID,
-          FollowDate: {
-            $gte: giveBirth.GiveBirthDate,
-          },
-        },
-      });
+    //   // yearling
+    //   let yearling = await Yearling.findOne({
+    //     where: {
+    //       MotherAnimalID: this.AnimalID,
+    //       FollowDate: {
+    //         $gte: giveBirth.GiveBirthDate,
+    //       },
+    //     },
+    //   });
 
-      // GiveBirthDate
-      if (yearling.FollowDate != null) {
-        day = dayjs().diff(day, "day");
-        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-          if (day >= 1) {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-          }
-        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-          }
-        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-          }
-        } else {
-          noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-        }
-      }
-    }
+    //   // GiveBirthDate
+    //   if (yearling.FollowDate != null) {
+    //     day = dayjs().diff(day, "day");
+    //     if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+    //       if (day >= 1) {
+    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+    //       }
+    //     } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+    //       if (day >= 30) {
+    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+    //       }
+    //     } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+    //       if (day >= 30) {
+    //         noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+    //       }
+    //     } else {
+    //       noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+    //     }
+    //   }
+    // }
 
     // // ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
     // if (this.ProductionStatusID == 2) {
