@@ -186,6 +186,14 @@ ProgressCheckup.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    ThaiCheckupDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.CheckupDate
+          ? dayjs(this.CheckupDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
   },
   {
     sequelize,

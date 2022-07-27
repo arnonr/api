@@ -1,0 +1,182 @@
+// let ai = await AI.findOne({
+    //   order: [
+    //     ["PAR", "DESC"],
+    //     ["TimeNo", "DESC"],
+    //   ],
+    //   where: {
+    //     AnimalID: data.AnimalID,
+    //     isRemove: 0,
+    //   },
+    // });
+
+    // let embryo = await TransferEmbryo.findOne({
+    //   order: [
+    //     ["PAR", "DESC"],
+    //     ["TimeNo", "DESC"],
+    //   ],
+    //   where: {
+    //     AnimalID: data.AnimalID,
+    //     isRemove: 0,
+    //   },
+    // });
+
+    // let animalJson = data.toJSON();
+    // let age = animalJson.AnimalAge;
+
+    // var data1 = {
+    //   AnimalID: animalJson.AnimalID,
+    //   AnimalEarID: animalJson.AnimalEarID,
+    //   AnimalName: animalJson.AnimalName,
+    //   AnimalTypeID: animalJson.AnimalTypeID,
+    //   AnimalSecretStatus: animalJson.AnimalSecretStatus,
+    //   AnimalAge: age,
+    //   AnimalBreedAll: animalJson.AnimalBreedAll,
+    //   AnimalStatus: animalJson.AnimalStatus.AnimalStatusName,
+    // };
+
+    // if (ai && embryo) {
+    //   if (
+    //     embryo.TimeNo > ai.TimeNo
+    //   ) {
+    //     let preg = await PregnancyCheckup.findOne({
+    //       order: [["TimeNo", "DESC"]],
+    //       where: {
+    //         AnimalID: animalJson.AnimalID,
+    //         TransferEmbryoID: embryo.TransferEmbryoID,
+    //       },
+    //       include: {
+    //         model: PregnancyCheckStatus,
+    //       },
+    //     });
+
+    //     let pregResult = "";
+    //     if (preg) {
+    //       pregResult =
+    //         preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+    //     }
+
+    //     data1 = {
+    //       ...data1,
+    //       AIID: null,
+    //       TransferEmbryoID: embryo.TransferEmbryoID,
+    //       PAR: embryo.PAR,
+    //       TimeNo: embryo.TimeNo,
+    //       AIDate: null,
+    //       EmbryoDate: embryo.TransferDate,
+    //       ThaiEmbryoDate: dayjs(embryo.TransferDate)
+    //         .locale("th")
+    //         .format("DD/MM/BBBB"),
+    //       PregnancyStatus: pregResult,
+    //       Notification: await data.Notification(),
+    //     };
+    //   } else {
+    //     let preg = await PregnancyCheckup.findOne({
+    //       order: [["TimeNo", "DESC"]],
+    //       where: {
+    //         AnimalID: animalJson.AnimalID,
+    //         AIID: ai.AIID,
+    //       },
+    //       include: {
+    //         model: PregnancyCheckStatus,
+    //       },
+    //     });
+    //     let pregResult = "";
+    //     if (preg) {
+    //       pregResult =
+    //         preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+    //     }
+
+    //     // console.log(ai.TimeNo+"FREEDOM")
+
+    //     var data1 = {
+    //       ...data1,
+    //       AIID: ai.AIID,
+    //       TransferEmbryoID: null,
+    //       PAR: ai.PAR,
+    //       TimeNo: ai.TimeNo,
+    //       AIDate: ai.AIDate,
+    //       ThaiAIDate: dayjs(ai.AIDate)
+    //         .locale("th")
+    //         .format("DD/MM/BBBB"),
+    //       EmbryoDate: null,
+    //       PregnancyStatus: pregResult,
+    //       Notification: await data.Notification(),
+    //       // EventLatest: (await data.EventLatest()).EventLatest,
+    //     };
+    //   }
+    //   // CheckDate เอาอันล่าสุด
+    // } else if (ai) {
+    //   let preg = await PregnancyCheckup.findOne({
+    //     order: [["TimeNo", "DESC"]],
+    //     where: {
+    //       AnimalID: animalJson.AnimalID,
+    //       AIID: ai.AIID,
+    //     },
+    //     include: {
+    //       model: PregnancyCheckStatus,
+    //     },
+    //   });
+    //   let pregResult = "";
+    //   if (preg) {
+    //     pregResult =
+    //       preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+    //   }
+
+    //   var data1 = {
+    //     ...data1,
+    //     AIID: ai.AIID,
+    //     TransferEmbryoID: null,
+    //     PAR: ai.PAR,
+    //     TimeNo: ai.TimeNo,
+    //     AIDate: ai.AIDate,
+    //     ThaiAIDate: dayjs(ai.AIDate)
+    //       .locale("th")
+    //       .format("DD/MM/BBBB"),
+    //     EmbryoDate: null,
+    //     PregnancyStatus: pregResult,
+    //     Notification: await data.Notification(),
+    //   };
+    // } else if (embryo) {
+    //   let preg = await PregnancyCheckup.findOne({
+    //     order: [["TimeNo", "DESC"]],
+    //     where: {
+    //       AnimalID: animalJson.AnimalID,
+    //       TransferEmbryoID: embryo.TransferEmbryoID,
+    //     },
+    //     include: {
+    //       model: PregnancyCheckStatus,
+    //     },
+    //   });
+    //   let pregResult = "";
+    //   if (preg) {
+    //     pregResult =
+    //       preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
+    //   }
+
+    //   var data1 = {
+    //     ...data1,
+    //     AIID: null,
+    //     TransferEmbryoID: embryo.TransferEmbryoID,
+    //     PAR: embryo.PAR,
+    //     TimeNo: embryo.TimeNo,
+    //     AIDate: null,
+    //     EmbryoDate: embryo.TransferDate,
+    //     ThaiEmbryoDate: dayjs(embryo.TransferDate)
+    //       .locale("th")
+    //       .format("DD/MM/BBBB"),
+    //     PregnancyStatus: pregResult,
+    //     Notification: await data.Notification(),
+    //   };
+    // } else {
+    //   var data1 = {
+    //     ...data1,
+    //     AIID: null,
+    //     TransferEmbryoID: null,
+    //     PAR: null,
+    //     TimeNo: null,
+    //     AIDate: null,
+    //     EmbryoDate: null,
+    //     PregnancyStatus: null,
+    //     Notification: await data.Notification(),
+    //   };
+    // }

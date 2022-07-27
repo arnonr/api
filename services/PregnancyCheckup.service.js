@@ -69,11 +69,13 @@ const methods = {
     let dataJson = data.toJSON();
     if (dataJson.AI) {
       data = {
+        ...dataJson,
         PregnancyCheckupID: dataJson.PregnancyCheckupID,
         AnimalID: dataJson.AnimalID,
         AIID: dataJson.AI.AIID,
         PAR: dataJson.AI.PAR,
         TimeNo: dataJson.AI.TimeNo,
+        ThaiDate: dataJson.AI.ThaiAIDate,
         ThaiAIDate: dataJson.AI.ThaiAIDate,
         // Type
         Type: "AI",
@@ -87,8 +89,6 @@ const methods = {
         ResponsibilityStaffName: dataJson.Staff
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
-
-        ...dataJson,
       };
     } else if (dataJson.TransferEmbryo) {
       data = {
@@ -99,6 +99,7 @@ const methods = {
         PAR: dataJson.TransferEmbryo.PAR,
         TimeNo: dataJson.TransferEmbryo.TimeNo,
         ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
+        ThaiDate: dataJson.TransferEmbryo.ThaiTransferDate,
         Type: "Embryo",
         ThaiCheckupDate: dataJson.ThaiCheckupDate,
         PregnancyCheckupTimeNo: dataJson.TimeNo,
@@ -109,17 +110,17 @@ const methods = {
         ResponsibilityStaffName: dataJson.Staff
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
-
-        
       };
     } else {
       data = {
+        ...dataJson,
         PregnancyCheckupID: dataJson.PregnancyCheckupID,
         AnimalID: dataJson.AnimalID,
         AIID: null,
         // PAR: dataJson.PAR,
         Type: "NI",
         ThaiCheckupDate: dataJson.ThaiCheckupDate,
+        ThaiDate: dataJson.ThaiCheckupDate,
         PregnancyCheckupTimeNo: dataJson.TimeNo,
         PregnancyCheckStatusName: dataJson.PregnancyCheckStatus
           ? dataJson.PregnancyCheckStatus.PregnancyCheckStatusName
@@ -128,8 +129,6 @@ const methods = {
         ResponsibilityStaffName: dataJson.Staff
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
-
-        ...dataJson,
       };
     }
 
@@ -181,7 +180,7 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-       let data = this.getData(obj);
+        let data = this.getData(obj);
 
         resolve(data);
       } catch (error) {
