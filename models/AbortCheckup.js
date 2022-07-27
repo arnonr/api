@@ -18,6 +18,9 @@ class AbortCheckup extends Model {
     this.belongsTo(models.AI, {
       foreignKey: "AIID",
     });
+    this.belongsTo(models.TransferEmbryo, {
+      foreignKey: "TransferEmbryoID",
+    });
     this.belongsTo(models.AbortResult, {
       foreignKey: "AbortResultID",
     });

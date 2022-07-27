@@ -329,6 +329,7 @@ AbortCheckup.associate({
   Animal,
   Staff,
   AI,
+  TransferEmbryo,
   AbortResult,
   BCS
 });
