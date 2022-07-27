@@ -7,6 +7,11 @@ const buddhistEra = require("dayjs/plugin/buddhistEra");
 
 class DiseaseActivity extends Model {
   static associate(models) {
+    this.belongsTo(models.Farm, {
+      foreignKey: "FarmID",
+    });
+
+    
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
     });

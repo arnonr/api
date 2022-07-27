@@ -7,6 +7,12 @@ const buddhistEra = require("dayjs/plugin/buddhistEra");
 
 class DewormActivity extends Model {
   static associate(models) {
+
+    this.belongsTo(models.Farm, {
+      foreignKey: "FarmID",
+    });
+
+    
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
     });

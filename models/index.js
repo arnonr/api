@@ -526,6 +526,7 @@ DiseaseActivity.associate({
   DiseaseResult,
   Organization,
   Staff,
+  Farm
 });
 
 VaccineActivity.associate({
@@ -549,6 +550,7 @@ DewormActivity.associate({
   DewormMedicine,
   Organization,
   Staff,
+  Farm
 });
 
 CureAntibiotic.associate({
