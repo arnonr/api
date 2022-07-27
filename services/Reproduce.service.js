@@ -1255,7 +1255,7 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = RpToOvarySymptom.update(
+        const obj1 = RpToRightOvarySymptom.update(
           { isRemove: 1, isActive: 0 },
           { where: { ReproduceID: id } }
         );
