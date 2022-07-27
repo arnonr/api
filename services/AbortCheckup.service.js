@@ -64,6 +64,7 @@ const methods = {
     let dataJson = data.toJSON();
     if (dataJson.AI) {
       data = {
+        ...dataJson,
         AbortCheckupID: dataJson.AbortCheckupID,
         AnimalID: dataJson.AnimalID,
         AIID: dataJson.AI.AIID,
@@ -84,15 +85,15 @@ const methods = {
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
 
-        ...dataJson,
       };
     } else if (dataJson.TransferEmbryo) {
       data = {
+        ...dataJson,
         AbortCheckupID: dataJson.AbortCheckupID,
         AnimalID: dataJson.AnimalID,
         TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
         PAR: dataJson.TransferEmbryo.PAR,
-        // TimeNo: dataJson.TransferEmbryo.TimeNo,
+        TimeNo: dataJson.TransferEmbryo.TimeNo,
         ThaiTransferDate: dataJson.TransferEmbryo.ThaiTransferDate,
         Type: "Embryo",
         ThaiAbortDate: dataJson.ThaiAbortDate,
@@ -106,10 +107,10 @@ const methods = {
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
 
-        ...dataJson,
       };
     } else {
       data = {
+        ...dataJson,
         AbortCheckupID: dataJson.AbortCheckupID,
         AnimalID: dataJson.AnimalID,
         AIID: null,
@@ -125,7 +126,6 @@ const methods = {
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
 
-        ...dataJson,
       };
     }
 
