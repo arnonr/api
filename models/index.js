@@ -285,6 +285,7 @@ AnimalStatus.associate({
 
 Animal.associate({
   AnimalSex,
+  GiveBirth,
   Farm,
   Animal,
   AnimalBreed,

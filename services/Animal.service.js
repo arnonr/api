@@ -13,6 +13,7 @@ const AI = require("../models/AI");
 const TransferEmbryo = require("../models/TransferEmbryo");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
+const GiveBirth = require("../models/GiveBirth");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -1795,6 +1796,11 @@ const methods = {
               data.Projects.forEach((element) => {
                 projectArray.push(element.ProjectName);
               });
+
+              if (data.GiveBirthSelfID != null) {
+                data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
+              }
+
               data = {
                 ...data.toJSON(),
                 Projects: projectArray,
@@ -1834,11 +1840,17 @@ const methods = {
         obj.toJSON().Projects.forEach((element) => {
           projectArray.push(element.ProjectName);
         });
+        
+        let GiveBirthSelf = undefined
+        if (obj.GiveBirthSelfID != null) {
+          GiveBirthSelf = await GiveBirth.findByPk(obj.GiveBirthSelfID);
+        }
 
         obj = {
           ...obj.toJSON(),
           Projects: projectArray,
           ProjectID: JSON.parse(obj.toJSON().ProjectID),
+          GiveBirthSelf: GiveBirthSelf
         };
         resolve(obj);
       } catch (error) {

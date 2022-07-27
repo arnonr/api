@@ -87,6 +87,11 @@ class Animal extends Model {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
     });
+
+    // this.belongsTo(models.GiveBirth, {
+    //   foreignKey: "GiveBirthSelfID",
+    //   as: "GiveBirthSelf",
+    // });
   }
 
   async Notification() {
@@ -466,6 +471,11 @@ class Animal extends Model {
 
 Animal.init(
   {
+    GiveBirthSelfID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสการเกิดของตัวเอง",
+    },
     AnimalID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
