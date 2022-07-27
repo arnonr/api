@@ -14,6 +14,7 @@ const TransferEmbryo = require("../models/TransferEmbryo");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const GiveBirth = require("../models/GiveBirth");
+const Yearling = require("../models/Yearling");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -1840,8 +1841,8 @@ const methods = {
         obj.toJSON().Projects.forEach((element) => {
           projectArray.push(element.ProjectName);
         });
-        
-        let GiveBirthSelf = undefined
+
+        let GiveBirthSelf = undefined;
         if (obj.GiveBirthSelfID != null) {
           GiveBirthSelf = await GiveBirth.findByPk(obj.GiveBirthSelfID);
         }
@@ -1850,7 +1851,7 @@ const methods = {
           ...obj.toJSON(),
           Projects: projectArray,
           ProjectID: JSON.parse(obj.toJSON().ProjectID),
-          GiveBirthSelf: GiveBirthSelf
+          GiveBirthSelf: GiveBirthSelf,
         };
         resolve(obj);
       } catch (error) {
@@ -1882,6 +1883,19 @@ const methods = {
           obj.AnimalMicrochip = null;
         }
         const inserted = await obj.save();
+
+        if (obj.GiveBirthSelfID) {
+          data = {
+            MotherAnimalID: obj.AnimalMotherID,
+            AnimalID: inserted.AnimalID,
+            FollowDate: null,
+            Weigth: null,
+            ResponsibilityStaffID: null,
+            CreatedUserID: inserted.CreatedUserID,
+          };
+          var yearling = new Yearling(data)
+          const inserted1 = await yearling.save();
+        }
 
         if (data.ProjectID) {
           // insert AnimalToAnimalType
@@ -2383,6 +2397,63 @@ const methods = {
 
     return { query: query };
   },
+
+  // insertChild(data) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       //check เงื่อนไขตรงนี้ได้
+  //       if (data.ProjectID) {
+  //         if (!Array.isArray(data.ProjectID)) {
+  //           reject(ErrorBadRequest("Project ID ต้องอยู่ในรูปแบบ Array"));
+  //           return;
+  //         }
+  //         var ProjectIDList = [...data.ProjectID];
+  //         data.ProjectID = JSON.stringify(data.ProjectID);
+  //       }
+  //       const obj = new db(data);
+  //       if (!obj.AnimalNationalID) {
+  //         obj.AnimalNationalID = null;
+  //       }
+  //       if (!obj.AnimalEarID) {
+  //         obj.AnimalEarID = null;
+  //       }
+  //       if (!obj.AnimalMicrochip) {
+  //         obj.AnimalMicrochip = null;
+  //       }
+  //       const inserted = await obj.save();
+
+  //       if (obj.GiveBirthSelfID) {
+  //         data = {
+  //           MotherAnimalID: obj.AnimalMotherID,
+  //           AnimalID: inserted.AnimalID,
+  //           FollowDate: null,
+  //           Weigth: null,
+  //           ResponsibilityStaffID: null,
+  //           CreatedUserID: inserted.CreatedUserID,
+  //         };
+  //         var yearling = new Yearling(data)
+  //         const inserted1 = await yearling.save();
+  //       }
+
+  //       if (data.ProjectID) {
+  //         // insert AnimalToAnimalType
+  //         ProjectIDList.forEach((ProjectID) => {
+  //           const obj1 = AnimalToProject.create({
+  //             AnimalID: inserted.AnimalID,
+  //             ProjectID: ProjectID,
+  //             CreatedUserID: data.CreatedUserID,
+  //           });
+  //         });
+  //       }
+
+  //       let res = methods.findById(inserted.AnimalID);
+
+  //       resolve(res);
+  //     } catch (error) {
+  //       reject(ErrorBadRequest(error.message));
+  //     }
+  //   });
+  // },
 
   findByFarmID(req) {
     const limit = +(req.query.size || config.pageLimit);

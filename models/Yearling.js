@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class Yearling extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -47,17 +53,17 @@ Yearling.init(
     },
     FollowDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       comment: "วันที่ติดตาม",
     },
     Weight: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
       comment: "น้ำหนัก",
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสเจ้าหน้าที่ผู้ตรวจ",
     },
     isActive: {
@@ -103,6 +109,14 @@ Yearling.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiFollowDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.FollowDate
+          ? dayjs(this.FollowDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {
