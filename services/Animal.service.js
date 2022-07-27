@@ -1890,7 +1890,7 @@ const methods = {
             AnimalID: inserted.AnimalID,
             FollowDate: null,
             Weigth: null,
-            ResponsibilityStaffID: null,
+            ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
           };
           var yearling = new Yearling(data)
