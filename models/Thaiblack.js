@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class Thaiblack extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -49,49 +55,49 @@ Thaiblack.init(
       comment: "วันที่บันทึก",
     },
     Section: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "พื้นที่หน้าตัด(นิ้ว)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "พื้นที่หน้าตัด(นิ้ว)",
     },
     FatThick: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ความหนาไขมัน(T12-13)นิ้ว",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ความหนาไขมัน(T12-13)นิ้ว",
     },
     FatInserted: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ไขมันแทรกเนื้อ(%)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ไขมันแทรกเนื้อ(%)",
     },
     FatThickHip: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ความหนาไขมันสะโพก(นิ้ว)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ความหนาไขมันสะโพก(นิ้ว)",
     },
     Height: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ความสูง(ซ.ม.)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ความสูง(ซ.ม.)",
     },
     Length: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ความยาว(ซ.ม.)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ความยาว(ซ.ม.)",
     },
     Width: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "รอบอก(ซ.ม.)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "รอบอก(ซ.ม.)",
     },
     Weigth: {
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: true,
-        comment: "ประมาณน้ำหนัก(กก.)",
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "ประมาณน้ำหนัก(กก.)",
     },
     Remark: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        comment: "หมายเหตุ (ถ้ามี)",
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "หมายเหตุ (ถ้ามี)",
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
@@ -141,6 +147,14 @@ Thaiblack.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiThaiblackDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ThaiblackDate
+          ? dayjs(this.ThaiblackDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

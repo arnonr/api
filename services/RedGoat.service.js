@@ -8,15 +8,14 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.RedGoatID)
-      $where["RedGoatID"] = req.query.RedGoatID;
+    if (req.query.RedGoatID) $where["RedGoatID"] = req.query.RedGoatID;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.RedGoatRound) $where["RedGoatRound"] = req.query.RedGoatRound;
 
     if (req.query.RedGoatDate) $where["RedGoatDate"] = req.query.RedGoatDate;
-   
+
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
 
@@ -44,11 +43,21 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
+  },
+  getData(data) {
+    let dataJson = data.toJSON();
+    data = {
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+
+    return data;
   },
 
   find(req) {
@@ -62,9 +71,16 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                return this.getData(data);
+              })
+            );
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -89,7 +105,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }

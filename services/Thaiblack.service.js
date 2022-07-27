@@ -50,6 +50,18 @@ const methods = {
 
     return { query: query };
   },
+  getData(data) {
+    let dataJson = data.toJSON();
+    data = {
+      ResponsibilityStaffName: dataJson.Staff
+        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
+        : null,
+
+      ...dataJson,
+    };
+
+    return data
+  },
 
   find(req) {
     const limit = +(req.query.size || config.pageLimit);
@@ -62,9 +74,16 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+              rows = await Promise.all(
+                rows.map(async (data) => {
+                  return this.getData(data);
+                })
+              );
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -89,7 +108,10 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+
+        let data = this.getData(obj);
+
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound("id: not found"));
       }
