@@ -54,7 +54,7 @@ AbortCheckup.init(
     },
     AIID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสอ้างอิงการผสมเทียม",
     },
     TransferEmbryoID: {
