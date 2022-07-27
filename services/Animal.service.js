@@ -2505,6 +2505,7 @@ const methods = {
                     AnimalID: animalJson.AnimalID,
                     AnimalEarID: animalJson.AnimalEarID,
                     AnimalName: animalJson.AnimalName,
+                    AnimalTypeID: animalJson.AnimalTypeID,
                     AnimalSecretStatus: animalJson.AnimalSecretStatus,
                     AnimalAge: age,
                     AnimalBreedAll: animalJson.AnimalBreedAll,
