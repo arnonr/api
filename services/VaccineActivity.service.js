@@ -17,7 +17,7 @@ const methods = {
     if (req.query.VaccineActivityDate)
       $where["VaccineActivityDate"] = req.query.VaccineActivityDate;
 
-    console.log(req.query.AnimalID+"FREEDOM")
+    console.log(req.query.AnimalID + "FREEDOM");
 
     if (req.query.AnimalID) {
       $where["AnimalID"] = {
@@ -29,7 +29,7 @@ const methods = {
         ],
       };
     }
-    
+
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.VaccineID) $where["VaccineID"] = req.query.VaccineID;
@@ -153,12 +153,12 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-
-        let data = this.getData(obj);
+        
+        let data = await this.getData(obj);
 
         resolve(data);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
@@ -168,7 +168,7 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
         if (!Array.isArray(data.AnimalID)) {
-          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
           return;
         }
         data.AnimalID = JSON.stringify(data.AnimalID);
@@ -197,7 +197,7 @@ const methods = {
 
         if (data.AnimalID) {
           if (!Array.isArray(data.AnimalID)) {
-            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
           data.AnimalID = JSON.stringify(data.AnimalID);
