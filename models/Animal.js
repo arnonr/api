@@ -886,6 +886,14 @@ Animal.init(
         return animalBreed.trim();
       },
     },
+    ThaiAnimalBirthDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.AnimalBirthDate
+          ? dayjs(this.AnimalBirthDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
   },
   {
     sequelize,
