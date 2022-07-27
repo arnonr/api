@@ -81,10 +81,10 @@ const methods = {
       AnimalID: dataJson.AnimalID,
       MotherAnimalID: dataJson.MotherAnimalID,
 
-      MotherAnimalEarID: dataJson.ChildAnimal.AnimalMother
+      MotherAnimalEarID: dataJson.ChildAnimal.AnimalMotherID
         ? dataJson.ChildAnimal.AnimalMother.AnimalEarID
         : null,
-      FatherAnimalEarID: dataJson.ChildAnimal.AnimalFather
+      FatherAnimalEarID: dataJson.ChildAnimal.AnimalFatherID
         ? dataJson.ChildAnimal.AnimalFather.AnimalEarID
         : null,
       AnimalEarID: dataJson.ChildAnimal.AnimalEarID,
