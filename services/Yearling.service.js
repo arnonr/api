@@ -56,7 +56,11 @@ const methods = {
       {
         model: Animal,
         as: "ChildAnimal",
-        include: [{ model: AnimalSex, as: "AnimalSex" }],
+        include: [
+          { model: AnimalSex, as: "AnimalSex" },
+          { model: Animal, as: "AnimalFather" },
+          { model: Animal, as: "AnimalMother" },
+        ],
       },
     ];
 
@@ -124,13 +128,13 @@ const methods = {
               rows.map(async (data) => {
                 data = await this.getData(data);
 
-                if (data.ChildAnimal.GiveBirthSelfID != null) {
+                if (data.ChildAnimal.GiveBirthSelfID) {
                   let giveBirth = await GiveBirth.findByPk(
                     data.ChildAnimal.GiveBirthSelfID
                   );
-
+        
+                  data.ThaiGiveBirthDate = giveBirth.ThaiGiveBirthDate;
                   data.PAR = giveBirth.PAR;
-                  data.GiveBirthSelf = giveBirth;
                 }
 
                 return data;
