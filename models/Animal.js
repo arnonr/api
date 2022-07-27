@@ -838,8 +838,10 @@ Animal.init(
       type: DataTypes.VIRTUAL,
       get() {
         let animalBreed = "";
+
         if (this.AnimalBreedID1 != null && this.AnimalBreed1 != undefined) {
           let breed = this.AnimalBreed1.toJSON();
+
           animalBreed =
             animalBreed +
             this.AnimalBreedPercent1 +
@@ -882,7 +884,7 @@ Animal.init(
             breed.AnimalBreedShortName +
             " ";
         }
-
+        
         return animalBreed.trim();
       },
     },

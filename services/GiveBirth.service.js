@@ -5,7 +5,8 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
-const { count } = require("../models/GiveBirth");
+const AnimalBreed = require("../models/AnimalBreed");
+const { count, beforeDestroy } = require("../models/GiveBirth");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -62,10 +63,25 @@ const methods = {
 
     query["include"] = [
       { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
+      {
+        model: Animal,
+        include: [{
+          model: AnimalBreed,
+          as: 'AnimalBreed1'
+        },{
+          model: AnimalBreed,
+          as: 'AnimalBreed2'
+        },{
+          model: AnimalBreed,
+          as: 'AnimalBreed3'
+        },{
+          model: AnimalBreed,
+          as: 'AnimalBreed4'
+        },{
+          model: AnimalBreed,
+          as: 'AnimalBreed5'
+        }]
+      },
     ];
 
     return { query: query };
