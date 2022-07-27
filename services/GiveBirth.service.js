@@ -5,6 +5,7 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
+const { count } = require("../models/GiveBirth");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -70,7 +71,7 @@ const methods = {
     return { query: query };
   },
 
-  getData(data) {
+  async getData(data) {
     let dataJson = data.toJSON();
     if (dataJson.AI) {
       data = {
@@ -133,6 +134,14 @@ const methods = {
       };
     }
 
+    let ChildAnimal = await Animal.findAll({
+      where: {
+        GiveBirthSelfID: dataJson.GiveBirthID,
+      },
+    });
+
+    data.ChildAnimal = ChildAnimal;
+    data.CountChildAnimal = ChildAnimal.length;
     return data;
   },
 
@@ -147,13 +156,15 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
+          .then(async (result) => {
             let rows = result[0],
               count = result[2];
 
-            rows = rows.map((data) => {
-              return this.getData(data);
-            });
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                return this.getData(data);
+              })
+            );
 
             resolve({
               total: count,
