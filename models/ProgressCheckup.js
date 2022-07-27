@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class ProgressCheckup extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
@@ -9,7 +15,7 @@ class ProgressCheckup extends Model {
     });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
-        as: "BCS"
+      as: "BCS",
     });
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
@@ -67,75 +73,75 @@ ProgressCheckup.init(
       comment: "รอบอก(ซม.)",
     },
     BodyLength: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "ความยาวลำตัว(ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "ความยาวลำตัว(ซม.)",
     },
     Height: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "ส่วนสูง(ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "ส่วนสูง(ซม.)",
     },
     PerimeterBall: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เส้นรอบวงอัณฑะ (ซม.) เฉพาะเพศผู้",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เส้นรอบวงอัณฑะ (ซม.) เฉพาะเพศผู้",
     },
 
     ShoulderHeight: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความสูงหัวไหล่ (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความสูงหัวไหล่ (ซม.)",
     },
     HipHeight: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความสูงสะโพก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความสูงสะโพก (ซม.)",
     },
     HeartGirth: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความยาวรอบอก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความยาวรอบอก (ซม.)",
     },
     BodyLength: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความยาวลำตัว (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความยาวลำตัว (ซม.)",
     },
     ChestDepth: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความลึกช่วงอก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความลึกช่วงอก (ซม.)",
     },
     ChestWidth: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความกว้างช่วงอก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความกว้างช่วงอก (ซม.)",
     },
     RumpLength: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความยาวสะโพก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความยาวสะโพก (ซม.)",
     },
     RumpWidth: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความกว้างช่วงเชิงกราน (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความกว้างช่วงเชิงกราน (ซม.)",
     },
     HipWidth: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความกว้างช่วงสะโพก (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความกว้างช่วงสะโพก (ซม.)",
     },
     ShoulderLength: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความยาวหัวไหล่ (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความยาวหัวไหล่ (ซม.)",
     },
     RearLegLength: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-        comment: "เฉพาะกระบือ ความยาวโคนขาหลัง (ซม.)",
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "เฉพาะกระบือ ความยาวโคนขาหลัง (ซม.)",
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),

@@ -45,9 +45,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
