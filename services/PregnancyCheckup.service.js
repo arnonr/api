@@ -92,6 +92,7 @@ const methods = {
       };
     } else if (dataJson.TransferEmbryo) {
       data = {
+        ...dataJson,
         PregnancyCheckupID: dataJson.PregnancyCheckupID,
         AnimalID: dataJson.AnimalID,
         TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
@@ -109,7 +110,7 @@ const methods = {
           ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
           : null,
 
-        ...dataJson,
+        
       };
     } else {
       data = {
