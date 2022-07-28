@@ -1671,7 +1671,11 @@ const methods = {
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
-    if (req.query.ProductionStatusID) $where["ProductionStatusID"] = req.query.ProductionStatusID;
+    if (req.query.ProductionStatusID)
+      $where["ProductionStatusID"] = req.query.ProductionStatusID;
+
+    if (req.query.AnimalStatusID)
+      $where["AnimalStatusID"] = req.query.AnimalStatusID;
 
     if (req.query.AnimalIdentificationID)
       $where["AnimalIdentificationID"] = {
@@ -2294,7 +2298,11 @@ const methods = {
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
-    if (req.query.ProductionStatusID) $where["ProductionStatusID"] = req.query.ProductionStatusID;
+    if (req.query.ProductionStatusID)
+      $where["ProductionStatusID"] = req.query.ProductionStatusID;
+
+    if (req.query.AnimalStatusID)
+      $where["AnimalStatusID"] = req.query.AnimalStatusID;
 
     if (req.query.AnimalIdentificationID)
       $where["AnimalIdentificationID"] = {
@@ -2329,6 +2337,7 @@ const methods = {
       };
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
     if (req.query.AnimalFirstBreed)
       $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
     if (req.query.AnimalFatherID)
@@ -2474,7 +2483,25 @@ const methods = {
               count = rows.length;
 
             //
+            let noti = {
+              noti1: 0,
+              noti2: 0,
+              noti3: 0,
+              noti4: 0,
+              noti5: 0,
+              noti6: 0,
+              noti7: 0,
+              noti8: 0,
+            };
 
+            let countAnimal = {
+              all: 0,
+              child: 0,
+              young: 0,
+              girl: 0,
+              father: 0,
+              mother: 0,
+            };
             const getWithPromiseAll = async () => {
               let data = await Promise.all(
                 rows.map(async (data) => {
@@ -2486,6 +2513,70 @@ const methods = {
                   let data1 = await data.EventLatest();
 
                   data1.Notification = await data.Notification();
+                  // noti1 = ครบกำหนดคลอด, 
+                  // noti2 = ครบกำหนดตรวจท้อง, 
+                  // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+                  // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+                  // noti5 = อายุมากกว่ากําหนด
+                  // noti6 = แจ้งเตือนกลับสัด
+                  // noti7 = ผสมซ้ําเกิน 3 ครั้ง
+                  // noti8 = เลยกำหนดคลอด
+
+
+                  data1.Notification.includes("ครบกำหนดคลอด")
+                    ? (noti.noti1 = noti.noti1 + 1)
+                    : null;
+
+                  data1.Notification.includes("ครบกำหนดตรวจท้อง")
+                    ? (noti.noti2 = noti.noti2 + 1)
+                    : null;
+
+                  data1.Notification.includes("ครบกําหนดติดตามลูกเกิดหลังคลอด")
+                    ? (noti.noti3 = noti.noti3 + 1)
+                    : null;
+
+                  data1.Notification.includes(
+                    "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
+                  )
+                    ? (noti.noti4 = noti.noti4 + 1)
+                    : null;
+
+                  data1.Notification.includes("อายุมากกว่ากําหนด")
+                    ? (noti[4] = noti[4] + 1)
+                    : null;
+
+                  data1.Notification.includes("แจ้งเตือนกลับสัด")
+                    ? (noti[5] = noti[5] + 1)
+                    : null;
+
+                  data1.Notification.includes("ผสมซ้ําเกิน 3 ครั้ง")
+                    ? (noti[6] = noti[6] + 1)
+                    : null;
+
+                  data1.Notification.includes("เลยกำหนดคลอด")
+                    ? (noti[7] = noti[7] + 1)
+                    : null;
+
+                  countAnimal.all = countAnimal.all + 1;
+                  countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
+                    ? countAnimal.child + 1
+                    : countAnimal.child;
+
+                  countAnimal.young = [2, 7, 12].includes(data.AnimalStatusID)
+                    ? countAnimal.young + 1
+                    : countAnimal.young;
+
+                  countAnimal.girl = [3, 8, 13].includes(data.AnimalStatusID)
+                    ? countAnimal.girl + 1
+                    : countAnimal.girl;
+
+                  countAnimal.father = [4, 9, 14].includes(data.AnimalStatusID)
+                    ? countAnimal.father + 1
+                    : countAnimal.father;
+
+                  countAnimal.mother = [5, 10, 15].includes(data.AnimalStatusID)
+                    ? countAnimal.mother + 1
+                    : countAnimal.mother;
 
                   return data1;
                 })
@@ -2501,6 +2592,8 @@ const methods = {
               lastPage: Math.ceil(count / limit),
               currPage: +req.query.page || 1,
               rows: animal,
+              noti,
+              countAnimal,
             });
           })
           .catch((error) => {
