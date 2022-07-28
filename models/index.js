@@ -340,6 +340,7 @@ GiveBirth.associate({
   AI,
   GiveBirthHelp,
   BCS,
+  TransferEmbryo,
 });
 
 Yearling.associate({
@@ -422,6 +423,7 @@ TransferEmbryo.associate({
   BCS,
   Staff,
   TransferMethod,
+  Embryo
 });
 
 DistributionReason.associate({

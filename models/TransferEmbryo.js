@@ -17,6 +17,9 @@ class TransferEmbryo extends Model {
     this.belongsTo(models.TransferMethod, {
       foreignKey: "TransferMethodID",
     });
+    this.belongsTo(models.Embryo, {
+      foreignKey: "EmbryoID",
+    });
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
       as: "BCS",
@@ -80,6 +83,11 @@ TransferEmbryo.init(
       type: DataTypes.STRING,
       allowNull: false,
       comment: "หมายเลขตัวอ่อน",
+    },
+    EmbryoID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "ไอดีอ้างอิงตัวอ่อน",
     },
     TransferMethodID: {
       type: DataTypes.INTEGER(11),

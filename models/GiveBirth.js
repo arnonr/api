@@ -18,6 +18,9 @@ class GiveBirth extends Model {
     this.belongsTo(models.AI, {
       foreignKey: "AIID",
     });
+    this.belongsTo(models.TransferEmbryo, {
+      foreignKey: "TransferEmbryoID",
+    });
     this.belongsTo(models.GiveBirthHelp, {
       foreignKey: "GiveBirthHelpID",
     });

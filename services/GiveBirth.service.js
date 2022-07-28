@@ -7,6 +7,10 @@ const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
 const AnimalBreed = require("../models/AnimalBreed");
 const { count, beforeDestroy } = require("../models/GiveBirth");
+const AI = require("../models/AI");
+const Semen = require("../models/Semen");
+const TransferEmbryo = require("../models/TransferEmbryo");
+const Embryo = require("../models/Embryo");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -65,22 +69,50 @@ const methods = {
       { all: true, required: false },
       {
         model: Animal,
-        include: [{
-          model: AnimalBreed,
-          as: 'AnimalBreed1'
-        },{
-          model: AnimalBreed,
-          as: 'AnimalBreed2'
-        },{
-          model: AnimalBreed,
-          as: 'AnimalBreed3'
-        },{
-          model: AnimalBreed,
-          as: 'AnimalBreed4'
-        },{
-          model: AnimalBreed,
-          as: 'AnimalBreed5'
-        }]
+        include: [
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed1",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed2",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed3",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed4",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed5",
+          },
+        ],
+      },
+      {
+        model: AI,
+        as: "AI",
+        include: [
+          {
+            model: Semen,
+            attributes: ['SemenID','SemenNumber','BreederID'],
+            as: "Semen",
+          },
+        ],
+      },
+      {
+        model: TransferEmbryo,
+        as: "TransferEmbryo",
+        include: [
+          {
+            model: Embryo,
+            attributes: ['EmbryoID','EmbryoNumber','MaleBreederID'],
+            as: "Embryo",
+          },
+        ],
       },
     ];
 
