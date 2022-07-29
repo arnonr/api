@@ -19,3 +19,6 @@ truncate -s 0 /var/lib/docker/containers/*/*-json.log
 
 clear log docker mac os
 echo "rm /var/lib/docker/containers/*/*.log" | nc -U -w 0 ~/Library/Containers/com.docker.docker/Data/debug-shell.sock
+
+ถ้าไฟล์ไหนไม่ยอม ignore
+git rm --cached [file]
