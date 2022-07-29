@@ -110,6 +110,11 @@ Farmer.init(
         },
       },
     },
+    FarmerTypeID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "1 = เกษตกรทั่วไป, 2 = นิติบุคคล, 3 = หน่วยงาน",
+    },
     TitleID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,

@@ -122,7 +122,7 @@ const methods = {
               let farmerPID = req.query.IdentificationNumber;
 
               if (rows.length == 0) {
-                let fetchAPIFarmer = await this.fetchAPIFarmer1(farmerPID);
+                let fetchAPIFarmer = await this.fetchAPIFarmer(farmerPID);
 
                 if (fetchAPIFarmer) {
                   rows = fetchAPIFarmer;
@@ -237,39 +237,7 @@ const methods = {
     return data;
   },
 
-  fetchAPIFarmer() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // axios
-
-        let data = await this.getToken();
-        let token = data.data.access_token;
-
-        let data1 = await axios.post(
-          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10000/asc/true/sortBy/1",
-          {
-            farmTypeId: "1",
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (data1.data.code == "200") {
-          // console.log(data1.data.result)
-          console.log(data1.data.pagination);
-        } else {
-          reject(ErrorNotFound("API Error"));
-        }
-
-        resolve({ access: 1 });
-      } catch (error) {
-        reject(ErrorNotFound(error));
-      }
-    });
-  },
-
-  fetchAPIFarmer1(farmerPID) {
+  fetchAPIFarmer(farmerPID) {
     return new Promise(async (resolve, reject) => {
       try {
         let token = await this.getToken();
@@ -289,18 +257,14 @@ const methods = {
           if (data1.data.result.length != 0) {
             let dataFarmer = data1.data.result[data1.data.result.length - 1];
 
-            // saveToDB
-            // farmerProvinceId,
-            // farmerTambolId,
-            // farmerAmphurId
             let province = Province.findOne({
-              where: { ProvinceCode: dataFarmer.farmerProvinceId },
-            });
-            let tumbol = Tumbol.findOne({
-              where: { TumbolCode: dataFarmer.farmerTambolId },
+              where: { ProvinceCode: dataFarmer.farmerProvinceId.toString() },
             });
             let amphur = Amphur.findOne({
-              where: { AmphurCode: dataFarmer.farmerAmphurId },
+              where: { AmphurCode: dataFarmer.farmerAmphurId.toString() },
+            });
+            let tumbol = Tumbol.findOne({
+              where: { TumbolCode: dataFarmer.farmerTambolId.toString() },
             });
 
             let data = {
@@ -308,11 +272,19 @@ const methods = {
               IdentificationNumber: dataFarmer.pid,
               GivenName: dataFarmer.firstName,
               Surname: dataFarmer.lastName,
-              // FarmerTypeName: dataFarmer.farmerTypeName,
+              FarmerTypeID:
+                dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
+                  ? 1
+                  : dataFarmer.farmerTypeName == "นิติบุคคล"
+                  ? 2
+                  : dataFarmer.farmerTypeName == "หน่วยงาน"
+                  ? 3
+                  : null,
               HouseBuildingNumber: dataFarmer.farmerHomeNo,
               HouseProvinceID: province ? province.ProvinceID : null,
               HouseAmphurID: amphur ? amphur.AmphurID : null,
               HouseTumbolID: tumbol ? tumbol.TumbolID : null,
+              HouseZipCode: tumbol ? tumbol.Zipcode : null,
               HouseVillageName: dataFarmer.farmerVillageName,
               CreatedUserID: 1,
             };
