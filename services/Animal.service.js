@@ -1949,6 +1949,15 @@ const methods = {
 
         await db.update(data, { where: { AnimalID: id } });
 
+        if (data.ProjectID === null) {
+          AnimalToProject.destroy({
+            where: {
+              AnimalID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.ProjectID) {
           // insert AnimalToProject
           const searchATP = await AnimalToProject.findAll({
@@ -2005,10 +2014,10 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = AnimalToProject.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { AnimalID: id } }
-        );
+        const obj1 = AnimalToProject.destroy({
+          where: { AnimalID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {
@@ -2513,15 +2522,14 @@ const methods = {
                   let data1 = await data.EventLatest();
 
                   data1.Notification = await data.Notification();
-                  // noti1 = ครบกำหนดคลอด, 
-                  // noti2 = ครบกำหนดตรวจท้อง, 
+                  // noti1 = ครบกำหนดคลอด,
+                  // noti2 = ครบกำหนดตรวจท้อง,
                   // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
                   // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
                   // noti5 = อายุมากกว่ากําหนด
                   // noti6 = แจ้งเตือนกลับสัด
                   // noti7 = ผสมซ้ําเกิน 3 ครั้ง
                   // noti8 = เลยกำหนดคลอด
-
 
                   data1.Notification.includes("ครบกำหนดคลอด")
                     ? (noti.noti1 = noti.noti1 + 1)
