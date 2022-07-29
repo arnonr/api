@@ -132,14 +132,17 @@ const methods = {
       {
         model: CureAntibiotic,
         as: "CureAntibiotic",
+        through: { attributes: ["Amount"] },
       },
       {
         model: CureHormone,
         as: "CureHormone",
+        through: { attributes: ["Amount"] },
       },
       {
         model: CureVitamin,
         as: "CureVitamin",
+        through: { attributes: ["Amount"] },
       },
       {
         model: ReproduceSuggestion,
@@ -195,17 +198,26 @@ const methods = {
 
     let cureAntibioticArray = [];
     obj.toJSON().CureAntibiotic.forEach((element) => {
-      cureAntibioticArray.push(element.CureAntibioticName);
+      cureAntibioticArray.push([
+        element.CureAntibioticName,
+        element.RpToCureAntibiotic.Amount,
+      ]);
     });
 
     let cureHormoneArray = [];
     obj.toJSON().CureHormone.forEach((element) => {
-      cureHormoneArray.push(element.CureHormoneName);
+      cureHormoneArray.push([
+        element.CureHormoneName,
+        element.RpToCureHormone.Amount,
+      ]);
     });
 
     let cureVitaminArray = [];
     obj.toJSON().CureVitamin.forEach((element) => {
-      cureVitaminArray.push(element.CureVitaminName);
+      cureVitaminArray.push([
+        element.CureVitaminName,
+        element.RpToCureVitamin.Amount,
+      ]);
     });
 
     let reproduceSuggestionArray = [];
@@ -397,14 +409,17 @@ const methods = {
             {
               model: CureAntibiotic,
               as: "CureAntibiotic",
+              through: { attributes: ["Amount"] },
             },
             {
               model: CureHormone,
               as: "CureHormone",
+              through: { attributes: ["Amount"] },
             },
             {
               model: CureVitamin,
               as: "CureVitamin",
+              through: { attributes: ["Amount"] },
             },
             {
               model: ReproduceSuggestion,
@@ -643,7 +658,8 @@ const methods = {
           CureAntibioticIDList.forEach((CureAntibioticID) => {
             const obj1 = RpToCureAntibiotic.create({
               ReproduceID: inserted.ReproduceID,
-              CureAntibioticID: CureAntibioticID,
+              CureAntibioticID: CureAntibioticID[0],
+              Amount: CureAntibioticID[1],
               CreatedUserID: data.CreatedUserID,
             });
           });
@@ -653,7 +669,8 @@ const methods = {
           CureHormoneIDList.forEach((CureHormoneID) => {
             const obj1 = RpToCureHormone.create({
               ReproduceID: inserted.ReproduceID,
-              CureHormoneID: CureHormoneID,
+              CureHormoneID: CureHormoneID[0],
+              Amount: CureHormoneID[1],
               CreatedUserID: data.CreatedUserID,
             });
           });
@@ -663,7 +680,8 @@ const methods = {
           CureVitaminIDList.forEach((CureVitaminID) => {
             const obj1 = RpToCureVitamin.create({
               ReproduceID: inserted.ReproduceID,
-              CureVitaminID: CureVitaminID,
+              CureVitaminID: CureVitaminID[0],
+              Amount: CureVitaminID[1],
               CreatedUserID: data.CreatedUserID,
             });
           });
@@ -1182,13 +1200,20 @@ const methods = {
         }
 
         if (data.CureAntibioticID) {
-          // insert ProjectToAnimalType
           const search = await RpToCureAntibiotic.findAll({
             where: { ReproduceID: obj.ReproduceID },
           });
-          // loop pta ของทั้งหมดที่มาจาก DB
+
           search.forEach((s) => {
-            if (!CureAntibioticIDList.includes(s.CureAntibioticID)) {
+            let i = 0;
+
+            CureAntibioticIDList.find((element) => {
+              if (element[0] == s.CureAntibioticID) {
+                i = 1;
+              }
+            });
+
+            if (i == 0) {
               RpToCureAntibiotic.destroy({
                 where: {
                   RpToCureAntibioticID: s.RpToCureAntibioticID,
@@ -1198,19 +1223,23 @@ const methods = {
           });
 
           CureAntibioticIDList.forEach(async (ID) => {
-            const search = await RpToCureAntibiotic.findOne({
+            const searchOne = await RpToCureAntibiotic.findOne({
               where: {
                 ReproduceID: obj.ReproduceID,
-                CureAntibioticID: ID,
+                CureAntibioticID: ID[0],
               },
             });
 
-            if (!search) {
+            if (!searchOne) {
               const obj1 = RpToCureAntibiotic.create({
                 ReproduceID: obj.ReproduceID,
-                CureAntibioticID: ID,
+                CureAntibioticID: ID[0],
+                Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
+            } else {
+              searchOne.Amount = ID[1];
+              await searchOne.save();
             }
           });
         }
@@ -1226,14 +1255,22 @@ const methods = {
           });
         }
 
+        //
         if (data.CureHormoneID) {
-          // insert ProjectToAnimalType
           const search = await RpToCureHormone.findAll({
             where: { ReproduceID: obj.ReproduceID },
           });
-          // loop pta ของทั้งหมดที่มาจาก DB
+
           search.forEach((s) => {
-            if (!CureHormoneIDList.includes(s.CureHormoneID)) {
+            let i = 0;
+
+            CureHormoneIDList.find((element) => {
+              if (element[0] == s.CureHormoneID) {
+                i = 1;
+              }
+            });
+
+            if (i == 0) {
               RpToCureHormone.destroy({
                 where: {
                   RpToCureHormoneID: s.RpToCureHormoneID,
@@ -1243,19 +1280,23 @@ const methods = {
           });
 
           CureHormoneIDList.forEach(async (ID) => {
-            const search = await RpToCureHormone.findOne({
+            const searchOne = await RpToCureHormone.findOne({
               where: {
                 ReproduceID: obj.ReproduceID,
-                CureHormoneID: ID,
+                CureHormoneID: ID[0],
               },
             });
 
-            if (!search) {
+            if (!searchOne) {
               const obj1 = RpToCureHormone.create({
                 ReproduceID: obj.ReproduceID,
-                CureHormoneID: ID,
+                CureHormoneID: ID[0],
+                Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
+            } else {
+              searchOne.Amount = ID[1];
+              await searchOne.save();
             }
           });
         }
@@ -1272,13 +1313,20 @@ const methods = {
         }
 
         if (data.CureVitaminID) {
-          // insert ProjectToAnimalType
           const search = await RpToCureVitamin.findAll({
             where: { ReproduceID: obj.ReproduceID },
           });
-          // loop pta ของทั้งหมดที่มาจาก DB
+
           search.forEach((s) => {
-            if (!CureVitaminIDList.includes(s.CureVitaminID)) {
+            let i = 0;
+
+            CureVitaminIDList.find((element) => {
+              if (element[0] == s.CureVitaminID) {
+                i = 1;
+              }
+            });
+
+            if (i == 0) {
               RpToCureVitamin.destroy({
                 where: {
                   RpToCureVitaminID: s.RpToCureVitaminID,
@@ -1288,19 +1336,23 @@ const methods = {
           });
 
           CureVitaminIDList.forEach(async (ID) => {
-            const search = await RpToCureVitamin.findOne({
+            const searchOne = await RpToCureVitamin.findOne({
               where: {
                 ReproduceID: obj.ReproduceID,
-                CureVitaminID: ID,
+                CureVitaminID: ID[0],
               },
             });
 
-            if (!search) {
+            if (!searchOne) {
               const obj1 = RpToCureVitamin.create({
                 ReproduceID: obj.ReproduceID,
-                CureVitaminID: ID,
+                CureVitaminID: ID[0],
+                Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
+            } else {
+              searchOne.Amount = ID[1];
+              await searchOne.save();
             }
           });
         }

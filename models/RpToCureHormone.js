@@ -31,6 +31,11 @@ RpToCureHormone.init(
       allowNull: false,
       comment: "รหัสอ้างอิงฮอร์โมน",
     },
+    Amount: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      comment: "จำนวน",
+    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

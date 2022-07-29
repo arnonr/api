@@ -2,8 +2,7 @@ const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
 class RpToCureVitamin extends Model {
-  static associate(models) {
-  }
+  static associate(models) {}
   // Custom JSON Response
   toJSON() {
     return {
@@ -30,6 +29,11 @@ RpToCureVitamin.init(
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสอ้างอิงวิตามิน",
+    },
+    Amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      comment: "จำนวน",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
