@@ -20,7 +20,7 @@ const methods = {
 
     if (req.query.IdentificationNumber)
       $where["IdentificationNumber"] = req.query.IdentificationNumber;
-      
+
     if (req.query.FarmerNumber)
       $where["FarmerNumber"] = {
         [Op.like]: "%" + req.query.FarmerNumber + "%",
@@ -313,7 +313,7 @@ const methods = {
         let tokenAccess = token.data.access_token;
 
         let data1 = await axios.post(
-          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10000/asc/true/sortBy/1",
+          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
           {
             farmerTypeId: farmerTypeId,
           },
@@ -326,56 +326,57 @@ const methods = {
           if (data1.data.result.length != 0) {
             let i = 0;
 
-            let dataFarmer = data1.data.result[i];
+            for (let i = 0; i < data1.data.result.length; i++) {
+              let dataFarmer = data1.data.result[i];
 
-            let farmer = Farmer.findOne({
-              where: { IdentificationNumber: dataFarmer.pid },
-            });
+              let farmer = Farmer.findOne({
+                where: { IdentificationNumber: dataFarmer.pid },
+              });
 
-            let province = Province.findOne({
-              where: { ProvinceCode: dataFarmer.farmerProvinceId.toString() },
-            });
-            let amphur = Amphur.findOne({
-              where: { AmphurCode: dataFarmer.farmerAmphurId.toString() },
-            });
-            let tumbol = Tumbol.findOne({
-              where: { TumbolCode: dataFarmer.farmerTambolId.toString() },
-            });
+              let province = Province.findOne({
+                where: { ProvinceCode: dataFarmer.farmerProvinceId.toString() },
+              });
+              let amphur = Amphur.findOne({
+                where: { AmphurCode: dataFarmer.farmerAmphurId.toString() },
+              });
+              let tumbol = Tumbol.findOne({
+                where: { TumbolCode: dataFarmer.farmerTambolId.toString() },
+              });
 
-            let data = {
-              FarmerNumber: dataFarmer.farmerId,
-              IdentificationNumber: dataFarmer.pid,
-              GivenName: dataFarmer.firstName,
-              Surname: dataFarmer.lastName,
-              FarmerTypeID:
-                dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
-                  ? 1
-                  : dataFarmer.farmerTypeName == "นิติบุคคล"
-                  ? 2
-                  : dataFarmer.farmerTypeName == "หน่วยงาน"
-                  ? 3
-                  : null,
-              HouseBuildingNumber: dataFarmer.farmerHomeNo,
-              HouseProvinceID: province ? province.ProvinceID : null,
-              HouseAmphurID: amphur ? amphur.AmphurID : null,
-              HouseTumbolID: tumbol ? tumbol.TumbolID : null,
-              HouseZipCode: tumbol ? tumbol.Zipcode : null,
-              HouseVillageName: dataFarmer.farmerVillageName,
-              CreatedUserID: 1,
-              FarmerRegisterStatus: 2,
-            };
+              let data = {
+                FarmerNumber: dataFarmer.farmerId,
+                IdentificationNumber: dataFarmer.pid,
+                GivenName: dataFarmer.firstName,
+                Surname: dataFarmer.lastName,
+                FarmerTypeID:
+                  dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
+                    ? 1
+                    : dataFarmer.farmerTypeName == "นิติบุคคล"
+                    ? 2
+                    : dataFarmer.farmerTypeName == "หน่วยงาน"
+                    ? 3
+                    : null,
+                HouseBuildingNumber: dataFarmer.farmerHomeNo,
+                HouseProvinceID: province ? province.ProvinceID : null,
+                HouseAmphurID: amphur ? amphur.AmphurID : null,
+                HouseTumbolID: tumbol ? tumbol.TumbolID : null,
+                HouseZipCode: tumbol ? tumbol.Zipcode : null,
+                HouseVillageName: dataFarmer.farmerVillageName,
+                CreatedUserID: 1,
+                FarmerRegisterStatus: 2,
+              };
 
-            if (farmer) {
-              await Farmer.update(data, { where: { FarmerID: farmer.FarmerID } });
-              let res = methods.findById(farmer.FarmerID);
-            } else {
-              const obj = new db(data);
-              const inserted = await obj.save();
-              let res = methods.findById(inserted.FarmerID);
+              if (farmer) {
+                await Farmer.update(data, {
+                  where: { FarmerID: farmer.FarmerID },
+                });
+              } else {
+                const obj = new db(data);
+                const inserted = await obj.save();
+              }
             }
 
-           
-            resolve(res);
+            resolve({ status: "success" });
           } else {
             reject(ErrorNotFound("IdentificationNumber Not Found"));
           }
