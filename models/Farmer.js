@@ -132,7 +132,7 @@ Farmer.init(
     },
     GenderID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "เพศ",
     },
     BirthDate: {
@@ -147,7 +147,7 @@ Farmer.init(
     },
     MobilePhoneNumber: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "หมายเลขโทรศัพท์มือถือ",
     },
     EducationID: {

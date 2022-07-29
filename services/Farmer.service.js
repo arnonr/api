@@ -2,6 +2,13 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farmer"),
   { Op } = require("sequelize");
+var FormData = require("form-data");
+
+const Farmer = require("../models/Farmer");
+const Province = require("../models/Province");
+const Amphur = require("../models/Amphur");
+const Tumbol = require("../models/Tumbol");
+
 const axios = require("axios").default;
 
 const methods = {
@@ -107,9 +114,25 @@ const methods = {
           delete _q.query.include,
           db.count(_q.query),
         ])
-          .then((result) => {
-            const rows = result[0],
+          .then(async (result) => {
+            let rows = result[0],
               count = result[2];
+
+            if (req.query.IdentificationNumber) {
+              let farmerPID = req.query.IdentificationNumber;
+
+              if (rows.length == 0) {
+                let fetchAPIFarmer = await this.fetchAPIFarmer1(farmerPID);
+
+                if (fetchAPIFarmer) {
+                  rows = fetchAPIFarmer;
+                  count = 1;
+                } else {
+                  reject(ErrorNotFound("IdentificationNumber Not Found"));
+                }
+              }
+            }
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -195,36 +218,119 @@ const methods = {
     });
   },
 
+  async getToken() {
+    var bodyFormData = new FormData();
+    bodyFormData.append("username", "biotech");
+    bodyFormData.append("password", "!Q@WeRegist");
+    bodyFormData.append("grant_type", "password");
+
+    let data = await axios.post(
+      "https://service-eregist.dld.go.th/regislives_authen/oauth/token",
+      bodyFormData,
+      {
+        auth: {
+          username: "zealtech",
+          password: "zeal1tech",
+        },
+      }
+    );
+    return data;
+  },
+
   fetchAPIFarmer() {
     return new Promise(async (resolve, reject) => {
       try {
         // axios
-        let AccessToken = null;
-        var username = "zealtech";
-        var password = "zeal1tech";
-        var credentials = btoa(username + ":" + password);
-        var basicAuth = "Basic " + credentials;
-        axios
-          .post(
-            "https://service-eregist.dld.go.th/regislives_authen/oauth/token",
-            {
-              auth: {
-                username: "zealtech",
-                password: "zeal1tech",
-              },
-              username: "biotech",
-              password: "!Q@WeRegist",
-              grant_type: "password",
-            }
-          )
-          .then(function (response) {
-            console.log(response);
-            AccessToken = response.access_token;
-          });
 
-        resolve({});
+        let data = await this.getToken();
+        let token = data.data.access_token;
+
+        let data1 = await axios.post(
+          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10000/asc/true/sortBy/1",
+          {
+            farmTypeId: "1",
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (data1.data.code == "200") {
+          // console.log(data1.data.result)
+          console.log(data1.data.pagination);
+        } else {
+          reject(ErrorNotFound("API Error"));
+        }
+
+        resolve({ access: 1 });
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  fetchAPIFarmer1(farmerPID) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let token = await this.getToken();
+        let tokenAccess = token.data.access_token;
+
+        let data1 = await axios.post(
+          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+          {
+            farmerPID: farmerPID,
+          },
+          {
+            headers: { Authorization: `Bearer ${tokenAccess}` },
+          }
+        );
+
+        if (data1.data.code == "200") {
+          if (data1.data.result.length != 0) {
+            let dataFarmer = data1.data.result[data1.data.result.length - 1];
+
+            // saveToDB
+            // farmerProvinceId,
+            // farmerTambolId,
+            // farmerAmphurId
+            let province = Province.findOne({
+              where: { ProvinceCode: dataFarmer.farmerProvinceId },
+            });
+            let tumbol = Tumbol.findOne({
+              where: { TumbolCode: dataFarmer.farmerTambolId },
+            });
+            let amphur = Amphur.findOne({
+              where: { AmphurCode: dataFarmer.farmerAmphurId },
+            });
+
+            let data = {
+              FarmerNumber: dataFarmer.farmerId,
+              IdentificationNumber: dataFarmer.pid,
+              GivenName: dataFarmer.firstName,
+              Surname: dataFarmer.lastName,
+              // FarmerTypeName: dataFarmer.farmerTypeName,
+              HouseBuildingNumber: dataFarmer.farmerHomeNo,
+              HouseProvinceID: province ? province.ProvinceID : null,
+              HouseAmphurID: amphur ? amphur.AmphurID : null,
+              HouseTumbolID: tumbol ? tumbol.TumbolID : null,
+              HouseVillageName: dataFarmer.farmerVillageName,
+              CreatedUserID: 1,
+            };
+
+            const obj = new db(data);
+            const inserted = await obj.save();
+            let res = methods.findById(inserted.FarmerID);
+            resolve(res);
+          } else {
+            reject(ErrorNotFound("IdentificationNumber Not Found"));
+          }
+        } else {
+          reject(ErrorNotFound("API Error"));
+        }
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
       }
     });
   },
