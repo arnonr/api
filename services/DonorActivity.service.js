@@ -5,10 +5,11 @@ const config = require("../configs/app"),
 
 const Animal = require("../models/Animal");
 const Donor = require("../models/Donor");
-const dayjs = require('dayjs');
-const locale = require('dayjs/locale/th');
-const buddhistEra = require('dayjs/plugin/buddhistEra');
-dayjs.extend(buddhistEra)
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+const Staff = require("../models/Staff");
+dayjs.extend(buddhistEra);
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -244,12 +245,11 @@ const methods = {
         ])
           .then(async (result) => {
             const rows = result[0],
-            count = rows.length;
+              count = rows.length;
 
             const getWithPromiseAll = async () => {
               let data = await Promise.all(
                 rows.map(async (d) => {
-
                   let da = await db.findAll({
                     where: {
                       DonorID: d.DonorID,
@@ -257,22 +257,26 @@ const methods = {
                     },
                   });
 
-                  let FindDonor = await Donor.findByPk(d.DonorID,{
-                    include: {all: true, required: false}
+                  // get Donor
+                  let FindDonor = await Donor.findByPk(d.DonorID, {
+                    include: { all: true, required: false },
                   });
-                  
 
                   let PresetActivity1 = da
                     .filter((d) => d.PresetActivityID == 1)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
 
                   let PresetActivity2 = da
                     .filter((d) => d.PresetActivityID == 2)
                     .map((d) => {
                       return (
-                        dayjs(d.ActivityDate).locale('th').format('DD MMM BB') +
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
                         " " +
                         d.Time +
                         " (" +
@@ -285,7 +289,7 @@ const methods = {
                     .filter((d) => d.PresetActivityID == 3)
                     .map((d) => {
                       return (
-                        dayjs(d.ActivityDate).locale('th').format('DD MMM BB') +
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
                         " " +
                         d.Time +
                         " (" +
@@ -297,44 +301,74 @@ const methods = {
                   let PresetActivity4 = da
                     .filter((d) => d.PresetActivityID == 5)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
 
                   let PresetActivity5 = da
                     .filter((d) => d.PresetActivityID == 4)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB');
+                      return dayjs(d.ActivityDate)
+                        .locale("th")
+                        .format("DD MMM BB");
                     });
 
                   let PresetActivity6 = da
                     .filter((d) => d.PresetActivityID == 6)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
 
                   let PresetActivity7 = da
                     .filter((d) => d.PresetActivityID == 7)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
 
                   let PresetActivity8 = da
                     .filter((d) => d.PresetActivityID == 8)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
 
                   let PresetActivity9 = da
                     .filter((d) => d.PresetActivityID == 9)
                     .map((d) => {
-                      return dayjs(d.ActivityDate).locale('th').format('DD MMM BB') + " " + d.Time;
+                      return (
+                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
+                        " " +
+                        d.Time
+                      );
                     });
+
+                  let sf = null;
+                  if (da[0].ExcludeResponsibilityStaffID) {
+                    sf = await Staff.findByPk(1);
+                  }
 
                   let dn = {
                     AnimalID: d.AnimalID,
                     AnimalEarID: d.Animal.AnimalEarID,
                     DonorID: FindDonor.DonorID,
-                    Staff: FindDonor.Staff.StaffGivenName+" "+FindDonor.Staff.StaffSurname,
+                    Staff:
+                      FindDonor.Staff.StaffGivenName +
+                      " " +
+                      FindDonor.Staff.StaffSurname,
                     PresetActivity1:
                       PresetActivity1.length != 0 ? PresetActivity1 : null,
                     PresetActivity2:
@@ -353,13 +387,24 @@ const methods = {
                       PresetActivity8 != 0 ? PresetActivity8 : null,
                     PresetActivity9:
                       PresetActivity9 != 0 ? PresetActivity9 : null,
+                    IsExclude: da[0].IsExclude,
+                    IsExcludeName: da[0].IsExclude ? "อยู่ในโปรแกรม" : "คัดออก",
+                    ExcludeRemark: da[0].ExcludeRemark,
+                    ExcludeDate: da[0].ExcludeDate,
+                    ThaiExcludeDate: da[0].ExcludeDate
+                      ? dayjs(da[0].ExcludeDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB")
+                      : null,
+                    ExcludeResponsibilityStaffID: sf
+                      ? `${sf.StaffNumber} ${sf.StaffGivenName}  ${sf.StaffSurname}`
+                      : null,
                   };
 
                   return dn;
                 })
               );
 
-              console.log(data);
               return data;
             };
 
@@ -377,6 +422,38 @@ const methods = {
           });
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  excludeDonor(id, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Update
+        data.AnimalID = parseInt(data.AnimalID);
+        // data.IsExclude = data.IsExclude;
+        // data.ExcludeRemark = data.ExcludeRemark;
+        // data.ExcludeDate = data.ExcludeDate;
+        // data.ExcludeResponsibilityStaffID = data.ExcludeResponsibilityStaffID;
+        // console.log(data)
+        let data1 = {
+          IsExclude: data.IsExclude,
+          ExcludeRemark: data.ExcludeRemark,
+          ExcludeDate: data.ExcludeDate,
+          ExcludeResponsibilityStaffID: data.ExcludeResponsibilityStaffID,
+          UpdatedUserID:  data.UpdatedUserID,
+          
+        };
+
+        const obj = await db.update(data1, {
+          where: { DonorID: id, AnimalID: data.AnimalID },
+        });
+
+        // this.findDonor(data)
+
+        resolve({ data: "success" });
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },

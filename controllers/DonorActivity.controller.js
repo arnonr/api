@@ -60,6 +60,18 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onExcludeDonor(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UpdatedUserID = decoded.id;
+      
+      let result = await Service.excludeDonor(req.params.id, req.body);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };
