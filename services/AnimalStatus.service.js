@@ -255,6 +255,15 @@ const methods = {
 
         await db.update(data, { where: { AnimalStatusID: id } });
 
+        if (data.AnimalTypeID === null) {
+          AnimalStatusToAnimalType.destroy({
+            where: {
+              AnimalStatusID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
           const searchATA = await AnimalStatusToAnimalType.findAll({
@@ -290,6 +299,15 @@ const methods = {
           });
         }
         //
+
+        if (data.AnimalSexID === null) {
+          AnimalStatusToAnimalSex.destroy({
+            where: {
+              AnimalStatusID: id,
+            },
+            truncate: true,
+          });
+        }
 
         if (data.AnimalSexID) {
           // insert ProjectToAnimalType
@@ -350,10 +368,14 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = AnimalStatusToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { AnimalStatusID: id } }
-        );
+        const obj1 = AnimalStatusToAnimalType.destroy({
+          where: { AnimalStatusID: id },
+          truncate: true,
+        });
+        const obj2 = AnimalStatusToAnimalSex.destroy({
+          where: { AnimalStatusID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

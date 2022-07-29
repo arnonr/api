@@ -119,9 +119,9 @@ const methods = {
           include: [{ all: true, required: false }],
         });
 
-        console.log( obj.toJSON())
+        console.log(obj.toJSON());
         if (!obj) reject(ErrorNotFound("id: not found"));
-        console
+        console;
         let animalTypeArray = [];
 
         obj.toJSON().AnimalTypes.forEach((element) => {
@@ -194,6 +194,15 @@ const methods = {
 
         await db.update(data, { where: { CureAntibioticID: id } });
 
+        if (data.AnimalTypeID === null) {
+          CureAntibioticToAnimalType.destroy({
+            where: {
+              CureAntibioticID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert CureAntibioticToAnimalType
           const searchPTA = await CureAntibioticToAnimalType.findAll({
@@ -205,7 +214,8 @@ const methods = {
             if (!AnimalTypeIDList.includes(pta.AnimalTypeID)) {
               CureAntibioticToAnimalType.destroy({
                 where: {
-                  CureAntibioticToAnimalTypeID: pta.CureAntibioticToAnimalTypeID,
+                  CureAntibioticToAnimalTypeID:
+                    pta.CureAntibioticToAnimalTypeID,
                 },
               });
             }
@@ -247,11 +257,11 @@ const methods = {
           { where: { CureAntibioticID: id } }
         );
 
-        // delete CureAntibioticToAnimalType
-        const obj1 = CureAntibioticToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { CureAntibioticID: id } }
-        );
+        // delete CauseHealthToAnimalType
+        const obj1 = CureAntibioticToAnimalType.destroy({
+          where: { CureAntibioticID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

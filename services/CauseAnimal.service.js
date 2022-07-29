@@ -119,9 +119,9 @@ const methods = {
           include: [{ all: true, required: false }],
         });
 
-        console.log( obj.toJSON())
+        console.log(obj.toJSON());
         if (!obj) reject(ErrorNotFound("id: not found"));
-        console
+        console;
         let animalTypeArray = [];
 
         obj.toJSON().AnimalTypes.forEach((element) => {
@@ -194,6 +194,15 @@ const methods = {
 
         await db.update(data, { where: { CauseAnimalID: id } });
 
+        if (data.AnimalTypeID === null) {
+          CauseAnimalToAnimalType.destroy({
+            where: {
+              CauseAnimalID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert CauseAnimalToAnimalType
           const searchPTA = await CauseAnimalToAnimalType.findAll({
@@ -248,10 +257,10 @@ const methods = {
         );
 
         // delete CauseAnimalToAnimalType
-        const obj1 = CauseAnimalToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { CauseAnimalID: id } }
-        );
+        const obj1 = CauseAnimalToAnimalType.destroy({
+          where: { CauseAnimalID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

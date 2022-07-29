@@ -245,6 +245,16 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
         await db.update(data, { where: { FarmID: id } });
+
+        if (data.ProjectID === null) {
+          FarmToProject.destroy({
+            where: {
+              FarmID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.ProjectID) {
           // insert FarmToProject
           const searchFTP = await FarmToProject.findAll({
@@ -299,11 +309,10 @@ const methods = {
           { where: { FarmID: id } }
         );
 
-        // delete ProjectToAnimalType
-        const obj1 = FarmToProject.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { FarmID: id } }
-        );
+        const obj1 = FarmToProject.destroy({
+          where: { FarmID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

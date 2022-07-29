@@ -193,6 +193,15 @@ const methods = {
 
         await db.update(data, { where: { VaccineID: id } });
 
+        if (data.AnimalTypeID === null) {
+          VcToAnimalType.destroy({
+            where: {
+              VaccineID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert VcToAnimalType
           const searchPTA = await VcToAnimalType.findAll({
@@ -247,10 +256,10 @@ const methods = {
         );
 
         // delete VcToAnimalType
-        const obj1 = VcToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { VaccineID: id } }
-        );
+        const obj1 = VcToAnimalType.destroy({
+          where: { VaccineID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

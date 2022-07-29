@@ -201,6 +201,15 @@ const methods = {
 
         await db.update(data, { where: { AnnualGoalID: id } });
 
+        if (data.AnimalTypeID === null) {
+          AnnualGoalToAnimalType.destroy({
+            where: {
+              AnnualGoalID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
           const searchATA = await AnnualGoalToAnimalType.findAll({
@@ -259,10 +268,10 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = AnnualGoalToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { AnnualGoalID: id } }
-        );
+        const obj1 = AnnualGoalToAnimalType.destroy({
+          where: { AnnualGoalID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

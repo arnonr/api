@@ -119,9 +119,9 @@ const methods = {
           include: [{ all: true, required: false }],
         });
 
-        console.log( obj.toJSON())
+        console.log(obj.toJSON());
         if (!obj) reject(ErrorNotFound("id: not found"));
-        console
+        console;
         let animalTypeArray = [];
 
         obj.toJSON().AnimalTypes.forEach((element) => {
@@ -194,6 +194,15 @@ const methods = {
 
         await db.update(data, { where: { CureHormoneID: id } });
 
+        if (data.AnimalTypeID === null) {
+          CureHormoneToAnimalType.destroy({
+            where: {
+              CureHormoneID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert CureHormoneToAnimalType
           const searchPTA = await CureHormoneToAnimalType.findAll({
@@ -248,10 +257,10 @@ const methods = {
         );
 
         // delete CureHormoneToAnimalType
-        const obj1 = CureHormoneToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { CureHormoneID: id } }
-        );
+        const obj1 = CureHormoneToAnimalType.destroy({
+          where: { CureHormoneID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

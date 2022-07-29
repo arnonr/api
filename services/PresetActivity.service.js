@@ -193,6 +193,15 @@ const methods = {
 
         await db.update(data, { where: { PresetActivityID: id } });
 
+        if (data.AnimalTypeID === null) {
+          PresetActivityToAnimalType.destroy({
+            where: {
+              PresetActivityID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert PresetActivityToAnimalType
           const searchPTA = await PresetActivityToAnimalType.findAll({
@@ -246,6 +255,12 @@ const methods = {
           { isRemove: 1, isActive: 0 },
           { where: { PresetActivityID: id } }
         );
+
+        const obj1 = PresetActivityToAnimalType.destroy({
+          where: { PresetActivityID: id },
+          truncate: true,
+        });
+
         resolve();
       } catch (error) {
         reject(error);

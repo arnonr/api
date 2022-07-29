@@ -187,6 +187,15 @@ const methods = {
 
         await db.update(data, { where: { DistributionReasonID: id } });
 
+        if (data.AnimalTypeID === null) {
+          DistributionReasonToAnimalType.destroy({
+            where: {
+              DistributionReasonID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert DistributionReasonToAnimalType
           const searchPTA = await DistributionReasonToAnimalType.findAll({
@@ -242,10 +251,10 @@ const methods = {
         );
 
         // delete DistributionReasonToAnimalType
-        const obj1 = DistributionReasonToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { DistributionReasonID: id } }
-        );
+        const obj1 = DistributionReasonToAnimalType.destroy({
+          where: { DistributionReasonID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

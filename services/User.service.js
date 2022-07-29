@@ -210,6 +210,15 @@ const methods = {
 
         await db.update(data, { where: { UserID: id } });
 
+        if (data.AnimalTypeID === null) {
+          UserToAnimalType.destroy({
+            where: {
+              UserID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
           const searchPTA = await UserToAnimalType.findAll({
@@ -263,11 +272,10 @@ const methods = {
           { where: { UserID: id } }
         );
 
-        // delete ProjectToAnimalType
-        const obj1 = UserToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { UserID: id } }
-        );
+        const obj1 = UserToAnimalType.destroy({
+          where: { UserID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

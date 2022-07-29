@@ -196,7 +196,7 @@ const methods = {
 
         if (data.AnimalID) {
           if (!Array.isArray(data.AnimalID)) {
-            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
           data.AnimalID = JSON.stringify(data.AnimalID);

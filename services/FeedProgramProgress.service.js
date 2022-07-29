@@ -13,8 +13,10 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.FeedProgramProgressID) $where["FeedProgramProgressID"] = req.query.FeedProgramProgressID;
-    if (req.query.FeedProgramID) $where["FeedProgramID"] = req.query.FeedProgramID;
+    if (req.query.FeedProgramProgressID)
+      $where["FeedProgramProgressID"] = req.query.FeedProgramProgressID;
+    if (req.query.FeedProgramID)
+      $where["FeedProgramID"] = req.query.FeedProgramID;
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.ResponsibilityStaffID)
@@ -275,6 +277,14 @@ const methods = {
 
         await db.update(data, { where: { FeedProgramProgressID: id } });
 
+        if (data.ConcentrateID === null) {
+          FeedPPToConcentrate.destroy({
+            where: {
+              FeedProgramProgressID: id,
+            },
+            truncate: true,
+          });
+        }
 
         if (data.ConcentrateID) {
           // ค้นหา table junction
@@ -299,7 +309,7 @@ const methods = {
               });
             }
           });
-          // 
+          //
           ConcentrateIDList.forEach(async (ConcentrateID) => {
             const searchFPPTCOne = await FeedPPToConcentrate.findOne({
               where: {
@@ -315,10 +325,19 @@ const methods = {
                 Amount: ConcentrateID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
-            }else{
+            } else {
               searchFPPTCOne.Amount = ConcentrateID[1];
               await searchFPPTCOne.save();
             }
+          });
+        }
+
+        if (data.RoughagesID === null) {
+          FeedPPToRoughages.destroy({
+            where: {
+              FeedProgramProgressID: id,
+            },
+            truncate: true,
           });
         }
 
@@ -361,7 +380,7 @@ const methods = {
                 Amount: RoughagesID[1],
                 CreatedUserID: data.UpdatedUserID,
               });
-            }else{
+            } else {
               searchTTROne.Amount = RoughagesID[1];
               await searchTTROne.save();
             }
@@ -369,7 +388,7 @@ const methods = {
         }
 
         let res = methods.findById(data.FeedProgramProgressID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -388,15 +407,14 @@ const methods = {
           { where: { FeedProgramProgressID: id } }
         );
 
-        const obj1 = FeedPPToConcentrate.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { FeedProgramProgressID: id } }
-        );
+        const obj1 = FeedPPToConcentrate.destroy({
+          where: { FeedProgramProgressID: id },
+          truncate: true,
+        });
 
-        const obj2 = FeedPPToRoughages.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { FeedProgramProgressID: id } }
-        );
+        const obj2 = FeedPPToRoughages.destroy({
+          where: { FeedProgramProgressID: id, truncate: true },
+        });
 
         resolve();
       } catch (error) {

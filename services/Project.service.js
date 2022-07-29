@@ -211,8 +211,17 @@ const methods = {
           var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
-        
+
         await db.update(data, { where: { ProjectID: id } });
+
+        if (data.AnimalTypeID === null) {
+          ProjectToAnimalType.destroy({
+            where: {
+              ProjectID: id,
+            },
+            truncate: true,
+          });
+        }
 
         if (data.AnimalTypeID) {
           // insert ProjectToAnimalType
@@ -266,10 +275,10 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = ProjectToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { ProjectID: id } }
-        );
+        const obj1 = ProjectToAnimalType.destroy({
+          where: { ProjectID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {

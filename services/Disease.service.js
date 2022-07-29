@@ -11,8 +11,7 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.DiseaseID)
-      $where["DiseaseID"] = req.query.DiseaseID;
+    if (req.query.DiseaseID) $where["DiseaseID"] = req.query.DiseaseID;
 
     if (req.query.DiseaseCode)
       $where["DiseaseCode"] = {
@@ -119,9 +118,9 @@ const methods = {
           include: [{ all: true, required: false }],
         });
 
-        console.log( obj.toJSON())
+        console.log(obj.toJSON());
         if (!obj) reject(ErrorNotFound("id: not found"));
-        console
+        console;
         let animalTypeArray = [];
 
         obj.toJSON().AnimalTypes.forEach((element) => {
@@ -194,6 +193,15 @@ const methods = {
 
         await db.update(data, { where: { DiseaseID: id } });
 
+        if (data.AnimalTypeID === null) {
+          DsToAnimalType.destroy({
+            where: {
+              DiseaseID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.AnimalTypeID) {
           // insert DsToAnimalType
           const searchPTA = await DsToAnimalType.findAll({
@@ -246,12 +254,11 @@ const methods = {
           { isRemove: 1, isActive: 0 },
           { where: { DiseaseID: id } }
         );
-
-        // delete DsToAnimalType
-        const obj1 = DsToAnimalType.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { DiseaseID: id } }
-        );
+        
+        const obj1 = DsToAnimalType.destroy({
+          where: { DiseaseID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {
