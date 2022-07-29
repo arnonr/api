@@ -169,10 +169,13 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         let res = { ...obj.toJSON() };
-        res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+        if (res.CardRequestLog.length != 0) {
+          res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+        }
+
         resolve(res);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
