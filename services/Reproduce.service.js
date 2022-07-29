@@ -821,6 +821,15 @@ const methods = {
 
         await db.update(data, { where: { ReproduceID: id } });
 
+        if (data.LeftOvarySymptomID === null) {
+          RpToLeftOvarySymptom.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.LeftOvarySymptomID) {
           // insert ProjectToAnimalType
           const search = await RpToLeftOvarySymptom.findAll({
@@ -855,6 +864,16 @@ const methods = {
           });
         }
         //
+
+        if (data.RightOvarySymptomID === null) {
+          RpToRightOvarySymptom.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.RightOvarySymptomID) {
           // insert ProjectToAnimalType
           const search = await RpToRightOvarySymptom.findAll({
@@ -886,6 +905,15 @@ const methods = {
                 CreatedUserID: data.UpdatedUserID,
               });
             }
+          });
+        }
+
+        if (data.VaginaSymptomID === null) {
+          RpToVaginaSymptom.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
           });
         }
 
@@ -923,6 +951,15 @@ const methods = {
           });
         }
 
+        if (data.OtherSymptomID === null) {
+          RpToOtherSymptom.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.OtherSymptomID) {
           // insert ProjectToAnimalType
           const search = await RpToOtherSymptom.findAll({
@@ -957,6 +994,16 @@ const methods = {
           });
         }
         //
+
+        if (data.CauseAnimalID === null) {
+          RpToCauseAnimal.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CauseAnimalID) {
           // insert ProjectToAnimalType
           const search = await RpToCauseAnimal.findAll({
@@ -991,6 +1038,16 @@ const methods = {
           });
         }
         //
+
+        if (data.CauseEnvironmentID === null) {
+          RpToCauseEnvironment.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CauseEnvironmentID) {
           // insert ProjectToAnimalType
           const search = await RpToCauseEnvironment.findAll({
@@ -1025,6 +1082,16 @@ const methods = {
           });
         }
         //
+
+        if (data.CauseFeederID === null) {
+          RpToCauseFeeder.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CauseFeederID) {
           // insert ProjectToAnimalType
           const search = await RpToCauseFeeder.findAll({
@@ -1059,6 +1126,16 @@ const methods = {
           });
         }
         //
+
+        if (data.CauseHealthID === null) {
+          RpToCauseHealth.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CauseHealthID) {
           // insert ProjectToAnimalType
           const search = await RpToCauseHealth.findAll({
@@ -1094,6 +1171,16 @@ const methods = {
         }
 
         //
+
+        if (data.CureAntibioticID === null) {
+          RpToCureAntibiotic.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CureAntibioticID) {
           // insert ProjectToAnimalType
           const search = await RpToCureAntibiotic.findAll({
@@ -1129,6 +1216,16 @@ const methods = {
         }
 
         //
+
+        if (data.CureHormoneID === null) {
+          RpToCureHormone.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CureHormoneID) {
           // insert ProjectToAnimalType
           const search = await RpToCureHormone.findAll({
@@ -1164,6 +1261,16 @@ const methods = {
         }
 
         //
+
+        if (data.CureVitaminID === null) {
+          RpToCureVitamin.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.CureVitaminID) {
           // insert ProjectToAnimalType
           const search = await RpToCureVitamin.findAll({
@@ -1199,6 +1306,16 @@ const methods = {
         }
 
         //
+
+        if (data.ReproduceSuggestionID === null) {
+          RpToRpSuggestion.destroy({
+            where: {
+              ReproduceID: id,
+            },
+            truncate: true,
+          });
+        }
+
         if (data.ReproduceSuggestionID) {
           // insert ProjectToAnimalType
           const search = await RpToRpSuggestion.findAll({
@@ -1255,15 +1372,65 @@ const methods = {
         );
 
         // delete ProjectToAnimalType
-        const obj1 = RpToRightOvarySymptom.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { ReproduceID: id } }
-        );
+        const obj1 = RpToRightOvarySymptom.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
 
-        const obj2 = RpToVaginaSymptom.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { ReproduceID: id } }
-        );
+        const obj2 = RpToVaginaSymptom.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj3 = RpToLeftOvarySymptom.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj4 = RpToOtherSymptom.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj5 = RpToCauseAnimal.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj6 = RpToCauseEnvironment.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj7 = RpToCauseFeeder.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj8 = RpToCauseHealth.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj9 = RpToCureHormone.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj10 = RpToCureAntibiotic.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj11 = RpToCureVitamin.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
+
+        const obj12 = RpToRpSuggestion.destroy({
+          where: { ReproduceID: id },
+          truncate: true,
+        });
 
         resolve();
       } catch (error) {
