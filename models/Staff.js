@@ -90,6 +90,7 @@ class Staff extends Model {
         ? {
             OrganizationCode: this.get().Organization.OrganizationCode,
             OrganizationName: this.get().Organization.OrganizationName,
+            // Parent: this.get().Organization.AIZoneID,
           }
         : "",
       PositionType: this.get().PositionType
