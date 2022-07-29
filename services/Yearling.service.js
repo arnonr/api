@@ -223,6 +223,9 @@ const methods = {
 
         await db.update(data, { where: { YearlingID: id } });
 
+        // Update AnimalBornWeight
+        await Animal.update({AnimalBornWeight: data.Weight}, { where: { AnimalID: obj.AnimalID } });
+
         let res = methods.findById(data.YearlingID);
 
         resolve(res);

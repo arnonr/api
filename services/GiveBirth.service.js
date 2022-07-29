@@ -98,7 +98,7 @@ const methods = {
         include: [
           {
             model: Semen,
-            attributes: ['SemenID','SemenNumber','BreederID'],
+            attributes: ["SemenID", "SemenNumber", "BreederID"],
             as: "Semen",
           },
         ],
@@ -109,7 +109,12 @@ const methods = {
         include: [
           {
             model: Embryo,
-            attributes: ['EmbryoID','EmbryoNumber','MaleBreederID'],
+            attributes: [
+              "EmbryoID",
+              "EmbryoNumber",
+              "MaleBreederID",
+              "FemaleBreederID",
+            ],
             as: "Embryo",
           },
         ],
