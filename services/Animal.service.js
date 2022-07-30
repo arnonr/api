@@ -2500,7 +2500,6 @@ const methods = {
               noti5: 0,
               noti6: 0,
               noti7: 0,
-              noti8: 0,
             };
 
             let countAnimal = {
@@ -2511,6 +2510,7 @@ const methods = {
               father: 0,
               mother: 0,
             };
+
             const getWithPromiseAll = async () => {
               let data = await Promise.all(
                 rows.map(async (data) => {
@@ -2531,38 +2531,38 @@ const methods = {
                   // noti7 = ผสมซ้ําเกิน 3 ครั้ง
                   // noti8 = เลยกำหนดคลอด
 
-                  data1.Notification.includes("ครบกำหนดคลอด")
-                    ? (noti.noti1 = noti.noti1 + 1)
+                  noti.noti1 = data1.Notification.includes("ครบกำหนดคลอด")
+                    ? noti.noti1 + 1
                     : null;
 
-                  data1.Notification.includes("ครบกำหนดตรวจท้อง")
-                    ? (noti.noti2 = noti.noti2 + 1)
+                  noti.noti2 = data1.Notification.includes("ครบกำหนดตรวจท้อง")
+                    ? noti.noti2 + 1
                     : null;
 
-                  data1.Notification.includes("ครบกําหนดติดตามลูกเกิดหลังคลอด")
-                    ? (noti.noti3 = noti.noti3 + 1)
+                  noti.noti3 = data1.Notification.includes(
+                    "ครบกําหนดติดตามลูกเกิดหลังคลอด"
+                  )
+                    ? noti.noti3 + 1
                     : null;
 
-                  data1.Notification.includes(
+                  noti.noti4 = data1.Notification.includes(
                     "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
                   )
-                    ? (noti.noti4 = noti.noti4 + 1)
+                    ? noti.noti4 + 1
                     : null;
 
-                  data1.Notification.includes("อายุมากกว่ากําหนด")
-                    ? (noti[4] = noti[4] + 1)
+                  noti.noti5 = data1.Notification.includes("แจ้งเตือนกลับสัด")
+                    ? noti.noti5 + 1
                     : null;
 
-                  data1.Notification.includes("แจ้งเตือนกลับสัด")
-                    ? (noti[5] = noti[5] + 1)
+                  noti.noti6 = data1.Notification.includes(
+                    "ผสมซ้ําเกิน 3 ครั้ง"
+                  )
+                    ? noti.noti6 + 1
                     : null;
 
-                  data1.Notification.includes("ผสมซ้ําเกิน 3 ครั้ง")
-                    ? (noti[6] = noti[6] + 1)
-                    : null;
-
-                  data1.Notification.includes("เลยกำหนดคลอด")
-                    ? (noti[7] = noti[7] + 1)
+                  noti.noti7 = data1.Notification.includes("เลยกำหนดคลอด")
+                    ? noti.noti7 + 1
                     : null;
 
                   countAnimal.all = countAnimal.all + 1;
