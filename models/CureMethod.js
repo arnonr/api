@@ -1,17 +1,8 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class Vaccine extends Model {
+class CureMethod extends Model {
   static associate(models) {
-    this.belongsToMany(models.AnimalType, {
-      through: models.VcToAnimalType,
-      foreignKey: "VaccineID",
-    });
-
-    this.belongsToMany(models.CureActivity, {
-      through: "CAToVC",
-      // foreignKey: "VaccineID",
-    });
   }
 
   // Custom JSON Response
@@ -22,28 +13,28 @@ class Vaccine extends Model {
   }
 }
 
-Vaccine.init(
+CureMethod.init(
   {
-    VaccineID: {
+    CureMethodID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "รหัสอ้างอิง",
+      comment: "เลขไอดีอ้างอิง",
     },
-    VaccineCode: {
+    CureMethodCode: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "รหัสวัคซีน",
+      comment: "รหัสวิธีการรักษา",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Vaccine.findOne({
-            where: { VaccineCode: value, isRemove: 0 },
+          CureMethod.findOne({
+            where: { CureMethodCode: value, isRemove: 0 },
           })
             .then(function (data) {
-              if (data && self.VaccineID !== data.VaccineID) {
-                throw new Error("Vaccine Code already in use!");
+              if (data && self.CureMethodID !== data.CureMethodID) {
+                throw new Error("CureMethod Name already in use!");
               }
               return next();
             })
@@ -53,19 +44,19 @@ Vaccine.init(
         },
       },
     },
-    VaccineName: {
+    CureMethodName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "ชื่อวัคซีน",
+      comment: "คำอธิบาย",
       validate: {
         isUnique: function (value, next) {
           let self = this;
-          Vaccine.findOne({
-            where: { VaccineName: value, isRemove: 0 },
+          CureMethod.findOne({
+            where: { CureMethodName: value, isRemove: 0 },
           })
             .then(function (data) {
-              if (data && self.VaccineID !== data.VaccineID) {
-                throw new Error("Vaccine Name already in use!");
+              if (data && self.CureMethodID !== data.CureMethodID) {
+                throw new Error("CureMethod Name already in use!");
               }
               return next();
             })
@@ -75,11 +66,13 @@ Vaccine.init(
         },
       },
     },
+
     AnimalTypeID: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: "รหัสชนิดสัตว์ (Array)",
+      comment: "ชนิดสัตว์ (Array)",
     },
+
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
@@ -119,8 +112,8 @@ Vaccine.init(
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "Vaccine",
+    modelName: "CureMethod",
   }
 );
 
-module.exports = Vaccine;
+module.exports = CureMethod;

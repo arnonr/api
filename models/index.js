@@ -164,6 +164,10 @@ const RedGoat = require("./RedGoat");
 const Thaiblack = require("./Thaiblack");
 const ProductionStatus = require("./ProductionStatus");
 
+const CAToVC = require("./CAToVC")
+const CureActivity = require("./CureActivity");
+const CureMethod = require("./CureMethod");
+
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
@@ -423,7 +427,7 @@ TransferEmbryo.associate({
   BCS,
   Staff,
   TransferMethod,
-  Embryo
+  Embryo,
 });
 
 DistributionReason.associate({
@@ -518,6 +522,8 @@ DewormMedicine.associate({
 Vaccine.associate({
   VcToAnimalType,
   AnimalType,
+  CAToVC,
+  CureActivity,
 });
 
 Disease.associate({
@@ -658,10 +664,22 @@ RedGoat.associate({
   Staff,
 });
 
+CureActivity.associate({
+  CAToVC,
+  Vaccine,
+  Animal,
+  Disease,
+  CureMethod,
+  Staff,
+  Organization,
+});
+
+
 Thaiblack.associate({
   Animal,
   Staff,
 });
+
 
 PresetActivity.associate({
   PresetActivityToAnimalType,
