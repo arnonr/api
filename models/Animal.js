@@ -353,6 +353,7 @@ class Animal extends Model {
       AnimalAge: age,
       AnimalBreedAll: animalJson.AnimalBreedAll,
       AnimalStatus: animalJson.AnimalStatus.AnimalStatusName,
+      FarmName: animalJson.AnimalFarm.FarmName,
     };
 
     if (ai && embryo) {
