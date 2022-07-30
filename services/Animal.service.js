@@ -2531,6 +2531,7 @@ const methods = {
                   // data คือตัวสัตว์
 
                   let data1 = await data.EventLatest();
+                  // data1
 
                   data1.Notification = await data.Notification();
                   // noti1 = ครบกำหนดคลอด,
@@ -2539,7 +2540,7 @@ const methods = {
                   // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
                   // noti5 = อายุมากกว่ากําหนด
                   // noti6 = แจ้งเตือนกลับสัด
-                  // noti7 = ผสมซ้ําเกิน 3 ครั้ง
+                  // noti7 = ผสมซ้ำเกิน 3 ครั้ง
                   // noti8 = เลยกำหนดคลอด
 
                   noti.noti1 = data1.Notification.includes("ครบกำหนดคลอด")
@@ -2570,7 +2571,7 @@ const methods = {
                     ? noti.noti6 + 1
                     : null;
 
-                  if (data1.Notification.includes("ผสมซ้ําเกิน 3 ครั้ง")) {
+                  if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
                     noti.noti7 += 1;
                     noti.noti7Animal.push(data1.AnimalID);
                     // noti7Animal

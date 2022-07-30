@@ -292,7 +292,7 @@ class Animal extends Model {
     // ผสมซ้ำเกิน 3 ครั้ง
     if (this.ProductionStatusID == 4) {
       if (eventLatest.TimeNo > 3) {
-        noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
+        noti.push(`ผสมซ้ำเกิน 3 ครั้ง`);
       }
     }
 
