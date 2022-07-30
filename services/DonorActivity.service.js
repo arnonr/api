@@ -279,106 +279,238 @@ const methods = {
                     include: { all: true, required: false },
                   });
 
-                  let PresetActivity1 = da
-                    .filter((d) => d.PresetActivityID == 1)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                  let PresetActivity1 = null;
+                  let PresetActivity2 = null;
+                  let PresetActivity3 = null;
+                  let PresetActivity4 = null;
+                  let PresetActivity5 = null;
+                  let PresetActivity6 = null;
+                  let PresetActivity7 = null;
+                  let PresetActivity8 = null;
+                  let PresetActivity9 = null;
 
-                  let PresetActivity2 = da
-                    .filter((d) => d.PresetActivityID == 2)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time +
-                        " (" +
-                        d.Description +
-                        ")"
-                      );
-                    });
+                  if (
+                    d.Animal.AnimalTypeID == 17 ||
+                    d.Animal.AnimalTypeID == 18
+                  ) {
+                    PresetActivity1 = da
+                      .filter((d) => d.PresetActivityID == 11)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
 
-                  let PresetActivity3 = da
-                    .filter((d) => d.PresetActivityID == 3)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time +
-                        " (" +
-                        d.Description +
-                        ")"
-                      );
-                    });
+                    PresetActivity2 = da
+                      .filter((d) => d.PresetActivityID == 12)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
 
-                  let PresetActivity4 = da
-                    .filter((d) => d.PresetActivityID == 5)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity3 = da
+                      .filter((d) => d.PresetActivityID == 13)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
 
-                  let PresetActivity5 = da
-                    .filter((d) => d.PresetActivityID == 4)
-                    .map((d) => {
-                      return dayjs(d.ActivityDate)
-                        .locale("th")
-                        .format("DD MMM BB");
-                    });
+                    PresetActivity4 = da
+                      .filter((d) => d.PresetActivityID == 15)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
 
-                  let PresetActivity6 = da
-                    .filter((d) => d.PresetActivityID == 6)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity5 = da
+                      .filter((d) => d.PresetActivityID == 14)
+                      .map((d) => {
+                        return dayjs(d.ActivityDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB");
+                      });
 
-                  let PresetActivity7 = da
-                    .filter((d) => d.PresetActivityID == 7)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity6 = da
+                      .filter((d) => d.PresetActivityID == 16)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
 
-                  let PresetActivity8 = da
-                    .filter((d) => d.PresetActivityID == 8)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity7 = da
+                      .filter((d) => d.PresetActivityID == 17)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
 
-                  let PresetActivity9 = da
-                    .filter((d) => d.PresetActivityID == 9)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity8 = da
+                      .filter((d) => d.PresetActivityID == 18)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity9 = da
+                      .filter((d) => d.PresetActivityID == 19)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+                    //
+                  } else {
+                    PresetActivity1 = da
+                      .filter((d) => d.PresetActivityID == 1)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity2 = da
+                      .filter((d) => d.PresetActivityID == 2)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
+
+                    PresetActivity3 = da
+                      .filter((d) => d.PresetActivityID == 3)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
+
+                    PresetActivity4 = da
+                      .filter((d) => d.PresetActivityID == 5)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity5 = da
+                      .filter((d) => d.PresetActivityID == 4)
+                      .map((d) => {
+                        return dayjs(d.ActivityDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB");
+                      });
+
+                    PresetActivity6 = da
+                      .filter((d) => d.PresetActivityID == 6)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity7 = da
+                      .filter((d) => d.PresetActivityID == 7)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity8 = da
+                      .filter((d) => d.PresetActivityID == 8)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity9 = da
+                      .filter((d) => d.PresetActivityID == 9)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+                  }
 
                   let sf = null;
                   if (da[0].ExcludeResponsibilityStaffID) {
                     sf = await Staff.findByPk(1);
                   }
-
-                  console.log(d.Animal);
 
                   let dn = {
                     AnimalID: d.AnimalID,
