@@ -385,7 +385,7 @@ const methods = {
                     AnimalEarID: d.Animal.AnimalEarID,
                     AnimalName: d.Animal.AnimalName,
                     FarmName: d.Animal.AnimalFarm.FarmName,
-                    AnimaltypeID: d.Animal.AnimalTypID,
+                    AnimaltypeID: d.Animal.AnimalTypeID,
 
                     DonorID: FindDonor.DonorID,
                     Staff:
