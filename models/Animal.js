@@ -371,7 +371,7 @@ class Animal extends Model {
 
         let pregResult = "";
         let pregnancyTimeNo = "";
-        console.log(preg);
+        // console.log(preg);
         if (preg) {
           pregResult = preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
           pregnancyTimeNo = preg.TimeNo;

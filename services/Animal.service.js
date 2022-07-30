@@ -2494,12 +2494,21 @@ const methods = {
             //
             let noti = {
               noti1: 0,
+              noti1Animal: [],
               noti2: 0,
+              noti2Animal: [],
               noti3: 0,
+              noti3Animal: [],
               noti4: 0,
+              noti4Animal: [],
               noti5: 0,
+              noti5Animal: [],
               noti6: 0,
+              noti6Animal: [],
               noti7: 0,
+              noti7Animal: [],
+              noti8: 0,
+              noti8Animal: [],
             };
 
             let countAnimal = {
@@ -2518,6 +2527,8 @@ const methods = {
                   data.Projects.forEach((element) => {
                     projectArray.push(element.ProjectName);
                   });
+
+                  // data คือตัวสัตว์
 
                   let data1 = await data.EventLatest();
 
@@ -2551,18 +2562,22 @@ const methods = {
                     ? noti.noti4 + 1
                     : null;
 
-                  noti.noti5 = data1.Notification.includes("แจ้งเตือนกลับสัด")
+                  noti.noti5 = data1.Notification.includes("อายุมากกว่ากําหนด")
                     ? noti.noti5 + 1
                     : null;
 
-                  noti.noti6 = data1.Notification.includes(
-                    "ผสมซ้ําเกิน 3 ครั้ง"
-                  )
+                  noti.noti6 = data1.Notification.includes("แจ้งเตือนกลับสัด")
                     ? noti.noti6 + 1
                     : null;
 
-                  noti.noti7 = data1.Notification.includes("เลยกำหนดคลอด")
-                    ? noti.noti7 + 1
+                  if (data1.Notification.includes("ผสมซ้ําเกิน 3 ครั้ง")) {
+                    noti.noti7 += 1;
+                    noti.noti7Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  noti.noti8 = data1.Notification.includes("เลยกำหนดคลอด")
+                    ? noti.noti8 + 1
                     : null;
 
                   countAnimal.all = countAnimal.all + 1;
