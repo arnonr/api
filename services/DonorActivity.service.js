@@ -9,6 +9,7 @@ const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
 const buddhistEra = require("dayjs/plugin/buddhistEra");
 const Staff = require("../models/Staff");
+const Farm = require("../models/Farm");
 dayjs.extend(buddhistEra);
 
 const methods = {
@@ -179,6 +180,7 @@ const methods = {
 
     if (req.query.DonorID) $where["DonorID"] = req.query.DonorID;
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
     if (req.query.ActivityDate) $where["ActivityDate"] = req.query.ActivityDate;
     if (req.query.Day) $where["Day"] = req.query.Day;
     if (req.query.Time) $where["Time"] = req.query.Time;
@@ -221,9 +223,24 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    let $whereAnimalTypeID = {};
+    if (req.query.AnimalTypeID) {
+      $whereAnimalTypeID = {
+        AnimalTypeID: { [Op.in]: JSON.parse(req.query.AnimalTypeID) },
+      };
+    }
+
     query["include"] = [
       {
         model: Animal,
+        // as: "Animal",
+        where: $whereAnimalTypeID,
+        include: [
+          {
+            model: Farm,
+            as: "AnimalFarm",
+          },
+        ],
       },
     ];
     query["attributes"] = ["DonorID", "AnimalID"];
@@ -361,9 +378,14 @@ const methods = {
                     sf = await Staff.findByPk(1);
                   }
 
+                  console.log(d.Animal);
+
                   let dn = {
                     AnimalID: d.AnimalID,
                     AnimalEarID: d.Animal.AnimalEarID,
+                    AnimalName: d.Animal.AnimalName,
+                    FarmName: d.Animal.AnimalFarm.FarmName,
+                    
                     DonorID: FindDonor.DonorID,
                     Staff:
                       FindDonor.Staff.StaffGivenName +
@@ -388,7 +410,7 @@ const methods = {
                     PresetActivity9:
                       PresetActivity9 != 0 ? PresetActivity9 : null,
                     IsExclude: da[0].IsExclude,
-                    IsExcludeName: da[0].IsExclude ? "อยู่ในโปรแกรม" : "คัดออก",
+                    IsExcludeName: da[0].IsExclude ? "คัดออก" : "อยู่ในโปรแกรม",
                     ExcludeRemark: da[0].ExcludeRemark,
                     ExcludeDate: da[0].ExcludeDate,
                     ThaiExcludeDate: da[0].ExcludeDate
@@ -441,8 +463,7 @@ const methods = {
           ExcludeRemark: data.ExcludeRemark,
           ExcludeDate: data.ExcludeDate,
           ExcludeResponsibilityStaffID: data.ExcludeResponsibilityStaffID,
-          UpdatedUserID:  data.UpdatedUserID,
-          
+          UpdatedUserID: data.UpdatedUserID,
         };
 
         const obj = await db.update(data1, {
