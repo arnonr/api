@@ -297,12 +297,12 @@ class Animal extends Model {
     }
 
     // Thai Black
-    console.log(this.Project)
-    if (this.ProductionStatusID == 4) {
-      if (eventLatest.TimeNo > 3) {
-        noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
-      }
-    }
+    // console.log(this.Project)
+    // if (this.ProductionStatusID == 4) {
+    //   if (eventLatest.TimeNo > 3) {
+    //     noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
+    //   }
+    // }
 
     return noti;
   }
