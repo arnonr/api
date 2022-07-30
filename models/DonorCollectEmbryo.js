@@ -15,6 +15,7 @@ class DonorCollectEmbryo extends Model {
 
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
+      as: "Animal"
     });
 
     this.belongsTo(models.BCS, {

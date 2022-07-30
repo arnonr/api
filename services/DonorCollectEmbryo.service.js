@@ -6,6 +6,7 @@ const config = require("../configs/app"),
 const Staff = require("../models/Staff");
 
 const Donor = require("../models/Donor");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -33,6 +34,7 @@ const methods = {
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
     $where["isRemove"] = 0;
+
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
@@ -50,11 +52,25 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    let WhereAnimalType = null;
+    if (req.query.AnimalTypeID) {
+      WhereAnimalType = {
+        AnimalTypeID: {
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        },
+      };
+    }
+
     query["include"] = [
       { all: true, required: false },
       {
         model: Donor,
         include: { all: true, required: false },
+      },
+      {
+        model: Animal,
+        where: WhereAnimalType,
+        as: "Animal",
       },
     ];
 
@@ -76,7 +92,7 @@ const methods = {
             const rows = result[0],
               count = result[2];
             resolve({
-              total: count,
+              total: rows.length,
               lastPage: Math.ceil(count / limit),
               currPage: +req.query.page || 1,
               rows: rows,
