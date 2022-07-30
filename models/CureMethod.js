@@ -3,6 +3,10 @@ const { Model, DataTypes } = require("sequelize"),
 
 class CureMethod extends Model {
   static associate(models) {
+    this.belongsToMany(models.AnimalType, {
+      through: models.CMToAT,
+      foreignKey: "CureMethodID"
+    });
   }
 
   // Custom JSON Response
@@ -66,13 +70,11 @@ CureMethod.init(
         },
       },
     },
-
     AnimalTypeID: {
       type: DataTypes.STRING,
       allowNull: false,
       comment: "ชนิดสัตว์ (Array)",
     },
-
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

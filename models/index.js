@@ -164,10 +164,10 @@ const RedGoat = require("./RedGoat");
 const Thaiblack = require("./Thaiblack");
 const ProductionStatus = require("./ProductionStatus");
 
-const CAToVC = require("./CAToVC")
+const CAToVC = require("./CAToVC");
 const CureActivity = require("./CureActivity");
 const CureMethod = require("./CureMethod");
-
+const CMToAT = require("./CMToAT");
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
@@ -276,6 +276,8 @@ AnimalType.associate({
   CauseEnvironment,
   CauseAnimalToAnimalType,
   CauseAnimal,
+  CMToAT,
+  CureMethod,
 });
 
 AnimalBreed.associate({ AnimalType });
@@ -674,12 +676,15 @@ CureActivity.associate({
   Organization,
 });
 
+CureMethod.associate({
+  CMToAT,
+  AnimalType,
+});
 
 Thaiblack.associate({
   Animal,
   Staff,
 });
-
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

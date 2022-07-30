@@ -94,6 +94,11 @@ class AnimalType extends Model {
       through: models.CauseAnimalToAnimalType,
       foreignKey: "AnimalTypeID",
     });
+
+    this.belongsToMany(models.CureMethod, {
+      through: models.CMToAT,
+      foreignKey: "AnimalTypeID",
+    });
     
   }
 

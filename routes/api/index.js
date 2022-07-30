@@ -167,5 +167,6 @@ router.use("/thaiblack", auth.required, require("./Thaiblack"));
 
 router.use("/report", auth.required, require("./Report"));
 router.use("/cure-activity", auth.required, require("./CureActivity"));
+router.use("/cure-method", auth.required, require("./CureMethod"));
 
 module.exports = router;
