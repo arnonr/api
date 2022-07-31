@@ -11,11 +11,6 @@ class DiseaseActivity extends Model {
       foreignKey: "FarmID",
     });
 
-    
-    this.belongsTo(models.Animal, {
-      foreignKey: "AnimalID",
-    });
-
     this.belongsTo(models.Disease, {
       foreignKey: "DiseaseID",
     });
@@ -24,8 +19,9 @@ class DiseaseActivity extends Model {
       foreignKey: "DiseaseMethodID",
     });
 
-    this.belongsTo(models.DiseaseResult, {
-      foreignKey: "DiseaseResultID",
+    this.hasMany(models.DiseaseActivityAnimal, {
+      foreignKey: "DiseaseActivityID",
+      as: "DiseaseActivityAnimal",
     });
 
     this.belongsTo(models.Organization, {
@@ -65,11 +61,6 @@ DiseaseActivity.init(
       comment: "วันที่ตรวจโรค",
     },
 
-    AnimalID: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      comment: "รหัสสัตว์",
-    },
     FarmID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,
@@ -93,11 +84,10 @@ DiseaseActivity.init(
       allowNull: true,
       comment: "รหัสอ้างอิงวิธีการตรวจ",
     },
-
-    DiseaseResultID: {
-      type: DataTypes.INTEGER(11),
+    DiseaseMethodOther: {
+      type: DataTypes.STRING(500),
       allowNull: true,
-      comment: "รหัสอ้างอิงผลการตรวจ",
+      comment: "วิธีการตรวจอื่นๆ",
     },
 
     OrganizationID: {
@@ -111,11 +101,7 @@ DiseaseActivity.init(
       allowNull: false,
       comment: "รหัสเจ้าหน้าที่ผู้ตรวจ",
     },
-    Remark: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      comment: "หมายเหตุ (ถ้ามี)",
-    },
+
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

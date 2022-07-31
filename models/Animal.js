@@ -7,6 +7,8 @@ const PregnancyCheckStatus = require("./PregnancyCheckStatus");
 const GiveBirth = require("./GiveBirth");
 const Yearling = require("./Yearling");
 const Reproduce = require("./Reproduce");
+const Thaiblack = require("./Thaiblack");
+const RedGoat = require("./RedGoat");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -79,7 +81,7 @@ class Animal extends Model {
       foreignKey: "AnimalID",
     });
 
-    this.belongsTo(models.AnimalStatus, {
+    this.hasOne(models.AnimalStatus, {
       foreignKey: "AnimalStatusID",
       as: "AnimalStatus",
     });
@@ -296,13 +298,65 @@ class Animal extends Model {
       }
     }
 
-    // Thai Black
-    // console.log(this.Project)
-    // if (this.ProductionStatusID == 4) {
-    //   if (eventLatest.TimeNo > 3) {
-    //     noti.push(`ผสมซ้ําเกิน 3 ครั้ง`);
-    //   }
-    // }
+    if (this.ProjectID) {
+      // Thai black
+      if (JSON.parse(this.ProjectID).includes(3)) {
+        let day = dayjs().diff(dayjs(this.AnimalBirthDate), "day");
+
+        if (day >= 800) {
+          let checkThaiblack = await Thaiblack.findOne({
+            where: { AnimalID: this.AnimalID, ThaiblackRound: 4 },
+          });
+          if (!checkThaiblack) {
+            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 800 วัน`);
+          }
+        } else if (day >= 600) {
+          let checkThaiblack = await Thaiblack.findOne({
+            where: { AnimalID: this.AnimalID, ThaiblackRound: 3 },
+          });
+          if (!checkThaiblack) {
+            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 600 วัน`);
+          }
+        } else if (day >= 400) {
+          let checkThaiblack = await Thaiblack.findOne({
+            where: { AnimalID: this.AnimalID, ThaiblackRound: 2 },
+          });
+          if (!checkThaiblack) {
+            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 400 วัน`);
+          }
+        } else if (day >= 210) {
+          let checkThaiblack = await Thaiblack.findOne({
+            where: { AnimalID: this.AnimalID, ThaiblackRound: 1 },
+          });
+          if (!checkThaiblack) {
+            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 210 วัน`);
+          }
+        } else {
+        }
+      }
+
+      // Red Goat
+      if (JSON.parse(this.ProjectID).includes(8)) {
+        let day = dayjs().diff(dayjs(this.AnimalBirthDate), "day");
+
+        if (day >= 360) {
+          let checkRedGoat = await RedGoat.findOne({
+            where: { AnimalID: this.AnimalID, RedGoatRound: 2 },
+          });
+          if (!checkRedGoat) {
+            noti.push(`ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี`);
+          }
+        } else if (day >= 30) {
+          let checkRedGoat = await RedGoat.findOne({
+            where: { AnimalID: this.AnimalID, RedGoatRound: 1 },
+          });
+          if (!checkRedGoat) {
+            noti.push(`ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน`);
+          }
+        } else {
+        }
+      }
+    }
 
     return noti;
   }
@@ -344,6 +398,8 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
+
+
     var data = {
       AnimalID: animalJson.AnimalID,
       AnimalEarID: animalJson.AnimalEarID,
@@ -352,11 +408,17 @@ class Animal extends Model {
       AnimalSecretStatus: animalJson.AnimalSecretStatus,
       AnimalAge: age,
       AnimalBreedAll: animalJson.AnimalBreedAll,
-      AnimalStatus: animalJson.AnimalStatus.AnimalStatusName,
-      FarmName: animalJson.AnimalFarm.FarmName,
+      AnimalStatus: this.AnimalStatus
+        ? this.AnimalStatus.AnimalStatusName
+        : null,
+      FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
+      AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
 
+   
+
     if (ai && embryo) {
+      
       if (embryo.TimeNo > ai.TimeNo) {
         let preg = await PregnancyCheckup.findOne({
           order: [["TimeNo", "DESC"]],
@@ -369,15 +431,14 @@ class Animal extends Model {
             model: PregnancyCheckStatus,
           },
         });
-
+        
         let pregResult = "";
         let pregnancyTimeNo = "";
-        // console.log(preg);
         if (preg) {
           pregResult = preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
           pregnancyTimeNo = preg.TimeNo;
         }
-
+        
         data = {
           ...data,
           AIID: null,
@@ -396,6 +457,7 @@ class Animal extends Model {
           PregnancyTimeNo: pregnancyTimeNo,
         };
       } else {
+        
         let preg = await PregnancyCheckup.findOne({
           order: [["TimeNo", "DESC"]],
           where: {
@@ -413,7 +475,6 @@ class Animal extends Model {
           pregResult = preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
           pregnancyTimeNo = preg.TimeNo;
         }
-
         var data = {
           ...data,
           AIID: ai.AIID,
@@ -510,7 +571,7 @@ class Animal extends Model {
         PregnancyTimeNo: null,
       };
     }
-
+    
     return data;
   }
 
@@ -518,7 +579,7 @@ class Animal extends Model {
   toJSON() {
     return {
       ...this.get(),
-      // AnimalToProject: undefined,  
+      // AnimalToProject: undefined,
     };
   }
 }

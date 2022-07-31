@@ -5,6 +5,10 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
+const DiseaseActivityAnimal = require("../models/DiseaseActivityAnimal");
+const Farm = require("../models/Farm");
+const AnimalSex = require("../models/AnimalSex");
+const AnimalStatus = require("../models/AnimalStatus");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -17,17 +21,6 @@ const methods = {
     if (req.query.DiseaseActivityDate)
       $where["DiseaseActivityDate"] = req.query.DiseaseActivityDate;
 
-    if (req.query.AnimalID) {
-      $where["AnimalID"] = {
-        [Op.or]: [
-          { [Op.like]: "%," + req.query.AnimalID + ",%" },
-          { [Op.like]: "[" + req.query.AnimalID + ",%" },
-          { [Op.like]: "%," + req.query.AnimalID + "]" },
-          { [Op.like]: "[" + req.query.AnimalID + "]" },
-        ],
-      };
-    }
-
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.DiseaseID) $where["DiseaseID"] = req.query.DiseaseID;
@@ -38,16 +31,11 @@ const methods = {
     if (req.query.DiseaseMethodID)
       $where["DiseaseMethodID"] = req.query.DiseaseMethodID;
 
-    if (req.query.DiseaseResultID)
-      $where["DiseaseResultID"] = req.query.DiseaseResultID;
-
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
-
-    if (req.query.PAR) $where["PAR"] = req.query.PAR;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -73,41 +61,48 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
 
   async getData(data) {
-    let dataJson = data.toJSON();
-    dataJson.AnimalID = JSON.parse(dataJson.AnimalID);
-    let animal = await Animal.findAll({
-      where: { AnimalID: dataJson.AnimalID },
-    });
-    dataJson.Animal = animal;
+    let dj = data.toJSON();
+
+    let masterData = {
+      OrganizationID: dj.OrganizationID,
+      OrganizationName: dj.Organization
+        ? dj.Organization.OrganizationName
+        : null,
+      ResponsibilityStaffID: dj.ResponsibilityStaffID,
+      ResponsibilityStaffName: dj.Staff
+        ? `${dj.Staff.StaffNumber} ${dj.Staff.StaffGivenName}  ${dj.Staff.StaffSurname}`
+        : null,
+      isActive: dj.isActive,
+      isRemove: dj.isRemove,
+      CreatedUserID: dj.CreatedUserID,
+      CreatedDateTime: dj.CreatedDateTime,
+      UpdatedUserID: dj.UpdatedUserID,
+      UpdatedDateTime: dj.UpdatedDateTime,
+    };
 
     data = {
-      DiseaseActivityID: dataJson.DiseaseActivityID,
-      ThaiDiseaseActivityDate: dataJson.ThaiDiseaseActivityDate,
-      DiseaseName: dataJson.Disease ? dataJson.Disease.DiseaseName : null,
-      OrganizationName: dataJson.Organization
-        ? dataJson.Organization.OrganizationName
+      DiseaseActivityID: dj.DiseaseActivityID,
+      DiseaseActivityDate: dj.DiseaseActivityDate,
+      ThaiDiseaseActivityDate: dj.ThaiDiseaseActivityDate,
+      FarmID: dj.FarmID,
+      FarmName: dj.Farm ? dj.Farm.FarmName : null,
+      DiseaseID: dj.DiseaseID,
+      DiseaseName: dj.Disease ? dj.Disease.DiseaseName : null,
+      DiseaseNextDate: dj.DiseaseNextDate,
+      ThaiDiseaseNextDate: dj.ThaiDiseaseNextDate,
+      DiseaseMethodID: dj.DiseaseMethodID,
+      DiseaseMethod: dj.DiseaseMethod
+        ? dj.DiseaseMethod.DiseaseMethodName
         : null,
-      DiseaseResultName: dataJson.DiseaseResult
-        ? dataJson.DiseaseResult.DiseaseResultName
-        : null,
-      ThaiDiseaseNextDate: dataJson.ThaiDiseaseNextDate,
-
-      ResponsibilityStaffName: dataJson.Staff
-        ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
-        : null,
-      ...dataJson,
+      DiseaseMethodOther: dj.DiseaseMethodOther,
+      ...masterData,
+      // DiseaseActivityAnimal: dj.DiseaseActivityAnimal,
     };
 
     return data;
@@ -154,7 +149,9 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          include: [
+            { all: true, required: false },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -163,7 +160,7 @@ const methods = {
 
         resolve(data);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
@@ -171,15 +168,6 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        //check เงื่อนไขตรงนี้ได้
-        if (data.AnimalID) {
-          if (!Array.isArray(data.AnimalID)) {
-            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
-            return;
-          }
-          data.AnimalID = JSON.stringify(data.AnimalID);
-        }
-        
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -187,7 +175,7 @@ const methods = {
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        reject(ErrorBadRequest(error));
       }
     });
   },
@@ -201,14 +189,6 @@ const methods = {
 
         // Update
         data.DiseaseActivityID = parseInt(id);
-
-        if (data.AnimalID) {
-          if (!Array.isArray(data.AnimalID)) {
-            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
-            return;
-          }
-          data.AnimalID = JSON.stringify(data.AnimalID);
-        }
 
         await db.update(data, { where: { DiseaseActivityID: id } });
 
@@ -231,6 +211,7 @@ const methods = {
           { isRemove: 1, isActive: 0 },
           { where: { DiseaseActivityID: id } }
         );
+
         resolve();
       } catch (error) {
         reject(error);

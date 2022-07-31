@@ -168,6 +168,8 @@ const CAToVC = require("./CAToVC");
 const CureActivity = require("./CureActivity");
 const CureMethod = require("./CureMethod");
 const CMToAT = require("./CMToAT");
+
+const DiseaseActivityAnimal = require("./DiseaseActivityAnimal");
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
@@ -534,13 +536,18 @@ Disease.associate({
 });
 
 DiseaseActivity.associate({
-  Animal,
   Disease,
   DiseaseMethod,
-  DiseaseResult,
   Organization,
   Staff,
   Farm,
+  DiseaseActivityAnimal
+});
+
+DiseaseActivityAnimal.associate({
+  DiseaseResult,
+  DiseaseActivity,
+  Animal,
 });
 
 VaccineActivity.associate({
