@@ -101,7 +101,9 @@ const methods = {
         ? dj.DiseaseMethod.DiseaseMethodName
         : null,
       DiseaseMethodOther: dj.DiseaseMethodOther,
+      CountAnimal: await data.countDiseaseActivityAnimal(),
       ...masterData,
+      // Animaleiei: await data.getDiseaseActivityAnimal(),
       // DiseaseActivityAnimal: dj.DiseaseActivityAnimal,
     };
 
