@@ -7,6 +7,8 @@ const Staff = require("../models/Staff");
 
 const Donor = require("../models/Donor");
 const Animal = require("../models/Animal");
+const DonorCollectEmbryoDetail = require("../models/DonorCollectEmbryoDetail");
+
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -175,6 +177,11 @@ const methods = {
           { isRemove: 1, isActive: 0 },
           { where: { DonorCollectEmbryoID: id } }
         );
+
+        await DonorCollectEmbryoDetail.destroy(
+          { where: { DonorCollectEmbryoID: id } }
+        );
+
         resolve();
       } catch (error) {
         reject(error);
