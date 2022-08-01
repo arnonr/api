@@ -51,6 +51,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onDeleteByDonorCollectEmbryoID(req, res) {
+    try {
+      await Service.deleteByDonorCollectEmbryoID(req.params.id);
+      res.success("success", 204);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

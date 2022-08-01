@@ -22,7 +22,7 @@ router.post(
   "/",
   auth.required,
   checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(
@@ -37,6 +37,13 @@ router.delete(
   auth.required,
   checkPermission(resource, "delete"),
   controllers.onDelete
+);
+
+router.delete(
+  "/delete-by-donor-collect-embryo-id/:id",
+  auth.required,
+  checkPermission(resource, "delete"),
+  controllers.onDeleteByDonorCollectEmbryoID
 );
 
 module.exports = router;
