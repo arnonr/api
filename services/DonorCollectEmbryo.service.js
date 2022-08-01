@@ -9,7 +9,6 @@ const Donor = require("../models/Donor");
 const Animal = require("../models/Animal");
 const DonorCollectEmbryoDetail = require("../models/DonorCollectEmbryoDetail");
 
-
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -178,7 +177,12 @@ const methods = {
           { where: { DonorCollectEmbryoID: id } }
         );
 
-        await DonorCollectEmbryoDetail.destroy(
+        // await DonorCollectEmbryoDetail.destroy(
+        //   { where: { DonorCollectEmbryoID: id } }
+        // );
+
+        await DonorCollectEmbryoDetail.update(
+          { isRemove: 1, isActive: 0 },
           { where: { DonorCollectEmbryoID: id } }
         );
 
