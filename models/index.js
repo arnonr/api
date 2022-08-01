@@ -170,6 +170,8 @@ const CureMethod = require("./CureMethod");
 const CMToAT = require("./CMToAT");
 
 const DiseaseActivityAnimal = require("./DiseaseActivityAnimal");
+const Cart = require("./Cart");
+
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
@@ -541,7 +543,7 @@ DiseaseActivity.associate({
   Organization,
   Staff,
   Farm,
-  DiseaseActivityAnimal
+  DiseaseActivityAnimal,
 });
 
 DiseaseActivityAnimal.associate({
@@ -692,6 +694,11 @@ Thaiblack.associate({
   Animal,
   Staff,
 });
+
+Cart.associate({
+  Animal,
+  User,
+})
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

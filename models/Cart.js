@@ -1,9 +1,16 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class AbortResult extends Model {
-  static associate(models) {}
+class Cart extends Model {
+  static associate(models) {
+    this.belongsTo(models.Animal, {
+      foreignKey: "AnimalID",
+    });
 
+    this.belongsTo(models.User, {
+      foreignKey: "UserID",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {
@@ -12,41 +19,24 @@ class AbortResult extends Model {
   }
 }
 
-AbortResult.init(  {
-    AbortResultID: {
+Cart.init(
+  {
+    CartID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
-      comment: "เลขไอดีอ้างอิง ลักษณะการแท้ง",
+      comment: "เลขไอดีอ้างอิง ตะกร้า",
     },
-    AbortResultCode: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "รหัสลักษณะการแท้ง",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          AbortResult.findOne({
-            where: { AbortResultCode: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              console.log(self);
-              if (data && self.AbortResultID !== data.AbortResultID) {
-                throw new Error("AbortResult Code already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+    AnimalID:{
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+        comment: "รหัสอ้างอิงสัตว์",
     },
-    AbortResultName: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "คำอธิบายลักษณะการแท้ง",
+    UserID:{
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+        comment: "รหัสอ้างอิงผู้ใช้งาน",
     },
     isActive: {
       type: DataTypes.TINYINT(1),
@@ -87,8 +77,8 @@ AbortResult.init(  {
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    modelName: "AbortResult",
+    modelName: "Cart",
   }
 );
 
-module.exports = AbortResult;
+module.exports = Cart;

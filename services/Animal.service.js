@@ -15,6 +15,7 @@ const PregnancyCheckup = require("../models/PregnancyCheckup");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const GiveBirth = require("../models/GiveBirth");
 const Yearling = require("../models/Yearling");
+const Cart = require("../models/Cart");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -2307,6 +2308,9 @@ const methods = {
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
+    // if (req.query.GetUserID)
+    // $where["AnimalMotherID"] = req.query.GetUserID;
+
     if (req.query.ProductionStatusID)
       $where["ProductionStatusID"] = req.query.ProductionStatusID;
 
@@ -2509,6 +2513,10 @@ const methods = {
               noti7Animal: [],
               noti8: 0,
               noti8Animal: [],
+              noti9: 0,
+              noti9Animal: [],
+              noti10: 0,
+              noti10Animal: [],
             };
 
             let countAnimal = {
@@ -2533,6 +2541,12 @@ const methods = {
                   let data1 = await data.EventLatest();
                   // data1
 
+                  let cart = await Cart.findOne({
+                    where: { AnimalID: data.AnimalID, UserID: req.body.GetUserID },
+                  });
+
+                  data1.cart = cart ? 1 : 0;
+
                   data1.Notification = await data.Notification();
                   // noti1 = ครบกำหนดคลอด,
                   // noti2 = ครบกำหนดตรวจท้อง,
@@ -2542,6 +2556,8 @@ const methods = {
                   // noti6 = แจ้งเตือนกลับสัด
                   // noti7 = ผสมซ้ำเกิน 3 ครั้ง
                   // noti8 = เลยกำหนดคลอด
+                  // noti9 = Thai Black
+                  // noti10 = แดงสุราษฏร์
 
                   noti.noti1 = data1.Notification.includes("ครบกำหนดคลอด")
                     ? noti.noti1 + 1
@@ -2579,6 +2595,18 @@ const methods = {
 
                   noti.noti8 = data1.Notification.includes("เลยกำหนดคลอด")
                     ? noti.noti8 + 1
+                    : null;
+
+                  noti.noti9 = data1.Notification.includes(
+                    "ครบกำหนดบันทึก Thaiblack"
+                  )
+                    ? noti.noti9 + 1
+                    : null;
+
+                  noti.noti10 = data1.Notification.includes(
+                    "ครบกำหนดบันทึก แดงสุราษฏร์"
+                  )
+                    ? noti.noti10 + 1
                     : null;
 
                   countAnimal.all = countAnimal.all + 1;

@@ -81,7 +81,7 @@ class Animal extends Model {
       foreignKey: "AnimalID",
     });
 
-    this.hasOne(models.AnimalStatus, {
+    this.belongsTo(models.AnimalStatus, {
       foreignKey: "AnimalStatusID",
       as: "AnimalStatus",
     });
@@ -399,7 +399,8 @@ class Animal extends Model {
     let age = animalJson.AnimalAge;
 
 
-
+    console.log(this.AnimalStatusID+"FREEDOM")
+    console.log(this.AnimalStatus)
     var data = {
       AnimalID: animalJson.AnimalID,
       AnimalEarID: animalJson.AnimalEarID,
@@ -707,11 +708,13 @@ Animal.init(
       allowNull: true,
       comment: "ชื่อสัตว์",
     },
+
     FarmID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสฟาร์ม",
     },
+    
     AnimalFirstBreed: {
       type: DataTypes.TINYINT(1),
       allowNull: false,

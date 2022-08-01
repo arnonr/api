@@ -1,9 +1,11 @@
-const Service = require("../services/Animal.service"),
+const Service = require("../services/Cart.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
   async onGetAll(req, res) {
     try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.GetUserID = decoded.id;
       let result = await Service.find(req);
       res.success(result);
     } catch (error) {
@@ -13,6 +15,8 @@ const methods = {
 
   async onGetById(req, res) {
     try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.GetUserID = decoded.id;
       let result = await Service.findById(req.params.id);
       res.success(result);
     } catch (error) {
@@ -45,53 +49,10 @@ const methods = {
 
   async onDelete(req, res) {
     try {
-      await Service.delete(req.params.id);
-      res.success("success", 204);
-    } catch (error) {
-      res.error(error);
-    }
-  },
-
-  async onGenerateNumber(req, res) {
-    try {
-      let result = await Service.GenerateNumber(
-        req.query.FarmID,
-        req.query.BirthDate,
-        req.query.AnimalTypeID
-      );
-      res.success(result);
-    } catch (error) {
-      res.error(error);
-    }
-  },
-  async onGenerateBreed(req, res) {
-    try {
-      let result = await Service.GenerateBreed(
-        req.query.AnimalFatherID,
-        req.query.AnimalMotherID
-      );
-      res.success(result);
-    } catch (error) {
-      res.error(error);
-    }
-  },
-
-  async onGetByFarmID(req, res) {
-    try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.GetUserID = decoded.id;
-      
-      let result = await Service.findByFarmID(req);
-      res.success(result);
-    } catch (error) {
-      res.error(error);
-    }
-  },
-
-  async onPhoto(req, res) {
-    try {
-      const result = await Service.photo(req.params.id, req.file.filename);
-      res.success(result);
+      // req.body.DeleteUserID = decoded.id;
+      await Service.delete(req.body.AnimalID, decoded.id);
+      res.success("success", 204);
     } catch (error) {
       res.error(error);
     }

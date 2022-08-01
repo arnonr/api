@@ -142,8 +142,11 @@ router.use("/vaccine-objective", auth.required, require("./VaccineObjective"));
 router.use("/disease-result", auth.required, require("./DiseaseResult"));
 router.use("/disease-method", auth.required, require("./DiseaseMethod"));
 router.use("/disease-activity", auth.required, require("./DiseaseActivity"));
-router.use("/disease-activity-animal", auth.required, require("./DiseaseActivityAnimal"));
-
+router.use(
+  "/disease-activity-animal",
+  auth.required,
+  require("./DiseaseActivityAnimal")
+);
 
 router.use("/vaccine-activity", auth.required, require("./VaccineActivity"));
 router.use("/deworm-activity", auth.required, require("./DewormActivity"));
@@ -171,5 +174,6 @@ router.use("/thaiblack", auth.required, require("./Thaiblack"));
 router.use("/report", auth.required, require("./Report"));
 router.use("/cure-activity", auth.required, require("./CureActivity"));
 router.use("/cure-method", auth.required, require("./CureMethod"));
+router.use("/cart", auth.required, require("./Cart"));
 
 module.exports = router;
