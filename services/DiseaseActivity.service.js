@@ -91,6 +91,7 @@ const methods = {
       DiseaseActivityDate: dj.DiseaseActivityDate,
       ThaiDiseaseActivityDate: dj.ThaiDiseaseActivityDate,
       FarmID: dj.FarmID,
+      FarmIdentificationNumber: dj.Farm ? dj.Farm.FarmIdentificationNumber : null,
       FarmName: dj.Farm ? dj.Farm.FarmName : null,
       DiseaseID: dj.DiseaseID,
       DiseaseName: dj.Disease ? dj.Disease.DiseaseName : null,
