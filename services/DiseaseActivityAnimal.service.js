@@ -184,6 +184,7 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log(id)
         const obj = await db.findByPk(id, {
           include: [
             { all: true, required: false },
@@ -244,7 +245,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.DiseaseActivityID = parseInt(id);
+        data.DiseaseActivityAnimalID = parseInt(id);
 
         await db.update(data, { where: { DiseaseActivityAnimalID: id } });
 
