@@ -252,7 +252,7 @@ const methods = {
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        reject(ErrorBadRequest(error));
       }
     });
   },
