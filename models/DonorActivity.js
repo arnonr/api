@@ -21,11 +21,7 @@ class DonorActivity extends Model {
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
     });
-
-    // this.belongsTo(models.Semen, {
-    //   foreignKey: "SemenID",
-    // });
-
+    
     this.belongsTo(models.Staff, {
       foreignKey: "ExcludeResponsibilityStaffID",
       as: "ExcludeResponsibility",

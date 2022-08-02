@@ -1,6 +1,12 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class RecipientActivity extends Model {
   static associate(models) {
     this.belongsTo(models.Recipient, {
@@ -148,6 +154,30 @@ RecipientActivity.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiActivityDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ActivityDate
+          ? dayjs(this.ActivityDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiWorkActivityDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.WorkActivityDate
+          ? dayjs(this.WorkActivityDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiExcludeDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ExcludeDate
+          ? dayjs(this.ExcludeDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {

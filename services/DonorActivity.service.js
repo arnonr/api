@@ -5,11 +5,13 @@ const config = require("../configs/app"),
 
 const Animal = require("../models/Animal");
 const Donor = require("../models/Donor");
+const Staff = require("../models/Staff");
+const Farm = require("../models/Farm");
+
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
 const buddhistEra = require("dayjs/plugin/buddhistEra");
-const Staff = require("../models/Staff");
-const Farm = require("../models/Farm");
+
 dayjs.extend(buddhistEra);
 
 const methods = {
@@ -586,11 +588,7 @@ const methods = {
       try {
         // Update
         data.AnimalID = parseInt(data.AnimalID);
-        // data.IsExclude = data.IsExclude;
-        // data.ExcludeRemark = data.ExcludeRemark;
-        // data.ExcludeDate = data.ExcludeDate;
-        // data.ExcludeResponsibilityStaffID = data.ExcludeResponsibilityStaffID;
-        // console.log(data)
+
         let data1 = {
           IsExclude: data.IsExclude,
           ExcludeRemark: data.ExcludeRemark,

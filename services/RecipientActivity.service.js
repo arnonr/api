@@ -5,6 +5,9 @@ const config = require("../configs/app"),
 
 const Animal = require("../models/Animal");
 const Recipient = require("../models/Recipient");
+const Staff = require("../models/Staff");
+const Farm = require("../models/Farm");
+
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
 const buddhistEra = require("dayjs/plugin/buddhistEra");
@@ -213,9 +216,24 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    let $whereAnimalTypeID = {};
+    if (req.query.AnimalTypeID) {
+      $whereAnimalTypeID = {
+        AnimalTypeID: { [Op.in]: JSON.parse(req.query.AnimalTypeID) },
+      };
+    }
+
     query["include"] = [
       {
         model: Animal,
+        // as: "Animal",
+        where: $whereAnimalTypeID,
+        include: [
+          {
+            model: Farm,
+            as: "AnimalFarm",
+          },
+        ],
       },
     ];
     query["attributes"] = ["RecipientID", "AnimalID"];
@@ -253,63 +271,155 @@ const methods = {
                     include: { all: true, required: false },
                   });
 
-                  let PresetActivity1 = da
-                    .filter((d) => d.PresetActivityID == 1)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                  let PresetActivity1 = null;
+                  let PresetActivity2 = null;
+                  let PresetActivity3 = null;
+                  let PresetActivity4 = null;
+                  let PresetActivity5 = null;
+                  let PresetActivity6 = null;
+                  let PresetActivity7 = null;
+                  let PresetActivity8 = null;
+                  let PresetActivity9 = null;
 
-                  let PresetActivity2 = da
-                    .filter((d) => d.PresetActivityID == 2)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time +
-                        " (" +
-                        d.Description +
-                        ")"
-                      );
-                    });
+                  if (
+                    d.Animal.AnimalTypeID == 17 ||
+                    d.Animal.AnimalTypeID == 18
+                  ) {
+                    // แพะ
+                    // PresetActivity1 = ใส่ CIDR-G
+                    // PresetActivity2 = ใส่ PG
+                    // PresetActivity3 = ถอด CIDR-G
+                    // PresetActivity4 = standing heat
+                    // PresetActivity5 = ย้ายฝากตัวอ่อน
 
-                  let PresetActivity3 = da
-                    .filter((d) => d.PresetActivityID == 3)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time +
-                        " (" +
-                        d.Description +
-                        ")"
-                      );
-                    });
+                    PresetActivity1 = da
+                      .filter((d) => d.PresetActivityID == 11)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
 
-                  let PresetActivity4 = da
-                    .filter((d) => d.PresetActivityID == 5)
-                    .map((d) => {
-                      return (
-                        dayjs(d.ActivityDate).locale("th").format("DD MMM BB") +
-                        " " +
-                        d.Time
-                      );
-                    });
+                    PresetActivity2 = da
+                      .filter((d) => d.PresetActivityID == 13)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
 
-                  let PresetActivity5 = da
-                    .filter((d) => d.PresetActivityID == 4)
-                    .map((d) => {
-                      return dayjs(d.ActivityDate)
-                        .locale("th")
-                        .format("DD MMM BB");
-                    });
+                    PresetActivity3 = da
+                      .filter((d) => d.PresetActivityID == 15)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity4 = da
+                      .filter((d) => d.PresetActivityID == 14)
+                      .map((d) => {
+                        return dayjs(d.ActivityDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB");
+                      });
+
+                    PresetActivity5 = da
+                      .filter((d) => d.PresetActivityID == 20)
+                      .map((d) => {
+                        return dayjs(d.ActivityDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB");
+                      });
+                    //
+                  } else {
+                    // PresetActivity1 = ใส่ CIDR-B
+                    // PresetActivity2 = ใส่ PG
+                    // PresetActivity3 = ถอด CIDR-B
+                    // PresetActivity4 = standing heat
+                    // PresetActivity5 = ย้ายฝากตัวอ่อน
+                    PresetActivity1 = da
+                      .filter((d) => d.PresetActivityID == 1)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity2 = da
+                      .filter((d) => d.PresetActivityID == 3)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time +
+                          (d.Description ? " (" + d.Description + ")" : "")
+                        );
+                      });
+
+                    PresetActivity3 = da
+                      .filter((d) => d.PresetActivityID == 5)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+
+                    PresetActivity4 = da
+                      .filter((d) => d.PresetActivityID == 4)
+                      .map((d) => {
+                        return dayjs(d.ActivityDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB");
+                      });
+
+                    PresetActivity5 = da
+                      .filter((d) => d.PresetActivityID == 10)
+                      .map((d) => {
+                        return (
+                          dayjs(d.ActivityDate)
+                            .locale("th")
+                            .format("DD/MM/BBBB") +
+                          " " +
+                          d.Time
+                        );
+                      });
+                  }
+
+                  let sf = null;
+                  if (da[0].ExcludeResponsibilityStaffID) {
+                    sf = await Staff.findByPk(1);
+                  }
 
                   let dn = {
                     AnimalID: d.AnimalID,
                     AnimalEarID: d.Animal.AnimalEarID,
+                    AnimalName: d.Animal.AnimalName,
+                    FarmName: d.Animal.AnimalFarm.FarmName,
+                    AnimaltypeID: d.Animal.AnimalTypeID,
                     RecipientID: FindRecipient.RecipientID,
                     Staff:
                       FindRecipient.Staff.StaffGivenName +
@@ -325,6 +435,18 @@ const methods = {
                       PresetActivity4 != 0 ? PresetActivity4 : null,
                     PresetActivity5:
                       PresetActivity5 != 0 ? PresetActivity5 : null,
+                    IsExclude: da[0].IsExclude,
+                    IsExcludeName: da[0].IsExclude ? "คัดออก" : "อยู่ในโปรแกรม",
+                    ExcludeRemark: da[0].ExcludeRemark,
+                    ExcludeDate: da[0].ExcludeDate,
+                    ThaiExcludeDate: da[0].ExcludeDate
+                      ? dayjs(da[0].ExcludeDate)
+                          .locale("th")
+                          .format("DD/MM/BBBB")
+                      : null,
+                    ExcludeResponsibilityStaffID: sf
+                      ? `${sf.StaffNumber} ${sf.StaffGivenName}  ${sf.StaffSurname}`
+                      : null,
                   };
 
                   return dn;
@@ -348,6 +470,31 @@ const methods = {
           });
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  excludeRecipient(id, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Update
+        data.AnimalID = parseInt(data.AnimalID);
+
+        let data1 = {
+          IsExclude: data.IsExclude,
+          ExcludeRemark: data.ExcludeRemark,
+          ExcludeDate: data.ExcludeDate,
+          ExcludeResponsibilityStaffID: data.ExcludeResponsibilityStaffID,
+          UpdatedUserID: data.UpdatedUserID,
+        };
+
+        const obj = await db.update(data1, {
+          where: { RecipientID: id, AnimalID: data.AnimalID },
+        });
+
+        resolve({ data: "success" });
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },
