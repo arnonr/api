@@ -41,7 +41,6 @@ const upload = multer({
 });
 
 
-
 router.get(
   "/",
   auth.required,
@@ -76,6 +75,14 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetById
 );
+
+router.get(
+  "/:id/export-registered-animal",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onExportRegisteredAnimal
+);
+
 
 router.post(
   "/",

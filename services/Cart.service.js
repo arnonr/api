@@ -61,18 +61,34 @@ const methods = {
 
   async getData(data) {
     let dataJson = data.toJSON();
-
+    let animal = dataJson.Animal.toJSON();
     data = {
-      ...dataJson,
-      Animal: {
-        ...dataJson.Animal.toJSON(),
-        EventLatest: await data.Animal.EventLatest(),
-        Notification: await data.Animal.Notification(),
-        AnimalFarm: undefined,
-        AnimalSex: undefined,
-        AnimalStatus: undefined,
-      },
-      User: undefined,
+      CartID: dataJson.CartID,
+      ...await data.Animal.EventLatest(),
+     Notification: await data.Animal.Notification()
+
+
+
+      //       "AIID": 51,
+      //       "TransferEmbryoID": null,
+      //       "PAR": 12,
+      //       "TimeNo": 17,
+      //       "AIDate": "2022-07-28",
+      //       "ThaiAIDate": "28/07/2565",
+      //       "ThaiEventLatest": "28/07/2565",
+      //       "EmbryoDate": null,
+      //       "PregnancyStatus": "",
+      //       "PregnancyTimeNo": "",
+      // ...dataJson,
+      // Animal: {
+      //   ...dataJson.Animal.toJSON(),
+      //   EventLatest: await data.Animal.EventLatest(),
+      //   Notification: await data.Animal.Notification(),
+      //   AnimalFarm: undefined,
+      //   AnimalSex: undefined,
+      //   AnimalStatus: undefined,
+      // },
+      // User: undefined,
     };
     return data;
   },

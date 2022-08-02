@@ -88,6 +88,17 @@ const methods = {
     }
   },
 
+  async onExportRegisteredAnimal(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      // let result = await Service.findById(req.params.id);
+      let result = await Service.exportRegisteredAnimal(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onPhoto(req, res) {
     try {
       const result = await Service.photo(req.params.id, req.file.filename);

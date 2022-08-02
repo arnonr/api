@@ -2542,10 +2542,13 @@ const methods = {
                   // data1
 
                   let cart = await Cart.findOne({
-                    where: { AnimalID: data.AnimalID, UserID: req.body.GetUserID },
+                    where: {
+                      AnimalID: data.AnimalID,
+                      UserID: req.body.GetUserID,
+                    },
                   });
 
-                  data1.cart = cart ? 1 : 0;
+                  data1.cart = cart ? true : false;
 
                   data1.Notification = await data.Notification();
                   // noti1 = ครบกำหนดคลอด,
@@ -2653,6 +2656,33 @@ const methods = {
           });
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  exportRegisteredAnimal(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log(req.params.id);
+        let animal = await db.findByPk(req.params.id, {
+          include: [{ model: Farm, as: "AnimalFarm" }],
+        });
+
+        //
+        let data = {
+          AnimalName: animal.AnimalName,
+          AnimalEarID: animal.AnimalEarID,
+          AnimalBirthDate: animal.ThaiAnimalBirthDate,
+          AnimalBreedAll: animal.AnimalBreedAll,
+          // Dad Breed
+          // Mom breed
+          FarmName: animal.AnimalFarm.FarmName,
+          FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
+          FarmAddress:  `${animal.AnimalFarm.FarmAddress}`
+        };
+        resolve(data);
+      } catch (error) {
+        reject(ErrorNotFound(error));
       }
     });
   },

@@ -90,7 +90,7 @@ class Animal extends Model {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
     });
-
+    
     // this.belongsTo(models.GiveBirth, {
     //   foreignKey: "GiveBirthSelfID",
     //   as: "GiveBirthSelf",
