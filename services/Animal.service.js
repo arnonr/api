@@ -2573,33 +2573,49 @@ const methods = {
                   // noti9 = Thai Black
                   // noti10 = แดงสุราษฏร์
 
-                  noti.noti1 = data1.Notification.includes("ครบกำหนดคลอด")
-                    ? noti.noti1 + 1
-                    : 0;
+                  if (data1.Notification.includes("ครบกำหนดคลอด")) {
+                    noti.noti1 += 1;
+                    noti.noti1Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti2 = data1.Notification.includes("ครบกำหนดตรวจท้อง")
-                    ? noti.noti2 + 1
-                    : 0;
+                  if (data1.Notification.includes("ครบกำหนดตรวจท้อง")) {
+                    noti.noti2 += 1;
+                    noti.noti2Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti3 = data1.Notification.includes(
-                    "ครบกําหนดติดตามลูกเกิดหลังคลอด"
-                  )
-                    ? noti.noti3 + 1
-                    : 0;
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดติดตามลูกเกิดหลังคลอด"
+                    )
+                  ) {
+                    noti.noti3 += 1;
+                    noti.noti3Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti4 = data1.Notification.includes(
-                    "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
-                  )
-                    ? noti.noti4 + 1
-                    : 0;
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
+                    )
+                  ) {
+                    noti.noti4 += 1;
+                    noti.noti4Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti5 = data1.Notification.includes("อายุมากกว่ากําหนด")
-                    ? noti.noti5 + 1
-                    : 0;
+                  if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
+                    noti.noti5 += 1;
+                    noti.noti5Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti6 = data1.Notification.includes("แจ้งเตือนกลับสัด")
-                    ? noti.noti6 + 1
-                    : 0;
+                  if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
+                    noti.noti6 += 1;
+                    noti.noti6Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
                   if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
                     noti.noti7 += 1;
@@ -2607,17 +2623,13 @@ const methods = {
                     // noti7Animal
                   }
 
-                  noti.noti8 = data1.Notification.includes("เลยกำหนดคลอด")
-                    ? noti.noti8 + 1
-                    : 0;
+                  if (data1.Notification.includes("เลยกำหนดคลอด")) {
+                    noti.noti8 += 1;
+                    noti.noti8Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti9 = data1.Notification.includes(
-                    "ครบกำหนดบันทึก Thaiblack 1 เดือน"
-                  )
-                    ? noti.noti9 + 1
-                    : 0;
-
-                  noti.noti9 =
+                  if (
                     data1.Notification.includes(
                       "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
                     ) ||
@@ -2630,18 +2642,24 @@ const methods = {
                     data1.Notification.includes(
                       "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
                     )
-                      ? noti.noti9 + 1
-                      : 0;
+                  ) {
+                    noti.noti9 += 1;
+                    noti.noti9Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
 
-                  noti.noti10 =
+                  if (
                     data1.Notification.includes(
                       "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
                     ) ||
                     data1.Notification.includes(
                       "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
                     )
-                      ? noti.noti10 + 1
-                      : 0;
+                  ) {
+                    noti.noti10 += 1;
+                    noti.noti10Animal.push(data1.AnimalID);
+                    // noti10Animal
+                  }
 
                   countAnimal.all = countAnimal.all + 1;
                   countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
