@@ -215,9 +215,11 @@ const methods = {
   delete(AnimalID, UserID) {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log(AnimalID+"FREEDOM8")
         const obj = await db.findOne({
           where: { AnimalID: AnimalID, UserID: UserID },
         });
+
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.destroy({ where: { AnimalID: AnimalID, UserID: UserID } });
