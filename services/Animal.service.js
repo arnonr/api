@@ -16,6 +16,17 @@ const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const GiveBirth = require("../models/GiveBirth");
 const Yearling = require("../models/Yearling");
 const Cart = require("../models/Cart");
+const Semen = require("../models/Semen");
+const Staff = require("../models/Staff");
+const DiseaseActivity = require("../models/DiseaseActivity");
+const DiseaseActivityAnimal = require("../models/DiseaseActivityAnimal");
+const Disease = require("../models/Disease");
+const DiseaseResult = require("../models/DiseaseResult");
+const VaccineActivity = require("../models/VaccineActivity");
+const Vaccine = require("../models/Vaccine");
+const DewormActivity = require("../models/DewormActivity");
+const DewormMedicine = require("../models/DewormMedicine");
+const CureActivity = require("../models/CureActivity");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -2564,31 +2575,31 @@ const methods = {
 
                   noti.noti1 = data1.Notification.includes("ครบกำหนดคลอด")
                     ? noti.noti1 + 1
-                    : null;
+                    : 0;
 
                   noti.noti2 = data1.Notification.includes("ครบกำหนดตรวจท้อง")
                     ? noti.noti2 + 1
-                    : null;
+                    : 0;
 
                   noti.noti3 = data1.Notification.includes(
                     "ครบกําหนดติดตามลูกเกิดหลังคลอด"
                   )
                     ? noti.noti3 + 1
-                    : null;
+                    : 0;
 
                   noti.noti4 = data1.Notification.includes(
                     "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
                   )
                     ? noti.noti4 + 1
-                    : null;
+                    : 0;
 
                   noti.noti5 = data1.Notification.includes("อายุมากกว่ากําหนด")
                     ? noti.noti5 + 1
-                    : null;
+                    : 0;
 
                   noti.noti6 = data1.Notification.includes("แจ้งเตือนกลับสัด")
                     ? noti.noti6 + 1
-                    : null;
+                    : 0;
 
                   if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
                     noti.noti7 += 1;
@@ -2598,19 +2609,39 @@ const methods = {
 
                   noti.noti8 = data1.Notification.includes("เลยกำหนดคลอด")
                     ? noti.noti8 + 1
-                    : null;
+                    : 0;
 
                   noti.noti9 = data1.Notification.includes(
-                    "ครบกำหนดบันทึก Thaiblack"
+                    "ครบกำหนดบันทึก Thaiblack 1 เดือน"
                   )
                     ? noti.noti9 + 1
-                    : null;
+                    : 0;
 
-                  noti.noti10 = data1.Notification.includes(
-                    "ครบกำหนดบันทึก แดงสุราษฏร์"
-                  )
-                    ? noti.noti10 + 1
-                    : null;
+                  noti.noti9 =
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 600 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 400 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
+                    )
+                      ? noti.noti9 + 1
+                      : 0;
+
+                  noti.noti10 =
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
+                    )
+                      ? noti.noti10 + 1
+                      : 0;
 
                   countAnimal.all = countAnimal.all + 1;
                   countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
@@ -2663,9 +2694,244 @@ const methods = {
   exportRegisteredAnimal(req) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(req.params.id);
         let animal = await db.findByPk(req.params.id, {
           include: [{ model: Farm, as: "AnimalFarm" }],
+        });
+
+        let ai = await AI.findAll({
+          where: { AnimalID: req.params.id, isRemove: 0 },
+          order: [["AIID", "ASC"]],
+          include: [
+            { model: Semen, as: "Semen" },
+            { model: Staff, as: "Staff" },
+            {
+              model: PregnancyCheckup,
+              limit: 1,
+              include: { model: PregnancyCheckStatus },
+              order: [
+                ["CheckupDate", "DESC"],
+                ["PregnancyCheckupID", "DESC"],
+              ],
+            },
+            {
+              model: GiveBirth,
+              as: "GiveBirth",
+            },
+          ],
+        });
+
+        let aiRes = await Promise.all(
+          ai.map(async (a) => {
+            // GiveBirthSelfID
+            let ChildSex = "";
+
+            if (a.GiveBirth) {
+              let GiveBirthSelf = await db.findAll({
+                where: { GiveBirthSelfID: a.GiveBirth.GiveBirthID },
+                include: [{ model: AnimalSex, as: "AnimalSex" }],
+              });
+
+              if (GiveBirthSelf) {
+                GiveBirthSelf.forEach((g) => {
+                  ChildSex = ChildSex + " " + g.AnimalSex.AnimalSexName;
+                });
+              }
+            }
+
+            let data = {
+              PAR: a.PAR,
+              TimeNo: a.TimeNo,
+              AIDate: a.ThaiAIDate,
+              SemenNumber: a.Semen.SemenNumber,
+              Staff: a.Staff.StaffNumber,
+              PregnancyCheckup: a.PregnancyCheckups
+                ? a.PregnancyCheckups[0]
+                  ? a.PregnancyCheckups[0].toJSON().PregnancyCheckStatus
+                      .PregnancyCheckStatusName
+                  : ""
+                : "",
+              GiveBirthDate: a.GiveBirth ? a.GiveBirth.ThaiGiveBirthDate : "",
+              ChildSex: ChildSex,
+            };
+
+            return data;
+          })
+        );
+
+        //
+
+        let diseaseActivityAnimal = await DiseaseActivityAnimal.findAll({
+          where: { AnimalID: req.params.id, isRemove: 0 },
+          include: [
+            {
+              model: DiseaseActivity,
+              as: "DiseaseActivity",
+              include: [{ model: Disease, as: "Disease" }],
+            },
+            {
+              model: DiseaseResult,
+              as: "DiseaseResult",
+            },
+          ],
+          order: [["DiseaseActivityID", "ASC"]],
+        });
+
+        let disease = [];
+        diseaseActivityAnimal.forEach((d) => {
+          let searchDisease = disease.find((f) => {
+            return f.DiseaseID === d.DiseaseActivity.DiseaseID;
+          });
+
+          if (!searchDisease) {
+            disease.push({
+              DiseaseID: d.DiseaseActivity.DiseaseID,
+              DiseaseName: d.DiseaseActivity.Disease.DiseaseName,
+              Time: [
+                {
+                  Date: d.DiseaseActivity.ThaiDiseaseActivityDate,
+                  Result: d.DiseaseResult.DiseaseResultName,
+                },
+              ],
+            });
+          } else {
+            searchDisease.Time.push({
+              Date: d.DiseaseActivity.ThaiDiseaseActivityDate,
+              Result: d.DiseaseResult.DiseaseResultName,
+            });
+          }
+        });
+
+        //
+        let vaccineActivity = await VaccineActivity.findAll({
+          where: {
+            AnimalID: {
+              [Op.or]: [
+                { [Op.like]: "%," + req.params.id + ",%" },
+                { [Op.like]: "[" + req.params.id + ",%" },
+                { [Op.like]: "%," + req.params.id + "]" },
+                { [Op.like]: "[" + req.params.id + "]" },
+              ],
+            },
+            isRemove: 0,
+          },
+          include: [
+            {
+              model: Vaccine,
+              as: "Vaccine",
+            },
+            {
+              model: Staff,
+              as: "Staff",
+            },
+          ],
+          order: [["VaccineActivityID", "ASC"]],
+        });
+
+        let vaccine = [];
+
+        vaccineActivity.forEach((d) => {
+          let searchVaccine = vaccine.find((f) => {
+            return f.VaccineID === d.VaccineID;
+          });
+
+          if (!searchVaccine) {
+            vaccine.push({
+              VaccineID: d.VaccineID,
+              VaccineName: d.Vaccine.VaccineName,
+              Time: [
+                {
+                  Date: d.ThaiVaccineActivityDate,
+                  Staff: d.Staff.StaffNumber,
+                },
+              ],
+            });
+          } else {
+            searchVaccine.Time.push({
+              Date: d.ThaiVaccineActivityDate,
+              Staff: d.Staff.StaffNumber,
+            });
+          }
+        });
+
+        // deworm
+        //
+        let dewormActivity = await DewormActivity.findAll({
+          where: {
+            AnimalID: {
+              [Op.or]: [
+                { [Op.like]: "%," + req.params.id + ",%" },
+                { [Op.like]: "[" + req.params.id + ",%" },
+                { [Op.like]: "%," + req.params.id + "]" },
+                { [Op.like]: "[" + req.params.id + "]" },
+              ],
+            },
+            isRemove: 0,
+          },
+          include: [
+            {
+              model: DewormMedicine,
+              as: "DewormMedicine",
+            },
+            {
+              model: Staff,
+              as: "Staff",
+            },
+          ],
+          order: [["DewormActivityID", "ASC"]],
+        });
+
+        let deworm = [];
+
+        dewormActivity.forEach((d) => {
+          let searchDeworm = deworm.find((f) => {
+            return f.DewormMedicineID === d.DewormMedicineID;
+          });
+
+          if (!searchDeworm) {
+            deworm.push({
+              DewormMedicineID: d.DewormMedicineID,
+              DewormMedicineName: d.DewormMedicine.DewormMedicineName,
+              Time: [
+                {
+                  Date: d.ThaiDewormActivityDate,
+                  Staff: d.Staff.StaffNumber,
+                },
+              ],
+            });
+          } else {
+            searchDeworm.Time.push({
+              Date: d.ThaiDewormActivityDate,
+              Staff: d.Staff.StaffNumber,
+            });
+          }
+        });
+
+        // cureActivity
+        let cureActivity = await CureActivity.findAll({
+          where: {
+            AnimalID: req.params.id,
+            isRemove: 0,
+          },
+          include: [
+            {
+              model: Disease,
+              as: "Disease",
+            },
+            {
+              model: Staff,
+              as: "Staff",
+            },
+          ],
+          order: [["CureActivityID", "ASC"]],
+        });
+
+        let cure = [];
+        cureActivity.forEach((d) => {
+          cure.push({
+            Date: d.ThaiCureActivityDate,
+            Remark: d.Remark,
+            Staff: d.Staff.StaffNumber,
+          });
         });
 
         //
@@ -2674,12 +2940,19 @@ const methods = {
           AnimalEarID: animal.AnimalEarID,
           AnimalBirthDate: animal.ThaiAnimalBirthDate,
           AnimalBreedAll: animal.AnimalBreedAll,
-          // Dad Breed
-          // Mom breed
+          AnimalDadBreed: "TH890890",
+          AnimaMomBreed: "4343dsd90934",
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
-          FarmAddress:  `${animal.AnimalFarm.FarmAddress}`
+          FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
+          // AI
+          AI: [...aiRes],
+          Disease: disease,
+          Vaccine: vaccine,
+          Deworm: deworm,
+          Cure: cure,
         };
+
         resolve(data);
       } catch (error) {
         reject(ErrorNotFound(error));
