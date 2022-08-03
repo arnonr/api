@@ -5,6 +5,7 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
+const AnimalType = require("../models/AnimalType");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -15,6 +16,8 @@ const methods = {
       $where["TransferEmbryoID"] = req.query.TransferEmbryoID;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
+    // if (req.query.AnimalTypeID) $where["AnimalTypeID"] = req.query.AnimalTypeID;
 
     if (req.query.TransferDate) $where["TransferDate"] = req.query.TransferDate;
 
@@ -53,12 +56,23 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    // AnimalTypeID
+    let WhereAnimalType = null;
+
+    if (req.query.AnimalTypeID) {
+      WhereAnimalType = {
+        AnimalTypeID: {
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        },
+      };
+    }
+
     query["include"] = [
       { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
+      {
+        model: Animal,
+        where: WhereAnimalType,
+      },
     ];
 
     return { query: query };
@@ -75,10 +89,12 @@ const methods = {
       EmbryoNumber:
         dataJson.EmbryoNumber != null ? dataJson.EmbryoNumber : null,
       TransferMethodName:
-        dataJson.TransferMethod != null ? (dataJson.TransferMethod.TransferMethodName == 'Direct Transfer')? 'ย้ายฝากสด':'ย้ายฝากแช่แข็ง' : null,
+        dataJson.TransferMethod != null
+          ? dataJson.TransferMethod.TransferMethodName == "Direct Transfer"
+            ? "ย้ายฝากสด"
+            : "ย้ายฝากแช่แข็ง"
+          : null,
       BCSName: dataJson.BCS ? dataJson.BCS.BCSName : null,
-
-
 
       ResponsibilityStaffName: dataJson.Staff
         ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName}  ${dataJson.Staff.StaffSurname}`
@@ -97,12 +113,12 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
+          // delete _q.query.include,
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
+              count = rows.length;
 
             rows = rows.map((data) => {
               data = this.getData(data);
@@ -133,7 +149,7 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        
+
         let data = this.getData(obj);
 
         resolve(data);
