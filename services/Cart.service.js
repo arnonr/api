@@ -212,17 +212,17 @@ const methods = {
     });
   },
 
-  delete(AnimalID, UserID) {
+  delete(data, UserID) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(AnimalID+"FREEDOM8")
+
         const obj = await db.findOne({
-          where: { AnimalID: AnimalID, UserID: UserID },
+          where: { AnimalID: data.AnimalID, UserID: UserID },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        await db.destroy({ where: { AnimalID: AnimalID, UserID: UserID } });
+        await db.destroy({ where: { AnimalID: data.AnimalID, UserID: UserID } });
         resolve();
       } catch (error) {
         reject(error);

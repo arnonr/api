@@ -51,8 +51,7 @@ const methods = {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       // req.body.DeleteUserID = decoded.id;
-      console.log(req.body.AnimalID)
-      await Service.delete(req.body.AnimalID, decoded.id);
+      await Service.delete(req.body, decoded.id);
       res.success("success", 204);
     } catch (error) {
       res.error(error);
