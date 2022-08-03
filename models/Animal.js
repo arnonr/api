@@ -399,8 +399,7 @@ class Animal extends Model {
     let age = animalJson.AnimalAge;
 
 
-    console.log(this.AnimalStatusID+"FREEDOM")
-    console.log(this.AnimalStatus)
+   
     var data = {
       AnimalID: animalJson.AnimalID,
       AnimalEarID: animalJson.AnimalEarID,

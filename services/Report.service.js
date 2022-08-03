@@ -2,197 +2,88 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models"),
   { Op } = require("sequelize");
-const Organization = require("../models/Organization");
 
+const Organization = require("../models/Organization");
 const Staff = require("../models/Staff");
+const Animal = require("../models/Animal");
+const Farm = require("../models/Farm");
 
 const methods = {
-  scopeSearch(req, limit, offset) {
-    // Where
-    $where = {};
-
-    if (req.query.RegionID) $where["RegionID"] = req.query.RegionID;
-    if (req.query.RegionCode)
-      $where["RegionCode"] = {
-        [Op.like]: "%" + req.query.RegionCode + "%",
-      };
-    if (req.query.RegionName)
-      $where["RegionName"] = {
-        [Op.like]: "%" + req.query.RegionName + "%",
-      };
-
-    if (req.query.RegionNameEN)
-      $where["RegionNameEN"] = {
-        [Op.like]: "%" + req.query.RegionNameEN + "%",
-      };
-
-    if (req.query.isActive) $where["isActive"] = req.query.isActive;
-    if (req.query.CreatedUserID)
-      $where["CreatedUserID"] = req.query.CreatedUserID;
-    if (req.query.UpdatedUserID)
-      $where["UpdatedUserID"] = req.query.UpdatedUserID;
-
-    $where["isRemove"] = 0;
-    const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
-    // Order
-    $order = [["RegionID", "ASC"]];
-    if (req.query.orderByField && req.query.orderBy)
-      $order = [
-        [
-          req.query.orderByField,
-          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
-        ],
-      ];
-    query["order"] = $order;
-
-    if (!isNaN(limit)) query["limit"] = limit;
-
-    if (!isNaN(offset)) query["offset"] = offset;
-
-    return { query: query };
-  },
-
-  //   find(req) {
-  //     const limit = +(req.query.size || config.pageLimit);
-  //     const offset = +(limit * ((req.query.page || 1) - 1));
-  //     const _q = methods.scopeSearch(req, limit, offset);
-  //     return new Promise(async (resolve, reject) => {
-  //       try {
-  //         Promise.all([db.findAll(_q.query), db.count(_q.query)])
-  //           .then((result) => {
-  //             const rows = result[0],
-  //               count = result[1];
-  //             resolve({
-  //               total: count,
-  //               lastPage: Math.ceil(count / limit),
-  //               currPage: +req.query.page || 1,
-  //               rows: rows,
-  //             });
-  //           })
-  //           .catch((error) => {
-  //             reject(error);
-  //           });
-  //       } catch (error) {
-  //         reject(error);
-  //       }
-  //     });
-  //   },
-
-  //   findById(id) {
-  //     return new Promise(async (resolve, reject) => {
-  //       try {
-  //         const obj = await db.findByPk(id);
-
-  //         if (!obj) reject(ErrorNotFound("id: not found"));
-  //         resolve(obj.toJSON());
-  //       } catch (error) {
-  //         reject(ErrorNotFound("id: not found"));
-  //       }
-  //     });
-  //   },
-
-  report1() {
+  report1(req) {
     return new Promise(async (resolve, reject) => {
       try {
-        let staff = await Staff.findAll({
-          attributes: [
-            "StaffID",
-            "StaffNumber",
-            "StaffGivenName",
-            "StaffSurname",
-          ],
+        // REPORT1
+        let $where = {};
+
+        if (req.query.OrganizationZoneID)
+          $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+        if (req.query.ProvinceID) $where["FarmProvinceID"] = req.query.ProvinceID;
+        if (req.query.AmphurID) $where["FarmAmphurID"] = req.query.AmphurID;
+        if (req.query.TumbolID) $where["FarmTumbolID"] = req.query.TumbolID;
+
+        if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+        if (req.query.OrganizationID)
+          $where["OrganizationID"] = req.query.OrganizationID;
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        let animal = await Animal.findAll({
           where: {
-            isRemove: 0,
-            isActive: 1,
+            AnimalTypeID: { [Op.in]: JSON.parse(req.query.AnimalTypeID) },
+            AnimalSexID: 2,
           },
+          include: [
+            { all: true, required: false },
+            {
+              model: Farm,
+              as: "AnimalFarm",
+              ...query,
+            },
+          ],
         });
 
-        staff = staff.map((s) => {
-          s = s.toJSON();
-          s.Title = undefined;
-          s.gender = undefined;
-          s.MarriedStatus = undefined;
-          s.Gender = undefined;
-          s.Organization = undefined;
-          s.PositionType = undefined;
-          s.Position = undefined;
-          s.Tumbol = undefined;
-          s.Amphur = undefined;
-          s.Province = undefined;
-          s.Education = undefined;
-          s.Major = undefined;
-          s.ai = [
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-            Math.random() * 100 + "%",
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10),
-          ];
-          return s;
-        });
+        console.log(animal);
 
-        resolve({total: staff.length , staff: staff});
+        animal.forEach((a) => {
+          if(a.AnimalStatus == 1){
+            
+          }
+        });
+        
+
+        // AnimalStatus1:
+
+
+
+        let data = {};
+        data = {
+          AnimalStatus1: 50,
+          AnimalStatus2: 60,
+          AnimalStatus3: 100,
+          Total: 160,
+          Farms: [
+            {
+              FarmIdentificationNumber: "109909043",
+              FarmName: "ทดสอบ",
+              AnimalStatus1: 1,
+              AnimalStatus2: 2,
+              AnimalStatus1: 3,
+              Total: 10,
+            },
+            {
+              FarmIdentificationNumber: "109909043",
+              FarmName: "ทดสอบ",
+              AnimalStatus1: 1,
+              AnimalStatus2: 2,
+              AnimalStatus1: 3,
+              Total: 10,
+            },
+          ],
+          FarmCount: 100,
+        };
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound(error));
-      }
-    });
-  },
-
-  insert(data) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        //check เงื่อนไขตรงนี้ได้
-        const obj = new db(data);
-        const inserted = await obj.save();
-
-        const res = await db.findByPk(inserted.RegionID);
-
-        resolve(res);
-      } catch (error) {
-        reject(ErrorBadRequest(error.message));
-      }
-    });
-  },
-
-  update(id, data) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Check ID
-        const obj = await db.findByPk(id);
-        if (!obj) reject(ErrorNotFound("id: not found"));
-
-        // Update
-        data.RegionID = parseInt(id);
-
-        await db.update(data, { where: { RegionID: id } });
-
-        const res = await db.findByPk(id);
-
-        resolve(res);
-      } catch (error) {
-        reject(ErrorBadRequest(error.message));
-      }
-    });
-  },
-
-  delete(id) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const obj = await db.findByPk(id);
-        if (!obj) reject(ErrorNotFound("id: not found"));
-
-        await db.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { RegionID: id } }
-        );
-        resolve();
-      } catch (error) {
-        reject(error);
       }
     });
   },

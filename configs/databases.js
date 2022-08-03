@@ -2,11 +2,11 @@ const config = require("../configs/app");
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  config.DbDatabase,
-  config.DbUsername,
-  config.DbPassword,
+  config.DbDatabase ? config.DbDatabase : "aidm",
+  config.DbUsername ? config.DbUsername : "aidm",
+  config.DbPassword ? config.DbPassword : "2022@aidm",
   {
-    host: config.DbHostname,
+    host: config.DbHostname ? config.DbHostname : "host.docker.internal",
     port: config.DbPort,
     dialect: "mysql",
     operatorsAlias: false,
@@ -22,12 +22,14 @@ const sequelize = new Sequelize(
   }
 );
 
-sequelize.authenticate().then(() => {
-  console.log('connected..')
-})
-.catch(err => {
-  console.log('Error' + err)
-})
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("connected..");
+  })
+  .catch((err) => {
+    console.log("Error" + err);
+  });
 
 const db = {};
 

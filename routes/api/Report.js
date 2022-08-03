@@ -11,38 +11,12 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
 router.get(
-    "/report1",
-    auth.required,
-    checkPermission(resource, "read"),
-    controllers.onGetReport1
-  );
-router.get(
-  "/:id",
+  "/report1",
   auth.required,
   checkPermission(resource, "read"),
-  controllers.onGetById
-);
-
-router.post(
-  "/",
-  auth.required,
-  checkPermission(resource, "create"),
-  controllers.onInsert,
-);
-
-router.put(
-  "/:id",
-  auth.required,
-  checkPermission(resource, "update"),
-  controllers.onUpdate
-);
-
-router.delete(
-  "/:id",
-  auth.required,
-  checkPermission(resource, "delete"),
-  controllers.onDelete
+  controllers.onGetReport1
 );
 
 module.exports = router;
