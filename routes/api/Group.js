@@ -5,8 +5,10 @@ const { checkPermission } = require("../accessControl");
 
 let resource = "user";
 
+// router.get("/", controllers.onLogin);
+
 router.get(
-  "/",
+  "/", 
   controllers.onGetAll
 );
 router.get(

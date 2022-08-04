@@ -33,7 +33,7 @@ router.use("/user", require("./User"));
 router.use("/staff", require("./Staff"));
 
 router.use("/menu", auth.required, require("./Menu"));
-router.use("/group", auth.required, require("./Group"));
+router.use("/group", require("./Group"));
 router.use("/group-authorize", auth.required, require("./GroupAuthorize"));
 
 router.use("/project", auth.required, require("./Project"));
