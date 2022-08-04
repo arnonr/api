@@ -282,7 +282,7 @@ const methods = {
           ],
         });
 
-        if (!obj) reject(ErrorNotFound("id: not found"));
+        if (!obj)  resolve(false);
 
         let res = { ...obj.toJSON() };
         if (res.CardRequestLog.length != 0) {
@@ -295,6 +295,29 @@ const methods = {
       }
     });
   },
+
+  updateMobilePhone(id, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(id);
+        if (!obj) resolve(false);
+
+        // Update
+        await db.update({StaffMobilePhone: data.StaffMobilePhone}, {
+          where: { StaffID: id },
+          individualHooks: true,
+        });
+
+        let res = methods.findById(data.StaffID);
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
 };
 
 module.exports = { ...methods };
