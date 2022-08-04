@@ -266,7 +266,8 @@ const methods = {
 
         const obj = await db.findOne({
           where: {
-            StaffNumber: StaffNumber.toString()
+            StaffNumber: StaffNumber.toString(),
+            isRemove: 0
           },
           include: [
             { all: true, required: false },
