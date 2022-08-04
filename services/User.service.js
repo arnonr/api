@@ -487,7 +487,7 @@ const methods = {
           ],
         });
 
-        if (!obj) reject(ErrorNotFound("id: not found"));
+        if (!obj) resolve(false);
 
         let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {
