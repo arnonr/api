@@ -176,7 +176,7 @@ User.init(
     },
     CreatedUserID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
     },
     createdAt: {
