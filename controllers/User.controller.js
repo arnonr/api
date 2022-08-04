@@ -102,6 +102,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetByStaffID(req, res) {
+    try {
+      let result = await Service.findByStaffID(req.params.id);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

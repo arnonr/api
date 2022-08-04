@@ -60,6 +60,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetByStaffNumber(req, res) {
+    try {
+      let result = await Service.findByStaffNumber(req.params.id);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

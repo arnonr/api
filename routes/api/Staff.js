@@ -44,8 +44,7 @@ router.get(
   "/",
   auth.required,
   checkPermission(resource, "read"),
-  controllers.onGetAll,
- 
+  controllers.onGetAll
 );
 
 router.get(
@@ -66,7 +65,7 @@ router.put(
   "/:id",
   auth.required,
   checkPermission(resource, "update"),
-  controllers.onUpdate,
+  controllers.onUpdate
 );
 
 router.delete(
@@ -83,6 +82,11 @@ router.post(
   checkPermission(resource, "update"),
   upload.single("photo_url"),
   controllers.onPhoto
+);
+
+router.get(
+  "/staff-by-number/:id",
+  controllers.onGetByStaffNumber
 );
 
 module.exports = router;

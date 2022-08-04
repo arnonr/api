@@ -58,4 +58,9 @@ router.post("/login", controllers.onLogin);
 router.post("/register", controllers.onRegister);
 router.post("/refresh-token", controllers.onRefreshToken);
 
+router.get(
+  "/user-by-staff-id/:id",
+  controllers.onGetByStaffID
+);
+
 module.exports = router;

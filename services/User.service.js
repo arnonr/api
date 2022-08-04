@@ -329,18 +329,52 @@ const methods = {
   },
 
   register(data) {
+
     return new Promise(async (resolve, reject) => {
       try {
-        //   validate Data
+        //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalTypeID)) {
+          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+
+        let AnimalTypeIDList = [...data.AnimalTypeID];
+        data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
+
         const obj = new db(data);
-        obj.password = obj.passwordHash(obj.password);
+        obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
 
-        resolve(inserted);
+        // insert ProjectToAnimalType
+        AnimalTypeIDList.forEach((AnimalTypeID) => {
+          const obj1 = UserToAnimalType.create({
+            UserID: inserted.UserID,
+            AnimalTypeID: AnimalTypeID,
+            CreatedUserID: data.CreatedUserID,
+          });
+        });
+
+        let res = methods.findById(inserted.UserID);
+
+        resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
       }
     });
+
+
+    // return new Promise(async (resolve, reject) => {
+    //   try {
+    //     //   validate Data
+    //     const obj = new db(data);
+    //     obj.password = obj.passwordHash(obj.password);
+    //     const inserted = await obj.save();
+
+    //     resolve(inserted);
+    //   } catch (error) {
+    //     reject(ErrorBadRequest(error.message));
+    //   }
+    // });
   },
 
   refreshToken(accessToken) {
@@ -433,6 +467,42 @@ const methods = {
         });
       } catch (error) {
         reject(ErrorNotFound("id: not found1"));
+      }
+    });
+  },
+
+  findByStaffID(StaffID) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let obj = await db.findOne({
+          where: {
+            StaffID: StaffID
+          },
+          include: [
+            { all: true, required: false },
+            {
+              model: AnimalType,
+              required: false,
+            },
+          ],
+        });
+
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        let animalTypeArray = [];
+        obj.toJSON().AnimalTypes.forEach((element) => {
+          animalTypeArray.push(element.AnimalTypeName);
+        });
+
+        obj = {
+          ...obj.toJSON(),
+          AnimalTypes: animalTypeArray,
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
+
+        resolve(obj);
+      } catch (error) {
+        reject(ErrorNotFound(error));
       }
     });
   },

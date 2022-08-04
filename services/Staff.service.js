@@ -259,6 +259,42 @@ const methods = {
       }
     });
   },
+
+  findByStaffNumber(StaffNumber) {
+    return new Promise(async (resolve, reject) => {
+      try {
+
+        const obj = await db.findOne({
+          where: {
+            StaffNumber: StaffNumber.toString()
+          },
+          include: [
+            { all: true, required: false },
+            {
+              model: CardRequestLog,
+              as: "CardRequestLog",
+              limit: 1,
+              order: [
+                ["RequestDate", "DESC"],
+                ["CardRequestID", "DESC"],
+              ],
+            },
+          ],
+        });
+
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        let res = { ...obj.toJSON() };
+        if (res.CardRequestLog.length != 0) {
+          res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+        }
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };
