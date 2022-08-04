@@ -53,13 +53,13 @@ UserToAnimalType.init(
     },
     CreatedUserID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
     },
     createdAt: {
       field: "CreatedDatetime",
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
     },
     UpdatedUserID: {
