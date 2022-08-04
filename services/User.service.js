@@ -288,7 +288,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findOne({
-          where: { Username: data.Username, isRemove: 0 },
+          where: { Username: data.Username, isRemove: 0, isActive: 1 },
           include: { all: true },
         });
 
