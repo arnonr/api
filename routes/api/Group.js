@@ -7,8 +7,6 @@ let resource = "user";
 
 router.get(
   "/",
-  // auth.required,
-  // checkPermission(resource, "read"),
   controllers.onGetAll
 );
 router.get(
