@@ -89,4 +89,10 @@ router.get(
   controllers.onGetByStaffNumber
 );
 
+
+router.put(
+  "/:id/mobile-phone",
+  controllers.onUpdateMobilePhone
+);
+
 module.exports = router;

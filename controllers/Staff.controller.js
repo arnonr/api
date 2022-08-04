@@ -69,6 +69,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onUpdateMobilePhone(req, res) {
+    try {
+      const result = await Service.update(req.params.id, req.body);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };
