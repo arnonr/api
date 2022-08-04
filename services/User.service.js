@@ -288,7 +288,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findOne({
-          where: { Username: data.Username },
+          where: { Username: data.Username, isRemove: 0 },
           include: { all: true },
         });
 
@@ -329,7 +329,6 @@ const methods = {
   },
 
   register(data) {
-
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
@@ -361,7 +360,6 @@ const methods = {
         reject(ErrorBadRequest(error.message));
       }
     });
-
 
     // return new Promise(async (resolve, reject) => {
     //   try {
