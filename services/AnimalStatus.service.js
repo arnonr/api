@@ -114,7 +114,7 @@ const methods = {
               let animalSexArray = [];
               data.AnimalSexes.forEach((element) => {
                 console.log("FREEDOM");
-                animalTypeArray.push(element.AnimalSexName);
+                animalSexArray.push(element.AnimalSexName);
               });
 
               data = {
