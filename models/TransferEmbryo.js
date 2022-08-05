@@ -95,9 +95,17 @@ TransferEmbryo.init(
       comment: "วิธีการย้ายฝาก",
     },
     StandingHeatDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       comment: "วันที่เป็นสัด",
+      get() {
+        if (this.getDataValue("StandingHeatDate") != null)
+          return dayjs(this.getDataValue("StandingHeatDate")).format(
+            "YYYY-MM-DD"
+          );
+
+        return null;
+      },
     },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
@@ -105,14 +113,28 @@ TransferEmbryo.init(
       comment: "รหัสเจ้าหน้าที่ที่ดำเนินการ",
     },
     EstimateBirthDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
       comment: "ประมาณการวันคลอด",
+      get() {
+        if (this.getDataValue("EstimateBirthDate") != null)
+          return dayjs(this.getDataValue("EstimateBirthDate")).format(
+            "YYYY-MM-DD"
+          );
+
+        return null;
+      },
     },
     BirthDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
       comment: "วันคลอด",
+      get() {
+        if (this.getDataValue("BirthDate") != null)
+          return dayjs(this.getDataValue("BirthDate")).format("YYYY-MM-DD");
+
+        return null;
+      },
     },
     LeftOvaryAmount: {
       type: DataTypes.DECIMAL,
