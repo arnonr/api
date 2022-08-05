@@ -50,7 +50,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    // query["include"] = { all: true, required: false  };
+    query["include"] = [{ model: AnimalGenre }, { model: AnimalGroupType }];
 
     return { query: query };
   },
@@ -67,8 +67,18 @@ const methods = {
           db.count(_q.query),
         ])
           .then((result) => {
-            const rows = result[0],
+            let rows = result[0],
               count = result[2];
+
+            rows = rows.map((obj) => {
+              obj = obj.toJSON();
+              obj.AnimalGenreName = obj.AnimalGenre.AnimalGenreName;
+              obj.AnimalGroupTypeName = obj.AnimalGroupType.AnimalGroupTypeName;
+              obj.AnimalGenre = undefined;
+              obj.AnimalGroupType = undefined;
+              return obj;
+            });
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -93,7 +103,7 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        obj = obj.toJSON()
+        obj = obj.toJSON();
         obj.AnimalGenreName = obj.AnimalGenre.AnimalGenreName;
         obj.AnimalGroupTypeName = obj.AnimalGroupType.AnimalGroupTypeName;
         obj.AnimalGenre = undefined;
