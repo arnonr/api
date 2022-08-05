@@ -108,13 +108,12 @@ const methods = {
             rows = rows.map((data) => {
               let animalTypeArray = [];
               data.AnimalTypes.forEach((element) => {
-               
                 animalTypeArray.push(element.AnimalTypeName);
               });
 
               let animalSexArray = [];
               data.AnimalSexes.forEach((element) => {
-                console.log("FREEDOM")
+                console.log("FREEDOM");
                 animalTypeArray.push(element.AnimalSexName);
               });
 
@@ -124,6 +123,8 @@ const methods = {
                 AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
                 AnimalSexName: animalSexArray,
                 AnimalSexID: JSON.parse(data.toJSON().AnimalSexID),
+                AnimalSexes: undefined,
+                AnimalTypes: undefined,
               };
               return data;
             });
@@ -178,6 +179,8 @@ const methods = {
           AnimalSexName: animalSexArray,
           AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
           AnimalSexID: JSON.parse(obj.toJSON().AnimalSexID),
+          AnimalSexes: undefined,
+          AnimalTypes: undefined,
         };
 
         resolve(obj);
