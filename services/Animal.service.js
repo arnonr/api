@@ -1732,9 +1732,12 @@ const methods = {
     if (req.query.AnimalBornType)
       $where["AnimalBornType"] = req.query.AnimalBornType;
     if (req.query.AnimalBornTypeID)
+
       $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
+
     if (req.query.AnimalSource)
-      $where["AnimalBornTypeID"] = req.query.AnimalSource;
+      $where["AnimalSource"] = req.query.AnimalSource;
+      
     if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
