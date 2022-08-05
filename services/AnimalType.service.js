@@ -2,7 +2,8 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/AnimalType"),
   { Op } = require("sequelize");
-
+const AnimalGenre = require("../models/AnimalGenre");
+const AnimalGroupType = require("../models/AnimalGroupType");
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -51,7 +52,7 @@ const methods = {
 
     // query["include"] = { all: true, required: false  };
 
-    return { query: query};
+    return { query: query };
   },
 
   find(req) {
@@ -87,14 +88,20 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+        let obj = await db.findByPk(id, {
+          include: [{ model: AnimalGenre }, { model: AnimalGroupType }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
-        resolve(obj.toJSON());
+        obj = obj.toJSON()
+        obj.AnimalGenreName = obj.AnimalGenre.AnimalGenreName;
+        obj.AnimalGroupTypeName = obj.AnimalGroupType.AnimalGroupTypeName;
+        obj.AnimalGenre = undefined;
+        obj.AnimalGroupType = undefined;
+
+        resolve(obj);
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },

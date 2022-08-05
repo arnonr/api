@@ -5,7 +5,7 @@ class AnimalType extends Model {
   static associate(models) {
     this.belongsTo(models.AnimalGenre, {
       foreignKey: "AnimalGenreID",
-      as: "AnimalGenre",
+      // as: "AnimalGenre",
     });
     this.belongsTo(models.AnimalGroupType, {
       foreignKey: "AnimalGroupTypeID",
