@@ -1810,7 +1810,7 @@ const methods = {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then(async (result) => {
             let rows = result[0],
-              count = rows.length;
+              count = result[1];
 
             //
             rows = await Promise.all(
