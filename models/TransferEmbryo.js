@@ -208,6 +208,30 @@ TransferEmbryo.init(
           : null;
       },
     },
+    ThaiStandingHeatDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.StandingHeatDate
+          ? dayjs(this.StandingHeatDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiEstimateBirthDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.EstimateBirthDate
+          ? dayjs(this.EstimateBirthDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiBirthDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.BirthDate
+          ? dayjs(this.BirthDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
   },
   {
     sequelize,
