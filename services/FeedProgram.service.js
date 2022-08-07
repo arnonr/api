@@ -13,6 +13,8 @@ const methods = {
 
     //   StartDate EndDate
 
+    if (req.query.FarmName) $where["FarmName"] = req.query.FarmName;
+
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.ResponsibilityStaffID)
@@ -92,7 +94,7 @@ const methods = {
     });
   },
 
-  insert(data) {
+  insert(data) { if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้

@@ -40,7 +40,7 @@ await jane.save();
 // save บางฟิลด์
 await jane.save({ fields: ['name'] });
 
-// increment 
+// increment
 const jane = await User.create({ name: "Jane", age: 100, cash: 5000 });
 await jane.increment({
   'age': 2,
@@ -49,7 +49,6 @@ await jane.increment({
 
 // If the values are incremented by the same amount, you can use this other syntax as well:
 await jane.increment(['age', 'cash'], { by: 2 });
-
 
 // insert สามารถใชั create ได้ คือการ build+save
 const jane = await User.create({ firstName: "Jane", lastName: "Doe" });
@@ -103,7 +102,7 @@ const captains = await Captain.bulkCreate([
   { name: 'Davy Jones' }
 ], { validate: true });
 
-// เหมือนจะ sort ขาก function ได้
+// เหมือนจะ sort จาก function ได้
 [sequelize.fn('otherfunction', sequelize.col('col1'), 12, 'lalala'), 'DESC'],
 // will return otherfunction(awesomefunction(`col`)) DESC, This nesting is potentially infinite!
 [sequelize.fn('otherfunction', sequelize.fn('awesomefunction', sequelize.col('col'))), 'DESC']
@@ -478,4 +477,71 @@ await post.restore();
 await Post.findByPk(123); // This will return `null` if the record of id 123 is soft-deleted
 await Post.findByPk(123, { paranoid: false }); // This will retrieve the record
 
+
+// Find all projects with a least one task where task.state === project.state
+Project.findAll({
+  include: {
+    model: Task,
+    where: {
+      state: Sequelize.col('project.state')
+    }
+  }
+})
+
+
+
+
+User.findAll({
+  where: {
+    '$Instruments.size$': { [Op.ne]: 'small' }
+  },
+  include: [{
+    model: Tool,
+    as: 'Instruments'
+  }]
+});
+
+// Inner where, `required: false`
+await User.findAll({
+  include: {
+    model: Tool,
+    as: 'Instruments',
+    where: {
+      size: { [Op.ne]: 'small' }
+    },
+    required: false
+  }
+});
+
+// Top-level where, with default `required: false`
+await User.findAll({
+  where: {
+    '$Instruments.size$': { [Op.ne]: 'small' }
+  },
+  include: {
+    model: Tool,
+    as: 'Instruments'
+  }
+});
+
+// Top-level where, `required: true`
+await User.findAll({
+  where: {
+    '$Instruments.size$': { [Op.ne]: 'small' }
+  },
+  include: {
+    model: Tool,
+    as: 'Instruments',
+    required: true
+  }
+});
+
+User.findAll({
+  include: [{
+    model: Tool,
+    where: { name: { [Op.ne]: 'empty trash' } },
+    required: false
+    right: true // will create a right join
+  }]
+});
 

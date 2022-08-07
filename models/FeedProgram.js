@@ -24,7 +24,7 @@ class FeedProgram extends Model {
 
     this.hasMany(models.FeedProgramProgress, {
       foreignKey: "FeedProgramID",
-      as: "FeedProgramProgress"
+      as: "FeedProgramProgress",
     });
   }
   // Custom JSON Response
@@ -43,6 +43,11 @@ FeedProgram.init(
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
+    },
+    FeedProgramName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      comment: "ชื่อโปรแกรม",
     },
     FarmID: {
       type: DataTypes.INTEGER(11),
