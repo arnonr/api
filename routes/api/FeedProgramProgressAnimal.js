@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const controllers = require("../../controllers/FeedProgramDetail.controller");
+const controllers = require("../../controllers/FeedProgramProgressAnimal.controller");
 const auth = require("../auth");
 const { checkPermission } = require("../accessControl");
 

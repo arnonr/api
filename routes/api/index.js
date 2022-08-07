@@ -124,15 +124,26 @@ router.use("/roughages", auth.required, require("./Roughages"));
 router.use("/tmr-formula", auth.required, require("./TMRFormula"));
 router.use("/feed-program", auth.required, require("./FeedProgram"));
 router.use(
-  "/feed-program-detail",
+  "/feed-program-animal",
   auth.required,
-  require("./FeedProgramDetail")
+  require("./FeedProgramAnimal")
 );
 router.use(
   "/feed-program-progress",
   auth.required,
   require("./FeedProgramProgress")
 );
+router.use(
+  "/feed-program-progress-food",
+  auth.required,
+  require("./FeedProgramProgressFood")
+);
+router.use(
+  "/feed-program-progress-animal",
+  auth.required,
+  require("./FeedProgramProgressAnimal")
+);
+router.use("/food", auth.required, require("./food"));
 router.use("/semen", auth.required, require("./Semen"));
 router.use("/embryo", auth.required, require("./Embryo"));
 router.use("/deworm-medicine", auth.required, require("./DewormMedicine"));

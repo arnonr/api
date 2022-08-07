@@ -1,22 +1,30 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
-  db = require("../models/FeedProgram"),
+  db = require("../models/FeedProgramProgressAnimal"),
   { Op } = require("sequelize");
+
+// const FeedPPToConcentrate = require("../models/FeedPPToConcentrate");
+// const Concentrate = require("../models/Concentrate");
+// const FeedPPToRoughages = require("../models/FeedPPToRoughages");
+// const Roughages = require("../models/Roughages");
+const FeedProgramProgress = require("../models/FeedProgramProgress");
+const FeedProgramAnimal = require("../models/FeedProgramAnimal");
+const Animal = require("../models/Animal");
 
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
-    if (req.query.FeedProgramID)
-      $where["FeedProgramID"] = req.query.FeedProgramID;
+    if (req.query.FeedProgramProgressAnimalID)
+      $where["FeedProgramProgressAnimalID"] =
+        req.query.FeedProgramProgressAnimalID;
 
-    //   StartDate EndDate
+    if (req.query.FeedProgramProgressID)
+      $where["FeedProgramProgressID"] = req.query.FeedProgramProgressID;
 
-    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
-
-    if (req.query.ResponsibilityStaffID)
-      $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+    if (req.query.FeedProgramAnimalID)
+      $where["FeedProgramAnimalID"] = req.query.FeedProgramAnimalID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -28,7 +36,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["FeedProgramID", "ASC"]];
+    $order = [["FeedProgramProgressAnimalID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -42,7 +50,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -53,14 +61,20 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          delete _q.query.include,
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
-            const rows = result[0],
-              count = result[2];
+            let rows = result[0],
+              count = result[1];
+            //
+            rows = rows.map((data) => {
+              data = {
+                ...data.toJSON(),
+              };
+
+              return data;
+            });
+            //
+
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -80,11 +94,12 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+        let obj = await db.findByPk(id, {
+          include: [{ all: true, required: false }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
+
         resolve(obj.toJSON());
       } catch (error) {
         reject(ErrorNotFound(error));
@@ -95,11 +110,10 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
 
-        let res = methods.findById(inserted.FeedProgramID);
+        let res = methods.findById(inserted.FeedProgramProgressAnimalID);
 
         resolve(res);
       } catch (error) {
@@ -116,15 +130,15 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.FeedProgramID = parseInt(id);
+        data.FeedProgramProgressAnimalID = parseInt(id);
 
-        await db.update(data, { where: { FeedProgramID: id } });
+        await db.update(data, { where: { FeedProgramProgressAnimalID: id } });
 
-        let res = methods.findById(data.FeedProgramID);
+        let res = methods.findById(data.FeedProgramProgressAnimalID);
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        reject(ErrorBadRequest(error));
       }
     });
   },
@@ -137,16 +151,12 @@ const methods = {
 
         await db.update(
           { isRemove: 1, isActive: 0 },
-          { where: { FeedProgramID: id } }
+          { where: { FeedProgramProgressAnimalID: id } }
         );
 
         await db.destroy({
-          where: { FeedProgramID: id }
+          where: { FeedProgramProgressAnimalID: id },
         });
-
-        // await db.restore({
-        //   where: { FeedProgramID: id }
-        // });
 
         resolve();
       } catch (error) {

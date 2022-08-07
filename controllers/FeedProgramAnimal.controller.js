@@ -1,4 +1,4 @@
-const Service = require("../services/FeedProgramDetail.service"),
+const Service = require("../services/FeedProgramAnimal.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {

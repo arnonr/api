@@ -1,10 +1,30 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class FeedProgram extends Model {
   static associate(models) {
     this.belongsTo(models.Farm, {
       foreignKey: "FarmID",
+      as: "Farm",
+    });
+    this.belongsTo(models.Staff, {
+      foreignKey: "ResponsibilityStaffID",
+      as: "Staff",
+    });
+    this.hasMany(models.FeedProgramAnimal, {
+      foreignKey: "FeedProgramID",
+      as: "FeedProgramAnimal",
+    });
+
+    this.hasMany(models.FeedProgramProgress, {
+      foreignKey: "FeedProgramID",
+      as: "FeedProgramProgress"
     });
   }
   // Custom JSON Response
@@ -24,6 +44,11 @@ FeedProgram.init(
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
     },
+    FarmID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "รหัสอ้างอิงฟาร์ม",
+    },
     StartDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
@@ -39,27 +64,21 @@ FeedProgram.init(
       allowNull: true,
       comment: "น้ำหนักเป้าหมาย (กก.)",
     },
-    TotalAnimal: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "จำนวนสัตว์ที่เข้าขุน",
-    },
-    SuccessAmount: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "จำนวนสัตว์ที่เป็นไปตามเป้าหมาย",
-    },
-    UnsuccessAmount: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "จำนวนสัตว์ที่ไม่เป็นไปตามเป้าหมาย",
-    },
-
-    FarmID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "รหัสอ้างอิงฟาร์ม",
-    },
+    // TotalAnimal: {
+    //   type: DataTypes.INTEGER(11),
+    //   allowNull: true,
+    //   comment: "จำนวนสัตว์ที่เข้าขุน",
+    // },
+    // SuccessAmount: {
+    //   type: DataTypes.INTEGER(11),
+    //   allowNull: true,
+    //   comment: "จำนวนสัตว์ที่เป็นไปตามเป้าหมาย",
+    // },
+    // UnsuccessAmount: {
+    //   type: DataTypes.INTEGER(11),
+    //   allowNull: true,
+    //   comment: "จำนวนสัตว์ที่ไม่เป็นไปตามเป้าหมาย",
+    // },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -99,11 +118,34 @@ FeedProgram.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    deletedAt: {
+      field: "DeletedDatetime",
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วัน-เวลาที่ลบ",
+    },
+    ThaiStartDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.StartDate
+          ? dayjs(this.StartDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiEndDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.EndDate
+          ? dayjs(this.EndDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
   },
   {
     sequelize,
     timestamps: true,
     freezeTableName: true,
+    paranoid: true,
     modelName: "FeedProgram",
   }
 );

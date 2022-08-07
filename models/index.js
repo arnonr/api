@@ -105,10 +105,13 @@ const TMRFormula = require("./TMRFormula");
 const TMRFormulaToRoughages = require("./TMRFormulaToRoughages");
 const TMRFormulaToConcentrate = require("./TMRFormulaToConcentrate");
 const FeedProgram = require("./FeedProgram");
-const FeedProgramDetail = require("./FeedProgramDetail");
+const FeedProgramAnimal = require("./FeedProgramAnimal");
 const FeedProgramProgress = require("./FeedProgramProgress");
-const FeedPPToRoughages = require("./FeedPPToRoughages");
-const FeedPPToConcentrate = require("./FeedPPToConcentrate");
+const FeedProgramProgressFood = require("./FeedProgramProgressFood");
+const FeedProgramProgressAnimal = require("./FeedProgramProgressAnimal")
+const Food = require("./Food");
+// const FeedPPToRoughages = require("./FeedPPToRoughages");
+// const FeedPPToConcentrate = require("./FeedPPToConcentrate");
 
 const Semen = require("./Semen");
 const Embryo = require("./Embryo");
@@ -456,20 +459,6 @@ AnnualGoal.associate({
   Project,
 });
 
-Concentrate.associate({
-  TMRFormulaToConcentrate,
-  TMRFormula,
-  FeedPPToConcentrate,
-  FeedProgramProgress,
-});
-
-Roughages.associate({
-  TMRFormulaToRoughages,
-  TMRFormula,
-  FeedPPToRoughages,
-  FeedProgramProgress,
-});
-
 TMRFormula.associate({
   TMRFormulaToRoughages,
   Roughages,
@@ -478,24 +467,32 @@ TMRFormula.associate({
   Staff,
 });
 
+FeedProgramProgress.associate({
+  Staff,
+  FeedProgram,
+});
+
 FeedProgram.associate({
   Farm,
   Staff,
+  FeedProgramAnimal,
+  FeedProgramProgress,
 });
 
-FeedProgramDetail.associate({
+FeedProgramAnimal.associate({
   FeedProgram,
   Animal,
 });
 
-FeedProgramProgress.associate({
-  FeedProgram,
+FeedProgramProgressFood.associate({
+  FeedProgramProgress,
+  Food,
+});
+
+FeedProgramProgressAnimal.associate({
+  FeedProgramProgress,
+  FeedProgramAnimal,
   Animal,
-  Staff,
-  FeedPPToRoughages,
-  Roughages,
-  FeedPPToConcentrate,
-  Concentrate,
 });
 
 Semen.associate({
@@ -698,7 +695,7 @@ Thaiblack.associate({
 Cart.associate({
   Animal,
   User,
-})
+});
 
 PresetActivity.associate({
   PresetActivityToAnimalType,

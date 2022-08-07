@@ -1,15 +1,16 @@
 const { Model, DataTypes, DOUBLE } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
-class FeedProgramProgress extends Model {
+class FeedProgramProgressFood extends Model {
   static associate(models) {
-    this.belongsTo(models.Staff, {
-      foreignKey: "ResponsibilityStaffID",
+    this.belongsTo(models.FeedProgramProgress, {
+      foreignKey: "FeedProgramProgressID",
+      as: "FeedProgramProgress",
     });
 
-    this.belongsTo(models.FeedProgram, {
-      foreignKey: "FeedProgramID",
-      as: "FeedProgram",
+    this.belongsTo(models.Food, {
+      foreignKey: "FoodID",
+      as: "Food",
     });
   }
   // Custom JSON Response
@@ -20,54 +21,29 @@ class FeedProgramProgress extends Model {
   }
 }
 
-FeedProgramProgress.init(
+FeedProgramProgressFood.init(
   {
-    FeedProgramProgressID: {
+    FeedProgramProgressFoodID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
       comment: "เลขไอดีอ้างอิง",
     },
-    FeedProgramID: {
+    FeedProgramProgressID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "รหัสอ้างอิงโปรแกรมเข้าขุน",
+      comment: "รหัสอ้างอิงการบันทึก",
     },
-    FeedProgramProgressDate: {
-      type: DataTypes.DATEONLY,
+    FoodID: {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "วันที่บันทึก",
+      comment: "อาหาร",
     },
-    FeedType: {
-      type: DataTypes.ENUM("TMR", "FOOD"),
-      allowNull: false,
-      comment: "ประเภทอาหาร",
-    },
-    TotalTMR: {
+    Total: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
       comment: "ปริมาณอาหาร",
-    },
-    TotalQuantity: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      comment: "ปริมาณอาหารรวม",
-    },
-    ProteinPercentage: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      comment: "โปรตีน (%)",
-    },
-    CaloriePercentage: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      comment: "พลังงาน (%)",
-    },
-    CostPerDay: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      comment: "ราคาต้นทุน/วัน",
     },
     // AnimalID: {
     //   type: DataTypes.INTEGER(11),
@@ -139,11 +115,6 @@ FeedProgramProgress.init(
     //     allowNull: true,
     //     comment: "%ความสำเร็จ",
     // },
-    ResponsibilityStaffID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "รหัสเจ้าหน้าที่ที่รับผิดชอบ",
-    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
@@ -190,8 +161,8 @@ FeedProgramProgress.init(
     timestamps: true,
     freezeTableName: true,
     paranoid: true,
-    modelName: "FeedProgramProgress",
+    modelName: "FeedProgramProgressFood",
   }
 );
 
-module.exports = FeedProgramProgress;
+module.exports = FeedProgramProgressFood;

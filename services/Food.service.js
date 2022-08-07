@@ -1,6 +1,6 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
-  db = require("../models/FeedProgramDetail"),
+  db = require("../models/Food"),
   { Op } = require("sequelize");
 
 const methods = {
@@ -8,11 +8,13 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.FeedProgramDetailID)
-      $where["FeedProgramDetailID"] = req.query.FeedProgramDetailID;
+    if (req.query.FoodID) $where["FoodID"] = req.query.FoodID;
 
-    if (req.query.FeedProgramID) $where["FeedProgramID"] = req.query.FeedProgramID;
-    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+    if (req.query.FoodType) $where["FoodTypeID"] = req.query.FoodTypeID;
+    if (req.query.FoodName)
+      $where["FoodName"] = {
+        [Op.like]: "%" + req.query.FoodName + "%",
+      };
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -24,7 +26,7 @@ const methods = {
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["FeedProgramDetailID", "ASC"]];
+    $order = [["FoodID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
       $order = [
         [
@@ -95,11 +97,11 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
-        let res = methods.findById(inserted.FeedProgramDetailID);
+        let res = methods.findById(inserted.FoodID);
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        reject(ErrorBadRequest(error));
       }
     });
   },
@@ -112,15 +114,15 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        data.FeedProgramDetailID = parseInt(id);
+        data.FoodID = parseInt(id);
 
-        await db.update(data, { where: { FeedProgramDetailID: id } });
+        await db.update(data, { where: { FoodID: id } });
 
-        let res = methods.findById(data.FeedProgramDetailID);
+        let res = methods.findById(data.FoodID);
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        reject(ErrorBadRequest(error));
       }
     });
   },
@@ -133,8 +135,13 @@ const methods = {
 
         await db.update(
           { isRemove: 1, isActive: 0 },
-          { where: { FeedProgramDetailID: id } }
+          { where: { FoodID: id } }
         );
+
+        await db.destroy({
+          where: { FoodID: id },
+        });
+
         resolve();
       } catch (error) {
         reject(error);
