@@ -143,7 +143,7 @@ router.use(
   auth.required,
   require("./FeedProgramProgressAnimal")
 );
-router.use("/food", auth.required, require("./food"));
+router.use("/food", auth.required, require("./Food"));
 router.use("/semen", auth.required, require("./Semen"));
 router.use("/embryo", auth.required, require("./Embryo"));
 router.use("/deworm-medicine", auth.required, require("./DewormMedicine"));
