@@ -479,4 +479,3 @@ await Post.findByPk(123); // This will return `null` if the record of id 123 is 
 await Post.findByPk(123, { paranoid: false }); // This will retrieve the record
 
 
-
