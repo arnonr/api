@@ -34,9 +34,11 @@ services:
     api:
         build:
             context: .
+        restart: always
         ports:
             - '8081:80'
             - '9229:9229'
+        command: npm run dev
         links:
             - db:db
         volumes:
