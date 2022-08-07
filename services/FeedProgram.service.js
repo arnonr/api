@@ -13,7 +13,7 @@ const methods = {
 
     //   StartDate EndDate
 
-    if (req.query.FarmName) $where["FarmName"] = req.query.FarmName;
+    if (req.query.FeedProgramName) $where["FeedProgramName"] = req.query.FeedProgramName;
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
@@ -94,7 +94,7 @@ const methods = {
     });
   },
 
-  insert(data) { if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+  insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
@@ -143,7 +143,7 @@ const methods = {
         );
 
         await db.destroy({
-          where: { FeedProgramID: id }
+          where: { FeedProgramID: id },
         });
 
         // await db.restore({
