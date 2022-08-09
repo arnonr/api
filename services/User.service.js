@@ -424,11 +424,11 @@ const methods = {
   authorize(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        let user = db.findByPk(id);
+        let user = await db.findByPk(id);
 
         const obj = await GroupAuthorize.findAll({
           where: {
-            GroupID: 1,
+            GroupID: user.GroupID,
           },
           include: { all: true, required: false },
         });
