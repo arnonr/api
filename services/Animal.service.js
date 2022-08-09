@@ -1732,12 +1732,10 @@ const methods = {
     if (req.query.AnimalBornType)
       $where["AnimalBornType"] = req.query.AnimalBornType;
     if (req.query.AnimalBornTypeID)
-
       $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
 
-    if (req.query.AnimalSource)
-      $where["AnimalSource"] = req.query.AnimalSource;
-      
+    if (req.query.AnimalSource) $where["AnimalSource"] = req.query.AnimalSource;
+
     if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
@@ -1747,37 +1745,54 @@ const methods = {
     // Breed
     // AgeStart
     // AgeEnd
-    if (req.query.AnimalBreedID1){
+    // 2-5
+    // หาวันที่ที่ต้องเกิด เช่นใส่วันที่ 1-2  เอาวันที่ปัจจุบัน- (1*365) ได้ย้อนไป 1 ปี ต้องเกิดก่อน วันที่ที่ได้เอามา where กับ birthday
+    // เอาวันที่ปัจจุบัน-(2*365) ได้ย้อยไป 2 ปี ต้องเกิดทีหลัง วันที่ที่ได้เอามา where กับ birthday
+    // birthday <= date AND birthday >= date2
+
+    if (req.query.AnimalAgeStart) {
+      let date1 = dayjs()
+        .subtract(req.query.AnimalAgeStart, "year")
+        .format("YYYY-MM-DD");
+
+      $where["AnimalBirthDate"] = { [Op.lte]: date1 };
+
+      if (req.query.AnimalAgeTo) {
+        let date2 = dayjs()
+          .subtract(parseInt(req.query.AnimalAgeTo)+1, "year")
+          .format("YYYY-MM-DD");
+        $where["AnimalBirthDate"] = {
+          [Op.and]: { [Op.lte]: date1, [Op.gte]: date2 },
+        };
+      }
+    }
+
+    if (req.query.AnimalBreedID1) {
       $where["AnimalBreedID1"] = req.query.AnimalBreedID1;
     }
-    
-    if (req.query.AnimalBreedID2){
-      
-      // 
-    }
-    if (req.query.AnimalBreedID3){
-      
-      // 
-    }
-    if (req.query.AnimalBreedID4){
-      
-      // 
-    }
-    if (req.query.AnimalBreedID4){
-      
-      // 
-    }
 
+    if (req.query.AnimalBreedID2) {
+      //
+    }
+    if (req.query.AnimalBreedID3) {
+      //
+    }
+    if (req.query.AnimalBreedID4) {
+      //
+    }
+    if (req.query.AnimalBreedID4) {
+      //
+    }
 
     // ช่วงวันเกิด
-    if (req.query.AnimalBirthDateStart) {
-      $where["AnimalBirthDate"] = {
-        [Op.between]: [
-          req.query.AnimalBirthDateStart,
-          req.query.AnimalBirthDateEnd,
-        ],
-      };
-    }
+    // if (req.query.AnimalBirthDateStart) {
+    //   $where["AnimalBirthDate"] = {
+    //     [Op.between]: [
+    //       req.query.AnimalBirthDateStart,
+    //       req.query.AnimalBirthDateEnd,
+    //     ],
+    //   };
+    // }
 
     // ProjectID
     let WhereProject = null;
