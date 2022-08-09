@@ -477,6 +477,7 @@ FeedProgram.associate({
   Staff,
   FeedProgramAnimal,
   FeedProgramProgress,
+  AnimalType
 });
 
 FeedProgramAnimal.associate({

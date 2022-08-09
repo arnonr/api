@@ -1745,6 +1745,29 @@ const methods = {
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
 
     // Breed
+    // AgeStart
+    // AgeEnd
+    if (req.query.AnimalBreedID1){
+      $where["AnimalBreedID1"] = req.query.AnimalBreedID1;
+    }
+    
+    if (req.query.AnimalBreedID2){
+      
+      // 
+    }
+    if (req.query.AnimalBreedID3){
+      
+      // 
+    }
+    if (req.query.AnimalBreedID4){
+      
+      // 
+    }
+    if (req.query.AnimalBreedID4){
+      
+      // 
+    }
+
 
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {

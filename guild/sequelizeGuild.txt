@@ -545,3 +545,35 @@ User.findAll({
   }]
 });
 
+Company.findAll({
+  // If the include uses an alias...
+  include: { model: Division, as: 'Div' },
+  order: [
+    // ...we use the same syntax from the include
+    // in the beginning of the order array
+    [{ model: Division, as: 'Div' }, 'name', 'DESC']
+  ]
+});
+
+Company.findAll({
+  // If we have includes nested in several levels...
+  include: {
+    model: Division,
+    include: Department
+  },
+  order: [
+    // ... we replicate the include chain of interest
+    // at the beginning of the order array
+    [Division, Department, 'name', 'DESC']
+  ]
+});
+
+User.findAll({
+  include: {
+    model: Post,
+    separate: true,
+    order: [
+      ['createdAt', 'DESC']
+    ]
+  }
+});

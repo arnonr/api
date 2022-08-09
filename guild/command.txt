@@ -43,4 +43,28 @@ debug
             "protocol": "inspector"
           }
     ]
-}
+
+
+
+docker exec 851 /usr/bin/mysql -u root --password=2022@aidm aidm > backup1.sql
+
+crontab
+apt-get install cron
+sudo crontab -e
+
+*/1 * * * * /usr/bin/php /home/user/public_html/cronrun.php
+*/1 * * * * sudo docker exec 1b2 /usr/bin/mysqldump -u edocument --password="Z010(A1[b2bUx0Kl" edocument > "/var/www/html/edocument/backupDB/backup-"`date +\%Y\%m\%d\%M`.sql
+
+* * * * * command to be executed
+- - - - -
+| | | | |
+| | | | ----- Day of week (0 - 7) (Sunday=0 or 7)
+| | | ------- Month (1 - 12)
+| | --------- Day of month (1 - 31)
+| ----------- Hour (0 - 23)
+------------- Minute (0 - 59)
+
+sudo service cron restart
+
+grep CRON /var/log/syslog
+

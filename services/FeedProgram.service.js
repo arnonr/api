@@ -3,6 +3,8 @@ const config = require("../configs/app"),
   db = require("../models/FeedProgram"),
   { Op } = require("sequelize");
 
+let AnimalType = require("../models/AnimalType");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -13,7 +15,8 @@ const methods = {
 
     //   StartDate EndDate
 
-    if (req.query.FeedProgramName) $where["FeedProgramName"] = req.query.FeedProgramName;
+    if (req.query.FeedProgramName)
+      $where["FeedProgramName"] = req.query.FeedProgramName;
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
@@ -100,6 +103,7 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+        inserted.addAnimalTypes(data.AnimalTypeID);
 
         let res = methods.findById(inserted.FeedProgramID);
 
@@ -118,9 +122,14 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
+        const animalTypes = await obj.getAnimalTypes()
+        await obj.removeAnimalTypes(animalTypes);
+
         data.FeedProgramID = parseInt(id);
 
-        await db.update(data, { where: { FeedProgramID: id } });
+        const updated = await db.update(data, { where: { FeedProgramID: id } });
+
+        obj.addAnimalTypes(data.AnimalTypeID);
 
         let res = methods.findById(data.FeedProgramID);
 
@@ -136,6 +145,9 @@ const methods = {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
+
+        const animalTypes = await obj.getAnimalTypes()
+        await obj.removeAnimalTypes(animalTypes);
 
         await db.update(
           { isRemove: 1, isActive: 0 },

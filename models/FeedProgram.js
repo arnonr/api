@@ -26,6 +26,8 @@ class FeedProgram extends Model {
       foreignKey: "FeedProgramID",
       as: "FeedProgramProgress",
     });
+
+    this.belongsToMany(models.AnimalType, { through: 'FeedProgramAnimalType' }); 
   }
   // Custom JSON Response
   toJSON() {
