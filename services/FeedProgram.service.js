@@ -157,14 +157,12 @@ const methods = {
             reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-          
+
           const animalTypes = await obj.getAnimalTypes();
           await obj.removeAnimalTypes(animalTypes);
 
           obj.addAnimalTypes(data.AnimalTypeID);
         }
-
-       
 
         let res = methods.findById(data.FeedProgramID);
 

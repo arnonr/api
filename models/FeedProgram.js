@@ -161,13 +161,13 @@ FeedProgram.init(
       },
     },
 
-    PercentSuccess: {
+    PercentFail: {
       type: DataTypes.VIRTUAL,
       get() {
         return 30;
       },
     },
-    
+
     // ชื่อเจ้าหน้าที่
 
     
