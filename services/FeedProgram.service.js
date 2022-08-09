@@ -41,13 +41,30 @@ const methods = {
           req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
         ],
       ];
+
     query["order"] = $order;
 
     if (!isNaN(limit)) query["limit"] = limit;
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    // AnimalTypeID
+    let WhereAnimalType = null;
+    if (req.query.AnimalTypeID) {
+      WhereAnimalType = {
+        AnimalTypeID: {
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        },
+      };
+    }
+
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: AnimalType,
+        where: WhereAnimalType,
+      },
+    ];
 
     return { query: query };
   },
@@ -122,7 +139,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        const animalTypes = await obj.getAnimalTypes()
+        const animalTypes = await obj.getAnimalTypes();
         await obj.removeAnimalTypes(animalTypes);
 
         data.FeedProgramID = parseInt(id);
@@ -146,7 +163,7 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        const animalTypes = await obj.getAnimalTypes()
+        const animalTypes = await obj.getAnimalTypes();
         await obj.removeAnimalTypes(animalTypes);
 
         await db.update(
