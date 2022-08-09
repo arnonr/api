@@ -133,7 +133,9 @@ const methods = {
         DiseaseMethodName: dj.DiseaseActivity.DiseaseMethod.DiseaseMethodName,
         DiseaseMethodOther: dj.DiseaseActivity.DiseaseMethodOther,
         OrganizationID: dj.DiseaseActivity.OrganizationID,
-        OrganizationName: dj.DiseaseActivity.Organization.OrganizationName,
+        OrganizationName: dj.DiseaseActivity.Organization
+          ? dj.DiseaseActivity.Organization.OrganizationName
+          : "",
         ResponsibilityStaffID: dj.DiseaseActivity.ResponsibilityStaffID,
         ResponsibilityStaffName: dj.DiseaseActivity.Staff
           ? `${dj.DiseaseActivity.Staff.StaffNumber} ${dj.DiseaseActivity.Staff.StaffGivenName}  ${dj.DiseaseActivity.Staff.StaffSurname}`
@@ -184,7 +186,7 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(id)
+        console.log(id);
         const obj = await db.findByPk(id, {
           include: [
             { all: true, required: false },
