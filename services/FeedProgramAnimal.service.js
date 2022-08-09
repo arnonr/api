@@ -3,6 +3,9 @@ const config = require("../configs/app"),
   db = require("../models/FeedProgramAnimal"),
   { Op } = require("sequelize");
 
+const Animal = require("../models/Animal");
+const AnimalBreed = require("../models/AnimalBreed");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -11,7 +14,8 @@ const methods = {
     if (req.query.FeedProgramAnimalID)
       $where["FeedProgramAnimalID"] = req.query.FeedProgramAnimalID;
 
-    if (req.query.FeedProgramID) $where["FeedProgramID"] = req.query.FeedProgramID;
+    if (req.query.FeedProgramID)
+      $where["FeedProgramID"] = req.query.FeedProgramID;
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
@@ -38,7 +42,35 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: Animal,
+        as: "Animal",
+        include: [
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed1",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed2",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed3",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed4",
+          },
+          {
+            model: AnimalBreed,
+            as: "AnimalBreed5",
+          },
+        ],
+      },
+    ];
 
     return { query: query };
   },
@@ -77,7 +109,35 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: { all: true, required: false },
+          include: [
+            { all: true, required: false },
+            {
+              model: Animal,
+              as: "Animal",
+              include: [
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+              ],
+            },
+          ],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -137,7 +197,7 @@ const methods = {
         );
 
         await db.destroy({
-          where: { FeedProgramAnimalID: id }
+          where: { FeedProgramAnimalID: id },
         });
 
         resolve();
