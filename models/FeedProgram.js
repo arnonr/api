@@ -147,6 +147,7 @@ FeedProgram.init(
           : null;
       },
     },
+    
   },
   {
     sequelize,

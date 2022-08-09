@@ -120,6 +120,13 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+
+        //check เงื่อนไขตรงนี้ได้
+        if (!Array.isArray(data.AnimalTypeID)) {
+          reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+          return;
+        }
+
         inserted.addAnimalTypes(data.AnimalTypeID);
 
         let res = methods.findById(inserted.FeedProgramID);
@@ -145,6 +152,13 @@ const methods = {
         data.FeedProgramID = parseInt(id);
 
         const updated = await db.update(data, { where: { FeedProgramID: id } });
+
+        if (data.AnimalTypeID) {
+          if (!Array.isArray(data.AnimalTypeID)) {
+            reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+        }
 
         obj.addAnimalTypes(data.AnimalTypeID);
 
