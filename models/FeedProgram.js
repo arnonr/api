@@ -147,6 +147,29 @@ FeedProgram.init(
           : null;
       },
     },
+    TotalAnimal: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return 10;
+      },
+    },
+
+    PercentSuccess: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return 70;
+      },
+    },
+
+    PercentSuccess: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return 30;
+      },
+    },
+    
+    // ชื่อเจ้าหน้าที่
+
     
   },
   {

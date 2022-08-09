@@ -146,8 +146,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        const animalTypes = await obj.getAnimalTypes();
-        await obj.removeAnimalTypes(animalTypes);
+       
 
         data.FeedProgramID = parseInt(id);
 
@@ -158,9 +157,14 @@ const methods = {
             reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
+          
+          const animalTypes = await obj.getAnimalTypes();
+          await obj.removeAnimalTypes(animalTypes);
+
+          obj.addAnimalTypes(data.AnimalTypeID);
         }
 
-        obj.addAnimalTypes(data.AnimalTypeID);
+       
 
         let res = methods.findById(data.FeedProgramID);
 
