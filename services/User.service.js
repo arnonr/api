@@ -65,6 +65,7 @@ const methods = {
       {
         model: AnimalType,
         where: WhereAnimalType,
+        required: false
       },
     ];
 
@@ -304,7 +305,7 @@ const methods = {
 
         const obj1 = UserToAnimalType.destroy({
           where: { UserID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();
