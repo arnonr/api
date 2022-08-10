@@ -206,7 +206,7 @@ const methods = {
             where: {
               AnnualGoalID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -270,7 +270,7 @@ const methods = {
         // delete ProjectToAnimalType
         const obj1 = AnnualGoalToAnimalType.destroy({
           where: { AnnualGoalID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

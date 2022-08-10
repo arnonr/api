@@ -272,7 +272,7 @@ const methods = {
 
         const obj1 = CAToVC.destroy({
           where: { CureActivityID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

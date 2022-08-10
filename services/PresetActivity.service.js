@@ -198,7 +198,7 @@ const methods = {
             where: {
               PresetActivityID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -258,7 +258,7 @@ const methods = {
 
         const obj1 = PresetActivityToAnimalType.destroy({
           where: { PresetActivityID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

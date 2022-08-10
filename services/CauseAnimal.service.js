@@ -199,7 +199,7 @@ const methods = {
             where: {
               CauseAnimalID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -259,7 +259,7 @@ const methods = {
         // delete CauseAnimalToAnimalType
         const obj1 = CauseAnimalToAnimalType.destroy({
           where: { CauseAnimalID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

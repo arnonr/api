@@ -198,7 +198,7 @@ const methods = {
             where: {
               DiseaseID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -257,7 +257,7 @@ const methods = {
         
         const obj1 = DsToAnimalType.destroy({
           where: { DiseaseID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

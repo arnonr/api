@@ -265,7 +265,7 @@ const methods = {
             where: {
               AnimalStatusID: id,
             },
-            truncate: true,
+            // // truncate: true,
           });
         }
 
@@ -310,7 +310,7 @@ const methods = {
             where: {
               AnimalStatusID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -375,11 +375,11 @@ const methods = {
         // delete ProjectToAnimalType
         const obj1 = AnimalStatusToAnimalType.destroy({
           where: { AnimalStatusID: id },
-          truncate: true,
+          // truncate: true,
         });
         const obj2 = AnimalStatusToAnimalSex.destroy({
           where: { AnimalStatusID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

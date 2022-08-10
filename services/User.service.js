@@ -225,7 +225,7 @@ const methods = {
             where: {
               UserID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -305,7 +305,7 @@ const methods = {
 
         const obj1 = UserToAnimalType.destroy({
           where: { UserID: id },
-          // truncate: true,
+          // // truncate: true,
         });
 
         resolve();

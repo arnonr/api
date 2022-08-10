@@ -251,7 +251,7 @@ const methods = {
             where: {
               FarmID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -311,7 +311,7 @@ const methods = {
 
         const obj1 = FarmToProject.destroy({
           where: { FarmID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

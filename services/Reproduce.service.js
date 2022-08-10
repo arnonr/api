@@ -844,7 +844,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -888,7 +888,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -931,7 +931,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -974,7 +974,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1018,7 +1018,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1062,7 +1062,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1106,7 +1106,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1150,7 +1150,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1195,7 +1195,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1251,7 +1251,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1308,7 +1308,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1364,7 +1364,7 @@ const methods = {
             where: {
               ReproduceID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -1426,62 +1426,62 @@ const methods = {
         // delete ProjectToAnimalType
         const obj1 = RpToRightOvarySymptom.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj2 = RpToVaginaSymptom.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj3 = RpToLeftOvarySymptom.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj4 = RpToOtherSymptom.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj5 = RpToCauseAnimal.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj6 = RpToCauseEnvironment.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj7 = RpToCauseFeeder.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj8 = RpToCauseHealth.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj9 = RpToCureHormone.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj10 = RpToCureAntibiotic.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj11 = RpToCureVitamin.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         const obj12 = RpToRpSuggestion.destroy({
           where: { ReproduceID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

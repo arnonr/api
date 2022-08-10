@@ -199,7 +199,7 @@ const methods = {
             where: {
               CureAntibioticID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -260,7 +260,7 @@ const methods = {
         // delete CauseHealthToAnimalType
         const obj1 = CureAntibioticToAnimalType.destroy({
           where: { CureAntibioticID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

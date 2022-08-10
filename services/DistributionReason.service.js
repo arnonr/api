@@ -192,7 +192,7 @@ const methods = {
             where: {
               DistributionReasonID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -253,7 +253,7 @@ const methods = {
         // delete DistributionReasonToAnimalType
         const obj1 = DistributionReasonToAnimalType.destroy({
           where: { DistributionReasonID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

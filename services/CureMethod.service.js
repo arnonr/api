@@ -198,7 +198,7 @@ const methods = {
             where: {
               CureMethodID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -257,7 +257,7 @@ const methods = {
         // delete CMToAT
         const obj1 = CMToAT.destroy({
           where: { CureMethodID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

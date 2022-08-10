@@ -199,7 +199,7 @@ const methods = {
             where: {
               CauseFeederID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -259,7 +259,7 @@ const methods = {
         // delete CauseFeederToAnimalType
         const obj1 = CauseFeederToAnimalType.destroy({
           where: { CauseFeederID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

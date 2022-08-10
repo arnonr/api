@@ -199,7 +199,7 @@ const methods = {
             where: {
               CureVitaminID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -258,7 +258,7 @@ const methods = {
 
         const obj1 = CureVitaminToAnimalType.destroy({
           where: { CureVitaminID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();

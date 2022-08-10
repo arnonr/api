@@ -199,7 +199,7 @@ const methods = {
             where: {
               CauseEnvironmentID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 

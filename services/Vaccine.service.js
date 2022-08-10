@@ -198,7 +198,7 @@ const methods = {
             where: {
               VaccineID: id,
             },
-            truncate: true,
+            // truncate: true,
           });
         }
 
@@ -258,7 +258,7 @@ const methods = {
         // delete VcToAnimalType
         const obj1 = VcToAnimalType.destroy({
           where: { VaccineID: id },
-          truncate: true,
+          // truncate: true,
         });
 
         resolve();
