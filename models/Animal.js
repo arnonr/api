@@ -747,7 +747,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 1",
     },
     AnimalBreedPercent1: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 1",
     },
@@ -757,7 +757,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 2",
     },
     AnimalBreedPercent2: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 2",
     },
@@ -767,7 +767,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 3",
     },
     AnimalBreedPercent3: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 3",
     },
@@ -777,7 +777,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 4",
     },
     AnimalBreedPercent4: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 4",
     },
@@ -787,7 +787,7 @@ Animal.init(
       comment: "รหัสสายพันธุ์ที่ 5",
     },
     AnimalBreedPercent5: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "สัดส่วนสายพันธุ์ที่ 5",
     },
@@ -797,7 +797,7 @@ Animal.init(
       comment: "url ภาพประจำตัวสัตว์",
     },
     AnimalBornWeight: {
-      type: DataTypes.DECIMAL(10, 4),
+      type: DataTypes.DECIMAL(10, 3),
       allowNull: true,
       comment: "น้ำหนักแรกเกิด",
     },
