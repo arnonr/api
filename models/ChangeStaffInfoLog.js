@@ -1,7 +1,18 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class ChangeStaffInfoLog extends Model {
+  static associate(models) {
+    this.belongsTo(models.Staff, {
+      foreignKey: "StaffID",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {
@@ -88,6 +99,28 @@ ChangeStaffInfoLog.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiChangeDatetime: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ChangeDatetime
+          ? dayjs(this.ChangeDatetime).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiApproveDatetime: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.ApproveDatetime
+          ? dayjs(this.ApproveDatetime).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    StaffName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.Staff.StaffNumber} ${this.Staff.StaffGivenName} ${this.Staff.StaffSurname}`;
+      },
     },
   },
   {

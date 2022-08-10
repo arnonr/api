@@ -36,6 +36,7 @@ const User = require("./User");
 const Menu = require("./Menu");
 const Group = require("./Group");
 const GroupAuthorize = require("./GroupAuthorize");
+const ChangeStaffInfoLog = require("./ChangeStaffInfoLog")
 
 const Project = require("./Project");
 const ProjectToAnimalType = require("./ProjectToAnimalType");
@@ -221,6 +222,10 @@ Project.associate({
 });
 ProjectToAnimalType.associate({ AnimalType, Project });
 UserToAnimalType.associate({ AnimalType, User });
+
+ChangeStaffInfoLog.associate({
+  Staff
+})
 
 Farm.associate({
   FarmStatus,

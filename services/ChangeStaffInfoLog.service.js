@@ -8,11 +8,13 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.ChangeStaffInfoLogID) $where["ChangeStaffInfoLogID"] = req.query.ChangeStaffInfoLogID;
+    if (req.query.ChangeStaffInfoLogID)
+      $where["ChangeStaffInfoLogID"] = req.query.ChangeStaffInfoLogID;
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
     if (req.query.IsApprove) $where["IsApprove"] = req.query.IsApprove;
-    if (req.query.ApproveByStaffID) $where["ApproveByStaffID"] = req.query.ApproveByStaffID;
-   
+    if (req.query.ApproveByStaffID)
+      $where["ApproveByStaffID"] = req.query.ApproveByStaffID;
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -32,6 +34,8 @@ const methods = {
         ],
       ];
     query["order"] = $order;
+
+    query["include"] = [{ all: true, required: false }];
 
     if (!isNaN(limit)) query["limit"] = limit;
 
@@ -69,7 +73,9 @@ const methods = {
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findByPk(id);
+        const obj = await db.findByPk(id, {
+          include: [{ all: true, required: false }],
+        });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
         resolve(obj.toJSON());
