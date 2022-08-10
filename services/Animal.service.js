@@ -1679,7 +1679,7 @@ const HF = [
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
-    $where = {};
+    let $where = {};
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
@@ -1742,14 +1742,6 @@ const methods = {
     if (req.query.OrganizationZoneID)
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
 
-    // Breed
-    // AgeStart
-    // AgeEnd
-    // 2-5
-    // หาวันที่ที่ต้องเกิด เช่นใส่วันที่ 1-2  เอาวันที่ปัจจุบัน- (1*365) ได้ย้อนไป 1 ปี ต้องเกิดก่อน วันที่ที่ได้เอามา where กับ birthday
-    // เอาวันที่ปัจจุบัน-(2*365) ได้ย้อยไป 2 ปี ต้องเกิดทีหลัง วันที่ที่ได้เอามา where กับ birthday
-    // birthday <= date AND birthday >= date2
-
     if (req.query.AnimalAgeStart) {
       let date1 = dayjs()
         .subtract(req.query.AnimalAgeStart, "year")
@@ -1759,7 +1751,7 @@ const methods = {
 
       if (req.query.AnimalAgeTo) {
         let date2 = dayjs()
-          .subtract(parseInt(req.query.AnimalAgeTo)+1, "year")
+          .subtract(parseInt(req.query.AnimalAgeTo) + 1, "year")
           .format("YYYY-MM-DD");
         $where["AnimalBirthDate"] = {
           [Op.and]: { [Op.lte]: date1, [Op.gte]: date2 },
@@ -1767,32 +1759,72 @@ const methods = {
       }
     }
 
+    // ค้นหาสายพันธุ์ ต้องมีสองอัน 1,2,3,4,5
+    // where ANimalBreedID1 In [1,2] or ANimalBreedID2 In  [1,2]
+    // let sql = “SELECT * From `Animal` WHERE 1”
+
+    // foreach (AnimalBreed as value){
+    // 	sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
+    // }
+
+    // let sql = “SELECT * From `Animal` WHERE 1”
+
+    // foreach (AnimalBreed as value){
+    // 	sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
+    // }
+
+    // req.query.AnimalBreedID = 1
+    // req.query.AnimalBreedID2 = 2
+    // req.query.AnimalBreedID3
+    // req.query.AnimalBreedID4
+    // req.query.AnimalBreedID5
+
+    let AnimalBreedArr = [];
+    
     if (req.query.AnimalBreedID1) {
-      $where["AnimalBreedID1"] = req.query.AnimalBreedID1;
+      AnimalBreedArr.push(req.query.AnimalBreedID1);
     }
 
     if (req.query.AnimalBreedID2) {
-      //
-    }
-    if (req.query.AnimalBreedID3) {
-      //
-    }
-    if (req.query.AnimalBreedID4) {
-      //
-    }
-    if (req.query.AnimalBreedID4) {
-      //
+      AnimalBreedArr.push(req.query.AnimalBreedID2);
     }
 
+    if (req.query.AnimalBreedID3) {
+      AnimalBreedArr.push(req.query.AnimalBreedID3);
+    }
+
+    if (req.query.AnimalBreedID4) {
+      AnimalBreedArr.push(req.query.AnimalBreedID4);
+    }
+
+    if (req.query.AnimalBreedID5) {
+      AnimalBreedArr.push(req.query.AnimalBreedID5);
+    }
+
+    $where[Op.and] = [];
+    AnimalBreedArr.forEach((value) => {
+      // sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
+      $where[Op.and].push({
+        [Op.or]: {
+          AnimalBreedID1: value,
+          AnimalBreedID2: value,
+          AnimalBreedID3: value,
+          AnimalBreedID4: value,
+          AnimalBreedID5: value,
+        },
+      });
+    });
+
+
     // ช่วงวันเกิด
-    // if (req.query.AnimalBirthDateStart) {
-    //   $where["AnimalBirthDate"] = {
-    //     [Op.between]: [
-    //       req.query.AnimalBirthDateStart,
-    //       req.query.AnimalBirthDateEnd,
-    //     ],
-    //   };
-    // }
+    if (req.query.AnimalBirthDateStart) {
+      $where["AnimalBirthDate"] = {
+        [Op.between]: [
+          req.query.AnimalBirthDateStart,
+          req.query.AnimalBirthDateEnd,
+        ],
+      };
+    }
 
     // ProjectID
     let WhereProject = null;
