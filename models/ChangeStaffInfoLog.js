@@ -12,6 +12,10 @@ class ChangeStaffInfoLog extends Model {
     this.belongsTo(models.Staff, {
       foreignKey: "StaffID",
     });
+    this.belongsTo(models.Staff, {
+      foreignKey: "ApproveByStaffID",
+      as: "ApproveByStaff",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -114,6 +118,12 @@ ChangeStaffInfoLog.init(
         return this.ApproveDatetime
           ? dayjs(this.ApproveDatetime).locale("th").format("DD/MM/BBBB")
           : null;
+      },
+    },
+    ApproveByStaffName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.ApproveByStaff.StaffNumber} ${this.ApproveByStaff.StaffGivenName} ${this.ApproveByStaff.StaffSurname}`;
       },
     },
     StaffName: {
