@@ -138,10 +138,18 @@ const methods = {
           animalTypeArray.push(element.AnimalTypeName);
         });
 
+        const obj1 = await GroupAuthorize.findAll({
+          where: {
+            GroupID: obj.GroupID,
+          },
+          include: { all: true, required: false },
+        });
+
         obj = {
           ...obj.toJSON(),
           AnimalTypes: animalTypeArray,
           AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+          GroupAuthorize: obj1
         };
 
         resolve(obj);
