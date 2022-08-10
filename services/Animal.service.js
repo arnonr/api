@@ -1759,28 +1759,8 @@ const methods = {
       }
     }
 
-    // ค้นหาสายพันธุ์ ต้องมีสองอัน 1,2,3,4,5
-    // where ANimalBreedID1 In [1,2] or ANimalBreedID2 In  [1,2]
-    // let sql = “SELECT * From `Animal` WHERE 1”
-
-    // foreach (AnimalBreed as value){
-    // 	sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
-    // }
-
-    // let sql = “SELECT * From `Animal` WHERE 1”
-
-    // foreach (AnimalBreed as value){
-    // 	sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
-    // }
-
-    // req.query.AnimalBreedID = 1
-    // req.query.AnimalBreedID2 = 2
-    // req.query.AnimalBreedID3
-    // req.query.AnimalBreedID4
-    // req.query.AnimalBreedID5
-
     let AnimalBreedArr = [];
-    
+
     if (req.query.AnimalBreedID1) {
       AnimalBreedArr.push(req.query.AnimalBreedID1);
     }
@@ -1803,7 +1783,6 @@ const methods = {
 
     $where[Op.and] = [];
     AnimalBreedArr.forEach((value) => {
-      // sql +=  “ AND (`AnimalBreedID1` = value OR `AnimalBreedID2` = value)”
       $where[Op.and].push({
         [Op.or]: {
           AnimalBreedID1: value,
@@ -1814,7 +1793,6 @@ const methods = {
         },
       });
     });
-
 
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {
@@ -1882,7 +1860,6 @@ const methods = {
             let rows = result[0],
               count = result[1];
 
-            //
             rows = await Promise.all(
               rows.map(async (data) => {
                 let projectArray = [];
@@ -1967,6 +1944,25 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
+
+        let AnimalBreedArr = [
+          "AnimalBreedPercent1",
+          "AnimalBreedPercent2",
+          "AnimalBreedPercent3",
+          "AnimalBreedPercent4",
+          "AnimalBreedPercent5",
+        ];
+
+        AnimalBreedArr.forEach((b) => {
+          if (data[b]) {
+            const found = HF.find((element) => {
+              return Math.abs(element - data[b]) < 0.00732421875; // = 0.0048828125
+            });
+
+            data[b] = found.toFixed(3);
+          }
+        });
+
         const obj = new db(data);
         if (!obj.AnimalNationalID) {
           obj.AnimalNationalID = null;
@@ -1977,6 +1973,7 @@ const methods = {
         if (!obj.AnimalMicrochip) {
           obj.AnimalMicrochip = null;
         }
+
         const inserted = await obj.save();
 
         if (obj.GiveBirthSelfID) {
@@ -2031,6 +2028,24 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
+
+        let AnimalBreedArr = [
+          "AnimalBreedPercent1",
+          "AnimalBreedPercent2",
+          "AnimalBreedPercent3",
+          "AnimalBreedPercent4",
+          "AnimalBreedPercent5",
+        ];
+
+        AnimalBreedArr.forEach((b) => {
+          if (data[b]) {
+            const found = HF.find((element) => {
+              return Math.abs(element - data[b]) < 0.00732421875; // = 0.0048828125
+            });
+
+            data[b] = found.toFixed(3);
+          }
+        });
 
         await db.update(data, { where: { AnimalID: id } });
 
@@ -2350,10 +2365,10 @@ const methods = {
           b.AnimalBreedPercent = b.AnimalBreedPercent / 2;
 
           const found = HF.find((element) => {
-            return Math.abs(element - b.AnimalBreedPercent) < 0.01220703125;
+            return Math.abs(element - b.AnimalBreedPercent) < 0.00732421875; // 0.0048828125
           });
 
-          b.AnimalBreedPercent = found.toFixed(4);
+          b.AnimalBreedPercent = found.toFixed(3);
           return b;
         });
 
