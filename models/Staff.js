@@ -70,7 +70,7 @@ class Staff extends Model {
             TitleNameEN: this.get().Title.TitleNameEN,
             TitleShortNameEN: this.get().Title.TitleShortNameEN,
           }
-        : "",
+        : undefined,
       Gender: this.get().Gender
         ? {
             // GenderID: this.get().Gender.GenderID,
@@ -78,52 +78,52 @@ class Staff extends Model {
             GenderName: this.get().Gender.GenderName,
             GenderNameEN: this.get().Gender.GenderNameEN,
           }
-        : "",
+        : undefined,
       MarriedStatus: this.get().MarriedStatus
         ? {
             // GenderID: this.get().Gender.GenderID,
             MarriedStatusCode: this.get().MarriedStatus.MarriedStatusCode,
             MarriedStatusName: this.get().MarriedStatus.MarriedStatusName,
           }
-        : "",
+        : undefined,
       Organization: this.get().Organization
         ? {
             OrganizationCode: this.get().Organization.OrganizationCode,
             OrganizationName: this.get().Organization.OrganizationName,
             // Parent: this.get().Organization.AIZoneID,
           }
-        : "",
+        : undefined,
       PositionType: this.get().PositionType
         ? {
             PositionTypeCode: this.get().PositionType.PositionTypeCode,
             PositionTypeName: this.get().PositionType.PositionTypeName,
           }
-        : "",
+        : undefined,
       Position: this.get().Position
         ? {
             PositionCode: this.get().Position.PositionCode,
             PositionName: this.get().Position.PositionName,
           }
-        : "",
+        : undefined,
       Tumbol: this.get().Tumbol
         ? {
             TumbolCode: this.get().Tumbol.TumbolCode,
             TumbolName: this.get().Tumbol.TumbolName,
           }
-        : "",
+        : undefined,
 
       Amphur: this.get().Amphur
         ? {
             AmphurCode: this.get().Amphur.AmphurCode,
             AmphurName: this.get().Amphur.AmphurName,
           }
-        : "",
+        : undefined,
       Province: this.get().Province
         ? {
             ProvinceCode: this.get().Province.ProvinceCode,
             ProvinceName: this.get().Province.ProvinceName,
           }
-        : "",
+        : undefined,
 
       Education: this.get().Education
         ? {
@@ -131,13 +131,13 @@ class Staff extends Model {
             EducationName: this.get().Education.EducationName,
             EducationNameEN: this.get().Education.EducationNameEN,
           }
-        : "",
+        : undefined,
       Major: this.get().Major
         ? {
             MajorCode: this.get().Major.MajorCode,
             MajorName: this.get().Major.MajorName,
           }
-        : "",
+        : undefined,
     };
   }
 }
@@ -160,7 +160,6 @@ Staff.init(
           let self = this;
           Staff.findOne({ where: { StaffNumber: value, isRemove: 0 } })
             .then(function (data) {
-              console.log(self);
               if (data && self.StaffID !== data.StaffID) {
                 throw new Error("Staff Number already in use!");
               }
@@ -183,7 +182,6 @@ Staff.init(
             where: { StaffIdentificationNumber: value, isRemove: 0 },
           })
             .then(function (data) {
-              console.log(self);
               if (data && self.StaffID !== data.StaffID) {
                 throw new Error("Staff IdentificationNumber already in use!");
               }
@@ -272,7 +270,12 @@ Staff.init(
       comment:
         "0 = ยกเลิกใช้งาน , 1 = ใช้งานอยู่, 2 = เจ้าหน้าที่ใหม่รอยื่นเรื่อง, 3 = หมดอายุ",
       get() {
-        let text = ["ยกเลิกใช้งาน", "ใช้งานอยู่", "เจ้าหน้าที่ใหม่รอยื่นเรื่อง", "หมดอายุ"];
+        let text = [
+          "ยกเลิกใช้งาน",
+          "ใช้งานอยู่",
+          "เจ้าหน้าที่ใหม่รอยื่นเรื่อง",
+          "หมดอายุ",
+        ];
 
         if (this.getDataValue("CardStatus") == null) {
           return text[1];
@@ -435,9 +438,14 @@ Staff.init(
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
     StaffFullName: {
-      type: DataTypes.VIRTUAL,
+      type: DataTypes.VIRTUAL(DataTypes.STRING),
       get() {
-        let fullname = this.StaffGivenName + " " + this.StaffSurname;
+        let fullname =
+          this.StaffNumber +
+          " " +
+          this.StaffGivenName +
+          " " +
+          this.StaffSurname;
         return fullname.trim();
       },
     },
