@@ -245,6 +245,10 @@ Organization.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    OrganizationAiZoneID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+    }
   },
   {
     sequelize,
