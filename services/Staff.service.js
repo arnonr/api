@@ -27,11 +27,11 @@ const methods = {
     });
 
 
-    // if (user.GroupID != 1) {
-    //   if (user.Staff.Organization.OrganizationAiZoneID != null) {
-    //     $where["$Organization.OrganizationAiZoneID$"] = 1
-    //   }
-    // }
+    if (user.GroupID != 1) {
+      if (user.Staff.Organization.OrganizationAiZoneID != null) {
+        $where["$Organization.OrganizationAiZoneID$"] = 1
+      }
+    }
 
     if (req.query.StaffNumber)
       $where["StaffNumber"] = {
