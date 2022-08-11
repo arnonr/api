@@ -70,7 +70,7 @@ class Staff extends Model {
             TitleNameEN: this.get().Title.TitleNameEN,
             TitleShortNameEN: this.get().Title.TitleShortNameEN,
           }
-        : undefined,
+        : null,
       Gender: this.get().Gender
         ? {
             // GenderID: this.get().Gender.GenderID,

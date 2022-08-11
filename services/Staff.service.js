@@ -3,14 +3,35 @@ const config = require("../configs/app"),
   db = require("../models/Staff"),
   { Op } = require("sequelize");
 
+const User = require("../models/User");
+const Organization = require("../models/Organization");
+
 const CardRequestLog = require("../models/CardRequestLog");
+const Staff = require("../models/Staff");
 
 const methods = {
-  scopeSearch(req, limit, offset) {
+  async scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
+
+    let user = await User.findByPk(req.query.GetedUserID, {
+      include: [
+        {
+          model: Staff,
+          as: "Staff",
+          include: [{ model: Organization, as: "Organization" }],
+        },
+      ],
+    });
+
+
+    if (user.GroupID != 1) {
+      if (user.Staff.Organization.OrganizationAiZoneID != null) {
+        $where["$Organization.OrganizationAiZoneID$"] = 1
+      }
+    }
 
     if (req.query.StaffNumber)
       $where["StaffNumber"] = {
@@ -104,24 +125,29 @@ const methods = {
           ["CardRequestID", "DESC"],
         ],
       },
+      {
+        model: Organization,
+        as: "Organization",
+      },
     ];
     return { query: query };
   },
 
-  find(req) {
+  async find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch(req, limit, offset);
+    const _q = await methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([
           db.findAll(_q.query),
           delete _q.query.include,
-          db.count(_q.query),
+          (_q.query["distinct"] = true),
+          1,
         ])
           .then((result) => {
             let rows = result[0],
-              count = result[2];
+              count = rows.length;
 
             let rows1 = rows.map((data) => {
               data = {
@@ -263,11 +289,10 @@ const methods = {
   findByStaffNumber(StaffNumber) {
     return new Promise(async (resolve, reject) => {
       try {
-
         const obj = await db.findOne({
           where: {
             StaffNumber: StaffNumber.toString(),
-            isRemove: 0
+            isRemove: 0,
           },
           include: [
             { all: true, required: false },
@@ -283,7 +308,7 @@ const methods = {
           ],
         });
 
-        if (!obj)  resolve(false);
+        if (!obj) resolve(false);
 
         let res = { ...obj.toJSON() };
         if (res.CardRequestLog.length != 0) {
@@ -305,10 +330,13 @@ const methods = {
         if (!obj) resolve(false);
 
         // Update
-        await db.update({StaffMobilePhone: data.StaffMobilePhone}, {
-          where: { StaffID: id },
-          individualHooks: true,
-        });
+        await db.update(
+          { StaffMobilePhone: data.StaffMobilePhone },
+          {
+            where: { StaffID: id },
+            individualHooks: true,
+          }
+        );
 
         let res = methods.findById(data.StaffID);
 
@@ -318,7 +346,6 @@ const methods = {
       }
     });
   },
-
 };
 
 module.exports = { ...methods };
