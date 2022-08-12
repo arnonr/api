@@ -29,20 +29,20 @@ const methods = {
       ],
     });
 
-    if (user.Staff.StaffOrganizationID != null) {
+    if (user.Staff.StaffOrganizationID != 1) {
       let organization = `with recursive cte (OrganizationID, ParentOrganizationID) as (
-        select     OrganizationID,
-                   ParentOrganizationID
-        from       Organization
-        where      ParentOrganizationID = 2
-        union all
-        select     o.OrganizationID,
-                   o.ParentOrganizationID
-        from       Organization o
-        inner join cte
-                on o.ParentOrganizationID = cte.OrganizationID
-      )
-      select * from cte;`;
+          select     OrganizationID,
+                     ParentOrganizationID
+          from       Organization
+          where      ParentOrganizationID = ${user.Staff.StaffOrganizationID}
+          union all
+          select     o.OrganizationID,
+                     o.ParentOrganizationID
+          from       Organization o
+          inner join cte
+                  on o.ParentOrganizationID = cte.OrganizationID
+        )
+        select * from cte;`;
 
       const res = await sequelize.query(organization);
 
@@ -53,16 +53,43 @@ const methods = {
 
       $where["StaffOrganizationID"] = { [Op.in]: orgArr };
 
-      if (req.query.StaffOrganizationID)
+      // if (req.query.StaffOrganizationID) {
+      //   $where["StaffOrganizationID"] = {
+      //     [Op.and]: {
+      //       StaffOrganizationID: req.query.StaffOrganizationID,
+      //       // StaffOrganizationID: { [Op.in]: orgArr },
+      //     },
+      //   };
+      //   //
+      // }
+    }
+
+    if (req.query.StaffOrganizationID) {
+      $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+
+      if (req.query.OrganizationAllChild == 1) {
+        let organization1 = `with recursive cte (OrganizationID, ParentOrganizationID) as (
+          select     OrganizationID,
+                     ParentOrganizationID
+          from       Organization
+          where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
+          union all
+          select     o.OrganizationID,
+                     o.ParentOrganizationID
+          from       Organization o
+          inner join cte
+                  on o.ParentOrganizationID = cte.OrganizationID
+        )
+        select * from cte;`;
+        const res1 = await sequelize.query(organization1);
+        let orgArr1 = [req.query.StaffOrganizationID];
+        res1[0].map((r) => {
+          orgArr1.push(r.OrganizationID);
+        });
         $where["StaffOrganizationID"] = {
-          [Op.and]: {
-            StaffOrganizationID: req.query.StaffOrganizationID,
-            StaffOrganizationID: { [Op.in]: orgArr },
-          },
+          [Op.in]: orgArr1,
         };
-    } else {
-      if (req.query.StaffOrganizationID)
-        $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+      }
     }
 
     //

@@ -3,16 +3,42 @@ const config = require("../configs/app"),
   db = require("../models/Organization"),
   { Op } = require("sequelize");
 
+const Sequelize = require("sequelize"),
+  { sequelize } = require("../configs/databases");
+
 const methods = {
-  scopeSearch(req, limit, offset) {
+  async scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
-    if (req.query.ParentOrganizationID)
-      $where["ParentOrganizationID"] = req.query.ParentOrganizationID;
+    if (req.query.ParentOrganizationID) {
+      // $where["ParentOrganizationID"] = req.query.ParentOrganizationID;
+      let organization = `with recursive cte (OrganizationID, ParentOrganizationID) as (
+        select     OrganizationID,
+                   ParentOrganizationID
+        from       Organization
+        where      ParentOrganizationID = ${req.query.ParentOrganizationID}
+        union all
+        select     o.OrganizationID,
+                   o.ParentOrganizationID
+        from       Organization o
+        inner join cte
+                on o.ParentOrganizationID = cte.OrganizationID
+      )
+      select * from cte;`;
+
+      const res = await sequelize.query(organization);
+
+      let orgArr = [req.query.ParentOrganizationID];
+      res[0].map((r) => {
+        orgArr.push(r.OrganizationID);
+      });
+
+      $where["OrganizationID"] = { [Op.in]: orgArr };
+    }
 
     if (req.query.OrganizationCode)
       $where["OrganizationCode"] = {
@@ -78,10 +104,10 @@ const methods = {
     return { query: query };
   },
 
-  find(req) {
+  async find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch(req, limit, offset);
+    const _q = await methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([
