@@ -29,6 +29,8 @@ class User extends Model {
         id: this.UserID,
         UserID: this.UserID,
         Username: this.Username,
+        GroupID: this.GroupID,
+        OrganizationID: this.Staff.StaffOrganizationID,
         // role: this.Group.code,
         exp: parseInt(exp.getTime() / 1000),
       },
