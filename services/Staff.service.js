@@ -1,7 +1,10 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Staff"),
-  { Op } = require("sequelize");
+  { Op, query } = require("sequelize");
+
+const Sequelize = require("sequelize"),
+  { sequelize } = require("../configs/databases");
 
 const User = require("../models/User");
 const Organization = require("../models/Organization");
@@ -26,12 +29,31 @@ const methods = {
       ],
     });
 
+    if (user.Staff.StaffOrganizationID != null) {
+      let organization = `with recursive cte (OrganizationID, ParentOrganizationID) as (
+        select     OrganizationID,
+                   ParentOrganizationID
+        from       Organization
+        where      ParentOrganizationID = 2
+        union all
+        select     o.OrganizationID,
+                   o.ParentOrganizationID
+        from       Organization o
+        inner join cte
+                on o.ParentOrganizationID = cte.OrganizationID
+      )
+      select * from cte;`;
 
-    if (user.GroupID != 1) {
-      if (user.Staff.Organization.OrganizationAiZoneID != null) {
-        $where["$Organization.OrganizationAiZoneID$"] = 1
-      }
+      const res = await sequelize.query(organization);
+
+      let orgArr = [user.Staff.StaffOrganizationID];
+      res[0].map((r) => {
+        orgArr.push(r.OrganizationID);
+      });
+
+      $where["StaffOrganizationID"] = orgArr;
     }
+    // }
 
     if (req.query.StaffNumber)
       $where["StaffNumber"] = {
@@ -57,8 +79,8 @@ const methods = {
     if (req.query.GenderID) $where["StaffGenderID"] = req.query.StaffGenderID;
     if (req.query.StaffMarriedStatusID)
       $where["StaffMarriedStatusID"] = req.query.StaffMarriedStatusID;
-    if (req.query.StaffOrganizationID)
-      $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+    // if (req.query.StaffOrganizationID)
+    //   $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
     if (req.query.StaffPositionTypeID)
       $where["StaffPositionTypeID"] = req.query.StaffPositionTypeID;
     if (req.query.StaffPositionID)

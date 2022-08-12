@@ -19,7 +19,7 @@ class User extends Model {
   generateJWT(obj) {
     let today = new Date(),
       exp = new Date(today);
-      exp.setDate(today.getDate() + config.token_exp_days || 1);
+      exp.setDate(today.getDate() + 10 || 1);
 
     // exp.setMinutes(today.getMinutes() + 60);
 
