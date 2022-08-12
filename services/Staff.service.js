@@ -51,9 +51,21 @@ const methods = {
         orgArr.push(r.OrganizationID);
       });
 
-      $where["StaffOrganizationID"] = orgArr;
+      $where["StaffOrganizationID"] = { [Op.in]: orgArr };
+
+      if (req.query.StaffOrganizationID)
+        $where["StaffOrganizationID"] = {
+          [Op.and]: {
+            StaffOrganizationID: req.query.StaffOrganizationID,
+            StaffOrganizationID: { [Op.in]: orgArr },
+          },
+        };
+    } else {
+      if (req.query.StaffOrganizationID)
+        $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
     }
-    // }
+
+    //
 
     if (req.query.StaffNumber)
       $where["StaffNumber"] = {
