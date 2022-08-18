@@ -45,6 +45,10 @@ const methods = {
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
+    if (req.query.FarmID) {
+      $where["$Animal.FarmID$"] = JSON.parse(req.query.FarmID);
+    }
+
     // Order
     $order = [["CureActivityID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
@@ -67,22 +71,10 @@ const methods = {
         as: "Vaccines",
         through: { attributes: ["Amount"] },
       },
-      // {
-      //   model: Animal,
-      //   as: "Animal",
-      //   include: [
-      //     {
-      //       model: AnimalStatus,
-      //       as: "AnimalStatus",
-      //       attributes: ["AnimalStatusName"],
-      //     },
-      //     {
-      //       model: AnimalSex,
-      //       as: "AnimalSex",
-      //       attributes: ["AnimalSexName"],
-      //     },
-      //   ],
-      // },
+      {
+        model: Animal,
+        as: "Animal",
+      },
     ];
 
     return { query: query };
