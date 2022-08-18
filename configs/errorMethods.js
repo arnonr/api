@@ -8,6 +8,7 @@ module.exports = {
     error.status = 304;
     return error;
   },
+  
   ErrorBadRequest(msg) {
     if (msg.hasOwnProperty("original")) {
       if (msg.original.errno == 1062) {

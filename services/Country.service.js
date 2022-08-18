@@ -9,7 +9,9 @@ const methods = {
     $where = {};
 
     if (req.query.CountryID) $where["CountryID"] = req.query.CountryID;
+
     if (req.query.CountryCode)
+
       $where["CountryCode"] = {
         [Op.like]: "%" + req.query.CountryCode + "%",
       };
@@ -31,6 +33,7 @@ const methods = {
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
     $where["isRemove"] = 0;
+
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
@@ -55,6 +58,7 @@ const methods = {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch(req, limit, offset);
+
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])

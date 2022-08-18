@@ -2,6 +2,7 @@ const Service = require("../services/Country.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+  
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);

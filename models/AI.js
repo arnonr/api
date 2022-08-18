@@ -9,9 +9,13 @@ dayjs.extend(buddhistEra);
 
 class AI extends Model {
   static associate(models) {
+
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
     });
+
+
+
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
     });
@@ -48,11 +52,15 @@ class AI extends Model {
       foreignKey: "GunDepthID5",
       as: "GunDepth5",
     });
+
+    // ตาราง AI
+    // BCSID foreignKey
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
       as: "BCS",
     });
 
+    // ตาราง AI
     this.hasMany(models.PregnancyCheckup, {
       foreignKey: "AIID",
     });
@@ -131,7 +139,7 @@ AI.init(
       comment: "วันคลอด",
     },
     GoatAIMethodID: {
-      type: DataTypes.ENUM("NI", "Buck", "V-AI", "L-AI"),
+      type: DataTypes.ENUM("NI", "Buck", "V-AI", "L-AI"), 
       allowNull: true,
       comment: "วิธีการผสม (แพะ)",
     },
@@ -381,6 +389,7 @@ AI.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+
     ThaiAIDate: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -389,6 +398,7 @@ AI.init(
           : null;
       },
     },
+
     AIStatusName: {
       type: DataTypes.VIRTUAL,
       get() {

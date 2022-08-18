@@ -8,6 +8,7 @@ let resource = "user";
 
 // Image
 const multer = require("multer");
+
 const storage = multer.diskStorage({
   destination: "public/uploads/images/staff",
   filename: function (req, file, cb) {

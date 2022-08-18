@@ -323,6 +323,8 @@ const methods = {
           include: { all: true },
         });
 
+        // checkICIT ACCOUNT
+
         // ตรวจสอบว่ามี username
         if (!obj) {
           reject(ErrorUnauthorized("Username not found"));

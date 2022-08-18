@@ -9,7 +9,7 @@ class AbortResult extends Model {
     return {
       ...this.get(),
     };
-  }
+  } 
 }
 
 AbortResult.init(  {
