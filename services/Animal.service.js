@@ -1982,7 +1982,7 @@ const methods = {
             AnimalID: inserted.AnimalID,
             // FollowDate: null,
             // Weigth: null,
-            ResponsibilityStaffID: inserted.CreatedUserID,
+            // ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
           };
           var yearling = new Yearling(data);
