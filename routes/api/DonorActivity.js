@@ -47,6 +47,13 @@ router.put(
   controllers.onExcludeDonor
 );
 
+router.put(
+  "/include-donor/:id",
+  auth.required,
+  checkPermission(resource, "update"),
+  controllers.onIncludeDonor
+);
+
 router.delete(
   "/:id",
   auth.required,

@@ -47,6 +47,13 @@ router.put(
   controllers.onExcludeRecipient
 );
 
+router.put(
+  "/include-recipient/:id",
+  auth.required,
+  checkPermission(resource, "update"),
+  controllers.onIncludeRecipient
+);
+
 router.delete(
   "/:id",
   auth.required,

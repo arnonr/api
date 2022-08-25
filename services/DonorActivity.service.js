@@ -610,6 +610,33 @@ const methods = {
     });
   },
 
+  includeDonor(id, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Update
+        data.AnimalID = parseInt(data.AnimalID);
+
+        let data1 = {
+          IsExclude: 0,
+          ExcludeRemark: null,
+          ExcludeDate: null,
+          ExcludeResponsibilityStaffID: null,
+          UpdatedUserID: data.UpdatedUserID,
+        };
+
+        const obj = await db.update(data1, {
+          where: { DonorID: id, AnimalID: data.AnimalID },
+        });
+
+        // this.findDonor(data)
+
+        resolve({ data: "success" });
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
   //
 };
 

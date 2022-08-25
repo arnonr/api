@@ -47,9 +47,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -60,10 +58,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             const rows = result[0],
               count = result[1];
@@ -90,11 +85,10 @@ const methods = {
           include: { all: true, required: false },
         });
 
-
         let recipientAnimal = [];
         let recipientActivity = RecipientActivity.findAll({
           where: { RecipientID: id },
-          attributes: ['RecipientActivity.AnimalID'],
+          attributes: ["RecipientActivity.AnimalID"],
           group: "RecipientActivity.AnimalID",
           include: [
             {
@@ -109,8 +103,6 @@ const methods = {
 
         let obj1 = obj.toJSON();
         obj1.Animals = recipientAnimal;
-
-
 
         if (!obj1) reject(ErrorNotFound("id: not found"));
         resolve(obj1);
