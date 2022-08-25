@@ -12,6 +12,8 @@ const nodemailer = require("nodemailer");
 const UserToAnimalType = require("../models/UserToAnimalType");
 const AnimalType = require("../models/AnimalType");
 const GroupAuthorize = require("../models/GroupAuthorize");
+var requestIp = require("request-ip");
+const LoginLog = require("../models/LoginLog");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -65,7 +67,7 @@ const methods = {
       {
         model: AnimalType,
         where: WhereAnimalType,
-        required: false
+        required: false,
       },
     ];
 
@@ -150,7 +152,7 @@ const methods = {
           ...obj.toJSON(),
           AnimalTypes: animalTypeArray,
           AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
-          GroupAuthorize: obj1
+          GroupAuthorize: obj1,
         };
 
         resolve(obj);
@@ -315,7 +317,7 @@ const methods = {
     });
   },
 
-  login(data) {
+  login(data, ip, device) {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findOne({
@@ -342,6 +344,16 @@ const methods = {
             reject(ErrorUnauthorized("ไม่อนุมัติ"));
           }
         }
+
+        let loginLog = new LoginLog({
+          UserID: obj.UserID,
+          IPAddress: ip,
+          LoginDatetime: Date.now(),
+          Device: JSON.stringify(device),
+          CreatedUserID: obj.UserID,
+        });
+
+        loginLog.save();
 
         let animalTypeArray = [];
         obj.toJSON().AnimalTypes.forEach((element) => {

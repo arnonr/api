@@ -4,6 +4,10 @@ const express = require("express"),
   cors = require("cors");
 (passport = require("passport")), (path = require("path"));
 
+//
+const DeviceDetector = require("node-device-detector");
+const ClientHints = require("node-device-detector/client-hints");
+
 module.exports = async (app) => {
   // Connect MongoDB
   //   require("../configs/databases");
@@ -36,6 +40,27 @@ module.exports = async (app) => {
 
   // Logger
   app.use(morgan("dev"));
+
+  // device
+  const deviceDetector = new DeviceDetector({
+    clientIndexes: true,
+    deviceIndexes: true,
+    deviceAliasCode: false,
+  });
+  const clientHints = new ClientHints();
+
+  // create middleware
+  const middlewareDetect = (req, res, next) => {
+    const useragent = req.headers["user-agent"];
+    const clientHintsData = clientHints.parse(res.headers);
+
+    req.useragent = useragent;
+    req.device = deviceDetector.detect(useragent, clientHintsData);
+    req.bot = deviceDetector.parseBot(useragent);
+    next();
+  };
+
+  app.use(middlewareDetect);
 
   // Passport
   require("../configs/passport");

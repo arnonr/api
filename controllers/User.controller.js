@@ -1,6 +1,8 @@
 const Service = require("../services/User.service"),
   jwt = require("jsonwebtoken");
 
+const requestIp = require("request-ip");
+
 const methods = {
   async onGetAll(req, res) {
     try {
@@ -78,7 +80,14 @@ const methods = {
 
   async onLogin(req, res) {
     try {
-      let result = await Service.login(req.body);
+      // let clientIp = requestIp.getClientIp(req);
+      // console.log(req.socket.remoteAddress);
+      // console.log(req.ip)
+      // console.log(clientIp);
+      let useragent = req.useragent;
+      let detectResult = req.device;
+
+      let result = await Service.login(req.body, req.ip, detectResult);
       res.success(result);
     } catch (error) {
       res.error(error);
