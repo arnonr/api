@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Animal"),
-  { Op, fn, col } = require("sequelize");
+  { Op, fn, col, where } = require("sequelize");
 const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
@@ -27,6 +27,7 @@ const Vaccine = require("../models/Vaccine");
 const DewormActivity = require("../models/DewormActivity");
 const DewormMedicine = require("../models/DewormMedicine");
 const CureActivity = require("../models/CureActivity");
+const Farmer = require("../models/Farmer");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -1722,6 +1723,29 @@ const methods = {
       };
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
+    if (req.query.FarmName) {
+      $where["$Farm.FarmName$"] = {
+        [Op.like]: "%" + req.query.FarmName + "%",
+      };
+    }
+
+    // 
+    // if (req.query.ProjectID) {
+    //   WhereProject = {
+    //     ProjectID: {
+    //       [Op.in]: JSON.parse(req.query.ProjectID),
+    //     },
+    //   };
+    // }
+
+    let WhereFarmer = null;
+    if (req.query.FarmerName) {
+      WhereFarmer = where(fn("concat", col("GivenName"), col("Surname")), {
+        [Op.like]: `%${req.query.FarmerName}%`
+    });
+    }
+
     if (req.query.AnimalFirstBreed)
       $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
     if (req.query.AnimalFatherID)
@@ -1843,6 +1867,16 @@ const methods = {
       {
         model: Project,
         where: WhereProject,
+      },
+      {
+        model: Farm,
+        as: "AnimalFarm",
+        required: req.query.FarmerName ? true : false,
+        include: {
+          model: Farmer,
+          as: "Farmer",
+          where: WhereFarmer,
+        },
       },
     ];
 
