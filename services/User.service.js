@@ -187,6 +187,26 @@ const methods = {
           });
         });
 
+        let transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false,
+          auth: {
+            // ข้อมูลการเข้าสู่ระบบ
+            user: "edocument@fba.kmutnb.ac.th", // email user ของเรา
+            pass: "edoc2565", // email password
+          },
+        });
+
+        let info = await transporter.sendMail({
+          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+          to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          subject: "ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ", // หัวข้ออีเมล
+          // text: "d", // plain text body
+          html: "<b>คุณได้รับการอนุมัติการเข้าใช้งานระบบฐานข้อมูล โคเนื้อ กระบือ แพะ สามารถเข้าใช้งานได้ที่ <a href='http://178.128.216.177/'>คลิก</a></b>", // html body
+        });
+      
+
         let res = methods.findById(inserted.UserID);
 
         resolve(res);
@@ -278,7 +298,7 @@ const methods = {
 
           let info = await transporter.sendMail({
             from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-            to: "tongfreedom@gmail.com", // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+            to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
             subject: "ยินดีต่้อบรับสู่ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ", // หัวข้ออีเมล
             // text: "d", // plain text body
             html: "<b>คุณได้รับการอนุมัติการเข้าใช้งานระบบฐานข้อมูล โคเนื้อ กระบือ แพะ สามารถเข้าใช้งานได้ที่ <a href='http://178.128.216.177/'>คลิก</a></b>", // html body
@@ -398,6 +418,26 @@ const methods = {
           });
         });
 
+        // Send mail
+        let transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false,
+          auth: {
+            // ข้อมูลการเข้าสู่ระบบ
+            user: "edocument@fba.kmutnb.ac.th", // email user ของเรา
+            pass: "edoc2565", // email password
+          },
+        });
+
+        let info = await transporter.sendMail({
+          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+          to: inserted.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          subject: "ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+          // text: "d", // plain text body
+          html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
+        });
+        
         let res = methods.findById(inserted.UserID);
 
         resolve(res);
