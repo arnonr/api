@@ -1725,7 +1725,7 @@ const methods = {
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.FarmName) {
-      $where["$Farm.FarmName$"] = {
+      $where["$AnimalFarm.FarmName$"] = { 
         [Op.like]: "%" + req.query.FarmName + "%",
       };
     }
@@ -1871,10 +1871,11 @@ const methods = {
       {
         model: Farm,
         as: "AnimalFarm",
-        required: req.query.FarmerName ? true : false,
+        required: req.query.FarmName ? true : false,
         include: {
           model: Farmer,
           as: "Farmer",
+          required: req.query.FarmerName ? true : false,
           where: WhereFarmer,
         },
       },
