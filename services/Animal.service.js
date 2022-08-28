@@ -8,6 +8,7 @@ const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
 const Farm = require("../models/Farm");
 const AnimalType = require("../models/AnimalType");
+const AnimalSex = require("../models/AnimalSex");
 const AnimalGroupType = require("../models/AnimalGroupType");
 const AI = require("../models/AI");
 const TransferEmbryo = require("../models/TransferEmbryo");
