@@ -37,7 +37,8 @@ const methods = {
         orgArr.push(r.OrganizationID);
       });
 
-      $where["OrganizationID"] = { [Op.in]: orgArr };
+      // $where["OrganizationID"] = { [Op.in]: orgArr };
+      $where["OrganizationID"] = { [Op.and]: [{ [Op.in]: orgArr }, {[Op.not]: 2 }] };
     }
 
     if (req.query.OrganizationCode)
