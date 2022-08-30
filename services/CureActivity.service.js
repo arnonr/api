@@ -44,9 +44,11 @@ const methods = {
 
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
-    if (req.query.FarmID) {
-      $where["$Animal.FarmID$"] = JSON.parse(req.query.FarmID);
+    whereFarmID = {}
+    if (req.query.FarmID) { 
+      whereFarmID = {FarmID: req.query.FarmID}
+      // $whereFarmID = req.query.FarmID;
+      // $where["$Animal.FarmID$"] = JSON.parse(req.query.FarmID);
     }
 
     // Order
@@ -74,6 +76,7 @@ const methods = {
       {
         model: Animal,
         as: "Animal",
+        where: whereFarmID,
       },
     ];
 
