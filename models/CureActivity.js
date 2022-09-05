@@ -11,6 +11,7 @@ class CureActivity extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
+      as: "Animal"
     });
     this.belongsTo(models.Disease, {
       foreignKey: "DiseaseID",

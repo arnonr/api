@@ -1,4 +1,3 @@
-const e = require("express");
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farm"),
@@ -321,25 +320,35 @@ const methods = {
     });
   },
 
-  GenerateNumber(OrganizationID) {
+  GenerateNumber(req) {
     // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
     return new Promise(async (resolve, reject) => {
       try {
+        // let farm = await db.max("FarmIdentificationNumber", {
+        //   where: { OrganizationID: OrganizationID },
+        // });
+
         let farm = await db.max("FarmIdentificationNumber", {
-          where: { OrganizationID: OrganizationID },
+          where: {
+            FarmProvinceID: req.query.ProvinceID,
+            FarmAmphurID: req.query.AmphurID,
+            FarmTumbolID: req.query.TumbolID,
+          },
         });
+
+        // จากจังหวัด อำเภอ ตำบล1
 
         if (farm) {
           var FarmNumberGenerate = parseInt(farm) + 1;
         } else {
-          let organization = await Organization.findByPk(OrganizationID);
-          if (!organization) {
-            reject(ErrorNotFound("Organization ID: not found"));
-          } else {
+          // let organization = await Organization.findByPk(OrganizationID);
+          // if (!organization) {
+          //   reject(ErrorNotFound("Organization ID: not found"));
+          // } else {
             FarmNumberGenerate = parseInt(
-              organization.OrganizationCode + "0001"
+              req.query.ProvinceID + req.query.AmphurID + req.query.TumbolID + "0001"
             );
-          }
+          // }
         }
 
         resolve({ FarmNumberGenerate: FarmNumberGenerate });

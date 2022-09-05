@@ -16,6 +16,9 @@ class FeedProgramAnimal extends Model {
   toJSON() {
     return {
       ...this.get(),
+      FeedProgram: this.FeedProgram ? this.FeedProgram : undefined,
+      Animal: this.Animal ? this.Animal : undefined
+
     };
   }
 }

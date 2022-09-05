@@ -187,10 +187,14 @@ const methods = {
         }
 
         const obj = new db(data);
-
+        // console.log(obj.CureNextDate);
+        // obj.CureNextDate = dayjs(obj.CureNextDate).format("YYYY-MM-DD")
         const inserted = await obj.save();
 
         const res = await db.findByPk(inserted.CureActivityID);
+
+  
+   
 
         for (let index = 0; index < VaccineIDList.length; index++) {
           let vc = await Vaccine.findByPk(VaccineIDList[index][0]);

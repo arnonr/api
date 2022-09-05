@@ -14,6 +14,7 @@ const AnimalType = require("../models/AnimalType");
 const GroupAuthorize = require("../models/GroupAuthorize");
 var requestIp = require("request-ip");
 const LoginLog = require("../models/LoginLog");
+const Staff = require("../models/Staff");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -408,6 +409,10 @@ const methods = {
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
+
+        // const staff = Staff.findOne()
+        // StaffEmail
+        // StaffMobilePhone
 
         // insert ProjectToAnimalType
         AnimalTypeIDList.forEach((AnimalTypeID) => {

@@ -1,9 +1,12 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/FeedProgram"),
-  { Op } = require("sequelize");
+  { Op, col, fn } = require("sequelize");
 
 let AnimalType = require("../models/AnimalType");
+const FeedProgramAnimal = require("../models/FeedProgramAnimal");
+let Staff = require("../models/Staff");
+let Farm = require("../models/Farm");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -49,22 +52,77 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     // AnimalTypeID
-    let WhereAnimalType = null;
+    // let WhereAnimalType = null;
     if (req.query.AnimalTypeID) {
-      WhereAnimalType = {
-        AnimalTypeID: {
-          [Op.in]: JSON.parse(req.query.AnimalTypeID),
-        },
+      // WhereAnimalType = {
+      //   AnimalTypeID: {
+      //     [Op.in]: JSON.parse(req.query.AnimalTypeID),
+      //   },
+      // };
+
+      $where["$AnimalTypes.AnimalTypeID$"] = {
+        [Op.in]: JSON.parse(req.query.AnimalTypeID),
       };
     }
 
     query["include"] = [
-      { all: true, required: false },
+      // { all: true, required: false },
       {
         model: AnimalType,
-        where: WhereAnimalType,
+        // where: WhereAnimalType,
+        attributes: ["AnimalTypeID", "AnimalTypeCode", "AnimalTypeName"],
+        through: {
+          attributes: [],
+        },
+        required: true,
+      },
+      {
+        model: FeedProgramAnimal,
+        as: "FeedProgramAnimals",
+        // where: WhereAnimalType,
+        attributes: [
+          "FeedProgramAnimalID",
+          "AnimalID",
+          "StartWeight",
+          "EndWeight",
+        ],
+        required: false,
+      },
+      {
+        model: Staff,
+        as: "Staff",
+        required: false,
+        attributes: [
+          "StaffID",
+          "StaffNumber",
+          "StaffGivenName",
+          "StaffSurname",
+          "StaffFullName",
+          // [col("StaffGivenName"), "task"],
+          // [
+          //   fn(
+          //     "CONCAT",
+          //     col("Staff.StaffGivenName"),
+          //     " ",
+          //     col("Staff.StaffSurName")
+          //   ),
+          //   "countTask",
+          // ],
+        ],
+      },
+      {
+        model: Farm,
+        as: "Farm",
+        required: false,
+        attributes: [
+          "FarmID",
+          "FarmIdentificationNumber",
+          "FarmName",
+        ],
       },
     ];
+
+    // query["attributes"] = ["FeedProgramID",[col("Staff.StaffGivenName"),'task']];
 
     return { query: query };
   },
@@ -77,12 +135,13 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
+          delete _q.query.attributes,
+          (_q.query["distinct"] = true),
           db.count(_q.query),
         ])
           .then((result) => {
             const rows = result[0],
-              count = result[2];
+              count = result[3];
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
@@ -146,8 +205,6 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-       
-
         data.FeedProgramID = parseInt(id);
 
         const updated = await db.update(data, { where: { FeedProgramID: id } });
@@ -160,7 +217,6 @@ const methods = {
 
           const animalTypes = await obj.getAnimalTypes();
           await obj.removeAnimalTypes(animalTypes);
-
           obj.addAnimalTypes(data.AnimalTypeID);
         }
 

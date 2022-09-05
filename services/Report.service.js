@@ -9,6 +9,7 @@ const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
 const AnimalStatus = require("../models/AnimalStatus");
 const ProductionStatus = require("../models/ProductionStatus");
+const AI = require("../models/AI");
 
 const methods = {
   report1(req) {
@@ -20,7 +21,6 @@ const methods = {
         // ZoneID อ้างจากจังหวัด
         if (req.query.OrganizationZoneID)
           $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-
 
         if (req.query.ProvinceID)
           $where["FarmProvinceID"] = req.query.ProvinceID;
@@ -154,14 +154,13 @@ const methods = {
           },
         ];
 
-
         let animal = await Animal.findOne({
           ...query,
         });
 
         // animal = await Promise.all(
         //   animal.map(async (e) => {
-      
+
         //   })
         // );
 
@@ -172,10 +171,10 @@ const methods = {
           AnimalStatus: animal.AnimalStatus.AnimalStatusName,
           ProductionStatus: animal.ProductionStatus.ProductionStatusName,
           AnimalPar: animal.AnimalPar,
-          // 
+          //
           AnimalBreed: animal.AnimalBreedAll,
           // father
-          
+
           // father Breed
           // moather
           // moather breed
@@ -183,7 +182,146 @@ const methods = {
           // วันที่เข้าฝูง คือไรว่ะ
           Farm: animal.Farm.FarmName,
           FarmIdentificationNumber: animal.Farm.FarmIdentificationNumber,
-          // 
+          //
+
+          // Young: young,
+          // Child: child,
+          // Total: total,
+          // Farms: farms,
+          // FarmCount: farms.length,
+        };
+        resolve(data);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+  report3(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Search
+        let $where = {};
+        // req.query.AIZoneID
+        // req.query.startDate
+        // req.query.endDate
+
+        // ต้อง get เจ้าหน้าที่ที่อยู่ในศูนย์วิจัยทั้งหมด
+        if (req.query.AIZoneID) {
+          // AIZONE มาจาก organizationID
+          // $where["ParentOrganizationID"] = req.query.ParentOrganizationID;
+          // let organization = `with recursive cte (OrganizationID, ParentOrganizationID) as (
+          //   select     OrganizationID,
+          //              ParentOrganizationID
+          //   from       Organization
+          //   where      ParentOrganizationID = ${req.query.OrganizationID}
+          //   union all
+          //   select     o.OrganizationID,
+          //              o.ParentOrganizationID
+          //   from       Organization o
+          //   inner join cte
+          //           on o.ParentOrganizationID = cte.OrganizationID
+          // )
+          // select * from cte;`;
+
+          // const res = await sequelize.query(organization);
+
+          // let orgArr = [req.query.ParentOrganizationID];
+          // res[0].map((r) => {
+          //   orgArr.push(r.OrganizationID);
+          // });
+
+          // $where["OrganizationID"] = { [Op.in]: orgArr };
+          // $where["OrganizationAiZoneID"] = req.query.AIZoneID;
+
+          let organization = await Organization.findAll({
+            where: {
+              OrganizationAiZoneID: req.query.AIZoneID,
+            },
+          });
+
+          let orgArr = [];
+          res[0].map((r) => {
+            orgArr.push(r.OrganizationID);
+          });
+
+          // $where["OrganizationID"] = { [Op.in]: orgArr };
+        }
+
+        // ตาราง staff,
+        let staff = await Staff.findAll({
+          where: { OrganizationID: { [Op.in]: orgArr } },
+        });
+
+        staff = await Promise.all(
+          staff.map(async (s) => {
+            let ai = await AI.findAll({
+              where: {
+                ResponsibilityStaffID: s.StaffID,
+              },
+            });
+            // s.r1
+            // let uniqueAIs = [...new Set(ai)];
+            // s.r1 = uniqueAIs.length
+
+            let uniqueAIs = ai.filter((element, index) => {
+              return ai.indexOf(element) === index;
+            });
+            
+            s.r1 = uniqueAIs.length();
+            s.r2 = ai.length();
+            return s;
+          })
+        );
+
+        // ขึ้นข้อมูล จำนวนที่ผสม
+
+        // ZoneID อ้างจากจังหวัด
+        if (req.query.AnimalEarID)
+          $where["AnimalEarID"] = req.query.AnimalEarID;
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        query["include"] = [
+          {
+            model: AnimalStatus,
+          },
+          {
+            model: ProductionStatus,
+          },
+          {
+            model: Farm,
+          },
+        ];
+
+        let animal = await Animal.findOne({
+          ...query,
+        });
+
+        // animal = await Promise.all(
+        //   animal.map(async (e) => {
+
+        //   })
+        // );
+
+        let data = {
+          AnimalEarID: animal.AnimalEarID,
+          AnimalMicrochip: animal.AnimalMicrochip,
+          AnimalBirthDate: animal.AnimalBirthDate,
+          AnimalStatus: animal.AnimalStatus.AnimalStatusName,
+          ProductionStatus: animal.ProductionStatus.ProductionStatusName,
+          AnimalPar: animal.AnimalPar,
+          //
+          AnimalBreed: animal.AnimalBreedAll,
+          // father
+
+          // father Breed
+          // moather
+          // moather breed
+          AnimalSource: animal.AnimalSource, // แปลไทย
+          // วันที่เข้าฝูง คือไรว่ะ
+          Farm: animal.Farm.FarmName,
+          FarmIdentificationNumber: animal.Farm.FarmIdentificationNumber,
+          //
 
           // Young: young,
           // Child: child,

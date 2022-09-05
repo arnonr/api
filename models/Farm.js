@@ -176,12 +176,12 @@ Farm.init(
     },
     OrganizationZoneID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสเขตปศุสัตว์",
     },
     AIZoneID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสศูนย์วิจัย",
     },
     FarmStatusID: {

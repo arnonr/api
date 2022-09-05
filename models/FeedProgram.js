@@ -19,20 +19,33 @@ class FeedProgram extends Model {
     });
     this.hasMany(models.FeedProgramAnimal, {
       foreignKey: "FeedProgramID",
-      as: "FeedProgramAnimal",
+      as: "FeedProgramAnimals",
     });
 
     this.hasMany(models.FeedProgramProgress, {
       foreignKey: "FeedProgramID",
-      as: "FeedProgramProgress",
+      as: "FeedProgramProgresses",
     });
 
-    this.belongsToMany(models.AnimalType, { through: 'FeedProgramAnimalType' }); 
+    this.belongsToMany(models.AnimalType, { through: "FeedProgramAnimalType" });
   }
+
   // Custom JSON Response
   toJSON() {
+    let farm = this.Farm;
+    let staff = this.Staff;
+    let animalTypes = this.AnimalTypes;
     return {
       ...this.get(),
+      AnimalTypes: animalTypes ? animalTypes : undefined,
+      Farm: farm ? farm : undefined,
+      Staff: staff
+        ? {
+            StaffID: staff.StaffID,
+            StaffFullName: staff.StaffFullName,
+          }
+        : undefined,
+      
     };
   }
 }
@@ -160,17 +173,13 @@ FeedProgram.init(
         return 70;
       },
     },
-
     PercentFail: {
       type: DataTypes.VIRTUAL,
       get() {
         return 30;
       },
     },
-
     // ชื่อเจ้าหน้าที่
-
-    
   },
   {
     sequelize,

@@ -54,7 +54,7 @@ const methods = {
 
   async onGenerateNumber(req, res) {
     try {
-      let result = await Service.GenerateNumber(req.query.OrganizationID);
+      let result = await Service.GenerateNumber(req);
       res.success(result);
     } catch (error) {
       res.error(error);
