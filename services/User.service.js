@@ -341,10 +341,17 @@ const methods = {
   login(data, ip, device) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findOne({
+        let obj = await db.findOne({
           where: { Username: data.Username, isRemove: 0, isActive: 1 },
           include: { all: true },
         });
+
+        // if(!obj){
+        //   obj = await db.findOne({
+        //     where: { Username: data.Username, isRemove: 0, isActive: 1 },
+        //     include: { all: true },
+        //   });
+        // }
 
         // checkICIT ACCOUNT
 

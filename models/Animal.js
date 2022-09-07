@@ -90,7 +90,7 @@ class Animal extends Model {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
     });
-    
+
     // this.belongsTo(models.GiveBirth, {
     //   foreignKey: "GiveBirthSelfID",
     //   as: "GiveBirthSelf",
@@ -169,35 +169,37 @@ class Animal extends Model {
         },
       });
 
-      day = dayjs(giveBirth.GiveBirthDate);
+      if (giveBirth) {
+        day = dayjs(giveBirth.GiveBirthDate);
 
-      // yearling
-      let yearling = await Yearling.findOne({
-        where: {
-          MotherAnimalID: this.AnimalID,
-          FollowDate: {
-            $gte: giveBirth.GiveBirthDate,
+        // yearling
+        let yearling = await Yearling.findOne({
+          where: {
+            MotherAnimalID: this.AnimalID,
+            FollowDate: {
+              $gte: giveBirth.GiveBirthDate,
+            },
           },
-        },
-      });
+        });
 
-      // GiveBirthDate
-      if (!yearling) {
-        day = dayjs().diff(day, "day");
-        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-          if (day >= 30) {
+        // GiveBirthDate
+        if (!yearling) {
+          day = dayjs().diff(day, "day");
+          if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+            }
+          } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+            }
+          } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+            }
+          } else {
             noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
           }
-        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-          }
-        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
-          }
-        } else {
-          noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
         }
       }
     }
@@ -398,8 +400,6 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
-
-   
     var data = {
       AnimalID: animalJson.AnimalID,
       AnimalEarID: animalJson.AnimalEarID,
@@ -415,10 +415,7 @@ class Animal extends Model {
       AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
 
-   
-
     if (ai && embryo) {
-      
       if (embryo.TimeNo > ai.TimeNo) {
         let preg = await PregnancyCheckup.findOne({
           order: [["TimeNo", "DESC"]],
@@ -431,14 +428,14 @@ class Animal extends Model {
             model: PregnancyCheckStatus,
           },
         });
-        
+
         let pregResult = "";
         let pregnancyTimeNo = "";
         if (preg) {
           pregResult = preg.PregnancyCheckStatus.PregnancyCheckStatusCode;
           pregnancyTimeNo = preg.TimeNo;
         }
-        
+
         data = {
           ...data,
           AIID: null,
@@ -457,7 +454,6 @@ class Animal extends Model {
           PregnancyTimeNo: pregnancyTimeNo,
         };
       } else {
-        
         let preg = await PregnancyCheckup.findOne({
           order: [["TimeNo", "DESC"]],
           where: {
@@ -571,7 +567,7 @@ class Animal extends Model {
         PregnancyTimeNo: null,
       };
     }
-    
+
     return data;
   }
 
@@ -713,7 +709,7 @@ Animal.init(
       allowNull: false,
       comment: "รหัสฟาร์ม",
     },
-    
+
     AnimalFirstBreed: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
