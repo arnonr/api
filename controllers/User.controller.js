@@ -6,6 +6,9 @@ const requestIp = require("request-ip");
 const methods = {
   async onGetAll(req, res) {
     try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.query.GetedUserID = decoded.id;
+
       let result = await Service.find(req);
       res.success(result);
     } catch (error) {

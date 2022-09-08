@@ -9,6 +9,9 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 const nodemailer = require("nodemailer");
 
+const Sequelize = require("sequelize"),
+  { sequelize } = require("../configs/databases");
+
 const UserToAnimalType = require("../models/UserToAnimalType");
 const AnimalType = require("../models/AnimalType");
 const GroupAuthorize = require("../models/GroupAuthorize");
@@ -17,9 +20,43 @@ const LoginLog = require("../models/LoginLog");
 const Staff = require("../models/Staff");
 
 const methods = {
-  scopeSearch(req, limit, offset) {
+  async scopeSearch(req, limit, offset) {
     // Where
     $where = {};
+
+    let $WhereStaff = {};
+
+    let user = await db.findByPk(req.query.GetedUserID, {
+      include: [
+        {
+          model: Staff,
+          as: "Staff",
+        },
+      ],
+    });
+
+    if (user.GroupID != 1) {
+      let organization1 = `with recursive cte (OrganizationID, ParentOrganizationID) as (
+            select     OrganizationID,
+                       ParentOrganizationID
+            from       Organization
+            where      ParentOrganizationID = ${user.Staff.StaffOrganizationID} AND isRemove = 0
+            union all
+            select     o.OrganizationID,
+                       o.ParentOrganizationID
+            from       Organization o
+            inner join cte
+                    on o.ParentOrganizationID = cte.OrganizationID
+          )
+          select * from cte;`;
+
+      const res1 = await sequelize.query(organization1);
+      let orgArr1 = [user.Staff.StaffOrganizationID];
+      res1[0].map((r) => {
+        orgArr1.push(r.OrganizationID);
+      });
+      $WhereStaff = { StaffOrganizationID: { [Op.in]: orgArr1 } };
+    }
 
     if (req.query.UserID) $where["UserID"] = req.query.UserID;
     if (req.query.Username)
@@ -70,6 +107,12 @@ const methods = {
         where: WhereAnimalType,
         required: false,
       },
+      {
+        model: Staff,
+        as: "Staff",
+        where: $WhereStaff,
+        required: true,
+      },
     ];
 
     if (!isNaN(limit)) query["limit"] = limit;
@@ -79,10 +122,10 @@ const methods = {
     return { query: query };
   },
 
-  find(req) {
+  async find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch(req, limit, offset);
+    const _q = await methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
@@ -206,7 +249,6 @@ const methods = {
           // text: "d", // plain text body
           html: "<b>คุณได้รับการอนุมัติการเข้าใช้งานระบบฐานข้อมูล โคเนื้อ กระบือ แพะ สามารถเข้าใช้งานได้ที่ <a href='http://178.128.216.177/'>คลิก</a></b>", // html body
         });
-      
 
         let res = methods.findById(inserted.UserID);
 
@@ -449,7 +491,7 @@ const methods = {
           // text: "d", // plain text body
           html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
         });
-        
+
         let res = methods.findById(inserted.UserID);
 
         resolve(res);

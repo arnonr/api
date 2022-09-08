@@ -2837,8 +2837,10 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         let animal = await db.findByPk(req.params.id, {
-          include: [{ model: Farm, as: "AnimalFarm" }],
+          include: [{all: true},{ model: Farm, as: "AnimalFarm" }],
         });
+
+        console.log(animal)
 
         let ai = await AI.findAll({
           where: { AnimalID: req.params.id, isRemove: 0 },
@@ -3082,8 +3084,9 @@ const methods = {
           AnimalEarID: animal.AnimalEarID,
           AnimalBirthDate: animal.ThaiAnimalBirthDate,
           AnimalBreedAll: animal.AnimalBreedAll,
+          AnimalImagePath: animal.AnimalImagePath,
           AnimalDadBreed: "TH890890",
-          AnimaMomBreed: "4343dsd90934",
+          AnimaMomBreed: "349872",
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
           FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
