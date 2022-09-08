@@ -215,40 +215,42 @@ class Animal extends Model {
         },
       });
 
-      day = dayjs(giveBirth.GiveBirthDate);
+      if (giveBirth) {
+        day = dayjs(giveBirth.GiveBirthDate);
 
-      // Reproduce
-      let reproduce = Reproduce.findOne({
-        where: {
-          AnimalID: this.AnimalID,
-          ReproduceDate: {
-            $gte: giveBirth.GiveBirthDate,
+        // Reproduce
+        let reproduce = Reproduce.findOne({
+          where: {
+            AnimalID: this.AnimalID,
+            ReproduceDate: {
+              $gte: giveBirth.GiveBirthDate,
+            },
+            // StandingHeatDate: {
+            //   $gte: giveBirth.GiveBirthDate,
+            // },
           },
-          // StandingHeatDate: {
-          //   $gte: giveBirth.GiveBirthDate,
-          // },
-        },
-      });
+        });
 
-      if (!reproduce) {
-        day = dayjs().diff(day, "day");
+        if (!reproduce) {
+          day = dayjs().diff(day, "day");
 
-        if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+          if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+            } else {
+            }
+          } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+            } else {
+            }
+          } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
+            if (day >= 30) {
+              noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
+            } else {
+            }
           } else {
           }
-        } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
-          } else {
-          }
-        } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-          if (day >= 30) {
-            noti.push(`ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด`);
-          } else {
-          }
-        } else {
         }
       }
     }
