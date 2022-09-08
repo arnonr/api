@@ -3,6 +3,9 @@ const { Model, DataTypes } = require("sequelize"),
   jwt = require("jsonwebtoken"),
   config = require("../configs/app"),
   { sequelize } = require("../configs/databases");
+  const dayjs = require("dayjs");
+  const locale = require("dayjs/locale/th");
+  const buddhistEra = require("dayjs/plugin/buddhistEra");
 
 class User extends Model {
   // Custom JSON Response
@@ -197,6 +200,22 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiRegisterDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.RegisterDate
+          ? dayjs(this.RegisterDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiLastLogin: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.LastLogin
+          ? dayjs(this.LastLogin).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {
