@@ -430,6 +430,10 @@ const methods = {
           animalTypeArray.push(element.AnimalTypeName);
         });
 
+        
+        obj.LastLogin = Date.now()
+        obj.save();
+
         res = {
           ...obj.toJSON(),
           AnimalTypes: animalTypeArray,
