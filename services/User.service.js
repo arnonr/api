@@ -398,7 +398,6 @@ const methods = {
               isActive: 1,
             },
           });
-          console.log(staff.StaffID)
           if (staff) {
             obj = await db.findOne({
               where: { StaffID: staff.StaffID},
