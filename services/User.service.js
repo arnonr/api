@@ -383,36 +383,44 @@ const methods = {
   login(data, ip, device) {
     return new Promise(async (resolve, reject) => {
       try {
-        let obj = await db.findOne({
+        let obj = null;
+        obj = await db.findOne({
           where: { Username: data.Username, isRemove: 0, isActive: 1 },
           include: { all: true },
         });
 
-        // if(!obj){
-        //   obj = await db.findOne({
-        //     where: { Username: data.Username, isRemove: 0, isActive: 1 },
-        //     include: { all: true },
-        //   });
-        // }
-
-        // checkICIT ACCOUNT
-
         // ตรวจสอบว่ามี username
         if (!obj) {
-          reject(ErrorUnauthorized("Username not found"));
-        } else {
-          // ตรวจสอบ Password
-          if (!obj.validPassword(data.Password)) {
-            reject(ErrorUnauthorized("Password is invalid."));
+          let staff = await Staff.findOne({
+            where: {
+              StaffMobilePhone: data.Username,
+              isRemove: 0,
+              isActive: 1,
+            },
+          });
+          console.log(staff.StaffID)
+          if (staff) {
+            obj = await db.findOne({
+              where: { StaffID: staff.StaffID},
+              include: { all: true },
+            });
+            console.log(obj )
+          } else {
+            reject(ErrorUnauthorized("Username not found"));
           }
+        }
 
-          if (obj.IsApprove === 0) {
-            reject(ErrorUnauthorized("รออนุมัติ"));
-          }
+        // ตรวจสอบ Password
+        if (!obj.validPassword(data.Password)) {
+          reject(ErrorUnauthorized("Password is invalid."));
+        }
 
-          if (obj.IsApprove === 2) {
-            reject(ErrorUnauthorized("ไม่อนุมัติ"));
-          }
+        if (obj.IsApprove === 0) {
+          reject(ErrorUnauthorized("รออนุมัติ"));
+        }
+
+        if (obj.IsApprove === 2) {
+          reject(ErrorUnauthorized("ไม่อนุมัติ"));
         }
 
         // ip ::ffff:
@@ -432,8 +440,7 @@ const methods = {
           animalTypeArray.push(element.AnimalTypeName);
         });
 
-        
-        obj.LastLogin = Date.now()
+        obj.LastLogin = Date.now();
         obj.save();
 
         res = {
