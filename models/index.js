@@ -175,11 +175,16 @@ const CMToAT = require("./CMToAT");
 
 const DiseaseActivityAnimal = require("./DiseaseActivityAnimal");
 const Cart = require("./Cart");
+const LoginLog = require("./LoginLog");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });
 Amphur.associate({ Province });
+
+LoginLog.associate({
+  User
+})
 
 Organization.associate({
   OrganizationType,
@@ -707,6 +712,7 @@ PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
+
 
 // เคย error เรื่องของลำดับด้วย
 

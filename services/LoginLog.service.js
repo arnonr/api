@@ -2,6 +2,8 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/LoginLog"),
   { Op } = require("sequelize");
+const User = require("../models/User");
+const Staff = require("../models/Staff");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -43,6 +45,11 @@ const methods = {
     if (!isNaN(limit)) query["limit"] = limit;
 
     if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [
+      { all: true, required: false },
+      { model: User, include: { model: Staff,as: 'Staff' } },
+    ];
 
     return { query: query };
   },
@@ -109,7 +116,7 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-       // Update
+        // Update
         data.LoginLogID = parseInt(id);
 
         await db.update(data, { where: { LoginLogID: id } });

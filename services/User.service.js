@@ -415,9 +415,11 @@ const methods = {
           }
         }
 
+        // ip ::ffff:
+
         let loginLog = new LoginLog({
           UserID: obj.UserID,
-          IPAddress: ip,
+          IPAddress: ip.substring(7),
           LoginDatetime: Date.now(),
           Device: JSON.stringify(device),
           CreatedUserID: obj.UserID,

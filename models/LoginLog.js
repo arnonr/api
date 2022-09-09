@@ -1,7 +1,18 @@
 const { Model, DataTypes } = require("sequelize"),
   { sequelize } = require("../configs/databases");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
+
 class LoginLog extends Model {
+  static associate(models) {
+    this.belongsTo(models.User, {
+      foreignKey: "UserID",
+    });
+  }
   // Custom JSON Response
   toJSON() {
     return {
@@ -77,6 +88,14 @@ LoginLog.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ThaiLoginDatetime: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.LoginDatetime
+          ? dayjs(this.LoginDatetime).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
     },
   },
   {
