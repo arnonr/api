@@ -19,6 +19,7 @@ module.exports = async (app) => {
     "http://localhost:8080",
     "http://178.128.216.177",
     "http://192.168.1.131:8080",
+    "http://178.128.216.177:8080",
   ];
   const corsOptions = {
     origin: function (origin, callback) {
