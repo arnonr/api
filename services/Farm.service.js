@@ -353,7 +353,7 @@ const methods = {
 
         resolve({ FarmNumberGenerate: FarmNumberGenerate });
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(error);
       }
     });
   },
