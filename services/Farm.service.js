@@ -9,6 +9,8 @@ const Project = require("../models/Project");
 const Organization = require("../models/Organization");
 const Farm = require("../models/Farm");
 const Farmer = require("../models/Farmer");
+const Tumbol = require("../models/Tumbol");
+const { findOne, findByPk } = require("../models/Project");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -345,8 +347,10 @@ const methods = {
           // if (!organization) {
           //   reject(ErrorNotFound("Organization ID: not found"));
           // } else {
+            let tumbol = Tumbol.findByPk(req.query.TumbolID);
+
             FarmNumberGenerate = parseInt(
-              req.query.ProvinceID + req.query.AmphurID + req.query.TumbolID + "0001"
+              tumbol.TumbolCode.substring(0,6) + "0001"
             );
           // }
         }
