@@ -4,12 +4,17 @@ const config = require("../configs/app"),
   { Op } = require("sequelize");
 
 const Organization = require("../models/Organization");
+const OrganizationType = require("../models/OrganizationType");
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
 const AnimalStatus = require("../models/AnimalStatus");
 const ProductionStatus = require("../models/ProductionStatus");
 const AI = require("../models/AI");
+const Province = require("../models/Province");
+const Amphur = require("../models/Amphur");
+const Tumbol = require("../models/Tumbol");
+const Semen = require("../models/Semen");
 
 const methods = {
   report1(req) {
@@ -266,7 +271,7 @@ const methods = {
             let uniqueAIs = ai.filter((element, index) => {
               return ai.indexOf(element) === index;
             });
-            
+
             s.r1 = uniqueAIs.length();
             s.r2 = ai.length();
             return s;
@@ -330,6 +335,108 @@ const methods = {
           // FarmCount: farms.length,
         };
         resolve(data);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+  report4(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // console.log("ARNON")
+        // let orgType = await OrganizationType.findAll();
+        // let org = await Organization.findAll();
+
+        // org.forEach(el => {
+        //   let index = orgType.find((ot) => {
+        //     console.log(ot.OrganizationTypeCode)
+        //     console.log(el.OrganizationTypeID)
+        //     return ot.OrganizationTypeCode == el.OrganizationTypeID
+        //   })
+        //   console.log(index)
+        //   el.OrganizationTypeID = index.OrganizationTypeID
+        //   el.save();
+        // });
+
+        // let province = await Province.findAll();
+        // let org = await Organization.findAll();
+
+        // org.forEach(el => {
+        //   let index = province.find((pv) => {
+        //     return pv.ProvinceCode.substring(0, 2) == el.OrganizationProvinceID
+        //   })
+        //   if(index){
+        //     el.OrganizationProvinceID = index.ProvinceID
+        //     el.save();
+        //   }
+
+        // });
+
+        let tumbol = await Tumbol.findAll();
+
+        let id = 63008;
+        let org = await Farm.findByPk(id);
+
+        org.forEach(el => {
+          let index = tumbol.find((pv) => {
+            return pv.TumbolCode.substring(0, 6) == el.FarmTumbolID
+          })
+          if(index){
+            el.FarmProvinceID = index.ProvinceID
+            el.FarmAmphurID = index.AmphurID
+            el.FarmTumbolID = index.TumbolID
+            el.FarmZipCode = index.Zipcode
+            el.save();
+          }
+
+        });
+
+        // let tumbol = await Tumbol.findAll();
+        // let org = await Organization.findAll();
+
+        // org.forEach(el => {
+        //   let index = tumbol.find((pv) => {
+        //     return pv.TumbolID == el.OrganizationTumbolID
+        //   })
+        //   if(index){
+        //     // el.OrganizationTumbolID = index.TumbolID
+        //     el.OrganizationZipCode = index.Zipcode
+        //     el.save();
+        //   }
+
+        // });
+
+        // let orgParent = await Organization.findAll();
+        // let org = await Organization.findAll();
+
+        // org.forEach(el => {
+        //   let index = orgParent.find((pv) => {
+        //     return pv.OrganizationCode == el.ParentOrganizationID
+        //   })
+        //   if(index){
+        //     el.ParentOrganizationID = index.OrganizationID
+        //     el.save();
+        //   }
+
+        // });
+
+        // let semen = await Semen.findAll({ where: { BreederID: 1 } });
+        // let animal = await Animal.findAll();
+
+        // if (semen) {
+        //   semen.forEach((el) => {
+        //     let index = animal.find((pv) => {
+        //       return pv.AnimalIdentificationID == el.SemenNumber;
+        //     });
+
+        //     if (index) {
+        //       el.BreederID = index.AnimalID;
+        //       el.save();
+        //     }
+        //   });
+        // }
+
+        resolve({});
       } catch (error) {
         reject(ErrorNotFound(error));
       }

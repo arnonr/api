@@ -18,6 +18,8 @@ const GroupAuthorize = require("../models/GroupAuthorize");
 var requestIp = require("request-ip");
 const LoginLog = require("../models/LoginLog");
 const Staff = require("../models/Staff");
+const Organization = require("../models/Organization");
+const Province = require("../models/Province");
 
 const methods = {
   async scopeSearch(req, limit, offset) {
@@ -386,7 +388,19 @@ const methods = {
         let obj = null;
         obj = await db.findOne({
           where: { Username: data.Username, isRemove: 0, isActive: 1 },
-          include: { all: true },
+          include: [
+            { all: true },
+            {
+              model: Staff,
+              as: "Staff",
+              include: {
+                model: Organization,
+                as: "Organization",
+                required: true,
+                include: [{ model: Province, as: "Province" }],
+              },
+            },
+          ],
         });
 
         // ตรวจสอบว่ามี username
@@ -400,10 +414,10 @@ const methods = {
           });
           if (staff) {
             obj = await db.findOne({
-              where: { StaffID: staff.StaffID},
+              where: { StaffID: staff.StaffID },
               include: { all: true },
             });
-            console.log(obj )
+            console.log(obj);
           } else {
             reject(ErrorUnauthorized("Username not found"));
           }
@@ -485,24 +499,24 @@ const methods = {
         });
 
         // Send mail
-        let transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
-          port: 587,
-          secure: false,
-          auth: {
-            // ข้อมูลการเข้าสู่ระบบ
-            user: "edocument@fba.kmutnb.ac.th", // email user ของเรา
-            pass: "edoc2565", // email password
-          },
-        });
+        // let transporter = nodemailer.createTransport({
+        //   host: "smtp.gmail.com",
+        //   port: 587,
+        //   secure: false,
+        //   auth: {
+        //     // ข้อมูลการเข้าสู่ระบบ
+        //     user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+        //     pass: "edoc2565", // email password
+        //   },
+        // });
 
-        let info = await transporter.sendMail({
-          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: inserted.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
-          subject: "ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
-          // text: "d", // plain text body
-          html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
-        });
+        // let info = await transporter.sendMail({
+        //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+        //   to: inserted.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+        //   subject: "ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+        //   // text: "d", // plain text body
+        //   html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
+        // });
 
         let res = methods.findById(inserted.UserID);
 

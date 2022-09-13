@@ -86,13 +86,13 @@ class Staff extends Model {
             MarriedStatusName: this.get().MarriedStatus.MarriedStatusName,
           }
         : undefined,
-      Organization: this.get().Organization
-        ? {
-            OrganizationCode: this.get().Organization.OrganizationCode,
-            OrganizationName: this.get().Organization.OrganizationName,
-            // Parent: this.get().Organization.AIZoneID,
-          }
-        : undefined,
+      // Organization: this.get().Organization
+      //   ? {
+      //       OrganizationCode: this.get().Organization.OrganizationCode,
+      //       OrganizationName: this.get().Organization.OrganizationName,
+      //       // Parent: this.get().Organization.AIZoneID,
+      //     }
+      //   : undefined,
       PositionType: this.get().PositionType
         ? {
             PositionTypeCode: this.get().PositionType.PositionTypeCode,

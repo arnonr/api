@@ -11,6 +11,7 @@ router.get(
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
 router.get(
   "/:id",
   auth.required,

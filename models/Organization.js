@@ -49,14 +49,14 @@ class Organization extends Model {
               this.get().OrganizationZone.OrganizationZoneName,
           }
         : "",
-      Province: this.get().Province
-        ? {
-            ProvinceID: this.get().Province.ProvinceID,
-            ProvinceCode: this.get().Province.ProvinceCode,
-            ProvinceName: this.get().Province.ProvinceName,
-            ProvinceNameEN: this.get().Province.ProvinceNameEN,
-          }
-        : "",
+      // Province: this.get().Province
+      //   ? {
+      //       ProvinceID: this.get().Province.ProvinceID,
+      //       ProvinceCode: this.get().Province.ProvinceCode,
+      //       ProvinceName: this.get().Province.ProvinceName,
+      //       ProvinceNameEN: this.get().Province.ProvinceNameEN,
+      //     }
+      //   : "",
       Amphur: this.get().Amphur
         ? {
             AmphurID: this.get().Amphur.AmphurID,
