@@ -19,4 +19,11 @@ router.get(
   controllers.onGetReport1
 );
 
+router.get(
+  "/report4",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGetReport4
+);
+
 module.exports = router;

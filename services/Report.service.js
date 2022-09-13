@@ -15,6 +15,8 @@ const Province = require("../models/Province");
 const Amphur = require("../models/Amphur");
 const Tumbol = require("../models/Tumbol");
 const Semen = require("../models/Semen");
+const Project = require("../models/Project");
+const ProjectToAnimalType = require("../models/ProjectToAnimalType");
 
 const methods = {
   report1(req) {
@@ -372,24 +374,25 @@ const methods = {
 
         // });
 
-        let tumbol = await Tumbol.findAll();
+        // let tumbol = await Tumbol.findAll();
 
-        let id = 63008;
-        let org = await Farm.findByPk(id);
+        // let id = 63008;
 
-        org.forEach(el => {
-          let index = tumbol.find((pv) => {
-            return pv.TumbolCode.substring(0, 6) == el.FarmTumbolID
-          })
-          if(index){
-            el.FarmProvinceID = index.ProvinceID
-            el.FarmAmphurID = index.AmphurID
-            el.FarmTumbolID = index.TumbolID
-            el.FarmZipCode = index.Zipcode
-            el.save();
-          }
+        // let org = await Farm.findByPk(id);
 
-        });
+        // org.forEach(el => {
+        //   let index = tumbol.find((pv) => {
+        //     return pv.TumbolCode.substring(0, 6) == el.FarmTumbolID
+        //   })
+        //   if(index){
+        //     el.FarmProvinceID = index.ProvinceID
+        //     el.FarmAmphurID = index.AmphurID
+        //     el.FarmTumbolID = index.TumbolID
+        //     el.FarmZipCode = index.Zipcode
+        //     el.save();
+        //   }
+
+        // });
 
         // let tumbol = await Tumbol.findAll();
         // let org = await Organization.findAll();
@@ -435,6 +438,23 @@ const methods = {
         //     }
         //   });
         // }
+
+        let project = Project.findAll();
+
+        (await project).forEach((e) => {
+          let type = JSON.parse(e.AnimalTypeID);
+
+          type.forEach(async (t) => {
+            let pa = new ProjectToAnimalType({
+              ProjectID: e.ProjectID,
+              AnimalTypeID: t,
+              CreatedUserID: 1,
+              CreatedDatetime: Date.now(),
+            });
+
+            await pa.save();
+          });
+        });
 
         resolve({});
       } catch (error) {

@@ -19,6 +19,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetReport4(req, res) {
+    try {
+      let result = await Service.report4(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };
