@@ -13,7 +13,7 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.GetUserID) $where["UserID"] = req.query.GetUserID;
+    if (req.body.GetUserID) $where["UserID"] = req.body.GetUserID;
 
     if (req.query.CartID) $where["CartID"] = req.query.CartID;
 
