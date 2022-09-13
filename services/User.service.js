@@ -415,7 +415,19 @@ const methods = {
           if (staff) {
             obj = await db.findOne({
               where: { StaffID: staff.StaffID },
-              include: { all: true },
+              include: [
+                { all: true },
+                {
+                  model: Staff,
+                  as: "Staff",
+                  include: {
+                    model: Organization,
+                    as: "Organization",
+                    required: true,
+                    include: [{ model: Province, as: "Province" }],
+                  },
+                },
+              ],
             });
             console.log(obj);
           } else {
