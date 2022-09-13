@@ -347,7 +347,7 @@ const methods = {
           // if (!organization) {
           //   reject(ErrorNotFound("Organization ID: not found"));
           // } else {
-            let tumbol = Tumbol.findByPk(req.query.TumbolID);
+            let tumbol = await Tumbol.findByPk(req.query.TumbolID);
 
             FarmNumberGenerate = parseInt(
               tumbol.TumbolCode.substring(0,6) + "0001"

@@ -93,7 +93,7 @@ LoginLog.init(
       type: DataTypes.VIRTUAL,
       get() {
         return this.LoginDatetime
-          ? dayjs(this.LoginDatetime).locale("th").format("DD/MM/BBBB")
+          ? dayjs(this.LoginDatetime).locale("th").format("DD/MM/BBBB HH:mm:ss")
           : null;
       },
     },
