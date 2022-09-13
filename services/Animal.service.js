@@ -1992,7 +1992,7 @@ const methods = {
         AnimalBreedArr.forEach((b) => {
           if (data[b]) {
             const found = HF.find((element) => {
-              return Math.abs(element - data[b]) < 0.00732421875; // = 0.0048828125
+              return Math.abs(element - data[b]) < 0.00732421874// 0.00732421875; // = 0.0048828125
             });
 
             data[b] = found.toFixed(3);

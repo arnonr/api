@@ -958,7 +958,7 @@ Animal.init(
 
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent1 +
+            this.AnimalBreedPercent1.substring(0,this.AnimalBreedPercent1.length-1) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -967,7 +967,7 @@ Animal.init(
           let breed = this.AnimalBreed2.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent2 +
+            this.AnimalBreedPercent2.substring(0,this.AnimalBreedPercent2.length-1) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -976,7 +976,7 @@ Animal.init(
           let breed = this.AnimalBreed3.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent3 +
+            this.AnimalBreedPercent3.substring(0,this.AnimalBreedPercent3.length-1)  +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -985,7 +985,7 @@ Animal.init(
           let breed = this.AnimalBreed4.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent4 +
+            this.AnimalBreedPercent4.substring(0,this.AnimalBreedPercent4.length-1)  +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -994,7 +994,7 @@ Animal.init(
           let breed = this.AnimalBreed5.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent5 +
+            this.AnimalBreedPercent5.substring(0,this.AnimalBreedPercent5.length-1)  +
             breed.AnimalBreedShortName +
             " ";
         }
