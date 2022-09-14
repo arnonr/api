@@ -1726,12 +1726,12 @@ const methods = {
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.FarmName) {
-      $where["$AnimalFarm.FarmName$"] = { 
+      $where["$AnimalFarm.FarmName$"] = {
         [Op.like]: "%" + req.query.FarmName + "%",
       };
     }
 
-    // 
+    //
     // if (req.query.ProjectID) {
     //   WhereProject = {
     //     ProjectID: {
@@ -1743,8 +1743,8 @@ const methods = {
     let WhereFarmer = null;
     if (req.query.FarmerName) {
       WhereFarmer = where(fn("concat", col("GivenName"), col("Surname")), {
-        [Op.like]: `%${req.query.FarmerName}%`
-    });
+        [Op.like]: `%${req.query.FarmerName}%`,
+      });
     }
 
     if (req.query.AnimalFirstBreed)
@@ -1992,7 +1992,7 @@ const methods = {
         AnimalBreedArr.forEach((b) => {
           if (data[b]) {
             const found = HF.find((element) => {
-              return Math.abs(element - data[b]) < 0.00732421875// 0.00732421875; // = 0.0048828125
+              return Math.abs(element - data[b]) < 0.00732421875; // 0.00732421875; // = 0.0048828125
             });
 
             data[b] = found.toFixed(3);
@@ -2163,7 +2163,7 @@ const methods = {
   },
 
   GenerateNumber(FarmID, BirthDate, AnimalTypeID) {
-    // หมายเลขประจำตัวสัตว์ ระบบ auto generate ให้ 
+    // หมายเลขประจำตัวสัตว์ ระบบ auto generate ให้
     // มี FORMAT ตามปีเกิด + เลขทะเบียนฟาร์ม + running number 5 หลัก เช่น ปีเกิดคือ 2022 เลขทะเบียนฟาร์มคือ 101010-0001 เลขที่ได้จะเป็น 1022101010-0001-00001 กรณีที่ไม่ทราบปีเกิดให้ใช้ปีที่บันทึกข้อมูล
     return new Promise(async (resolve, reject) => {
       try {
@@ -2201,10 +2201,16 @@ const methods = {
             }
 
             AnimalNumberGenerate =
-              year + farm.FarmIdentificationNumber + codeLastest;
+              year +
+              farm.FarmIdentificationNumber +
+              codeLastest +
+              Math.floor(Math.random() * 10);
           } else {
             AnimalNumberGenerate =
-              year + farm.FarmIdentificationNumber + "00001";
+              year +
+              farm.FarmIdentificationNumber +
+              "00001" +
+              Math.floor(Math.random() * 10);
           }
 
           //
@@ -2839,10 +2845,10 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         let animal = await db.findByPk(req.params.id, {
-          include: [{all: true},{ model: Farm, as: "AnimalFarm" }],
+          include: [{ all: true }, { model: Farm, as: "AnimalFarm" }],
         });
 
-        console.log(animal)
+        console.log(animal);
 
         let ai = await AI.findAll({
           where: { AnimalID: req.params.id, isRemove: 0 },
