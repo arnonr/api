@@ -442,6 +442,9 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
+
+        console.log(data)
+
         //check เงื่อนไขตรงนี้ได้
         if (data.LeftOvarySymptomID) {
           if (!Array.isArray(data.LeftOvarySymptomID)) {
