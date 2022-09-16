@@ -195,6 +195,7 @@ Organization.associate({
 });
 
 Staff.associate({
+  User,
   Title,
   Gender,
   MarriedStatus,

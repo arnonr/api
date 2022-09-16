@@ -60,6 +60,10 @@ class Embryo extends Model {
       foreignKey: "EmbryoStageID",
       as: "EmbryoStage",
     });
+
+    this.belongsTo(models.Staff, {
+      foreignKey: "ResponsibilityStaffID",
+    });
   }
   // Custom JSON Response
   toJSON() {
@@ -263,6 +267,11 @@ Embryo.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    ResponsibilityStaffID: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "รหัสเจ้าหน้าที่",
     },
   },
   {
