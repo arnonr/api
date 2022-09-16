@@ -10,7 +10,7 @@ const Organization = require("../models/Organization");
 const Farm = require("../models/Farm");
 const Farmer = require("../models/Farmer");
 const Tumbol = require("../models/Tumbol");
-const { findOne, findByPk } = require("../models/Project");
+// const { findOne, findByPk } = require("../models/Project");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -20,6 +20,8 @@ const methods = {
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
     if (req.query.FarmerID) $where["FarmerID"] = req.query.FarmerID;
+
+    if (req.query.FarmType) $where["FarmType"] = req.query.FarmType;
 
     if (req.query.FarmIdentificationNumber)
       $where["FarmIdentificationNumber"] = {
@@ -361,6 +363,7 @@ const methods = {
       }
     });
   },
+
   photo(id, filename) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -382,7 +385,7 @@ const methods = {
       }
     });
   },
-
+  
   Notification(id) {
     // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
     return new Promise(async (resolve, reject) => {

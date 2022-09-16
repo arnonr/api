@@ -214,6 +214,11 @@ Farm.init(
       allowNull: true,
       comment: "รหัสอ้างอิงโครงการ (Array)",
     },
+    FarmType: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "ประเภทโครงการ",
+    },
     isActive: {
       type: DataTypes.TINYINT(1),
       allowNull: false,
