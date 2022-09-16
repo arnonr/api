@@ -20,6 +20,15 @@ const methods = {
     }
   },
 
+  async onGetReport2(req, res) {
+    try {
+      let result = await Service.report2(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetReport3(req, res) {
     try {
       let result = await Service.report3(req);
