@@ -272,7 +272,7 @@ const methods = {
             )
           );
 
-          let giveBirth = GiveBirth.findAll({
+          let giveBirth = await GiveBirth.findAll({
             where: {
               ResponsibilityStaffID: s.StaffID,
             },
@@ -281,20 +281,22 @@ const methods = {
           let childM = 0;
           let childF = 0;
 
-          giveBirth.filter((el, index) => {
-            // ChildGender
-            if (el.ChildGender != null) {
-              let ChildGender = el.ChildGender.split(",");
-              for (let cg of ChildGender) {
-                if (cg == "M") {
-                  childM = childM + 1;
-                } else if (cg == "F") {
-                  childF = childF + 1;
-                } else {
+          if (giveBirth) {
+            giveBirth.filter((el, index) => {
+              // ChildGender
+              if (el.ChildGender != null) {
+                let ChildGender = el.ChildGender.split(",");
+                for (let cg of ChildGender) {
+                  if (cg == "M") {
+                    childM = childM + 1;
+                  } else if (cg == "F") {
+                    childF = childF + 1;
+                  } else {
+                  }
                 }
               }
-            }
-          });
+            });
+          }
 
           res.push({
             StaffNumber: s.StaffNumber,
@@ -310,8 +312,7 @@ const methods = {
             childT: childM + childF,
           });
         }
-
-        console.log(res);
+        
         // );
 
         // // ขึ้นข้อมูล จำนวนที่ผสม
