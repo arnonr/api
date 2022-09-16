@@ -682,6 +682,42 @@ const methods = {
       }
     });
   },
+
+  forgotpassword(data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const obj = new db(data);
+        obj.Password = obj.passwordHash(obj.Password);
+        const inserted = await obj.save();
+
+        // Send mail
+        let transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false,
+          auth: {
+            // ข้อมูลการเข้าสู่ระบบ
+            user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+            pass: "edoc2565", // email password
+          },
+        });
+
+        let info = await transporter.sendMail({
+          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+          to: inserted.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          subject: "ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+          // text: "d", // plain text body
+          html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
+        });
+
+        let res = methods.findById(inserted.UserID);
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };
