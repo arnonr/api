@@ -3,6 +3,10 @@ const config = require("../configs/app"),
   db = require("../models"),
   { Op } = require("sequelize");
 
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
 const Organization = require("../models/Organization");
 const OrganizationType = require("../models/OrganizationType");
 const Staff = require("../models/Staff");
@@ -235,24 +239,87 @@ const methods = {
 
         let res = [];
 
+        // if(){
+
+        // }
+        // date: {
+        //   [Op.between]: [startOfDay(parseDate), endOfDay(parseDate)],
+        //  },
+
         // await Promise.all(
+
+        let AIDate = {
+          [Op.ne]: null,
+        };
+
+        let AnimalCreatedDatetime = {
+          [Op.ne]: null,
+        };
+
+        let CheckupDate = {
+          [Op.ne]: null,
+        };
+
+        let GiveBirthDate = {
+          [Op.ne]: null,
+        };
+
+        if (req.query.StartDate) {
+          AIDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          AnimalCreatedDatetime = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          CheckupDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          GiveBirthDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
         for (let s of staff) {
+          let AIWhere = {
+            ResponsibilityStaffID: s.StaffID,
+            AIDate: AIDate,
+          };
+
           const ai = await AI.findAll({
-            where: {
-              ResponsibilityStaffID: s.StaffID,
-            },
+            where: AIWhere,
           });
+
+          let AnimalWhere = {
+            CreatedUserID: s.StaffID,
+            CreatedDatetime: AnimalCreatedDatetime,
+          };
 
           const animal = await Animal.findAll({
-            where: {
-              CreatedUserID: s.StaffID,
-            },
+            where: AnimalWhere,
           });
 
+          let PregnancyCheckupWhere = {
+            ResponsibilityStaffID: s.StaffID,
+            CheckupDate: CheckupDate,
+          };
+
           const pregnancyCheckup = await PregnancyCheckup.findAll({
-            where: {
-              ResponsibilityStaffID: s.StaffID,
-            },
+            where: PregnancyCheckupWhere,
           });
 
           let pregnancyStatus1 = pregnancyCheckup.filter((el, index) => {
@@ -272,10 +339,13 @@ const methods = {
             )
           );
 
+          let giveBirthWhere = {
+            ResponsibilityStaffID: s.StaffID,
+            GiveBirthDate: GiveBirthDate,
+          };
+
           let giveBirth = await GiveBirth.findAll({
-            where: {
-              ResponsibilityStaffID: s.StaffID,
-            },
+            where: giveBirthWhere,
           });
 
           let childM = 0;
@@ -312,7 +382,7 @@ const methods = {
             childT: childM + childF,
           });
         }
-        
+
         // );
 
         // // ขึ้นข้อมูล จำนวนที่ผสม
