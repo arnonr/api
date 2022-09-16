@@ -17,6 +17,8 @@ const Tumbol = require("../models/Tumbol");
 const Semen = require("../models/Semen");
 const Project = require("../models/Project");
 const ProjectToAnimalType = require("../models/ProjectToAnimalType");
+const PregnancyCheckup = require("../models/PregnancyCheckup");
+const GiveBirth = require("../models/GiveBirth");
 
 const methods = {
   report1(req) {
@@ -206,137 +208,137 @@ const methods = {
   report3(req) {
     return new Promise(async (resolve, reject) => {
       try {
-        // Search
         let $where = {};
-        // req.query.AIZoneID
-        // req.query.startDate
-        // req.query.endDate
 
-        // ต้อง get เจ้าหน้าที่ที่อยู่ในศูนย์วิจัยทั้งหมด
-        if (req.query.AIZoneID) {
-          // AIZONE มาจาก organizationID
-          // $where["ParentOrganizationID"] = req.query.ParentOrganizationID;
-          // let organization = `with recursive cte (OrganizationID, ParentOrganizationID) as (
-          //   select     OrganizationID,
-          //              ParentOrganizationID
-          //   from       Organization
-          //   where      ParentOrganizationID = ${req.query.OrganizationID}
-          //   union all
-          //   select     o.OrganizationID,
-          //              o.ParentOrganizationID
-          //   from       Organization o
-          //   inner join cte
-          //           on o.ParentOrganizationID = cte.OrganizationID
-          // )
-          // select * from cte;`;
+        let provinceIDArr = [];
+        const province = await Province.findAll({
+          where: { AIZoneID: req.query.AIZoneID },
+        });
 
-          // const res = await sequelize.query(organization);
+        province.forEach((p) => {
+          provinceIDArr.push(p.ProvinceID);
+        });
 
-          // let orgArr = [req.query.ParentOrganizationID];
-          // res[0].map((r) => {
-          //   orgArr.push(r.OrganizationID);
-          // });
+        let organizationIDArr = [];
+        const organization = await Organization.findAll({
+          where: { OrganizationProvinceID: { [Op.in]: provinceIDArr } },
+        });
 
-          // $where["OrganizationID"] = { [Op.in]: orgArr };
-          // $where["OrganizationAiZoneID"] = req.query.AIZoneID;
+        organization.forEach((o) => {
+          organizationIDArr.push(o.OrganizationID);
+        });
 
-          let organization = await Organization.findAll({
+        // ตาราง staff,
+        const staff = await Staff.findAll({
+          where: { StaffOrganizationID: { [Op.in]: organizationIDArr } },
+        });
+
+        let res = [];
+
+        // await Promise.all(
+        for (let s of staff) {
+          const ai = await AI.findAll({
             where: {
-              OrganizationAiZoneID: req.query.AIZoneID,
+              ResponsibilityStaffID: s.StaffID,
             },
           });
 
-          let orgArr = [];
-          res[0].map((r) => {
-            orgArr.push(r.OrganizationID);
+          const animal = await Animal.findAll({
+            where: {
+              CreatedUserID: s.StaffID,
+            },
           });
 
-          // $where["OrganizationID"] = { [Op.in]: orgArr };
+          const pregnancyCheckup = await PregnancyCheckup.findAll({
+            where: {
+              ResponsibilityStaffID: s.StaffID,
+            },
+          });
+
+          let pregnancyStatus1 = pregnancyCheckup.filter((el, index) => {
+            return el.PregnancyCheckStatusID == 1;
+          });
+
+          const seen = new Set();
+          let uniqueAIs = ai.filter((el, index) => {
+            const duplicate = seen.has(el.AnimalID);
+            seen.add(el.AnimalID);
+            return !duplicate;
+          });
+
+          let percent = parseFloat(
+            ((pregnancyStatus1.length * 100) / pregnancyCheckup.length).toFixed(
+              2
+            )
+          );
+
+          let giveBirth = GiveBirth.findAll({
+            where: {
+              ResponsibilityStaffID: s.StaffID,
+            },
+          });
+
+          let childM = 0;
+          let childF = 0;
+
+          giveBirth.filter((el, index) => {
+            // ChildGender
+            if (el.ChildGender != null) {
+              let ChildGender = el.ChildGender.split(",");
+              for (let cg of ChildGender) {
+                if (cg == "M") {
+                  childM = childM + 1;
+                } else if (cg == "F") {
+                  childF = childF + 1;
+                } else {
+                }
+              }
+            }
+          });
+
+          res.push({
+            StaffNumber: s.StaffNumber,
+            StaffFullName: `${s.StaffGivenName} ${s.StaffSurname}`,
+            r1: uniqueAIs.length,
+            r2: ai.length,
+            r3: animal.length,
+            r4: pregnancyCheckup.length,
+            r5: pregnancyStatus1.length,
+            percent: percent,
+            childM: childM,
+            childF: childF,
+            childT: childM + childF,
+          });
         }
 
-        // ตาราง staff,
-        let staff = await Staff.findAll({
-          where: { OrganizationID: { [Op.in]: orgArr } },
-        });
-
-        staff = await Promise.all(
-          staff.map(async (s) => {
-            let ai = await AI.findAll({
-              where: {
-                ResponsibilityStaffID: s.StaffID,
-              },
-            });
-            // s.r1
-            // let uniqueAIs = [...new Set(ai)];
-            // s.r1 = uniqueAIs.length
-
-            let uniqueAIs = ai.filter((element, index) => {
-              return ai.indexOf(element) === index;
-            });
-
-            s.r1 = uniqueAIs.length();
-            s.r2 = ai.length();
-            return s;
-          })
-        );
-
-        // ขึ้นข้อมูล จำนวนที่ผสม
-
-        // ZoneID อ้างจากจังหวัด
-        if (req.query.AnimalEarID)
-          $where["AnimalEarID"] = req.query.AnimalEarID;
-
-        const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
-        query["include"] = [
-          {
-            model: AnimalStatus,
-          },
-          {
-            model: ProductionStatus,
-          },
-          {
-            model: Farm,
-          },
-        ];
-
-        let animal = await Animal.findOne({
-          ...query,
-        });
-
-        // animal = await Promise.all(
-        //   animal.map(async (e) => {
-
-        //   })
+        console.log(res);
         // );
 
-        let data = {
-          AnimalEarID: animal.AnimalEarID,
-          AnimalMicrochip: animal.AnimalMicrochip,
-          AnimalBirthDate: animal.AnimalBirthDate,
-          AnimalStatus: animal.AnimalStatus.AnimalStatusName,
-          ProductionStatus: animal.ProductionStatus.ProductionStatusName,
-          AnimalPar: animal.AnimalPar,
-          //
-          AnimalBreed: animal.AnimalBreedAll,
-          // father
+        // // ขึ้นข้อมูล จำนวนที่ผสม
 
-          // father Breed
-          // moather
-          // moather breed
-          AnimalSource: animal.AnimalSource, // แปลไทย
-          // วันที่เข้าฝูง คือไรว่ะ
-          Farm: animal.Farm.FarmName,
-          FarmIdentificationNumber: animal.Farm.FarmIdentificationNumber,
-          //
+        // // ZoneID อ้างจากจังหวัด
+        // if (req.query.AnimalEarID)
+        //   $where["AnimalEarID"] = req.query.AnimalEarID;
 
-          // Young: young,
-          // Child: child,
-          // Total: total,
-          // Farms: farms,
-          // FarmCount: farms.length,
-        };
-        resolve(data);
+        // const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        // query["include"] = [
+        //   {
+        //     model: AnimalStatus,
+        //   },
+        //   {
+        //     model: ProductionStatus,
+        //   },
+        //   {
+        //     model: Farm,
+        //   },
+        // ];
+
+        // let animal = await Animal.findOne({
+        //   ...query,
+        // });
+
+        resolve(res);
       } catch (error) {
         reject(ErrorNotFound(error));
       }
