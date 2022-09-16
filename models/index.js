@@ -177,6 +177,8 @@ const DiseaseActivityAnimal = require("./DiseaseActivityAnimal");
 const Cart = require("./Cart");
 const LoginLog = require("./LoginLog");
 
+const News = require("./News");
+
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
 Tumbol.associate({ Amphur, Province });

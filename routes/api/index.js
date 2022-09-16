@@ -21,6 +21,8 @@ router.use("/position", auth.required, require("./Position"));
 router.use("/position-type", auth.required, require("./PositionType"));
 router.use("/married-status", auth.required, require("./MarriedStatus"));
 router.use("/major", auth.required, require("./Major"));
+router.use("/news", auth.required, require("./News"));
+
 router.use(
   "/change-staff-info-log",
   auth.required,
