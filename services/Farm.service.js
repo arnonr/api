@@ -225,7 +225,7 @@ const methods = {
 
         let farmer = Farmer.findByPk(inserted.FarmerID)
 
-        ig(farmer.Email){
+        if(farmer.Email){
           // let transporter = nodemailer.createTransport({
           //   host: "smtp.gmail.com",
           //   port: 587,
