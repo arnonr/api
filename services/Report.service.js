@@ -32,8 +32,6 @@ const methods = {
         let $where = {};
 
         // ZoneID อ้างจากจังหวัด
-        if (req.query.OrganizationZoneID)
-          $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
 
         if (req.query.ProvinceID)
           $where["FarmProvinceID"] = req.query.ProvinceID;
@@ -42,12 +40,18 @@ const methods = {
 
         if (req.query.TumbolID) $where["FarmTumbolID"] = req.query.TumbolID;
 
-        if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+        $whereProvince = {};
+        if (req.query.ZoneID)
+          $whereProvince["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+        if (req.query.AIZoneID) $whereProvince["AIZoneID"] = req.query.AIZoneID;
 
         if (req.query.OrganizationID)
           $where["OrganizationID"] = req.query.OrganizationID;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryProvince = Object.keys($whereProvince).length > 0 ? { where: $whereProvince } : {};
 
         // รายงาน จำนวนตาม animal_status แม่โค โคสาว ลูกโค (เพศเมียทั้งหมด)
         // และตารางเป็นรายการฟาร์ม จำนวนตาม animal_status แม่โค โคสาว ลูกโค (เพศเมียทั้งหมด) และรวม
@@ -71,6 +75,7 @@ const methods = {
 
         let farms = await Farm.findAll({
           ...query,
+          include: { model: Province, as: "Province", queryProvince },
         });
 
         farms = await Promise.all(
