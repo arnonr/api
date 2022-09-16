@@ -102,6 +102,11 @@ GiveBirth.init(
       allowNull: true,
       comment: "ท้องที่",
     },
+    ChildGender: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "เพศลูก M,F",
+    },
     ResponsibilityStaffID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -116,11 +121,6 @@ GiveBirth.init(
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "ระยะการคลอด (วัน)",
-    },
-    PAR: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "ท้องที่",
     },
     BCSID: {
       type: DataTypes.INTEGER(11),

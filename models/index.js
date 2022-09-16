@@ -36,7 +36,7 @@ const User = require("./User");
 const Menu = require("./Menu");
 const Group = require("./Group");
 const GroupAuthorize = require("./GroupAuthorize");
-const ChangeStaffInfoLog = require("./ChangeStaffInfoLog")
+const ChangeStaffInfoLog = require("./ChangeStaffInfoLog");
 
 const Project = require("./Project");
 const ProjectToAnimalType = require("./ProjectToAnimalType");
@@ -109,7 +109,7 @@ const FeedProgram = require("./FeedProgram");
 const FeedProgramAnimal = require("./FeedProgramAnimal");
 const FeedProgramProgress = require("./FeedProgramProgress");
 const FeedProgramProgressFood = require("./FeedProgramProgressFood");
-const FeedProgramProgressAnimal = require("./FeedProgramProgressAnimal")
+const FeedProgramProgressAnimal = require("./FeedProgramProgressAnimal");
 const Food = require("./Food");
 // const FeedPPToRoughages = require("./FeedPPToRoughages");
 // const FeedPPToConcentrate = require("./FeedPPToConcentrate");
@@ -178,6 +178,7 @@ const Cart = require("./Cart");
 const LoginLog = require("./LoginLog");
 
 const News = require("./News");
+const UserFarmer = require("./UserFarmer");
 
 // Associate
 Province.associate({ Region, AIZone, OrganizationZone });
@@ -185,8 +186,13 @@ Tumbol.associate({ Amphur, Province });
 Amphur.associate({ Province });
 
 LoginLog.associate({
-  User
-})
+  User,
+});
+
+UserFarmer.associate({
+  Farmer,
+  Group,
+});
 
 Organization.associate({
   OrganizationType,
@@ -232,8 +238,8 @@ ProjectToAnimalType.associate({ AnimalType, Project });
 UserToAnimalType.associate({ AnimalType, User });
 
 ChangeStaffInfoLog.associate({
-  Staff
-})
+  Staff,
+});
 
 Farm.associate({
   FarmStatus,
@@ -490,7 +496,7 @@ FeedProgram.associate({
   Staff,
   FeedProgramAnimal,
   FeedProgramProgress,
-  AnimalType
+  AnimalType,
 });
 
 FeedProgramAnimal.associate({
@@ -715,7 +721,6 @@ PresetActivity.associate({
   PresetActivityToAnimalType,
   AnimalType,
 });
-
 
 // เคย error เรื่องของลำดับด้วย
 
