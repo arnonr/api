@@ -143,6 +143,129 @@ const methods = {
       }
     });
   },
+  report5(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Search
+        let $where = {};
+
+        // ZoneID อ้างจากจังหวัด
+
+        if (req.query.ProvinceID)
+          $where["FarmProvinceID"] = req.query.ProvinceID;
+
+        if (req.query.AmphurID) $where["FarmAmphurID"] = req.query.AmphurID;
+
+        if (req.query.TumbolID) $where["FarmTumbolID"] = req.query.TumbolID;
+
+        $whereProvince = {};
+        if (req.query.ZoneID)
+          $whereProvince["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+        if (req.query.AIZoneID) $whereProvince["AIZoneID"] = req.query.AIZoneID;
+
+        if (req.query.OrganizationID)
+          $where["OrganizationID"] = req.query.OrganizationID;
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryProvince = Object.keys($whereProvince).length > 0 ? { where: $whereProvince } : {};
+
+        // รายงาน จำนวนตาม animal_status แม่โค โคสาว ลูกโค (เพศเมียทั้งหมด)
+        // และตารางเป็นรายการฟาร์ม จำนวนตาม animal_status แม่โค โคสาว ลูกโค (เพศเมียทั้งหมด) และรวม
+
+        let AnimalTypeID = JSON.parse(req.query.AnimalTypeID);
+        let AnimalStatusID = [];
+
+        if (AnimalTypeID.includes(1) || AnimalTypeID.includes(2)) {
+          AnimalStatusID = [5, 3, 1];
+        } else if (AnimalTypeID.includes(3) || AnimalTypeID.includes(4)) {
+          AnimalStatusID = [10, 8, 6];
+        } else if (AnimalTypeID.includes(17) || AnimalTypeID.includes(18)) {
+          AnimalStatusID = [15, 13, 11];
+        } else {
+        }
+
+        let mom = 0;
+        let young = 0;
+        let child = 0;
+        let total = 0;
+
+        let farms = await Farm.findAll({
+          ...query,
+          include: { model: Province, as: "Province", queryProvince },
+        });
+
+        farms = await Promise.all(
+          farms.map(async (e) => {
+            let f = {
+              FarmIdentificationNumber: e.FarmIdentificationNumber,
+              FarmName: e.FarmName,
+              mom: 0,
+              young: 0,
+              child: 0,
+              total: 0,
+            };
+
+            // แม่พันธุ์
+            let animalStatus1 = await Animal.findAll({
+              where: {
+                FarmID: e.FarmID,
+                AnimalStatusID: AnimalStatusID[0],
+                AnimalSexID: 2,
+                AnimalTypeID: { [Op.in]: AnimalTypeID },
+              },
+            });
+
+            // สาว
+            let animalStatus2 = await Animal.findAll({
+              where: {
+                FarmID: e.FarmID,
+                AnimalStatusID: AnimalStatusID[1],
+                AnimalSexID: 2,
+                AnimalTypeID: { [Op.in]: AnimalTypeID },
+              },
+            });
+
+            // ลูกโค
+            let animalStatus3 = await Animal.findAll({
+              where: {
+                FarmID: e.FarmID,
+                AnimalStatusID: AnimalStatusID[2],
+                AnimalSexID: 2,
+                AnimalTypeID: { [Op.in]: AnimalTypeID },
+              },
+            });
+
+            f.mom = animalStatus1.length;
+            f.young = animalStatus2.length;
+            f.child = animalStatus3.length;
+
+            f.total = f.mom + f.young + f.child;
+
+            mom += f.mom;
+            young += f.young;
+            child += f.child;
+            total += f.total;
+
+            return f;
+          })
+        );
+
+        let data = {
+          Mom: mom,
+          Young: young,
+          Child: child,
+          Total: total,
+          Farms: farms,
+          FarmCount: farms.length,
+        };
+        resolve(data);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
   report2(req) {
     return new Promise(async (resolve, reject) => {
       try {
