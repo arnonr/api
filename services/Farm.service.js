@@ -12,6 +12,8 @@ const Farmer = require("../models/Farmer");
 const Tumbol = require("../models/Tumbol");
 // const { findOne, findByPk } = require("../models/Project");
 
+const nodemailer = require("nodemailer");
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -221,6 +223,29 @@ const methods = {
 
         let res = methods.findById(inserted.FarmID);
 
+        let farmer = Farmer.findByPk(inserted.FarmerID)
+
+        ig(farmer.Email){
+          // let transporter = nodemailer.createTransport({
+          //   host: "smtp.gmail.com",
+          //   port: 587,
+          //   secure: false,
+          //   auth: {
+          //     // ข้อมูลการเข้าสู่ระบบ
+          //     user: "edocument@fba.kmutnb.ac.th", // email user ของเรา
+          //     pass: "edoc2565", // email password
+          //   },
+          // });
+  
+          // let info = await transporter.sendMail({
+          //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+          //   to: farmer.Email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          //   subject: "ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ", // หัวข้ออีเมล
+          //   html: "<b>ฟาร์ม "+inserted.FarmName+"ของคุณได้รับการบันทึกเข้าสู่ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ</b>", // html body
+          // });
+        }
+       
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -349,11 +374,11 @@ const methods = {
           // if (!organization) {
           //   reject(ErrorNotFound("Organization ID: not found"));
           // } else {
-            let tumbol = await Tumbol.findByPk(req.query.TumbolID);
+          let tumbol = await Tumbol.findByPk(req.query.TumbolID);
 
-            FarmNumberGenerate = parseInt(
-              tumbol.TumbolCode.substring(0,6) + "0001"
-            );
+          FarmNumberGenerate = parseInt(
+            tumbol.TumbolCode.substring(0, 6) + "0001"
+          );
           // }
         }
 
@@ -385,7 +410,7 @@ const methods = {
       }
     });
   },
-  
+
   Notification(id) {
     // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
     return new Promise(async (resolve, reject) => {
