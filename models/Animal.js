@@ -91,6 +91,11 @@ class Animal extends Model {
       as: "AnimalType",
     });
 
+    this.belongsTo(models.ProductionStatus, {
+      foreignKey: "ProductionStatusID",
+      as: "ProductionStatus",
+    });
+
     // this.belongsTo(models.GiveBirth, {
     //   foreignKey: "GiveBirthSelfID",
     //   as: "GiveBirthSelf",
@@ -271,11 +276,11 @@ class Animal extends Model {
             noti.push(`อายุมากกว่ากําหนด`);
           }
         } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
-          if (month >= 900) {
+          if (day >= 900) {
             noti.push(`อายุมากกว่ากําหนด`);
           }
         } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
-          if (month >= 360) {
+          if (day >= 360) {
             noti.push(`อายุมากกว่ากําหนด`);
           }
         } else {
