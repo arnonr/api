@@ -346,7 +346,7 @@ AI.init(
 
     BCSID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "คะแนนร่างกาย",
     },
     PAR: {
