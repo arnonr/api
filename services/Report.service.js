@@ -264,6 +264,7 @@ const methods = {
         });
 
         let data = {
+          AnimalID: animal.AnimalID,
           AnimalEarID: animal.AnimalEarID,
           AnimalMicrochip: animal.AnimalMicrochip,
           AnimalName: animal.AnimalName,
