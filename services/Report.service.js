@@ -170,8 +170,8 @@ const methods = {
         // Search
         // ZoneID อ้างจากจังหวัด
         let $where = {};
-        if (req.query.AnimalEarID)
-          $where["AnimalEarID"] = req.query.AnimalEarID;
+        if (req.query.AnimalID)
+          $where["AnimalID"] = req.query.AnimalID;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
