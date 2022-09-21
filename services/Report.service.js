@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models"),
-  { Op } = require("sequelize");
+  { Op, literal } = require("sequelize");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -23,6 +23,8 @@ const Project = require("../models/Project");
 const ProjectToAnimalType = require("../models/ProjectToAnimalType");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 const GiveBirth = require("../models/GiveBirth");
+const AnimalBreed = require("../models/AnimalBreed");
+const ProgressCheckup = require("../models/ProgressCheckup");
 
 const methods = {
   report1(req) {
@@ -151,27 +153,13 @@ const methods = {
       }
     });
   },
-  report5(req) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Search
-        let animal = Animal.findByPk(req.query.AnimalID, {});
-
-        let data = {};
-        resolve(data);
-      } catch (error) {
-        reject(ErrorNotFound(error));
-      }
-    });
-  },
   report2(req) {
     return new Promise(async (resolve, reject) => {
       try {
         // Search
         // ZoneID อ้างจากจังหวัด
         let $where = {};
-        if (req.query.AnimalID)
-          $where["AnimalID"] = req.query.AnimalID;
+        if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
@@ -498,7 +486,201 @@ const methods = {
       }
     });
   },
+ 
   report4(req) {
+    // report พ่อพันธุ์
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+
+        // เราจะค้นหาฟาร์ม จาก
+        if (req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.queryAIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        // ตาราง animal
+        let animalStatusID = null;
+        if (
+          req.query.AnimalTypeID.includes(1) ||
+          req.query.AnimalTypeID.includes(2)
+        ) {
+          animalStatusID = 4;
+        }
+
+        if (
+          req.query.AnimalTypeID.includes(3) ||
+          req.query.AnimalTypeID.includes(4)
+        ) {
+          animalStatusID = 9;
+        }
+
+        if (
+          req.query.AnimalTypeID.includes(17) ||
+          req.query.AnimalTypeID.includes(18)
+        ) {
+          animalStatusID = 14;
+        }
+
+        const animal = await Animal.findAll({
+          attributes: {
+            include: [
+              [
+                literal(`(
+                SELECT Weight
+                FROM ProgressCheckup
+                WHERE
+                  ProgressCheckup.AnimalID = Animal.AnimalID
+                ORDER BY ProgressCheckupID DESC
+                LIMIT 1
+            )`),
+                "Weight",
+              ],
+              [
+                literal(`(
+                SELECT Height
+                FROM ProgressCheckup
+                WHERE
+                  ProgressCheckup.AnimalID = Animal.AnimalID
+                ORDER BY ProgressCheckupID DESC
+                LIMIT 1
+            )`),
+                "Height",
+              ],
+              [
+                literal(`(
+                SELECT SemenNumber
+                FROM Semen
+                WHERE
+                  Semen.BreederID = Animal.AnimalID
+                ORDER BY SemenID DESC
+                LIMIT 1
+            )`),
+                "SemenNumber",
+              ],
+            ],
+          },
+          where: { AnimalStatusID: animalStatusID },
+          include: [
+            {
+              model: Farm,
+              as: "AnimalFarm",
+              ...query,
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed1",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed2",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed3",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed4",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed5",
+            },
+            {
+              model: Animal,
+              as: "AnimalFather",
+            },
+            {
+              model: Animal,
+              as: "AnimalMother",
+            },
+            {
+              model: AnimalStatus,
+              as: "AnimalStatus",
+            },
+          ],
+        });
+        let res = [];
+        animal.forEach((el) => {
+          res.push({
+            AnimalID: el.AnimalID,
+            AnimalEarID: el.AnimalEarID,
+            SemenNumber: el.dataValues.SemenNumber,
+            AnimalName: el.AnimalName,
+            AnimalBreedAll: el.AnimalBreedAll,
+            ThaiAnimalBirthDate: el.ThaiAnimalBirthDate,
+            AnimalWeight: el.dataValues.Weight ? el.dataValues.Weight : "-",
+            AnimalHeight: el.dataValues.Height ? el.dataValues.Height : "-",
+            AnimalFather: el.AnimalFather ? el.AnimalFather.AnimalEarID : "-",
+            AnimalMother: el.AnimalMother ? el.AnimalMother.AnimalEarID : "-",
+            AnimalStatusName: el.AnimalStatus.AnimalStatusName,
+            AnimalSource:
+              el.AnimalSource == "BORN"
+                ? "เกิดในฟาร์ม"
+                : el.AnimalSource == "BUY"
+                ? "ซื้อมา"
+                : el.AnimalSource == "TRANSFER"
+                ? "ย้ายมา"
+                : "-",
+          });
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report99(req) {
     return new Promise(async (resolve, reject) => {
       try {
         // console.log("ARNON")
