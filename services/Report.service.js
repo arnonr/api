@@ -25,6 +25,8 @@ const PregnancyCheckup = require("../models/PregnancyCheckup");
 const GiveBirth = require("../models/GiveBirth");
 const AnimalBreed = require("../models/AnimalBreed");
 const ProgressCheckup = require("../models/ProgressCheckup");
+const TransferEmbryo = require("../models/TransferEmbryo");
+const Embryo = require("../models/Embryo");
 
 const methods = {
   report1(req) {
@@ -486,7 +488,6 @@ const methods = {
       }
     });
   },
-
   report4(req) {
     // report พ่อพันธุ์
     return new Promise(async (resolve, reject) => {
@@ -679,7 +680,6 @@ const methods = {
       }
     });
   },
-
   report5(req) {
     // report รายงานการใช้น้ำเชื้อ
     return new Promise(async (resolve, reject) => {
@@ -855,6 +855,182 @@ const methods = {
                 ? "สำเร็จ"
                 : "ไม่สำเร็จ",
             // Farm
+            FarmName: el.Animal.AnimalFarm.FarmName,
+          });
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+  report6(req) {
+    // report รายงานการใช้น้ำเชื้อ
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+        let $whereTransferEmbryo = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.queryAIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        let $whereEmbryo = {};
+        if (req.query.EmbryoNumber) {
+          $whereEmbryo["EmbryoNumber"] = {
+            [Op.like]: "%" + req.query.EmbryoNumber + "%",
+          };
+        }
+
+        let TransferEmbryoDate = {};
+        if (req.query.StartDate) {
+          $whereTransferEmbryo['TransferDate'] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        $whereEmbryo["EmbryoID"] = { [Op.ne]: null };
+
+        const queryTransferEmbryo =
+          Object.keys($whereTransferEmbryo).length > 0 ? { where: $whereTransferEmbryo } : {};
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const queryEmbryo =
+          Object.keys($whereEmbryo).length > 0 ? { where: $whereEmbryo } : {};
+
+        const ai = await TransferEmbryo.findAll({
+          ...queryTransferEmbryo,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalFather",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalMother",
+                },
+                {
+                  model: AnimalStatus,
+                  as: "AnimalStatus",
+                },
+              ],
+              // ...query,
+            },
+            {
+              model: Embryo,
+              as: "Embryo",
+              ...queryEmbryo,
+            },
+          ],
+        });
+
+        let res = [];
+        ai.forEach((el) => {
+          res.push({
+            AnimalID: el.AnimalID,
+            // SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+            AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
+            ThaiAnimalBirthDate: el.Animal
+              ? el.Animal.ThaiAnimalBirthDate
+              : "-",
+            AnimalStatusName: el.Animal
+              ? el.Animal.AnimalStatus.AnimalStatusName
+              : "-",
+            AnimalFather: !el.Animal
+              ? "-"
+              : el.Animal.AnimalFather
+              ? el.Animal.AnimalFather.AnimalEarID
+              : "-",
+            AnimalMother: !el.Animal
+              ? "-"
+              : el.Animal.AnimalMother
+              ? el.Animal.AnimalMother.AnimalEarID
+              : "-",
+            Par: el.PAR,
+            TimeNo: el.TimeNo,
+            ThaiTransferDate: el.ThaiTransferDate,
             FarmName: el.Animal.AnimalFarm.FarmName,
           });
         });
