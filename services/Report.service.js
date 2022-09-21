@@ -486,7 +486,7 @@ const methods = {
       }
     });
   },
- 
+
   report4(req) {
     // report พ่อพันธุ์
     return new Promise(async (resolve, reject) => {
@@ -670,6 +670,192 @@ const methods = {
                 : el.AnimalSource == "TRANSFER"
                 ? "ย้ายมา"
                 : "-",
+          });
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report5(req) {
+    // report รายงานการใช้น้ำเชื้อ
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+        let $whereAI = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.queryAIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        let $whereSemen = {};
+        if (req.query.SemenNumber) {
+          $whereSemen["SemenNumber"] = {
+            [Op.like]: "%" + req.query.SemenNumber + "%",
+          };
+        }
+
+        let AIDate = {};
+        if (req.query.StartDate) {
+          $whereAI['AIDate'] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        $whereAI["SemenID"] = { [Op.ne]: null };
+
+        const queryAI =
+          Object.keys($whereAI).length > 0 ? { where: $whereAI } : {};
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const querySemen =
+          Object.keys($whereSemen).length > 0 ? { where: $whereSemen } : {};
+
+        const ai = await AI.findAll({
+          ...queryAI,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalFather",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalMother",
+                },
+                {
+                  model: AnimalStatus,
+                  as: "AnimalStatus",
+                },
+              ],
+              // ...query,
+            },
+            {
+              model: Semen,
+              as: "Semen",
+              ...querySemen,
+            },
+          ],
+        });
+
+        let res = [];
+        ai.forEach((el) => {
+          res.push({
+            AnimalID: el.AnimalID,
+            SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+            AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
+            ThaiAnimalBirthDate: el.Animal
+              ? el.Animal.ThaiAnimalBirthDate
+              : "-",
+            AnimalStatusName: el.Animal
+              ? el.Animal.AnimalStatus.AnimalStatusName
+              : "-",
+            AnimalFather: !el.Animal
+              ? "-"
+              : el.Animal.AnimalFather
+              ? el.Animal.AnimalFather.AnimalEarID
+              : "-",
+            AnimalMother: !el.Animal
+              ? "-"
+              : el.Animal.AnimalMother
+              ? el.Animal.AnimalMother.AnimalEarID
+              : "-",
+            Par: el.PAR,
+            TimeNo: el.TimeNo,
+            ThaiAIDate: el.ThaiAIDate,
+            Dose: el.Dose,
+            //
+            AIStatus:
+              el.AIStatus == 0
+                ? "รอผล"
+                : el.AIStatus == 1
+                ? "สำเร็จ"
+                : "ไม่สำเร็จ",
+            // Farm
+            FarmName: el.Animal.AnimalFarm.FarmName,
           });
         });
 
