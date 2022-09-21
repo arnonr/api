@@ -1009,7 +1009,7 @@ const methods = {
         ai.forEach((el) => {
           res.push({
             AnimalID: el.AnimalID,
-            // SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            EmbryoNumber: el.Embryo ? el.Embryo.EmbryoNumber : "-",
             AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
             AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
             ThaiAnimalBirthDate: el.Animal
