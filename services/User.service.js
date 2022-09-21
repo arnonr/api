@@ -569,7 +569,13 @@ const methods = {
         if (!obj) {
           reject(ErrorUnauthorized("Username not found"));
         }
-        resolve({ accessToken: obj.generateJWT(obj), userData: obj });
+
+        let res = {
+          ...obj.toJSON(),
+          AnimalTypeID: JSON.parse(obj.toJSON().AnimalTypeID),
+        };
+
+        resolve({ accessToken: obj.generateJWT(obj), userData: res });
       } catch (error) {
         reject(error);
       }
