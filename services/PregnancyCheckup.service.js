@@ -81,6 +81,7 @@ const methods = {
         Type: "AI",
 
         ThaiCheckupDate: dataJson.ThaiCheckupDate,
+        CheckupDate: dataJson.CheckupDate,
         PregnancyCheckupTimeNo: dataJson.TimeNo,
         PregnancyCheckStatusName: dataJson.PregnancyCheckStatus
           ? dataJson.PregnancyCheckStatus.PregnancyCheckStatusName
