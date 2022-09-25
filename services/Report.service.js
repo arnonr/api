@@ -28,6 +28,8 @@ const AnimalBreed = require("../models/AnimalBreed");
 const ProgressCheckup = require("../models/ProgressCheckup");
 const TransferEmbryo = require("../models/TransferEmbryo");
 const Embryo = require("../models/Embryo");
+const e = require("cors");
+const GiveBirthHelp = require("../models/GiveBirthHelp");
 
 const methods = {
   report1(req) {
@@ -1400,6 +1402,255 @@ const methods = {
             PerimeterBall: el.PerimeterBall,
           });
         });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report8(req) {
+    // report ครบกำหนดคลอด
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+        let $whereAI = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if (req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
+        let AIDate = {};
+        if (req.query.StartDate) {
+          $whereAI["EstimateBirthDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        const queryAI =
+          Object.keys($whereAI).length > 0 ? { where: $whereAI } : {};
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        let order = [];
+        if (req.query.Type == "FARM") {
+          order = [[Animal, "FarmID", "ASC"]];
+        }
+        if (req.query.Type == "STAFF") {
+          order = [["ResponsibilityStaffID", "ASC"]];
+        }
+
+        const ai = await AI.findAll({
+          ...queryAI,
+          order: order,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                },
+              ],
+            },
+            {
+              model: Semen,
+              as: "Semen",
+            },
+            { model: Staff },
+            {
+              model: GiveBirth,
+              as: "GiveBirth",
+              include: [{ model: GiveBirthHelp }, { model: Staff }],
+            },
+          ],
+        });
+
+        let res = [];
+        // res = [{ FarmID: 1, FarmName: 2, AI: [{},{}] }];
+
+        if (req.query.Type == "FARM") {
+          const sortAI = (el) => {
+            let resSort = {
+              AnimalID: el.AnimalID,
+              AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+              AnimalName: el.Animal ? el.Animal.AnimalName : "-",
+              Par: el.PAR,
+              TimeNo: el.TimeNo,
+              ThaiAIDate: el.ThaiAIDate,
+              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
+              ThaiGiveBirthDate: el.GiveBirth
+                ? el.GiveBirth.ThaiGiveBirthDate
+                : "-",
+              GiveBirthState: el.GiveBirth
+                ? el.GiveBirth.GiveBirthState == "NORMAL"
+                  ? "คลอดปกติ"
+                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
+                  ? "คลอดยาก"
+                  : "คลอดก่อน"
+                : "-",
+              GiveBirthState: el.GiveBirth
+                ? el.GiveBirth.GiveBirthState == "NORMAL"
+                  ? "คลอดปกติ"
+                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
+                  ? "คลอดยาก"
+                  : "คลอดก่อน"
+                : "-",
+              GiveBirthHelp: el.GiveBirth
+                ? el.GiveBirth.GiveBirthHelp.GiveBirthHelpName
+                : "-",
+              ResponsibilityStaffName: el.GiveBirth
+                ? el.GiveBirth.Staff.StaffFullName
+                : "-",
+              ChildGender: el.GiveBirth ? el.GiveBirth.ChildGender : "-",
+            };
+
+            return resSort;
+          };
+
+          ai.forEach((el) => {
+            let latestArr = res[res.length - 1];
+
+            if (latestArr) {
+              if (el.Animal.FarmID == latestArr.FarmID) {
+                latestArr.AI.push(sortAI(el));
+              } else {
+                res.push({
+                  FarmID: el.Animal.FarmID,
+                  FarmName: el.Animal.AnimalFarm.FarmName,
+                  AI: [sortAI(el)],
+                });
+              }
+            } else {
+              res.push({
+                FarmID: el.Animal.FarmID,
+                FarmName: el.Animal.AnimalFarm.FarmName,
+                AI: [sortAI(el)],
+              });
+            }
+          });
+        }
+
+        if (req.query.Type == "STAFF") {
+          const sortAI = (el) => {
+            let resSort = {
+              AnimalID: el.AnimalID,
+              AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+              AnimalName: el.Animal ? el.Animal.AnimalName : "-",
+              Par: el.PAR,
+              TimeNo: el.TimeNo,
+              ThaiAIDate: el.ThaiAIDate,
+              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
+              ThaiGiveBirthDate: el.GiveBirth
+                ? el.GiveBirth.ThaiGiveBirthDate
+                : "-",
+              GiveBirthState: el.GiveBirth
+                ? el.GiveBirth.GiveBirthState == "NORMAL"
+                  ? "คลอดปกติ"
+                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
+                  ? "คลอดยาก"
+                  : "คลอดก่อน"
+                : "-",
+              GiveBirthState: el.GiveBirth
+                ? el.GiveBirth.GiveBirthState == "NORMAL"
+                  ? "คลอดปกติ"
+                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
+                  ? "คลอดยาก"
+                  : "คลอดก่อน"
+                : "-",
+              GiveBirthHelp: el.GiveBirth
+                ? el.GiveBirth.GiveBirthHelp.GiveBirthHelpName
+                : "-",
+              ResponsibilityStaffName: el.GiveBirth
+                ? el.GiveBirth.Staff.StaffFullName
+                : "-",
+              ChildGender: el.GiveBirth ? el.GiveBirth.ChildGender : "-",
+            };
+
+            return resSort;
+          };
+
+          ai.forEach((el) => {
+            let latestArr = res[res.length - 1];
+
+            if (latestArr) {
+              if (el.ResponsibilityStaffID == latestArr.ResponsibilityStaffID) {
+                latestArr.AI.push(sortAI(el));
+              } else {
+                res.push({
+                  StaffID: el.ResponsibilityStaffID,
+                  StaffName: el.Staff ? el.Staff.StaffFullName : "-",
+                  AI: [sortAI(el)],
+                });
+              }
+            } else {
+              res.push({
+                StaffID: el.ResponsibilityStaffID,
+                StaffName: el.Staff ? el.Staff.StaffFullName : "-",
+                AI: [sortAI(el)],
+              });
+            }
+          });
+        }
 
         resolve(res);
       } catch (error) {
