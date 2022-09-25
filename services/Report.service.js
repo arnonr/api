@@ -155,6 +155,171 @@ const methods = {
       }
     });
   },
+  report11(req) {
+    // report ทะเบียนประวัติโคเพศเมีย
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        // ตาราง animal
+        const animal = await Animal.findAll({
+          attributes: {
+            include: [
+              [
+                literal(`(
+              SELECT Weight
+              FROM ProgressCheckup
+              WHERE
+                ProgressCheckup.AnimalID = Animal.AnimalID
+              ORDER BY ProgressCheckupID DESC
+              LIMIT 1
+          )`),
+                "Weight",
+              ],
+              [
+                literal(`(
+              SELECT Height
+              FROM ProgressCheckup
+              WHERE
+                ProgressCheckup.AnimalID = Animal.AnimalID
+              ORDER BY ProgressCheckupID DESC
+              LIMIT 1
+          )`),
+                "Height",
+              ],
+              [
+                literal(`(
+              SELECT SemenNumber
+              FROM Semen
+              WHERE
+                Semen.BreederID = Animal.AnimalID
+              ORDER BY SemenID DESC
+              LIMIT 1
+          )`),
+                "SemenNumber",
+              ],
+            ],
+          },
+          where: { animalSexID: 2 },
+          include: [
+            {
+              model: Farm,
+              as: "AnimalFarm",
+              ...query,
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed1",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed2",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed3",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed4",
+            },
+            {
+              model: AnimalBreed,
+              as: "AnimalBreed5",
+            },
+            {
+              model: Animal,
+              as: "AnimalFather",
+            },
+            {
+              model: Animal,
+              as: "AnimalMother",
+            },
+            {
+              model: AnimalStatus,
+              as: "AnimalStatus",
+            },
+          ],
+        });
+        let res = [];
+        animal.forEach((el) => {
+          res.push({
+            AnimalID: el.AnimalID,
+            AnimalEarID: el.AnimalEarID,
+            SemenNumber: el.dataValues.SemenNumber,
+            AnimalName: el.AnimalName,
+            AnimalBreedAll: el.AnimalBreedAll,
+            ThaiAnimalBirthDate: el.ThaiAnimalBirthDate,
+            AnimalWeight: el.dataValues.Weight ? el.dataValues.Weight : "-",
+            AnimalHeight: el.dataValues.Height ? el.dataValues.Height : "-",
+            AnimalFather: el.AnimalFather ? el.AnimalFather.AnimalEarID : "-",
+            AnimalMother: el.AnimalMother ? el.AnimalMother.AnimalEarID : "-",
+            AnimalStatusName: el.AnimalStatus.AnimalStatusName,
+            AnimalSource:
+              el.AnimalSource == "BORN"
+                ? "เกิดในฟาร์ม"
+                : el.AnimalSource == "BUY"
+                ? "ซื้อมา"
+                : el.AnimalSource == "TRANSFER"
+                ? "ย้ายมา"
+                : "-",
+          });
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
   report2(req) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -516,7 +681,7 @@ const methods = {
             });
           }
 
-          if (req.queryAIZoneID) {
+          if (req.query.AIZoneID) {
             provinceIDArr = [];
             const province = await Province.findAll({
               where: { AIZoneID: req.query.AIZoneID },
@@ -704,7 +869,7 @@ const methods = {
             });
           }
 
-          if (req.queryAIZoneID) {
+          if (req.query.AIZoneID) {
             provinceIDArr = [];
             const province = await Province.findAll({
               where: { AIZoneID: req.query.AIZoneID },
@@ -741,7 +906,7 @@ const methods = {
 
         let AIDate = {};
         if (req.query.StartDate) {
-          $whereAI['AIDate'] = {
+          $whereAI["AIDate"] = {
             [Op.between]: [
               dayjs(req.query.StartDate).format("YYYY-MM-DD"),
               dayjs(req.query.EndDate).format("YYYY-MM-DD"),
@@ -889,7 +1054,7 @@ const methods = {
             });
           }
 
-          if (req.queryAIZoneID) {
+          if (req.query.AIZoneID) {
             provinceIDArr = [];
             const province = await Province.findAll({
               where: { AIZoneID: req.query.AIZoneID },
@@ -926,7 +1091,7 @@ const methods = {
 
         let TransferEmbryoDate = {};
         if (req.query.StartDate) {
-          $whereTransferEmbryo['TransferDate'] = {
+          $whereTransferEmbryo["TransferDate"] = {
             [Op.between]: [
               dayjs(req.query.StartDate).format("YYYY-MM-DD"),
               dayjs(req.query.EndDate).format("YYYY-MM-DD"),
@@ -937,7 +1102,9 @@ const methods = {
         $whereEmbryo["EmbryoID"] = { [Op.ne]: null };
 
         const queryTransferEmbryo =
-          Object.keys($whereTransferEmbryo).length > 0 ? { where: $whereTransferEmbryo } : {};
+          Object.keys($whereTransferEmbryo).length > 0
+            ? { where: $whereTransferEmbryo }
+            : {};
 
         const query =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
@@ -945,7 +1112,67 @@ const methods = {
         const queryEmbryo =
           Object.keys($whereEmbryo).length > 0 ? { where: $whereEmbryo } : {};
 
-        const ai = await TransferEmbryo.findAll({
+        // const ai = await TransferEmbryo.findAll({
+        //   ...queryTransferEmbryo,
+        //   include: [
+        //     {
+        //       model: Animal,
+        //       as: "Animal",
+        //       where: {
+        //         AnimalTypeID: {
+        //           [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        //         },
+        //       },
+        //       include: [
+        //         {
+        //           model: Farm,
+        //           as: "AnimalFarm",
+        //           ...query,
+        //         },
+        //         {
+        //           model: AnimalBreed,
+        //           as: "AnimalBreed1",
+        //         },
+        //         {
+        //           model: AnimalBreed,
+        //           as: "AnimalBreed2",
+        //         },
+        //         {
+        //           model: AnimalBreed,
+        //           as: "AnimalBreed3",
+        //         },
+        //         {
+        //           model: AnimalBreed,
+        //           as: "AnimalBreed4",
+        //         },
+        //         {
+        //           model: AnimalBreed,
+        //           as: "AnimalBreed5",
+        //         },
+        //         {
+        //           model: Animal,
+        //           as: "AnimalFather",
+        //         },
+        //         {
+        //           model: Animal,
+        //           as: "AnimalMother",
+        //         },
+        //         {
+        //           model: AnimalStatus,
+        //           as: "AnimalStatus",
+        //         },
+        //       ],
+        //       // ...query,
+        //     },
+        //     {
+        //       model: Embryo,
+        //       as: "Embryo",
+        //       ...queryEmbryo,
+        //     },
+        //   ],
+        // });
+
+        const ai1 = await TransferEmbryo.findAll({
           ...queryTransferEmbryo,
           include: [
             {
@@ -1005,8 +1232,150 @@ const methods = {
           ],
         });
 
+        // const loadAIs = async (filter) => {
+        //   const ais = await AI.findAll(filter);
+        //   return Promise.all(ais.map(lazyLoad));
+        // };
+
+        // const lazyLoad = async (ai) => {
+        //   const [animal] = await Promise.all([ai.getAnimal()]);
+        //   // some data manipulation here to build a complexObject with all the data - not relevant
+        //   return {};
+        // };
+
         let res = [];
-        ai.forEach((el) => {
+        ai1.forEach((el) => {
+          res.push({
+            AnimalID: el.AnimalID,
+            EmbryoNumber: el.Embryo ? el.Embryo.EmbryoNumber : "-",
+            AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+            AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
+            ThaiAnimalBirthDate: el.Animal
+              ? el.Animal.ThaiAnimalBirthDate
+              : "-",
+            AnimalStatusName: el.Animal
+              ? el.Animal.AnimalStatus.AnimalStatusName
+              : "-",
+            AnimalFather: !el.Animal
+              ? "-"
+              : el.Animal.AnimalFather
+              ? el.Animal.AnimalFather.AnimalEarID
+              : "-",
+            AnimalMother: !el.Animal
+              ? "-"
+              : el.Animal.AnimalMother
+              ? el.Animal.AnimalMother.AnimalEarID
+              : "-",
+            Par: el.PAR,
+            TimeNo: el.TimeNo,
+            ThaiTransferDate: el.ThaiTransferDate,
+            FarmName: el.Animal.AnimalFarm.FarmName,
+          });
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report7(req) {
+    // report การเจริญเติบโต
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+
+        let provinceIDArr = [];
+
+        if (req.query.AIZoneID) {
+          provinceIDArr = [];
+          const province = await Province.findAll({
+            where: { AIZoneID: req.query.AIZoneID },
+          });
+
+          province.forEach((p) => {
+            provinceIDArr.push(p.ProvinceID);
+          });
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if(req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
+        if(req.query.AnimalSexID) {
+          $whereAnimal["AnimalSexID"] = req.query.AnimalSexID;
+        }
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const ai1 = await TransferEmbryo.findAll({
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalFather",
+                },
+                {
+                  model: Animal,
+                  as: "AnimalMother",
+                },
+                {
+                  model: AnimalStatus,
+                  as: "AnimalStatus",
+                },
+              ],
+              // ...query,
+            },
+            {
+              model: Embryo,
+              as: "Embryo",
+              ...queryEmbryo,
+            },
+          ],
+        });
+
+        let res = [];
+        ai1.forEach((el) => {
           res.push({
             AnimalID: el.AnimalID,
             EmbryoNumber: el.Embryo ? el.Embryo.EmbryoNumber : "-",
