@@ -9,12 +9,9 @@ dayjs.extend(buddhistEra);
 
 class AI extends Model {
   static associate(models) {
-
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
     });
-
-
 
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
@@ -139,7 +136,7 @@ AI.init(
       comment: "วันคลอด",
     },
     GoatAIMethodID: {
-      type: DataTypes.ENUM("NI", "Buck", "V-AI", "L-AI"), 
+      type: DataTypes.ENUM("NI", "Buck", "V-AI", "L-AI"),
       allowNull: true,
       comment: "วิธีการผสม (แพะ)",
     },
@@ -395,6 +392,14 @@ AI.init(
       get() {
         return this.AIDate
           ? dayjs(this.AIDate).locale("th").format("DD/MM/BBBB")
+          : null;
+      },
+    },
+    ThaiEstimateBirthDate: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.EstimateBirthDate
+          ? dayjs(this.EstimateBirthDate).locale("th").format("DD/MM/BBBB")
           : null;
       },
     },
