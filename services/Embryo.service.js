@@ -69,6 +69,9 @@ const methods = {
         [Op.like]: "%" + req.query.EmbryoStatus + "%",
       };
 
+    if (req.query.ResponsibilityStaffID)
+      $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
