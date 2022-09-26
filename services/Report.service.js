@@ -2266,6 +2266,7 @@ const methods = {
                 },
               ],
             },
+            { model: Staff },
           ],
         });
 
@@ -2287,7 +2288,7 @@ const methods = {
             Cure: "-",
             result: "-",
             BCS: el.BCSID,
-            ResponsibilityStaff: "-",
+            ResponsibilityStaff: el.Staff ? el.Staff.StaffFullName : "-",
           };
 
           return resSort;
