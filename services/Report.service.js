@@ -30,6 +30,7 @@ const TransferEmbryo = require("../models/TransferEmbryo");
 const Embryo = require("../models/Embryo");
 const e = require("cors");
 const GiveBirthHelp = require("../models/GiveBirthHelp");
+const Reproduce = require("../models/Reproduce");
 
 const methods = {
   report1(req) {
@@ -2164,6 +2165,136 @@ const methods = {
               GiveBirth: [sortAI(el)],
             });
           }
+        });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report12(req) {
+    // report แก้ไขปัญหาทางระบบสืบพันธุ์
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+        let $whereAnimal = {};
+        let $whereReproduce = {};
+
+        if (req.query.AnimalID) {
+          $whereAnimal["AnimalID"] = req.query.AnimalID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if (req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
+        if (req.query.StartDate) {
+          $whereReproduce["ReproduceDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        const queryReproduce =
+          Object.keys($whereReproduce).length > 0
+            ? { where: $whereReproduce }
+            : {};
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const queryAnimal =
+          Object.keys($whereAnimal).length > 0 ? { where: $whereAnimal } : {};
+
+        let order = [[Animal, "FarmID", "ASC"]];
+
+        const gb = await Reproduce.findAll({
+          ...queryReproduce,
+          order: order,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              ...queryAnimal,
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                },
+              ],
+            },
+          ],
+        });
+
+        let res = [];
+
+        const sortAI = (el) => {
+          let resSort = {
+            AnimalID: el.AnimalID,
+            AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+            AnimalName: el.Animal ? el.Animal.AnimalName : "-",
+            FarmIdentificationNumber: el.Animal
+              ? el.Animal.AnimalFarm.FarmIdentificationNumber
+              : "-",
+            FarmName: el.Animal ? el.Animal.AnimalFarm.FarmName : "-",
+            PAR: 0,
+            ThaiReproduceDate: el.ThaiReproduceDate,
+            FarmerRemark: el.FarmerRemark,
+            Symptom: "-",
+            Cure: "-",
+            result: "-",
+            BCS: el.BCSID,
+            ResponsibilityStaff: "-",
+          };
+
+          return resSort;
+        };
+
+        gb.forEach((el) => {
+          res.push(sortAI(el));
         });
 
         resolve(res);
