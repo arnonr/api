@@ -2187,6 +2187,10 @@ const methods = {
           $whereAnimal["AnimalID"] = req.query.AnimalID;
         }
 
+        if (req.query.ResponsibilityStaffID) {
+          $whereReproduce["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+        }
+
         let provinceIDArr = [];
         if (!req.query.ProvinceID) {
           if (req.query.OrganizationZoneID) {
