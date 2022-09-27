@@ -110,6 +110,15 @@ const methods = {
     }
   },
 
+  async onGetReport13(req, res) {
+    try {
+      let result = await Service.report13(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetReport99(req, res) {
     try {
       let result = await Service.report99(req);

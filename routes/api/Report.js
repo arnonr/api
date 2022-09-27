@@ -90,6 +90,13 @@ router.get(
 );
 
 router.get(
+  "/report13",
+  auth.required,
+  checkPermission(resource, "read"),
+  controllers.onGetReport13
+);
+
+router.get(
   "/report99",
   auth.required,
   checkPermission(resource, "read"),

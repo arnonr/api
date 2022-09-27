@@ -23,6 +23,7 @@ const Semen = require("../models/Semen");
 const Project = require("../models/Project");
 const ProjectToAnimalType = require("../models/ProjectToAnimalType");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
+const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const GiveBirth = require("../models/GiveBirth");
 const AnimalBreed = require("../models/AnimalBreed");
 const ProgressCheckup = require("../models/ProgressCheckup");
@@ -2188,7 +2189,8 @@ const methods = {
         }
 
         if (req.query.ResponsibilityStaffID) {
-          $whereReproduce["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+          $whereReproduce["ResponsibilityStaffID"] =
+            req.query.ResponsibilityStaffID;
         }
 
         let provinceIDArr = [];
@@ -2303,6 +2305,200 @@ const methods = {
         });
 
         resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  //
+  report13(req) {
+    // report รายงาน ผท9
+    return new Promise(async (resolve, reject) => {
+      try {
+        // let $where = {};
+        let $whereFarm = {};
+        let $whereAI = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        if (req.query.ProjectID) {
+          $whereAI["ProjectID"] = req.query.ProjectID;
+        }
+
+        let provinceIDArr = [];
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if (req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
+        let AIDate = {};
+        if (req.query.StartDate) {
+          $whereAI["AIDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        const queryAI =
+          Object.keys($whereAI).length > 0 ? { where: $whereAI } : {};
+
+        const query =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        let order = [[Animal, "FarmID", "ASC"]];
+
+        const ai = await AI.findAll({
+          ...queryAI,
+          order: order,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...query,
+                  include: [
+                    { model: Amphur, as: "Amphur" },
+                    { model: Province, as: "Province" },
+                  ],
+                },
+              ],
+            },
+            {
+              model: Semen,
+              as: "Semen",
+            },
+            { model: Staff },
+            { model: Project },
+            {
+              model: PregnancyCheckup,
+              include: [{ model: PregnancyCheckStatus }],
+            },
+          ],
+        });
+
+        let res = [];
+
+        let aiTotal = ai.length;
+        let pregTotal = [0, 0, 0, 0];
+
+        const sortAI = (el) => {
+          let pregnancyCheckup = "-";
+          if (el.PregnancyCheckups.length != 0) {
+            let pc = el.PregnancyCheckups[el.PregnancyCheckups.length - 1];
+            pregnancyCheckup = pc.PregnancyCheckStatus.PregnancyCheckStatusName;
+          }
+
+          if (pregnancyCheckup == "ท้อง") {
+            pregTotal[0] = pregTotal[0] + 1;
+          } else if (pregnancyCheckup == "ไม่ท้อง") {
+            pregTotal[1] = pregTotal[1] + 1;
+          } else if (pregnancyCheckup == "รอตรวจซ้ำ") {
+            pregTotal[2] = pregTotal[2] + 1;
+          } else {
+            pregTotal[3] = pregTotal[3] + 1;
+          }
+
+          let resSort = {
+            AnimalID: el.AnimalID,
+            AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
+            AnimalName: el.Animal ? el.Animal.AnimalName : "-",
+            Par: el.PAR,
+            TimeNo: el.TimeNo,
+            SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            ThaiAIDate: el.ThaiAIDate,
+            ResponsibilityStaffName: el.Staff ? el.Staff.StaffFullName : "-",
+            ProjectName: el.Project ? el.Project.ProjectName : "-",
+            pregnancyCheckup: pregnancyCheckup,
+          };
+
+          return resSort;
+        };
+
+        ai.forEach((el) => {
+          let latestArr = res[res.length - 1];
+
+          if (latestArr) {
+            if (el.Animal.FarmID == latestArr.FarmID) {
+              latestArr.AI.push(sortAI(el));
+            } else {
+              res.push({
+                FarmID: el.Animal.FarmID,
+                FarmName: el.Animal.AnimalFarm.FarmName,
+                AmphurName: el.Animal.AnimalFarm.Amphur.AmphurName,
+                ProvinceName: el.Animal.AnimalFarm.Province.ProvinceName,
+                AI: [sortAI(el)],
+              });
+            }
+          } else {
+            res.push({
+              FarmID: el.Animal.FarmID,
+              FarmName: el.Animal.AnimalFarm.FarmName,
+              AmphurName: el.Animal.AnimalFarm.Amphur.AmphurName,
+              ProvinceName: el.Animal.AnimalFarm.Province.ProvinceName,
+              AI: [sortAI(el)],
+            });
+          }
+        });
+
+        resolve({
+          Total: aiTotal,
+          preg1: pregTotal[0],
+          preg2: pregTotal[1],
+          preg3: pregTotal[2],
+          preg4: pregTotal[3],
+          Farm: res,
+        });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
