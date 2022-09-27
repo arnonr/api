@@ -32,6 +32,7 @@ const Embryo = require("../models/Embryo");
 const e = require("cors");
 const GiveBirthHelp = require("../models/GiveBirthHelp");
 const Reproduce = require("../models/Reproduce");
+const _ = require("lodash");
 
 const methods = {
   report1(req) {
@@ -1662,7 +1663,7 @@ const methods = {
   },
 
   report9(req) {
-    // report ครบกำหนดตรวจท้อง
+    // report รายงานตรวจท้อง
     return new Promise(async (resolve, reject) => {
       try {
         // let $where = {};
@@ -1671,6 +1672,14 @@ const methods = {
 
         if (req.query.OrganizationID) {
           $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        if (req.query.ProjectID) {
+          $whereFarm["ProjectID"] = req.query.ProjectID;
+        }
+
+        if (req.query.ProjectID) {
+          $whereAI["ProjectID"] = req.query.ProjectID;
         }
 
         let provinceIDArr = [];
@@ -1719,7 +1728,7 @@ const methods = {
 
         let AIDate = {};
         if (req.query.StartDate) {
-          $whereAI["EstimateBirthDate"] = {
+          $whereAI["AIDate"] = {
             [Op.between]: [
               dayjs(req.query.StartDate).format("YYYY-MM-DD"),
               dayjs(req.query.EndDate).format("YYYY-MM-DD"),
@@ -1733,13 +1742,7 @@ const methods = {
         const query =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
 
-        let order = [];
-        if (req.query.Type == "FARM") {
-          order = [[Animal, "FarmID", "ASC"]];
-        }
-        if (req.query.Type == "STAFF") {
-          order = [["ResponsibilityStaffID", "ASC"]];
-        }
+        let order = [[Animal, "FarmID", "ASC"]];
 
         const ai = await AI.findAll({
           ...queryAI,
@@ -1758,6 +1761,10 @@ const methods = {
                   model: Farm,
                   as: "AnimalFarm",
                   ...query,
+                  include: [
+                    { model: Amphur, as: "Amphur" },
+                    { model: Province, as: "Province" },
+                  ],
                 },
               ],
             },
@@ -1766,144 +1773,90 @@ const methods = {
               as: "Semen",
             },
             { model: Staff },
+            { model: Project },
             {
-              model: GiveBirth,
-              as: "GiveBirth",
-              include: [{ model: GiveBirthHelp }, { model: Staff }],
+              model: PregnancyCheckup,
+              include: [{ model: PregnancyCheckStatus }],
             },
           ],
         });
 
         let res = [];
-        // res = [{ FarmID: 1, FarmName: 2, AI: [{},{}] }];
 
-        if (req.query.Type == "FARM") {
-          const sortAI = (el) => {
-            let resSort = {
+        let aiTotal = ai.length;
+
+        const sortAI = (el) => {
+          let pregnancyCheckup = "";
+          let pregnancyCheckupDate = "";
+          if (el.PregnancyCheckups.length != 0) {
+            let pc = el.PregnancyCheckups[el.PregnancyCheckups.length - 1];
+            pregnancyCheckup = pc.PregnancyCheckStatus.PregnancyCheckStatusName;
+            pregnancyCheckupDate = pc.ThaiCheckupDate;
+          }
+
+          let day = dayjs().diff(dayjs(el.AIDate), "day");
+
+          let resSort = {};
+          if (day >= req.query.day) {
+            resSort = {
               AnimalID: el.AnimalID,
               AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
               AnimalName: el.Animal ? el.Animal.AnimalName : "-",
               Par: el.PAR,
               TimeNo: el.TimeNo,
-              ThaiAIDate: el.ThaiAIDate,
               SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
-              ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
-              ThaiGiveBirthDate: el.GiveBirth
-                ? el.GiveBirth.ThaiGiveBirthDate
-                : "-",
-              GiveBirthState: el.GiveBirth
-                ? el.GiveBirth.GiveBirthState == "NORMAL"
-                  ? "คลอดปกติ"
-                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
-                  ? "คลอดยาก"
-                  : "คลอดก่อน"
-                : "-",
-              GiveBirthState: el.GiveBirth
-                ? el.GiveBirth.GiveBirthState == "NORMAL"
-                  ? "คลอดปกติ"
-                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
-                  ? "คลอดยาก"
-                  : "คลอดก่อน"
-                : "-",
-              GiveBirthHelp: el.GiveBirth
-                ? el.GiveBirth.GiveBirthHelp.GiveBirthHelpName
-                : "-",
-              ResponsibilityStaffName: el.GiveBirth
-                ? el.GiveBirth.Staff.StaffFullName
-                : "-",
-              ChildGender: el.GiveBirth ? el.GiveBirth.ChildGender : "-",
+              ThaiAIDate: el.ThaiAIDate,
+              Day: day,
+              ProjectName: el.Project ? el.Project.ProjectName : "-",
+              ThaipregnancyCheckupDate: pregnancyCheckupDate,
+              pregnancyCheckup: pregnancyCheckup,
+              ResponsibilityStaffName: el.Staff ? el.Staff.StaffFullName : "-",
             };
+          }
 
-            return resSort;
-          };
+          return resSort;
+        };
 
-          ai.forEach((el) => {
-            let latestArr = res[res.length - 1];
+        ai.forEach((el) => {
+          let latestArr = res[res.length - 1];
 
-            if (latestArr) {
-              if (el.Animal.FarmID == latestArr.FarmID) {
-                latestArr.AI.push(sortAI(el));
-              } else {
+          if (latestArr) {
+            if (el.Animal.FarmID == latestArr.FarmID) {
+              let aiItem = sortAI(el);
+              if (!_.isEmpty(aiItem)) {
+                latestArr.AI.push(aiItem);
+              }
+            } else {
+              let aiItem = sortAI(el);
+              if (!_.isEmpty(aiItem)) {
                 res.push({
                   FarmID: el.Animal.FarmID,
                   FarmName: el.Animal.AnimalFarm.FarmName,
-                  AI: [sortAI(el)],
+                  AmphurName: el.Animal.AnimalFarm.Amphur.AmphurName,
+                  ProvinceName: el.Animal.AnimalFarm.Province.ProvinceName,
+                  AI: [aiItem],
                 });
               }
-            } else {
+            }
+          } else {
+            let aiItem = sortAI(el);
+            console.log(aiItem);
+            if (!_.isEmpty(aiItem)) {
               res.push({
                 FarmID: el.Animal.FarmID,
                 FarmName: el.Animal.AnimalFarm.FarmName,
-                AI: [sortAI(el)],
+                AmphurName: el.Animal.AnimalFarm.Amphur.AmphurName,
+                ProvinceName: el.Animal.AnimalFarm.Province.ProvinceName,
+                AI: [aiItem],
               });
             }
-          });
-        }
+          }
+        });
 
-        if (req.query.Type == "STAFF") {
-          const sortAI = (el) => {
-            let resSort = {
-              AnimalID: el.AnimalID,
-              AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
-              AnimalName: el.Animal ? el.Animal.AnimalName : "-",
-              Par: el.PAR,
-              TimeNo: el.TimeNo,
-              ThaiAIDate: el.ThaiAIDate,
-              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
-              ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
-              ThaiGiveBirthDate: el.GiveBirth
-                ? el.GiveBirth.ThaiGiveBirthDate
-                : "-",
-              GiveBirthState: el.GiveBirth
-                ? el.GiveBirth.GiveBirthState == "NORMAL"
-                  ? "คลอดปกติ"
-                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
-                  ? "คลอดยาก"
-                  : "คลอดก่อน"
-                : "-",
-              GiveBirthState: el.GiveBirth
-                ? el.GiveBirth.GiveBirthState == "NORMAL"
-                  ? "คลอดปกติ"
-                  : el.GiveBirth.GiveBirthState == "DIFFICULT"
-                  ? "คลอดยาก"
-                  : "คลอดก่อน"
-                : "-",
-              GiveBirthHelp: el.GiveBirth
-                ? el.GiveBirth.GiveBirthHelp.GiveBirthHelpName
-                : "-",
-              ResponsibilityStaffName: el.GiveBirth
-                ? el.GiveBirth.Staff.StaffFullName
-                : "-",
-              ChildGender: el.GiveBirth ? el.GiveBirth.ChildGender : "-",
-            };
-
-            return resSort;
-          };
-
-          ai.forEach((el) => {
-            let latestArr = res[res.length - 1];
-
-            if (latestArr) {
-              if (el.ResponsibilityStaffID == latestArr.ResponsibilityStaffID) {
-                latestArr.AI.push(sortAI(el));
-              } else {
-                res.push({
-                  StaffID: el.ResponsibilityStaffID,
-                  StaffName: el.Staff ? el.Staff.StaffFullName : "-",
-                  AI: [sortAI(el)],
-                });
-              }
-            } else {
-              res.push({
-                StaffID: el.ResponsibilityStaffID,
-                StaffName: el.Staff ? el.Staff.StaffFullName : "-",
-                AI: [sortAI(el)],
-              });
-            }
-          });
-        }
-
-        resolve(res);
+        resolve({
+          Total: aiTotal,
+          Farm: res,
+        });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
@@ -2313,7 +2266,7 @@ const methods = {
 
   //
   report13(req) {
-    // report รายงาน ผท9
+    // report รายงาน ผท6
     return new Promise(async (resolve, reject) => {
       try {
         // let $where = {};
