@@ -2167,68 +2167,56 @@ const methods = {
     // มี FORMAT ตามปีเกิด + เลขทะเบียนฟาร์ม + running number 5 หลัก เช่น ปีเกิดคือ 2022 เลขทะเบียนฟาร์มคือ 101010-0001 เลขที่ได้จะเป็น 1022101010-0001-00001 กรณีที่ไม่ทราบปีเกิดให้ใช้ปีที่บันทึกข้อมูล
     return new Promise(async (resolve, reject) => {
       try {
-        let date = new Date();
-        if (BirthDate) {
-          date = new Date(BirthDate);
-        }
-        let year = date.getFullYear();
+        // let date = new Date();
+        // if (BirthDate) {
+        //   date = new Date(BirthDate);
+        // }
+        // let year = date.getFullYear();
 
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
 
         if (farm) {
-          let animal = await db.max("AnimalIdentificationID", {
-            where: {
-              FarmID: FarmID,
-              AnimalIdentificationID: {
-                [Op.startsWith]: year,
-              },
-            },
-          });
+        //   let animal = await db.max("AnimalIdentificationID", {
+        //     where: {
+        //       FarmID: FarmID,
+        //       AnimalIdentificationID: {
+        //         [Op.startsWith]: year,
+        //       },
+        //     },
+        //   });
 
-          if (animal) {
-            let codeLastest = animal.substr(-5);
-            // let codeLastest = animal.substring(0, 17)
-            codeLastest = parseInt(codeLastest) + 1;
-            let number = 5 - parseInt(String(codeLastest).length);
+          // if (animal) {
+          //   let codeLastest = animal.substr(-5);
+          //   // let codeLastest = animal.substring(0, 17)
+          //   codeLastest = parseInt(codeLastest) + 1;
+          //   let number = 5 - parseInt(String(codeLastest).length);
 
-            if (number != 0) {
-              codeLastest = String(codeLastest);
-              for (let i = 1; i <= number; i++) {
-                codeLastest = "0" + codeLastest;
-              }
-            }
+          //   if (number != 0) {
+          //     codeLastest = String(codeLastest);
+          //     for (let i = 1; i <= number; i++) {
+          //       codeLastest = "0" + codeLastest;
+          //     }
+          //   }
 
-            AnimalNumberGenerate =
-              year +
-              farm.FarmIdentificationNumber +
-              codeLastest +
-              Math.floor(Math.random() * 10);
-          } else {
-            AnimalNumberGenerate =
-              year +
-              farm.FarmIdentificationNumber +
-              "00001" +
-              Math.floor(Math.random() * 10);
-          }
+          //   AnimalNumberGenerate =
+          //     year +
+          //     farm.FarmIdentificationNumber +
+          //     codeLastest +
+          //     Math.floor(Math.random() * 10);
+          // } else {
+          //   AnimalNumberGenerate =
+          //     year +
+          //     farm.FarmIdentificationNumber +
+          //     "00001" +
+          //     Math.floor(Math.random() * 10);
+          // }
 
           //
           let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
-          let AnimalGroupTypeRes = await AnimalGroupType.findByPk(
-            AnimalTypeRes.AnimalGroupTypeID
-          );
-          let GroupTypeCode = AnimalGroupTypeRes.AnimalGroupTypeCode;
-
-          if (GroupTypeCode.length < 2) {
-            GroupTypeCode = "0" + AnimalGroupTypeRes.AnimalGroupTypeCode;
-          }
-          let TypeCode =
-            GroupTypeCode +
-            "" +
-            AnimalTypeRes.AnimalTypeCode.slice(
-              AnimalTypeRes.AnimalTypeCode.length - 1
-            );
+          let TypeCode = AnimalTypeRes.AnimalTypeCode.slice(1);
+          
 
           let date2 = new Date();
           let year2 = date2.getFullYear();
@@ -2267,11 +2255,11 @@ const methods = {
         }
 
         resolve({
-          AnimalNumberGenerate: AnimalNumberGenerate,
+          AnimalNumberGenerate: AnimalEarGenerate,
           AnimalEarGenerate: AnimalEarGenerate,
         });
       } catch (error) {
-        reject(ErrorNotFound("id: not found"));
+        reject(ErrorNotFound(error));
       }
     });
   },
