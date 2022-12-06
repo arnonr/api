@@ -2176,16 +2176,19 @@ const methods = {
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
+        
+        let AnimalEarGenerate = "";
+        let AnimalNationalID = "";
 
         if (farm) {
-        //   let animal = await db.max("AnimalIdentificationID", {
-        //     where: {
-        //       FarmID: FarmID,
-        //       AnimalIdentificationID: {
-        //         [Op.startsWith]: year,
-        //       },
-        //     },
-        //   });
+          //   let animal = await db.max("AnimalIdentificationID", {
+          //     where: {
+          //       FarmID: FarmID,
+          //       AnimalIdentificationID: {
+          //         [Op.startsWith]: year,
+          //       },
+          //     },
+          //   });
 
           // if (animal) {
           //   let codeLastest = animal.substr(-5);
@@ -2214,27 +2217,73 @@ const methods = {
           // }
 
           //
-          let AnimalTypeRes = await AnimalType.findByPk(AnimalTypeID);
-          let TypeCode = AnimalTypeRes.AnimalTypeCode.slice(1);
-          
 
-          let date2 = new Date();
-          let year2 = date2.getFullYear();
-          year2 = String(year2).slice(2);
+          let year = String(new Date().getFullYear()).slice(2);
 
           let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
 
-          let animal2 = await db.max("AnimalEarID", {
+          let AnimalTypeCode = await AnimalType.findByPk(AnimalTypeID);
+          AnimalTypeCode = AnimalTypeCode.AnimalTypeCode.slice(1);
+
+          // Running Number
+          let prefixID = year + ProvinceAndAmphur + AnimalTypeCode;
+
+          // Running Number
+          let animal = await db.max("AnimalEarID", {
             where: {
               AnimalEarID: {
-                [Op.startsWith]: year2 + ProvinceAndAmphur + TypeCode,
+                [Op.startsWith]: prefixID,
               },
             },
           });
+
+          if (animal) {
+            let codeLastest = animal.substr(-6);
+            codeLastest = parseInt(codeLastest) + 1;
+            let number = 6 - parseInt(String(codeLastest).length);
+
+            if (number != 0) {
+              codeLastest = String(codeLastest);
+              for (let i = 1; i <= number; i++) {
+                codeLastest = "0" + codeLastest;
+              }
+            }
+
+            AnimalEarGenerate = prefixID + codeLastest;
+          } else {
+            AnimalEarGenerate = prefixID + "000001";
+          }
+
           //
+          // year
+          // ProvinceAndAmphur
+          // N,M
+          let type1 = "N";
+
+          // C,D,B,G animalType
+          let type2 = null;
+          if (AnimalTypeID == 1) {
+            type2 = "C";
+          } else if (AnimalTypeID == 3 || AnimalTypeID == 4) {
+            type2 = "B";
+          } else if (AnimalTypeID == 17 || AnimalTypeID == 18) {
+            type2 = "G";
+          } else {
+            type2 = "C";
+          }
+
+          let prefixID2 = year + ProvinceAndAmphur + type1 + type2;
+
+          let animal2 = await db.max("AnimalNationalID", {
+            where: {
+              AnimalNationalID: {
+                [Op.startsWith]: prefixID2,
+              },
+            },
+          });
 
           if (animal2) {
-            let codeLastest = animal2.substr(-5);
+            let codeLastest = animal.substr(-5);
             codeLastest = parseInt(codeLastest) + 1;
             let number = 5 - parseInt(String(codeLastest).length);
 
@@ -2245,10 +2294,9 @@ const methods = {
               }
             }
 
-            AnimalEarGenerate =
-              year2 + ProvinceAndAmphur + TypeCode + codeLastest;
+            AnimalNationalID = prefixID2 + codeLastest;
           } else {
-            AnimalEarGenerate = year2 + ProvinceAndAmphur + TypeCode + "00001";
+            AnimalNationalID = prefixID2 + "00001";
           }
         } else {
           reject(ErrorNotFound("Farm ID: not found"));
@@ -2257,6 +2305,7 @@ const methods = {
         resolve({
           AnimalNumberGenerate: AnimalEarGenerate,
           AnimalEarGenerate: AnimalEarGenerate,
+          AnimalNationalID: AnimalNationalID,
         });
       } catch (error) {
         reject(ErrorNotFound(error));
