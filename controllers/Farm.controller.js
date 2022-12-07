@@ -4,6 +4,9 @@ const Service = require("../services/Farm.service"),
 const methods = {
   async onGetAll(req, res) {
     try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UserID = decoded.id;
+
       let result = await Service.find(req);
       res.success(result);
     } catch (error) {

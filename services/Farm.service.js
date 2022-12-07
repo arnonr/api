@@ -10,12 +10,14 @@ const Organization = require("../models/Organization");
 const Farm = require("../models/Farm");
 const Farmer = require("../models/Farmer");
 const Tumbol = require("../models/Tumbol");
+const User = require("../models/User");
+const Staff = require("../models/Staff");
 // const { findOne, findByPk } = require("../models/Project");
 
 const nodemailer = require("nodemailer");
 
 const methods = {
-  scopeSearch(req, limit, offset) {
+  async scopeSearch(req, limit, offset) {
     // Where
     var $where = {};
 
@@ -37,11 +39,33 @@ const methods = {
 
     if (req.query.FarmTumbolID) $where["FarmTumbolID"] = req.query.FarmTumbolID;
     if (req.query.FarmAmphurID) $where["FarmAmphurID"] = req.query.FarmAmphurID;
+
+    //  get_by_org_province = 1;
+    if (req.query.GetByOrgProvince) {
+      let ProvinceID = null;
+      let user = await User.findByPk(req.body.UserID, {
+        include: [
+          {
+            model: Staff,
+            as: "Staff",
+            include: {
+              model: Organization,
+              as: "Organization",
+            },
+          },
+        ],
+      });
+
+      // ฟาร์ม
+      $where["FarmProvinceID"] = user.Staff.Organization.OrganizationProvinceID;
+    }
+
     if (req.query.FarmProvinceID)
       $where["FarmProvinceID"] = req.query.FarmProvinceID;
 
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
+
     if (req.query.OrganizationZoneID)
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
     if (req.query.AIZoneID) $where["FarmProvinceID"] = req.query.AIZoneID;
@@ -123,23 +147,26 @@ const methods = {
     return { query: query };
   },
 
-  find(req) {
+  async find(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch(req, limit, offset);
+    const _q = await methods.scopeSearch(req, limit, offset);
+
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then(async (result) => {
             let rows = result[0],
               count = rows.length;
-            //
+        
             rows = await Promise.all(
               rows.map(async (data) => {
                 let projectArray = [];
-                data.Projects.forEach((element) => {
-                  projectArray.push(element.ProjectName);
-                });
+
+                for (let i = 0; i < data.Projects.length; i++) {
+                  projectArray.push(data.Projects[i].ProjectName);
+                }
+
                 data = {
                   ...data.toJSON(),
                   Projects: projectArray,
@@ -223,9 +250,9 @@ const methods = {
 
         let res = methods.findById(inserted.FarmID);
 
-        let farmer = Farmer.findByPk(inserted.FarmerID)
+        let farmer = Farmer.findByPk(inserted.FarmerID);
 
-        if(farmer.Email){
+        if (farmer.Email) {
           // let transporter = nodemailer.createTransport({
           //   host: "smtp.gmail.com",
           //   port: 587,
@@ -236,7 +263,6 @@ const methods = {
           //     pass: "edoc2565", // email password
           //   },
           // });
-  
           // let info = await transporter.sendMail({
           //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
           //   to: farmer.Email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
@@ -244,7 +270,6 @@ const methods = {
           //   html: "<b>ฟาร์ม "+inserted.FarmName+"ของคุณได้รับการบันทึกเข้าสู่ระบบฐานข้อมูล โคเนื้อ กระบิอ แพะ</b>", // html body
           // });
         }
-       
 
         resolve(res);
       } catch (error) {
