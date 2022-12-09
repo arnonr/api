@@ -2176,7 +2176,7 @@ const methods = {
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
-        
+
         let AnimalEarGenerate = "";
         let AnimalNationalID = "";
 
@@ -2484,7 +2484,7 @@ const methods = {
 
   scopeSearch1(req, limit, offset) {
     // Where
-    $where = {};
+    let $where = {};
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
@@ -2748,11 +2748,17 @@ const methods = {
                     // noti7Animal
                   }
 
-                  if (data1.Notification.includes("ครบกำหนดตรวจท้อง")) {
+                  console.log(data1.Notification)
+                  console.log("FREEDOM6")
+                  if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
+                    console.log("FREEDOM5")
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
+                    console.log(noti.noti2)
                     // noti7Animal
                   }
+
+                  
 
                   if (
                     data1.Notification.includes(
@@ -2859,6 +2865,18 @@ const methods = {
             };
 
             let animal = await getWithPromiseAll();
+
+            console.log(noti);
+            // noti1 = ครบกำหนดคลอด,
+            // noti2 = ครบกำหนดตรวจท้อง,
+            // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+            // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+            // noti5 = อายุมากกว่ากําหนด
+            // noti6 = แจ้งเตือนกลับสัด
+            // noti7 = ผสมซ้ำเกิน 3 ครั้ง
+            // noti8 = เลยกำหนดคลอด
+            // noti9 = Thai Black
+            // noti10 = แดงสุราษฏร์
 
             resolve({
               total: count,
