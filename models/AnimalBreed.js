@@ -29,83 +29,83 @@ AnimalBreed.init(
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "รหัสสายพันธุ์",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          AnimalBreed.findOne({ where: { AnimalBreedCode: value, isRemove: 0 } })
-            .then(function (data) {
-              console.log(self);
-              if (data && self.AnimalBreedID !== data.AnimalBreedID) {
-                throw new Error("AnimalBreed Code already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     AnimalBreed.findOne({ where: { AnimalBreedCode: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         console.log(self);
+      //         if (data && self.AnimalBreedID !== data.AnimalBreedID) {
+      //           throw new Error("AnimalBreed Code already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
     AnimalBreedShortName: {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "ชื่อย่อสายพันธุ์",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          AnimalBreed.findOne({ where: { AnimalBreedShortName: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.AnimalBreedID !== data.AnimalBreedID) {
-                throw new Error("AnimalBreed Short Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     AnimalBreed.findOne({ where: { AnimalBreedShortName: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         if (data && self.AnimalBreedID !== data.AnimalBreedID) {
+      //           throw new Error("AnimalBreed Short Name already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
     AnimalBreedName: {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "คำอธิบายสายพันธุ์ (ภาษาไทย)",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          AnimalBreed.findOne({ where: { AnimalBreedName: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.AnimalBreedID !== data.AnimalBreedID) {
-                throw new Error("AnimalBreed Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     AnimalBreed.findOne({ where: { AnimalBreedName: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         if (data && self.AnimalBreedID !== data.AnimalBreedID) {
+      //           throw new Error("AnimalBreed Name already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
 
     AnimalBreedNameEN: {
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "คำอธิบายสายพันธุ์ (ภาษาอังกฤษ)",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          AnimalBreed.findOne({ where: { AnimalBreedNameEN: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.AnimalBreedID !== data.AnimalBreedID) {
-                throw new Error("AnimalBreed Name EN already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     AnimalBreed.findOne({ where: { AnimalBreedNameEN: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         if (data && self.AnimalBreedID !== data.AnimalBreedID) {
+      //           throw new Error("AnimalBreed Name EN already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
 
     AnimalTypeID: {
