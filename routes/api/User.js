@@ -57,6 +57,8 @@ router.delete(
 router.post("/login", controllers.onLogin);
 router.post("/register", controllers.onRegister);
 router.post("/refresh-token", controllers.onRefreshToken);
+router.post("/forgot-password", controllers.onForgotPassword);
+
 
 router.get(
   "/user-by-staff-id/:id",

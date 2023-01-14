@@ -106,6 +106,7 @@ const methods = {
     }
   },
 
+
   async onRefreshToken(req, res) {
     try {
       let result = await Service.refreshToken(req.body.accessToken);
@@ -118,6 +119,24 @@ const methods = {
   async onGetByStaffID(req, res) {
     try {
       let result = await Service.findByStaffID(req.params.id);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  // async onForgotPassword(req, res) {
+  //   try {
+  //     let result = await Service.forgotPassword(req.body);
+  //     res.success(result, 201);
+  //   } catch (error) {
+  //     res.error(error);
+  //   }
+  // },
+
+  async onForgotPassword(req, res) {
+    try {
+      let result = await Service.forgotPassword(req.body);
       res.success(result);
     } catch (error) {
       res.error(error);
