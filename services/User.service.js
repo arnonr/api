@@ -6,7 +6,7 @@ const config = require("../configs/app"),
     ErrorNotFound,
     ErrorUnauthorized,
   } = require("../configs/errorMethods"),
-  { Op } = require("sequelize");
+  { Op, where } = require("sequelize");
 const nodemailer = require("nodemailer");
 
 const Sequelize = require("sequelize"),
@@ -689,14 +689,34 @@ const methods = {
     });
   },
 
-  forgotpassword(data) {
+  forgotPassword(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = new db(data);
-        obj.Password = obj.passwordHash(obj.Password);
-        const inserted = await obj.save();
+        // TEST
+        const obj = await db.findOne({
+          where: {
+            Username: data.email,
+          },
+        });
 
-        // Send mail
+        if (!obj) reject(ErrorNotFound("email: not found"));
+
+        let chars =
+          "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let passwordLength = 12;
+        let password = "";
+
+        for (let i = 0; i <= passwordLength; i++) {
+          var randomNumber = Math.floor(Math.random() * chars.length);
+          password += chars.substring(randomNumber, randomNumber + 1);
+        }
+
+        console.log(password);
+
+        obj.Password = obj.passwordHash(password);
+        const updated = await obj.save();
+
+        // // Send mail
         let transporter = nodemailer.createTransport({
           host: "smtp.gmail.com",
           port: 587,
@@ -704,19 +724,23 @@ const methods = {
           auth: {
             // ข้อมูลการเข้าสู่ระบบ
             user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
-            pass: "edoc2565", // email password
+            pass: "zsetdnqrizeqtvwu", // email password
           },
         });
 
         let info = await transporter.sendMail({
           from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: inserted.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
-          subject: "ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+          to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          subject: "Password Reset", // หัวข้ออีเมล
           // text: "d", // plain text body
-          html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ ได้รับข้อมูลของท่านเรียบร้อยแล้ว อยู่ระหว่างรอการอนุมัติ", // html body
+          html:
+            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> รหัสผ่านใหม่ของท่านคือ : " +
+            password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
         });
 
-        let res = methods.findById(inserted.UserID);
+        // let res = methods.findById(inserted.UserID);
+
+        let res = {};
 
         resolve(res);
       } catch (error) {
