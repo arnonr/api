@@ -37,7 +37,14 @@ module.exports = async (app) => {
       return callback(null, true);
     },
   };
-  app.use(cors(corsOptions));
+  // app.use(cors(corsOptions));
+
+
+  app.use(
+    cors({
+      origin: "*",
+    })
+  );
 
   // Parser Body
   app.use(express.json());
