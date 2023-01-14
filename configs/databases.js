@@ -8,7 +8,8 @@ const sequelize = new Sequelize(
   {
     host: config.DbHostname ? config.DbHostname : "host.docker.internal",
     port: config.DbPort,
-    dialect: "mysql",
+    dialect: "mssql",
+    schema: 'aidm',
     operatorsAlias: false,
     pool: {
       max: 5,
