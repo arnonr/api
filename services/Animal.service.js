@@ -1731,6 +1731,26 @@ const methods = {
       };
     }
 
+    if (req.query.FarmProvinceID) {
+      $where["$AnimalFarm.FarmProvinceID$"] = req.query.FarmProvinceID;
+    }
+
+    if (req.query.FarmAmphurID) {
+      $where["$AnimalFarm.FarmAmphurID$"] = req.query.FarmAmphurID;
+    }
+
+    if (req.query.FarmTumbolID) {
+      $where["$AnimalFarm.FarmTumbolID$"] = req.query.FarmTumbolID;
+    }
+
+    // 
+    if (req.query.ProjectID) {
+      // $where["$AnimalFarm.FarmTumbolID$"] = req.query.FarmTumbolID;
+    }
+
+    // วันที่ขึ้นทะเบียน
+
+
     //
     // if (req.query.ProjectID) {
     //   WhereProject = {
@@ -2674,7 +2694,6 @@ const methods = {
           .then(async (result) => {
             let rows = result[0],
               count = rows.length;
-
             //
             let noti = {
               noti1: 0,
@@ -2717,7 +2736,6 @@ const methods = {
                   });
 
                   // data คือตัวสัตว์
-
                   let data1 = await data.EventLatest();
                   // data1
 
@@ -2748,17 +2766,15 @@ const methods = {
                     // noti7Animal
                   }
 
-                  console.log(data1.Notification)
-                  console.log("FREEDOM6")
+                  console.log(data1.Notification);
+                  console.log("FREEDOM6");
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
-                    console.log("FREEDOM5")
+                    console.log("FREEDOM5");
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2)
+                    console.log(noti.noti2);
                     // noti7Animal
                   }
-
-                  
 
                   if (
                     data1.Notification.includes(
@@ -2781,14 +2797,14 @@ const methods = {
                   }
 
                   if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
-                    noti.noti5 += 1;
-                    noti.noti5Animal.push(data1.AnimalID);
+                    noti.noti6 += 1;
+                    noti.noti6Animal.push(data1.AnimalID);
                     // noti7Animal
                   }
 
                   if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
-                    noti.noti6 += 1;
-                    noti.noti6Animal.push(data1.AnimalID);
+                    noti.noti5 += 1;
+                    noti.noti5Animal.push(data1.AnimalID);
                     // noti7Animal
                   }
 

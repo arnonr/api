@@ -203,7 +203,7 @@ class Animal extends Model {
               noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
             }
           } else {
-            noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
+            // noti.push(`ครบกําหนดติดตามลูกเกิดหลังคลอด`);
           }
         }
       }
@@ -294,8 +294,8 @@ class Animal extends Model {
         eventLatest.PregnancyStatus == "DU" ||
         eventLatest.PregnancyStatus == ""
       ) {
-        if (day > 24) {
-          noti.push(`แจ้งเตือนกลับสัด`);
+        if (day > 90) {
+          noti.push(`ไม่กลับสัดหลังผสม`);
         }
       }
     }
@@ -407,6 +407,27 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
+    let statusText = this.AnimalStatus
+    ? this.AnimalStatus.AnimalStatusName
+    : null;
+
+    if(this.ProductionStatusID == 1){
+      statusText  = statusText + " แท้ง"
+    }else if(this.ProductionStatusID == 2){
+      statusText  = statusText + " คลอด"
+    }else if(this.ProductionStatusID == 3){
+      statusText  = statusText + " รอตรวจซ้ำ"
+    }else if(this.ProductionStatusID == 4){
+      statusText  = statusText + " ผสม"
+    }else if(this.ProductionStatusID == 5){
+      statusText  = statusText + " ไม่ท้อง"
+    }else if(this.ProductionStatusID == 6){
+      statusText  = statusText + " ท้อง"
+    }else{
+
+    }
+
+
     var data = {
       AnimalID: animalJson.AnimalID,
       AnimalEarID: animalJson.AnimalEarID,
@@ -415,9 +436,8 @@ class Animal extends Model {
       AnimalSecretStatus: animalJson.AnimalSecretStatus,
       AnimalAge: age,
       AnimalBreedAll: animalJson.AnimalBreedAll,
-      AnimalStatus: this.AnimalStatus
-        ? this.AnimalStatus.AnimalStatusName
-        : null,
+      AnimalStatus: statusText,
+      AnimalStatusText: statusText+" ผสม",
       FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
       AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
@@ -623,7 +643,6 @@ Animal.init(
         },
       },
     },
-
     AnimalNationalID: {
       type: DataTypes.STRING(255),
       allowNull: true,
@@ -648,7 +667,6 @@ Animal.init(
         },
       },
     },
-
     AnimalEarID: {
       type: DataTypes.STRING(255),
       allowNull: true,
@@ -673,7 +691,6 @@ Animal.init(
         },
       },
     },
-
     AnimalMicrochip: {
       type: DataTypes.STRING(255),
       allowNull: true,
@@ -963,7 +980,10 @@ Animal.init(
 
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent1.toString().substring(0,this.AnimalBreedPercent1.length-1) +
+            this.AnimalBreedPercent1.toString().substring(
+              0,
+              this.AnimalBreedPercent1.length - 1
+            ) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -972,7 +992,10 @@ Animal.init(
           let breed = this.AnimalBreed2.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent2.toString().substring(0,this.AnimalBreedPercent2.length-1) +
+            this.AnimalBreedPercent2.toString().substring(
+              0,
+              this.AnimalBreedPercent2.length - 1
+            ) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -981,7 +1004,10 @@ Animal.init(
           let breed = this.AnimalBreed3.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent3.toString().substring(0,this.AnimalBreedPercent3.length-1)  +
+            this.AnimalBreedPercent3.toString().substring(
+              0,
+              this.AnimalBreedPercent3.length - 1
+            ) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -990,7 +1016,10 @@ Animal.init(
           let breed = this.AnimalBreed4.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent4.toString().substring(0,this.AnimalBreedPercent4.length-1)  +
+            this.AnimalBreedPercent4.toString().substring(
+              0,
+              this.AnimalBreedPercent4.length - 1
+            ) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -999,7 +1028,10 @@ Animal.init(
           let breed = this.AnimalBreed5.toJSON();
           animalBreed =
             animalBreed +
-            this.AnimalBreedPercent5.toString().substring(0,this.AnimalBreedPercent5.length-1)  +
+            this.AnimalBreedPercent5.toString().substring(
+              0,
+              this.AnimalBreedPercent5.length - 1
+            ) +
             breed.AnimalBreedShortName +
             " ";
         }
@@ -1015,6 +1047,45 @@ Animal.init(
           : null;
       },
     },
+    // AnimalStatusText: {
+    //   type: DataTypes.VIRTUAL,
+    //   get() {
+    //     let status = null;
+
+    //     const status1 = [1, 2, 4, 6, 7, 9, 11, 12, 14];
+        
+    //     // 1 คัดจำหน่าย
+    //     // 2 ผสมเทียม
+    //     // 3 ย้ายฝากตัวอ่อน
+    //     // 4 ตรวจการตั้งท้อง
+    //     // 5 แท้ง
+    //     // 6 คลอด
+    //     // 7 ตรวจระบบสืบพันธุ์
+    //     // 8 ติดตามลูกโคหลังคลอด
+    //     // 9 หย่านม
+
+    //     if (status1.includes(this.AnimalStatusID)) {
+    //       status = [1];
+    //     } else if (
+    //       this.ProductionStatusID == 4 ||
+    //       this.ProductionStatusID == 3
+    //     ) { 
+    //       status = [1, 2, 3, 4, 5, 6, 7];
+    //     } else if (this.ProductionStatusID == 6) {
+    //       status = [1, 4, 5, 6];
+    //     } else if (this.ProductionStatusID == 1) {
+    //       status = [1, 2, 3, 4, 6, 7];
+    //     } else if (this.ProductionStatusID == 2) {
+    //       status = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    //     } else if (this.ProductionStatusID == 5) {
+    //       status = [1, 2, 3, 4, 5, 6, 7];
+    //     } else {
+    //       status = [1, 2, 3, 4, 5, 6, 7];
+    //     }
+    //     return this.Animal;
+    //     //
+    //   },
+    // },
   },
   {
     sequelize,
