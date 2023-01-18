@@ -1725,31 +1725,58 @@ const methods = {
 
     if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
 
+    let WhereAnimalFarm = null;
+
     if (req.query.FarmName) {
-      $where["$AnimalFarm.FarmName$"] = {
-        [Op.like]: "%" + req.query.FarmName + "%",
+      WhereAnimalFarm = {
+        FarmName: {
+          [Op.like]: "%" + req.query.FarmName + "%",
+        },
       };
     }
 
     if (req.query.FarmProvinceID) {
-      $where["$AnimalFarm.FarmProvinceID$"] = req.query.FarmProvinceID;
+      WhereAnimalFarm = {
+        FarmProvinceID: req.query.FarmProvinceID,
+      };
     }
 
     if (req.query.FarmAmphurID) {
-      $where["$AnimalFarm.FarmAmphurID$"] = req.query.FarmAmphurID;
+      WhereAnimalFarm = {
+        FarmAmphurID: req.query.FarmAmphurID,
+      };
     }
 
     if (req.query.FarmTumbolID) {
-      $where["$AnimalFarm.FarmTumbolID$"] = req.query.FarmTumbolID;
+      WhereAnimalFarm = {
+        FarmTumbolID: req.query.FarmTumbolID,
+      };
     }
 
-    // 
+    // if (req.query.FarmName) {
+    //   $where["$AnimalFarm.FarmName$"] = {
+    //     [Op.like]: "%" + req.query.FarmName + "%",
+    //   };
+    // }
+
+    // if (req.query.FarmProvinceID) {
+    //   $where["$AnimalFarm.FarmProvinceID$"] = req.query.FarmProvinceID;
+    // }
+
+    // if (req.query.FarmAmphurID) {
+    //   $where["$AnimalFarm.FarmAmphurID$"] = req.query.FarmAmphurID;
+    // }
+
+    // if (req.query.FarmTumbolID) {
+    //   $where["$AnimalFarm.FarmTumbolID$"] = req.query.FarmTumbolID;
+    // }
+
+    //
     if (req.query.ProjectID) {
       // $where["$AnimalFarm.FarmTumbolID$"] = req.query.FarmTumbolID;
     }
 
     // วันที่ขึ้นทะเบียน
-
 
     //
     // if (req.query.ProjectID) {
@@ -1892,7 +1919,8 @@ const methods = {
       {
         model: Farm,
         as: "AnimalFarm",
-        required: req.query.FarmName ? true : false,
+        where: WhereAnimalFarm,
+        required: req.query.FarmName ? true : true,
         include: {
           model: Farmer,
           as: "Farmer",
