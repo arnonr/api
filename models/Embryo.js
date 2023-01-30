@@ -280,6 +280,14 @@ Embryo.init(
           EmbryoNumber: this.MaleBreederID
         };
       },
+    },
+    FeMaleBreeder: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return {
+          EmbryoNumber: this.FeMaleBreederID
+        };
+      },
     }
   },
   {

@@ -8,9 +8,17 @@ const Sequelize = require("sequelize"),
 
 const User = require("../models/User");
 const Organization = require("../models/Organization");
+const Province = require("../models/Province");
+const AIZone = require("../models/AIZone");
 
 const CardRequestLog = require("../models/CardRequestLog");
 const Staff = require("../models/Staff");
+
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
 
 const methods = {
   async scopeSearch(req, limit, offset) {
@@ -19,7 +27,7 @@ const methods = {
 
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
 
-    // 
+    //
     let user = await User.findByPk(req.query.GetedUserID, {
       include: [
         {
@@ -62,7 +70,7 @@ const methods = {
       // //     },
       // //   };
       // //   //
-       // // }
+      // // }
     }
 
     if (req.query.StaffOrganizationID) {
@@ -272,7 +280,55 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+
+        if (data.hasOwnProperty("isFlag")) {
+          if (data.isFlag == "NewRegister") {
+            // Generate StaffNumber
+            let org = await Organization.findOne({
+              where: { OrganizationID: data.StaffOrganizationID },
+            });
+
+            let province = await Province.findOne({
+              where: { ProvinceID: org.OrganizationProvinceID },
+              include: { model: AIZone, as: "AIZone" },
+            });
+
+            
+            let text1 = province.AIZone.AIZoneENCode;
+            let text2 = dayjs().locale("th").format("BB");
+            let text3 = data.StaffPositionTypeID;
+            let prefix = text1 + text2 + text3;
+
+            let staffCheck = await Staff.max("StaffNumber", {
+              where: {
+                StaffNumber: {
+                  [Op.startsWith]: prefix,
+                },
+              },
+            });
+
+            let codeLastest = null;
+            if (staffCheck) {
+              codeLastest = staffCheck.substr(-4);
+              codeLastest = parseInt(codeLastest) + 1;
+              let number = 4 - parseInt(String(codeLastest).length);
+
+              if (number != 0) {
+                codeLastest = String(codeLastest);
+                for (let i = 1; i <= number; i++) {
+                  codeLastest = "0" + codeLastest;
+                }
+              }
+            } else {
+              codeLastest = "0001";
+            }
+
+            data.StaffNumber = prefix + codeLastest;
+          }
+        }
+
         const obj = new db(data);
+
         const inserted = await obj.save({ individualHooks: true });
 
         let res = methods.findById(inserted.StaffID);

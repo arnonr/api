@@ -43,28 +43,24 @@ const upload = multer({
 
 router.get(
   "/",
-  auth.required,
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
 
 router.get(
   "/:id",
-  auth.required,
   checkPermission(resource, "read"),
   controllers.onGetById
 );
 
 router.post(
   "/",
-  auth.required,
   checkPermission(resource, "create"),
   controllers.onInsert
 );
 
 router.put(
   "/:id",
-  auth.required,
   checkPermission(resource, "update"),
   controllers.onUpdate
 );
@@ -79,7 +75,6 @@ router.delete(
 // ต้องตรวจสอบอะไรก่อน 1.สิทธิ์ 2.ขนาดไฟล์ ประเภทไฟล์ 3. บันทึกลง Database
 router.post(
   "/photo/:id",
-  auth.required,
   checkPermission(resource, "update"),
   upload.single("photo_url"),
   controllers.onPhoto
