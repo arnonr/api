@@ -273,6 +273,14 @@ Embryo.init(
       allowNull: true,
       comment: "รหัสเจ้าหน้าที่",
     },
+    MaleBreeder: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return {
+          EmbryoNumber: this.MaleBreederID
+        };
+      },
+    }
   },
   {
     sequelize,
