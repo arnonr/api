@@ -8,15 +8,15 @@ class Embryo extends Model {
       as: "Semen",
     });
 
-    this.belongsTo(models.Animal, {
-      foreignKey: "MaleBreederID",
-      as: "MaleBreeder",
-    });
+    // this.belongsTo(models.Animal, {
+    //   foreignKey: "MaleBreederID",
+    //   as: "MaleBreeder",
+    // });
 
-    this.belongsTo(models.Animal, {
-      foreignKey: "FemaleBreederID",
-      as: "FemaleBreeder",
-    });
+    // this.belongsTo(models.Animal, {
+    //   foreignKey: "FemaleBreederID",
+    //   as: "FemaleBreeder",
+    // });
     this.belongsTo(models.AnimalType, {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
@@ -93,13 +93,13 @@ Embryo.init(
       comment: "รหัสอ้างอิงน้ำเชื้อ",
     },
     MaleBreederID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+      type: DataTypes.STRING(500),
+      allowNull: true,
       comment: "หมายเลขพ่อพันธุ์",
     },
     FemaleBreederID: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+      type: DataTypes.STRING(500),
+      allowNull: true,
       comment: "หมายเลขพ่อพันธุ์",
     },
     AnimalTypeID: {
@@ -159,7 +159,7 @@ Embryo.init(
     },
     SourceTypeID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสแหล่งที่มา",
     },
     CountryID: {
@@ -179,17 +179,17 @@ Embryo.init(
     },
     ProduceType: {
       type: DataTypes.ENUM("INVIVO", "INVITRO"),
-      allowNull: false,
+      allowNull: true,
       comment: "วิธีการผลิต INVIVO - ในร่างกายสัตว INVITRO - สิ่งแวดล้อมเทียม",
     },
     ProduceDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       comment: "วันที่ผลิต",
     },
     EmbryoStageID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสอ้้างอิงระยะตัวอ่อน",
     },
     EmbryoSex: {

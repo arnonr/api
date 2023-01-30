@@ -51,6 +51,15 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onFetchApi(req, res) {
+    try {
+      let result = await Service.fetchApi(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

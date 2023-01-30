@@ -1,7 +1,12 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Embryo"),
+  Organization = require("../models/Organization"),
+  Embryo = require("../models/Embryo"),
+  AnimalBreed = require("../models/AnimalBreed"),
   { Op } = require("sequelize");
+const axios = require("axios");
+const { forEach } = require("lodash");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -194,6 +199,107 @@ const methods = {
           { where: { EmbryoID: id } }
         );
         resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  fetchApi(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // axios
+        await axios
+          .get(
+            "https://biotech.ztidev.com/ex-serviceapi/api/v1/Embryo/getEmbryoDetail",
+            {
+              params: {
+                aniGenreCode: 1,
+                aniType1: "01",
+                aniType2: 2,
+              },
+            }
+          )
+          .then(async (response) => {
+            let { data } = response.data;
+            for (i = 0; i < data.length; i++) {
+              // console.log(data[i].embryoId);
+              let addEmbryo = await Embryo.findOne({
+                where: { EmbryoNumber: data[i].embryoId },
+              });
+              if (!addEmbryo) {
+                addEmbryo = new Embryo();
+              }
+
+              addEmbryo.EmbryoNumber = data[i].embryoId;
+
+              //
+                addEmbryo.MaleBreederID = data[i].fatEmbDetailDto.fatAniNo;
+                addEmbryo.FemaleBreederID = data[i].motEmbDetailDto.motAniNo;
+              // 
+
+              addEmbryo.AnimalTypeID = 2;
+
+              let sortValue = data[i].embLotBrdDtoList.reverse((a, b) => {
+                console.log(typeof a.percBreed);
+                return a.percBreed - b.percBreed;
+              });
+
+              for (j = 0; j < sortValue.length; j++) {
+                let BreedID = await AnimalBreed.findOne({
+                  where: { AnimalBreedShortName: sortValue[j].brdCode },
+                });
+
+                if (!BreedID) {
+                  BreedID = new AnimalBreed();
+                  BreedID.AnimalBreedCode = sortValue[j].brdAnild;
+                  BreedID.AnimalBreedShortName = sortValue[j].brdCode;
+                  BreedID.AnimalBreedName = sortValue[j].brdAniNameTh;
+                  BreedID.AnimalBreedNameEN = sortValue[j].brdAniNameEn;
+                  BreedID.AnimalTypeID = 1;
+                  BreedID.isActive = 1;
+                  BreedID.isRemove = 0;
+                  BreedID.CreatedUserID = 1;
+                  BreedID.CreatedAt = Date.now();
+                  await BreedID.save();
+                }
+
+                // sort array
+                let k = j + 1;
+                let text1 = "AnimalBreedID" + k;
+                let text2 = "AnimalBreedPercent" + k;
+                addEmbryo[text1] = BreedID.AnimalBreedID;
+                addEmbryo[text2] = sortValue[j].percBreed;
+              }
+
+              let dep = await Organization.findOne({
+                where: { OrganizationCode: data[i].deptCode },
+              });
+              if (dep) {
+                addEmbryo.SourceOrganizationID = dep.OrganizationID;
+              }
+
+              addEmbryo.SourceTypeID = data[i].embOriginId;
+              addEmbryo.ProduceType = data[i].creationSh;
+              addEmbryo.ProduceDate = data[i].collectedDate;
+              addEmbryo.isActive = 1;
+              addEmbryo.EmbryoSex = data[i].aniSexCode == "01" ? 1 : 2;
+              addEmbryo.StrawColor = data[i].strawColorName;
+              addEmbryo.PlugColor = data[i].plugColorName;
+              addEmbryo.Trypsinization = data[i].embTrypsSh;
+              addEmbryo.ZonaIntact = data[i].embZonaSh;
+              addEmbryo.EmbryoManipulated = data[i].embManipulateSh;
+              addEmbryo.EmbryoStatus = data[i].embStatusName;
+
+              addEmbryo.CreatedUserID = 1;
+              addEmbryo.createdAt = Date.now();
+              // addEmbryo.Amount = data[i].;
+              // addEmbryo.EmbryoStageID = data[i].;
+              addEmbryo.save();
+            }
+            resolve(response.data);
+          })
+          .catch((err) => console.log(err));
       } catch (error) {
         reject(error);
       }

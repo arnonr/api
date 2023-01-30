@@ -6,8 +6,13 @@ const { checkPermission } = require("../accessControl");
 let resource = "user";
 
 router.get(
+  "/fetch-api",
+  controllers.onFetchApi
+);
+
+router.get(
   "/",
-  auth.required,
+  // auth.required,
   checkPermission(resource, "read"),
   controllers.onGetAll
 );
@@ -22,7 +27,7 @@ router.post(
   "/",
   auth.required,
   checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(
