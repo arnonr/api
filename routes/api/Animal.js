@@ -43,15 +43,11 @@ const upload = multer({
 
 router.get(
   "/",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onGetAll
 );
 
 router.get(
   "/generate-number",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onGenerateNumber
 );
 
@@ -62,59 +58,43 @@ router.get(
 
 router.get(
   "/generate-breed",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onGenerateBreed
 );
 
 router.get(
   "/get-by-farm-id",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onGetByFarmID
 );
 
 router.get(
   "/:id",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onGetById
 );
 
 router.get(
   "/:id/export-registered-animal",
-  auth.required,
-  checkPermission(resource, "read"),
   controllers.onExportRegisteredAnimal
 );
 
 
 router.post(
   "/",
-  auth.required,
-  checkPermission(resource, "create"),
   controllers.onInsert
 );
 
 router.put(
   "/:id",
-  auth.required,
-  checkPermission(resource, "update"),
   controllers.onUpdate
 );
 
 router.delete(
   "/:id",
-  auth.required,
-  checkPermission(resource, "delete"),
   controllers.onDelete
 );
 
 // ต้องตรวจสอบอะไรก่อน 1.สิทธิ์ 2.ขนาดไฟล์ ประเภทไฟล์ 3. บันทึกลง Database
 router.post(
   "/photo/:id",
-  auth.required,
-  checkPermission(resource, "update"),
   upload.single("photo_url"),
   controllers.onPhoto
 );
