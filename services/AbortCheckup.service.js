@@ -5,6 +5,8 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
+const axios = require("axios");
+const TransferEmbryo = require("../models/TransferEmbryo");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -198,6 +200,23 @@ const methods = {
         );
 
         let res = methods.findById(inserted.AbortCheckupID);
+
+        if (inserted.TransferEmbryoID != null) {
+          // EmbryoID
+          let Temb = await TransferEmbryo.findByPk(inserted.TransferEmbryoID, {
+            include: { all: true, required: false },
+          });
+
+          await axios.post(
+            "https://biotech.ztidev.com/ex-serviceapi/api/v1/Embryo/updateStatusEmbryo",
+            {
+              birthDate: res.AbortDate,
+              embBirthStatusId: 4,
+              // embTransStatusId: 1,
+              embryoId: Temb.Embryo.EmbryoNumber,
+            }
+          );
+        }
 
         resolve(res);
       } catch (error) {

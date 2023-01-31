@@ -5,6 +5,8 @@ const config = require("../configs/app"),
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
+const TransferEmbryo = require("../models/TransferEmbryo");
+const axios = require("axios");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -198,12 +200,19 @@ const methods = {
         const inserted = await obj.save();
 
         let productionStatusID = null;
+        let embTransStatusId = null;
         if (inserted.PregnancyCheckStatusID == 1) {
           productionStatusID = 6;
+          embTransStatusId = 1;
+          embBirthStatusId = 2;
         } else if (inserted.PregnancyCheckStatusID == 2) {
           productionStatusID = 5;
+          embTransStatusId = 2;
+          embBirthStatusId = 1;
         } else {
           productionStatusID = 3;
+          embTransStatusId = 99;
+          embBirthStatusId = 2;
         }
 
         await Animal.update(
@@ -212,6 +221,26 @@ const methods = {
         );
 
         let res = methods.findById(inserted.PregnancyCheckupID);
+
+        if (inserted.TransferEmbryoID != null) {
+          // EmbryoID
+          let Temb = await TransferEmbryo.findByPk(
+            inserted.TransferEmbryoID,
+            {
+              include: { all: true, required: false },
+            }
+          );
+
+          await axios.post(
+            "https://biotech.ztidev.com/ex-serviceapi/api/v1/Embryo/updateStatusEmbryo",
+            {
+              birthDate: null,
+              embBirthStatusId: embBirthStatusId,
+              embTransStatusId: embTransStatusId,
+              embryoId: Temb.Embryo.EmbryoNumber,
+            }
+          );
+        }
 
         resolve(res);
       } catch (error) {
