@@ -6,6 +6,7 @@ const config = require("../configs/app"),
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
 const AnimalType = require("../models/AnimalType");
+const axios = require("axios");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -193,6 +194,15 @@ const methods = {
         await db.update(data, { where: { TransferEmbryoID: id } });
 
         let res = methods.findById(data.TransferEmbryoID);
+
+        await axios.post(
+          "https://biotech.ztidev.com/ex-serviceapi//api/v1/Embryo/trfEmbryo",
+          {
+            earMother: res.Animal.AnimalIdentificationID,
+            embryoId: res.EmbryoNumber,
+            transferDate: res.TransferDate,
+          }
+        );
 
         resolve(res);
       } catch (error) {
