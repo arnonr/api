@@ -25,8 +25,8 @@ const methods = {
 
   async onInsert(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.CreatedUserID = decoded.id;
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.CreatedUserID = 1;
       let result = await Service.insert(req.body);
       res.success(result, 201);
     } catch (error) {
@@ -37,7 +37,7 @@ const methods = {
   async onUpdate(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UpdatedUserID = decoded.id;
+      req.body.UpdatedUserID = 1;
 
       const result = await Service.update(req.params.id, req.body);
       res.success(result);
