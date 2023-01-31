@@ -292,7 +292,6 @@ const methods = {
               where: { ProvinceID: org.OrganizationProvinceID },
               include: { model: AIZone, as: "AIZone" },
             });
-
             
             let text1 = province.AIZone.AIZoneENCode;
             let text2 = dayjs().locale("th").format("BB");

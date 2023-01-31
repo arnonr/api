@@ -201,6 +201,11 @@ User.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    ResetPasswordToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Token Reset Password",
+    },
     ThaiRegisterDate: {
       type: DataTypes.VIRTUAL,
       get() {

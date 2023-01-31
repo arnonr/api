@@ -284,7 +284,7 @@ const methods = {
           var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
-
+        data.ResetPasswordToken = null;
         await db.update(data, { where: { UserID: id } });
 
         if (data.AnimalTypeID === null) {
@@ -711,10 +711,10 @@ const methods = {
           password += chars.substring(randomNumber, randomNumber + 1);
         }
 
-        console.log(password);
-
         obj.Password = obj.passwordHash(password);
-        const updated = await obj.save();
+        obj.ResetPasswordToken = password;
+
+        await obj.save();
 
         // // Send mail
         let transporter = nodemailer.createTransport({
@@ -737,6 +737,15 @@ const methods = {
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> รหัสผ่านใหม่ของท่านคือ : " +
             password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
         });
+
+        // let info = await transporter.sendMail({
+        //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+        //   to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+        //   subject: "Password Reset", // หัวข้ออีเมล
+        //   html:
+        //     "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br>
+        //      ลิงค์สำหรับรีเซ็ตรหัสผ่าน <br> Link : http://bblp-aidm.dld.go.th/gor?token=" + obj.ResetPasswordToken, // html body
+        // });
 
         // let res = methods.findById(inserted.UserID);
 
