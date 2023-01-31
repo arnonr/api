@@ -705,7 +705,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("email: not found"));
 
         let chars =
-          "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let passwordLength = 12;
         let password = "";
 
