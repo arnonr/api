@@ -6,8 +6,8 @@ const requestIp = require("request-ip");
 const methods = {
   async onGetAll(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.query.GetedUserID = decoded.id;
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.query.GetedUserID = 1;
 
       let result = await Service.find(req);
       res.success(result);
@@ -18,8 +18,8 @@ const methods = {
 
   async onAuthorize(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      let result = await Service.authorize(decoded.id);
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      let result = await Service.authorize(1);
       res.success(result);
     } catch (error) {
       res.error(error);
@@ -28,7 +28,7 @@ const methods = {
 
   async onCheckPermission(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       let result = await Service.CheckPermission(
         decoded.id,
         req.query.MenuID,
@@ -51,8 +51,8 @@ const methods = {
 
   async onInsert(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.CreatedUserID = decoded.id;
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.CreatedUserID = 1;
       let result = await Service.insert(req.body);
       res.success(result, 201);
     } catch (error) {
@@ -62,8 +62,8 @@ const methods = {
 
   async onUpdate(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UpdatedUserID = decoded.id;
+      // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UpdatedUserID = 1;
 
       const result = await Service.update(req.params.id, req.body);
       res.success(result);
