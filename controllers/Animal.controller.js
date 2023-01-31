@@ -64,6 +64,14 @@ const methods = {
       res.error(error);
     }
   },
+  async onGetLatestNumber(req, res) {
+    try {
+      let result = await Service.getLatestNumber(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
   async onGenerateBreed(req, res) {
     try {
       let result = await Service.GenerateBreed(

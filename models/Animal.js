@@ -408,25 +408,23 @@ class Animal extends Model {
     let age = animalJson.AnimalAge;
 
     let statusText = this.AnimalStatus
-    ? this.AnimalStatus.AnimalStatusName
-    : null;
+      ? this.AnimalStatus.AnimalStatusName
+      : null;
 
-    if(this.ProductionStatusID == 1){
-      statusText  = statusText + " แท้ง"
-    }else if(this.ProductionStatusID == 2){
-      statusText  = statusText + " คลอด"
-    }else if(this.ProductionStatusID == 3){
-      statusText  = statusText + " รอตรวจซ้ำ"
-    }else if(this.ProductionStatusID == 4){
-      statusText  = statusText + " ผสม"
-    }else if(this.ProductionStatusID == 5){
-      statusText  = statusText + " ไม่ท้อง"
-    }else if(this.ProductionStatusID == 6){
-      statusText  = statusText + " ท้อง"
-    }else{
-
+    if (this.ProductionStatusID == 1) {
+      statusText = statusText + " แท้ง";
+    } else if (this.ProductionStatusID == 2) {
+      statusText = statusText + " คลอด";
+    } else if (this.ProductionStatusID == 3) {
+      statusText = statusText + " รอตรวจซ้ำ";
+    } else if (this.ProductionStatusID == 4) {
+      statusText = statusText + " ผสม";
+    } else if (this.ProductionStatusID == 5) {
+      statusText = statusText + " ไม่ท้อง";
+    } else if (this.ProductionStatusID == 6) {
+      statusText = statusText + " ท้อง";
+    } else {
     }
-
 
     var data = {
       AnimalID: animalJson.AnimalID,
@@ -437,7 +435,7 @@ class Animal extends Model {
       AnimalAge: age,
       AnimalBreedAll: animalJson.AnimalBreedAll,
       AnimalStatus: statusText,
-      AnimalStatusText: statusText+" ผสม",
+      AnimalStatusText: statusText + " ผสม",
       FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
       AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
@@ -917,6 +915,11 @@ Animal.init(
       allowNull: true,
       comment: "สถานภาพการผลิต",
     },
+    AnimalDateJoin: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "วันเข้่าฝูง",
+    },
     AnimalSecretStatus: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -933,7 +936,7 @@ Animal.init(
         // 7 ตรวจระบบสืบพันธุ์
         // 8 ติดตามลูกโคหลังคลอด
         // 9 หย่านม
-
+// 
         if (status1.includes(this.AnimalStatusID)) {
           status = [1];
         } else if (
@@ -943,7 +946,7 @@ Animal.init(
           status = [1, 2, 3, 4, 5, 6, 7];
         } else if (this.ProductionStatusID == 6) {
           status = [1, 4, 5, 6];
-        } else if (this.ProductionStatusID == 1) {
+        } else if (this.ProductionStatusID ==                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 1) {
           status = [1, 2, 3, 4, 6, 7];
         } else if (this.ProductionStatusID == 2) {
           status = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -952,6 +955,7 @@ Animal.init(
         } else {
           status = [1, 2, 3, 4, 5, 6, 7];
         }
+
         return status;
       },
     },
@@ -1047,13 +1051,14 @@ Animal.init(
           : null;
       },
     },
+
     // AnimalStatusText: {
     //   type: DataTypes.VIRTUAL,
     //   get() {
     //     let status = null;
 
     //     const status1 = [1, 2, 4, 6, 7, 9, 11, 12, 14];
-        
+
     //     // 1 คัดจำหน่าย
     //     // 2 ผสมเทียม
     //     // 3 ย้ายฝากตัวอ่อน
@@ -1069,7 +1074,7 @@ Animal.init(
     //     } else if (
     //       this.ProductionStatusID == 4 ||
     //       this.ProductionStatusID == 3
-    //     ) { 
+    //     ) {
     //       status = [1, 2, 3, 4, 5, 6, 7];
     //     } else if (this.ProductionStatusID == 6) {
     //       status = [1, 4, 5, 6];

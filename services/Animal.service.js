@@ -29,6 +29,7 @@ const DewormActivity = require("../models/DewormActivity");
 const DewormMedicine = require("../models/DewormMedicine");
 const CureActivity = require("../models/CureActivity");
 const Farmer = require("../models/Farmer");
+const axios = require("axios");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -2086,6 +2087,51 @@ const methods = {
 
         let res = methods.findById(inserted.AnimalID);
 
+        // API
+        // let dataSend = {
+        // aniBirthdateTxt: null,
+        // aniBrdIds: embBirthStatusId,
+        // aniName: "",
+        // aniNo: "",
+        // aniOriginId: "",
+        // aniProjectIds: "",
+        // aniSexId: "",
+        // brdAniPercents: "",
+        // cAgeFirstCalve: "",
+        // cBirthType: "",
+        // cBodyConditionScore: "",
+        // cBodyLength: "",
+        // cHeartGirth: "",
+        // cHeight: "",
+        // cLastCalveDate: "",
+        // cNumOfService: "",
+        // cPreProdStatus: "",
+        // cProductionStatus: "",
+        // cWeight: "",
+        // earNo: "",
+        // earUnderNo: "",
+        // farmNo: "",
+        // fatherEarNo: "",
+        // files: "",
+        // isFirstBrd: "", // y or n
+        // motherEarNo: "",
+        // releaseDate: "",
+        // rfidNo: "",
+        // runBreedStatus: "",
+        // statusSellId: ""
+        //   }
+
+        // let form_data = new FormData();
+        // for (var key in dataSend) {
+        //     form_data.append(key, dataSend[key]);
+        // }
+        // await axios.post(
+        //   "https://biotech.ztidev.com/ex-serviceapi/api/v1/Breeder/add",formData, {
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // }
+        // );
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -2220,66 +2266,30 @@ const methods = {
         //   date = new Date(BirthDate);
         // }
         // let year = date.getFullYear();
+        let AnimalIdentificationID = "";
+        let AnimalEarGenerate = "";
+        let AnimalNationalID = "";
 
         let farm = await Farm.findByPk(FarmID, {
           include: { all: true, required: false },
         });
 
-        let AnimalEarGenerate = "";
-        let AnimalNationalID = "";
-
         if (farm) {
-          //   let animal = await db.max("AnimalIdentificationID", {
-          //     where: {
-          //       FarmID: FarmID,
-          //       AnimalIdentificationID: {
-          //         [Op.startsWith]: year,
-          //       },
-          //     },
-          //   });
+          let year = dayjs().format("YY");
 
-          // if (animal) {
-          //   let codeLastest = animal.substr(-5);
-          //   // let codeLastest = animal.substring(0, 17)
-          //   codeLastest = parseInt(codeLastest) + 1;
-          //   let number = 5 - parseInt(String(codeLastest).length);
-
-          //   if (number != 0) {
-          //     codeLastest = String(codeLastest);
-          //     for (let i = 1; i <= number; i++) {
-          //       codeLastest = "0" + codeLastest;
-          //     }
-          //   }
-
-          //   AnimalNumberGenerate =
-          //     year +
-          //     farm.FarmIdentificationNumber +
-          //     codeLastest +
-          //     Math.floor(Math.random() * 10);
-          // } else {
-          //   AnimalNumberGenerate =
-          //     year +
-          //     farm.FarmIdentificationNumber +
-          //     "00001" +
-          //     Math.floor(Math.random() * 10);
-          // }
-
-          //
-
-          let year = String(new Date().getFullYear()).slice(2);
-
-          let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
+          let ProvinceAndAmphur = farm.FarmAmphurID;
 
           let AnimalTypeCode = await AnimalType.findByPk(AnimalTypeID);
           AnimalTypeCode = AnimalTypeCode.AnimalTypeCode.slice(1);
 
           // Running Number
-          let prefixID = year + ProvinceAndAmphur + AnimalTypeCode;
+          let prefixID =
+            String(year) + String(ProvinceAndAmphur) + String(AnimalTypeCode);
 
           // Running Number
-          let animal = await db.max("AnimalEarID", {
+          let animal = await db.max("AnimalIdentificationID", {
             where: {
-              AnimalEarID: {
+              AnimalIdentificationID: {
                 [Op.startsWith]: prefixID,
               },
             },
@@ -2297,9 +2307,9 @@ const methods = {
               }
             }
 
-            AnimalEarGenerate = prefixID + codeLastest;
+            AnimalIdentificationID = String(prefixID) + String(codeLastest);
           } else {
-            AnimalEarGenerate = prefixID + "000001";
+            AnimalIdentificationID = String(prefixID) + String("000001");
           }
 
           //
@@ -2307,7 +2317,6 @@ const methods = {
           // ProvinceAndAmphur
           // N,M
           let type1 = "N";
-
           // C,D,B,G animalType
           let type2 = null;
           if (AnimalTypeID == 1) {
@@ -2351,8 +2360,9 @@ const methods = {
         }
 
         resolve({
-          AnimalNumberGenerate: AnimalEarGenerate,
-          AnimalEarGenerate: AnimalEarGenerate,
+          AnimalNumberGenerate: AnimalIdentificationID,
+          AnimalIdentificationID: AnimalIdentificationID,
+          AnimalEarGenerate: AnimalIdentificationID,
           AnimalNationalID: AnimalNationalID,
         });
       } catch (error) {
@@ -3211,6 +3221,84 @@ const methods = {
       }
     });
   },
+
+  getLatestNumber(req) {
+    // หมายเลขประจำตัวสัตว์ ระบบ auto generate ให้
+    // มี FORMAT ตามปีเกิด + เลขทะเบียนฟาร์ม + running number 5 หลัก เช่น ปีเกิดคือ 2022 เลขทะเบียนฟาร์มคือ 101010-0001 เลขที่ได้จะเป็น 1022101010-0001-00001 กรณีที่ไม่ทราบปีเกิดให้ใช้ปีที่บันทึกข้อมูล
+    return new Promise(async (resolve, reject) => {
+      try {
+        // req.aniGenreId
+        // req.aniTypeCode1
+        // req.aniTypeCode2
+        let AnimalTypeID = null;
+        if((req.query.aniTypeCode1 == '01') && (req.query.aniTypeCode2 == 1)){
+          AnimalTypeID = 1;
+        }
+
+        if((req.query.aniTypeCode1 == '02') && (req.query.aniTypeCode2 == 1)){
+          AnimalTypeID = 3;
+        }
+
+        if((req.query.aniTypeCode1 == '02') && (req.query.aniTypeCode2 == 2)){
+          AnimalTypeID = 4;
+        }
+
+        if((req.query.aniTypeCode1 == '10') && (req.query.aniTypeCode2 == 1)){
+          AnimalTypeID = 5;
+        }
+
+        if((req.query.aniTypeCode1 == '10') && (req.query.aniTypeCode2 == 2)){
+          AnimalTypeID = 6;
+        }
+
+        let AnimalIdentificationID = "";
+
+        let ProvinceAndAmphur = req.query.districtId;
+        let year = req.query.year;
+
+        let AnimalTypeCode = await AnimalType.findByPk(AnimalTypeID);
+        AnimalTypeCode = AnimalTypeCode.AnimalTypeCode.slice(1);
+
+        // Running Number
+        let prefixID =
+          String(year) + String(ProvinceAndAmphur) + String(AnimalTypeCode);
+
+        // Running Number
+        let animal = await db.max("AnimalIdentificationID", {
+          where: {
+            AnimalIdentificationID: {
+              [Op.startsWith]: prefixID,
+            },
+          },
+        });
+
+        if (animal) {
+          let codeLastest = animal.substr(-6);
+          codeLastest = parseInt(codeLastest) + 1;
+          let number = 6 - parseInt(String(codeLastest).length);
+
+          if (number != 0) {
+            codeLastest = String(codeLastest);
+            for (let i = 1; i <= number; i++) {
+              codeLastest = "0" + codeLastest;
+            }
+          }
+
+          AnimalIdentificationID = String(prefixID) + String(codeLastest);
+        } else {
+          AnimalIdentificationID = String(prefixID) + String("000001");
+        }
+
+        resolve({
+          AnimalLatestNumber: AnimalIdentificationID,
+        });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  //
 };
 
 module.exports = { ...methods };

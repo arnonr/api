@@ -56,6 +56,11 @@ router.get(
 );
 
 router.get(
+  "/get-latest-number",
+  controllers.onGetLatestNumber
+);
+
+router.get(
   "/generate-breed",
   auth.required,
   checkPermission(resource, "read"),
