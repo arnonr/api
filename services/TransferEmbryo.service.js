@@ -196,7 +196,7 @@ const methods = {
         let res = methods.findById(data.TransferEmbryoID);
 
         await axios.post(
-          "https://biotech.ztidev.com/ex-serviceapi//api/v1/Embryo/trfEmbryo",
+          "https://biotech.ztidev.com/ex-serviceapi/api/v1/Embryo/trfEmbryo",
           {
             earMother: res.Animal.AnimalIdentificationID,
             embryoId: res.EmbryoNumber,
