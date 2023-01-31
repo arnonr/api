@@ -30,7 +30,7 @@ const methods = {
     try {
       // const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       let result = await Service.CheckPermission(
-        decoded.id,
+        1,
         req.query.MenuID,
         req.query.Action
       );
