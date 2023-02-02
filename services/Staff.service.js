@@ -493,7 +493,7 @@ const methods = {
           console.log(StaffNumber);
           await axios
             .get(
-              `http://164.115.24.111/api/staff/listAllStaff?text_search:${{StaffNumber}}&limit=1&page=1`
+              `http://164.115.24.111/api/staff/listAllStaff?text_search=${{StaffNumber}}&limit=1&page=1`
             )
             .then(async (response) => {
               let { items } = response.data;
