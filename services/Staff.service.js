@@ -16,7 +16,6 @@ const CardRequestLog = require("../models/CardRequestLog");
 const Staff = require("../models/Staff");
 const Position = require("../models/Position");
 const axios = require("axios");
-const http = require("http");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -491,9 +490,15 @@ const methods = {
         });
 
         if (!obj) {
-
+          // await fetch('http://bblp-dairy.dld.go.th/', {method: 'GET'}).then((response) => {
+          // console.log(response)
+          // });
+          console.log(StaffNumber);
           await axios
-            .get("http://bblp-dairy.dld.go.th/api/staff/listAllStaff?text_search=F6620053")
+            .get(
+              "http://164.115.24.111/api/staff/listAllStaff?text_search=" +
+                StaffNumber
+            )
             .then(async (response) => {
               let { items } = response.data;
 
@@ -550,14 +555,11 @@ const methods = {
                 staffNew.createdAt = Date.now();
                 await staffNew.save();
 
-                obj = staffNew;
+                
+                let res = this.findById(staffNew.StaffID);
 
-                let res = { ...obj.toJSON() };
-                if (res.CardRequestLog.length != 0) {
-                  res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
-                }
-
-                resolve(res);
+                // let res = { ...obj.toJSON() };
+                resolve(res.toJSON());
               } else {
                 resolve(false);
               }
