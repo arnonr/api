@@ -10,9 +10,13 @@ const User = require("../models/User");
 const Organization = require("../models/Organization");
 const Province = require("../models/Province");
 const AIZone = require("../models/AIZone");
+// const fetch = require("node-fetch");
 
 const CardRequestLog = require("../models/CardRequestLog");
 const Staff = require("../models/Staff");
+const Position = require("../models/Position");
+const axios = require("axios");
+const http = require("http");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -38,8 +42,9 @@ const methods = {
       ],
     });
 
-    if (user.Staff.StaffOrganizationID != 1) {
-      let organization = `WITH cte AS (
+    if (!req.query.SearchStaffNumber) {
+      if (user.Staff.StaffOrganizationID != 1) {
+        let organization = `WITH cte AS (
           select     OrganizationID,
                      ParentOrganizationID
           from       aidm.aidm.Organization
@@ -53,24 +58,16 @@ const methods = {
         )
         SELECT * FROM cte;`;
 
-      const res = await sequelize.query(organization);
+        const res = await sequelize.query(organization);
 
-      let orgArr = [user.Staff.StaffOrganizationID];
-      res[0].map((r) => {
-        orgArr.push(r.OrganizationID);
-      });
+        let orgArr = [user.Staff.StaffOrganizationID];
 
-      $where["StaffOrganizationID"] = { [Op.in]: orgArr };
+        res[0].map((r) => {
+          orgArr.push(r.OrganizationID);
+        });
 
-      // // if (req.query.StaffOrganizationID) {
-      // //   $where["StaffOrganizationID"] = {
-      // //     [Op.and]: {
-      // //       StaffOrganizationID: req.query.StaffOrganizationID,
-      // //       // StaffOrganizationID: { [Op.in]: orgArr },
-      // //     },
-      // //   };
-      // //   //
-      // // }
+        $where["StaffOrganizationID"] = { [Op.in]: orgArr };
+      }
     }
 
     if (req.query.StaffOrganizationID) {
@@ -101,12 +98,83 @@ const methods = {
       }
     }
 
-    //
-
-    if (req.query.StaffNumber)
+    if (req.query.StaffNumber) {
       $where["StaffNumber"] = {
         [Op.like]: "%" + req.query.StaffNumber + "%",
       };
+
+      // if (req.query.SearchStaffNumber) {
+      //   // req.query.StaffNumber
+      //   let staffCheck = await Staff.findOne({
+      //     where: { StaffNumber: req.query.StaffNumber },
+      //   });
+
+      //   if (!staffCheck) {
+      //     await axios
+      //       .get(
+      //         "http://bblp-dairy.dld.go.th/api/staff/listAllStaff?text_search=F6620053"
+      //       )
+      //       .then(async (response) => {
+      //         let { items } = response.data;
+
+      //         if (items.length > 0) {
+      //           let staffNew = new Staff();
+
+      //           staffNew.StaffNumber = items[0].staffId;
+      //           staffNew.StaffIdentificationNumber = items[0].staffIdCard;
+
+      //           let dep = await Organization.findOne({
+      //             where: { OrganizationCode: items[0].staffOrgId },
+      //           });
+      //           if (dep) {
+      //             staffNew.StaffOrganizationID = dep.OrganizationID;
+      //           }
+
+      //           staffNew.StaffTitleID =
+      //             items[0].TitleName == "นางสาว"
+      //               ? 4
+      //               : items[0].TitleName == "นาย"
+      //               ? 3
+      //               : 5;
+      //           staffNew.StaffGivenName = items[0].staffFName;
+      //           staffNew.StaffSurname = items[0].staffLName;
+      //           staffNew.StaffGenderID = items[0].staffSex;
+      //           staffNew.StaffBirthdate = items[0].staffBirthdate;
+      //           staffNew.StaffStatus = items[0].staff_status_name;
+      //           staffNew.StaffAddress = items[0].staffAddress;
+      //           staffNew.StaffMoo = items[0].staffMoo;
+      //           staffNew.StaffVillageName = items[0].staffVillageName;
+      //           staffNew.StaffFloor = items[0].staffFloor;
+      //           staffNew.StaffStreet = items[0].staffStreet;
+      //           staffNew.StaffSubLane = items[0].staffSubLane;
+      //           staffNew.StaffLane = items[0].staffLane;
+      //           staffNew.StaffTumbolID = items[0].staffTumbolCode;
+      //           staffNew.StaffAmphurID = items[0].staffAmphurCode;
+      //           staffNew.StaffProvinceID = items[0].staffProvinceCode;
+      //           staffNew.StaffZipCode = items[0].staffZipCode;
+      //           staffNew.StaffEmail = items[0].staffEmailAddress;
+      //           staffNew.StaffTelephone = items[0].staffTelNo;
+      //           staffNew.StaffMobilePhone = items[0].staffMobileNo;
+      //           staffNew.StaffEducationID = items[0].staffEducation;
+      //           staffNew.StaffGraduateYear = items[0].staffGraduateYear;
+      //           staffNew.StaffPositionTypeID = items[0].staffPositionLevel;
+      //           staffNew.StaffMarriedStatusID = 6;
+
+      //           let position = await Position.findOne({
+      //             where: { PositionCode: items[0].emStaffPosition },
+      //           });
+      //           if (Position) {
+      //             staffNew.StaffPositionID = position.PositionID;
+      //           }
+      //           staffNew.CreatedUserID = 1;
+      //           staffNew.createdAt = Date.now();
+      //           await staffNew.save();
+      //         }
+      //       })
+      //       .catch((err) => console.log(err));
+      //   }
+      // }
+    }
 
     if (req.query.StaffIdentificationNumber)
       $where["StaffIdentificationNumber"] = {
@@ -127,8 +195,6 @@ const methods = {
     if (req.query.GenderID) $where["StaffGenderID"] = req.query.StaffGenderID;
     if (req.query.StaffMarriedStatusID)
       $where["StaffMarriedStatusID"] = req.query.StaffMarriedStatusID;
-    // if (req.query.StaffOrganizationID)
-    //   $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
     if (req.query.StaffPositionTypeID)
       $where["StaffPositionTypeID"] = req.query.StaffPositionTypeID;
     if (req.query.StaffPositionID)
@@ -292,7 +358,7 @@ const methods = {
               where: { ProvinceID: org.OrganizationProvinceID },
               include: { model: AIZone, as: "AIZone" },
             });
-            
+
             let text1 = province.AIZone.AIZoneENCode;
             let text2 = dayjs().locale("th").format("BB");
             let text3 = data.StaffPositionTypeID;
@@ -391,7 +457,6 @@ const methods = {
         // Update
         var os = require("os");
         var hostname = os.hostname();
-        console.log(hostname);
 
         obj.StaffImage = config.UploadPath + "/images/staff/" + filename;
         obj.save();
@@ -406,7 +471,7 @@ const methods = {
   findByStaffNumber(StaffNumber) {
     return new Promise(async (resolve, reject) => {
       try {
-        const obj = await db.findOne({
+        let obj = await db.findOne({
           where: {
             StaffNumber: StaffNumber.toString(),
             isRemove: 0,
@@ -425,14 +490,90 @@ const methods = {
           ],
         });
 
-        if (!obj) resolve(false);
+        if (!obj) {
 
-        let res = { ...obj.toJSON() };
-        if (res.CardRequestLog.length != 0) {
-          res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+          await axios
+            .get("http://bblp-dairy.dld.go.th/api/staff/listAllStaff?text_search=F6620053")
+            .then(async (response) => {
+              let { items } = response.data;
+
+              if (items.length > 0) {
+                let staffNew = new Staff();
+
+                staffNew.StaffNumber = items[0].staffId;
+                staffNew.StaffIdentificationNumber = items[0].staffIdCard;
+
+                let dep = await Organization.findOne({
+                  where: { OrganizationCode: items[0].staffOrgId },
+                });
+                if (dep) {
+                  staffNew.StaffOrganizationID = dep.OrganizationID;
+                }
+
+                staffNew.StaffTitleID =
+                  items[0].TitleName == "นางสาว"
+                    ? 4
+                    : items[0].TitleName == "นาย"
+                    ? 3
+                    : 5;
+                staffNew.StaffGivenName = items[0].staffFName;
+                staffNew.StaffSurname = items[0].staffLName;
+                staffNew.StaffGenderID = items[0].staffSex;
+                staffNew.StaffBirthdate = items[0].staffBirthdate;
+                staffNew.StaffStatus = items[0].staff_status_name;
+                staffNew.StaffAddress = items[0].staffAddress;
+                staffNew.StaffMoo = items[0].staffMoo;
+                staffNew.StaffVillageName = items[0].staffVillageName;
+                staffNew.StaffFloor = items[0].staffFloor;
+                staffNew.StaffStreet = items[0].staffStreet;
+                staffNew.StaffSubLane = items[0].staffSubLane;
+                staffNew.StaffLane = items[0].staffLane;
+                staffNew.StaffTumbolID = items[0].staffTumbolCode;
+                staffNew.StaffAmphurID = items[0].staffAmphurCode;
+                staffNew.StaffProvinceID = items[0].staffProvinceCode;
+                staffNew.StaffZipCode = items[0].staffZipCode;
+                staffNew.StaffEmail = items[0].staffEmailAddress;
+                staffNew.StaffTelephone = items[0].staffTelNo;
+                staffNew.StaffMobilePhone = items[0].staffMobileNo;
+                staffNew.StaffEducationID = items[0].staffEducation;
+                staffNew.StaffGraduateYear = items[0].staffGraduateYear;
+                staffNew.StaffPositionTypeID = items[0].staffPositionLevel;
+                staffNew.StaffMarriedStatusID = 6;
+
+                let position = await Position.findOne({
+                  where: { PositionCode: items[0].emStaffPosition },
+                });
+                if (Position) {
+                  staffNew.StaffPositionID = position.PositionID;
+                }
+                staffNew.CreatedUserID = 1;
+                staffNew.createdAt = Date.now();
+                await staffNew.save();
+
+                obj = staffNew;
+
+                let res = { ...obj.toJSON() };
+                if (res.CardRequestLog.length != 0) {
+                  res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+                }
+
+                resolve(res);
+              } else {
+                resolve(false);
+              }
+            })
+            .catch((err) => {
+              resolve(false);
+              console.log(err);
+            });
+        } else {
+          let res = { ...obj.toJSON() };
+          if (res.CardRequestLog.length != 0) {
+            res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+          }
+
+          resolve(res);
         }
-
-        resolve(res);
       } catch (error) {
         reject(ErrorNotFound(error));
       }
