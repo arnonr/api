@@ -490,13 +490,15 @@ const methods = {
         });
 
         if (!obj) {
-          console.log(StaffNumber);
+
           await axios
             .get(
-              `http://164.115.24.111/api/staff/listAllStaff?text_search=${{StaffNumber}}&limit=1&page=1`
+              'http://164.115.24.111/api/staff/listAllStaff?text_search='+StaffNumber.toString()+'&limit=1&page=1'
             )
             .then(async (response) => {
               let { items } = response.data;
+
+              console.log(items)
 
               if (items.length > 0) {
                 let staffNew = new Staff();
@@ -551,10 +553,9 @@ const methods = {
                 staffNew.createdAt = Date.now();
                 await staffNew.save();
 
-                
-              console.log("FREEDOM1");
-                let res = this.findById(staffNew.StaffID);
-                resolve(res.toJSON());
+
+                let res = await this.findById(staffNew.StaffID);
+                resolve(res);
               } else {
                 resolve(false);
               }

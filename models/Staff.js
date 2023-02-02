@@ -360,23 +360,23 @@ Staff.init(
     },
     StaffMobilePhone: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "หมายเลขโทรศัพท์มือถือ",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Staff.findOne({ where: { StaffMobilePhone: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.StaffID !== data.StaffID) {
-                throw new Error("StaffMobilePhone Number already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     Staff.findOne({ where: { StaffMobilePhone: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         if (data && self.StaffID !== data.StaffID) {
+      //           throw new Error("StaffMobilePhone Number already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
     StaffFax: {
       type: DataTypes.STRING(255),
