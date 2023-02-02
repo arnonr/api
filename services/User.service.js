@@ -353,7 +353,7 @@ const methods = {
         //   });
         // }
 
-        if (obj.isApprove==0 && data.isApprove == 1) {
+        if (obj.IsApprove==0 && data.IsApprove == 1) {
 
           let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
@@ -365,7 +365,7 @@ const methods = {
               pass: "zsetdnqrizeqtvwu", // email password
             },
           });
-          
+
           await transporter.sendMail({
             from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
             to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
