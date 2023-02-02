@@ -497,11 +497,12 @@ const methods = {
           await axios
             .get(
               "http://164.115.24.111/api/staff/listAllStaff?text_search=" +
-                StaffNumber
+                StaffNumber +"&page=1&limit=1"
             )
             .then(async (response) => {
               let { items } = response.data;
 
+              console.log("FREEDOM");
               if (items.length > 0) {
                 let staffNew = new Staff();
 
@@ -556,9 +557,8 @@ const methods = {
                 await staffNew.save();
 
                 
+              console.log("FREEDOM1");
                 let res = this.findById(staffNew.StaffID);
-
-                // let res = { ...obj.toJSON() };
                 resolve(res.toJSON());
               } else {
                 resolve(false);
