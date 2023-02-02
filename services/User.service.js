@@ -753,6 +753,16 @@ const methods = {
           },
         });
 
+        await transporter.sendMail({
+          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+          to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          subject: "Password Reset", // หัวข้ออีเมล
+          html:
+            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
+            obj.ResetPasswordToken +
+            "</a>", // html body
+        });
+
         // let info = await transporter.sendMail({
         //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
         //   to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
@@ -762,16 +772,6 @@ const methods = {
         //     "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> รหัสผ่านใหม่ของท่านคือ : " +
         //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
         // });
-
-        await transporter.sendMail({
-          from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: 'arnon.r@tgde.kmutnb.ac.th', //obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
-          subject: "Password Reset", // หัวข้ออีเมล
-          html:
-            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
-            obj.ResetPasswordToken +
-            "</a>", // html body
-        });
 
         // let res = methods.findById(inserted.UserID);
 
