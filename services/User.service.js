@@ -353,6 +353,15 @@ const methods = {
         //   });
         // }
 
+        if (obj.isApprove==0 && data.isApprove == 1) {
+          let info = await transporter.sendMail({
+            from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+            to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+            subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://bblp-aidm.dld.go.th/</a>", // html body
+          });
+        }
+
         let res = methods.findById(obj.UserID);
 
         resolve(res);
@@ -747,7 +756,8 @@ const methods = {
           subject: "Password Reset", // หัวข้ออีเมล
           html:
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
-            obj.ResetPasswordToken+"</a>", // html body
+            obj.ResetPasswordToken +
+            "</a>", // html body
         });
 
         // let res = methods.findById(inserted.UserID);
