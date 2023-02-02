@@ -354,7 +354,19 @@ const methods = {
         // }
 
         if (obj.isApprove==0 && data.isApprove == 1) {
-          let info = await transporter.sendMail({
+
+          let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            auth: {
+              // ข้อมูลการเข้าสู่ระบบ
+              user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+              pass: "zsetdnqrizeqtvwu", // email password
+            },
+          });
+          
+          await transporter.sendMail({
             from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
             to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
             subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
