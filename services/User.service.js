@@ -353,8 +353,7 @@ const methods = {
         //   });
         // }
 
-        if (obj.IsApprove==0 && data.IsApprove == 1) {
-
+        if (obj.IsApprove == 0 && data.IsApprove == 1) {
           let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -735,20 +734,22 @@ const methods = {
           password += chars.substring(randomNumber, randomNumber + 1);
         }
 
-        obj.Password = obj.passwordHash(password);
+        // obj.Password = obj.passwordHash(password);
         obj.ResetPasswordToken = password;
 
         await obj.save();
 
         // // Send mail
         let transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
+          host: "webmail.workd.go.th", //host: "smtp.gmail.com",
           port: 587,
+          debug: true,
+          logger: true,
           secure: false,
           auth: {
             // ข้อมูลการเข้าสู่ระบบ
-            user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
-            pass: "zsetdnqrizeqtvwu", // email password
+            user: "bblp.datadev@dld.go.th", // user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+            pass: "Bio#113048", // pass: "zsetdnqrizeqtvwu", // email password
           },
         });
 
@@ -762,9 +763,9 @@ const methods = {
         //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
         // });
 
-        let info = await transporter.sendMail({
+        await transporter.sendMail({
           from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          to: 'arnon.r@tgde.kmutnb.ac.th', //obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
