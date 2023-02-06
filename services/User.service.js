@@ -739,23 +739,39 @@ const methods = {
 
         await obj.save();
 
-        // // Send mail
+        // Send mail
+        // let transporter = nodemailer.createTransport({
+        //   host: "webmail.workd.go.th", //host: "smtp.gmail.com",
+        //   port: 587,
+        //   debug: true,
+        //   logger: true,
+        //   secure: false,
+        //   auth: {
+        //     // ข้อมูลการเข้าสู่ระบบ
+        //     user: "bblp.datadev@dld.go.th", // user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+        //     pass: "Bio#113048", // pass: "zsetdnqrizeqtvwu", // email password
+        //   },
+        //   tls: {
+        //     maxVersion: 'TLSv1.2',
+        //     minVersion: 'TLSv1.2',
+        //   },
+        // });
+
+        // Send mail
         let transporter = nodemailer.createTransport({
-          host: "webmail.workd.go.th", //host: "smtp.gmail.com",
+          host: "smtp.gmail.com",
           port: 587,
-          debug: true,
-          logger: true,
           secure: false,
           auth: {
             // ข้อมูลการเข้าสู่ระบบ
-            user: "bblp.datadev@dld.go.th", // user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
-            pass: "Bio#113048", // pass: "zsetdnqrizeqtvwu", // email password
+            user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+            pass: "zsetdnqrizeqtvwu", // email password
           },
         });
 
         await transporter.sendMail({
           from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          to: 'tongfreedom@gmail.com', // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
