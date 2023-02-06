@@ -175,23 +175,23 @@ Staff.init(
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "หมายเลขประจำตัวประชาชน",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Staff.findOne({
-            where: { StaffIdentificationNumber: value, isRemove: 0 },
-          })
-            .then(function (data) {
-              if (data && self.StaffID !== data.StaffID) {
-                throw new Error("Staff IdentificationNumber already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     Staff.findOne({
+      //       where: { StaffIdentificationNumber: value, isRemove: 0 },
+      //     })
+      //       .then(function (data) {
+      //         if (data && self.StaffID !== data.StaffID) {
+      //           throw new Error("Staff IdentificationNumber already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
     StaffTitleID: {
       type: DataTypes.INTEGER(11),
