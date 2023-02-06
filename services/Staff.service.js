@@ -41,33 +41,33 @@ const methods = {
       ],
     });
 
-    if (!req.query.SearchStaffNumber) {
-      if (user.Staff.StaffOrganizationID != 1) {
-        let organization = `WITH cte AS (
-          select     OrganizationID,
-                     ParentOrganizationID
-          from       aidm.aidm.Organization
-          where      ParentOrganizationID = ${user.Staff.StaffOrganizationID}
-          UNION ALL
-          select     o.OrganizationID,
-                     o.ParentOrganizationID
-          from       aidm.aidm.Organization o
-          INNER JOIN cte e
-                  on o.ParentOrganizationID = e.OrganizationID
-        )
-        SELECT * FROM cte;`;
+    // if (!req.query.SearchStaffNumber) {
+    //   if (user.Staff.StaffOrganizationID != 1) {
+    //     let organization = `WITH cte AS (
+    //       select     OrganizationID,
+    //                  ParentOrganizationID
+    //       from       aidm.aidm.Organization
+    //       where      ParentOrganizationID = ${user.Staff.StaffOrganizationID}
+    //       UNION ALL
+    //       select     o.OrganizationID,
+    //                  o.ParentOrganizationID
+    //       from       aidm.aidm.Organization o
+    //       INNER JOIN cte e
+    //               on o.ParentOrganizationID = e.OrganizationID
+    //     )
+    //     SELECT * FROM cte;`;
 
-        const res = await sequelize.query(organization);
+    //     const res = await sequelize.query(organization);
 
-        let orgArr = [user.Staff.StaffOrganizationID];
+    //     let orgArr = [user.Staff.StaffOrganizationID];
 
-        res[0].map((r) => {
-          orgArr.push(r.OrganizationID);
-        });
+    //     res[0].map((r) => {
+    //       orgArr.push(r.OrganizationID);
+    //     });
 
-        $where["StaffOrganizationID"] = { [Op.in]: orgArr };
-      }
-    }
+    //     $where["StaffOrganizationID"] = { [Op.in]: orgArr };
+    //   }
+    // }
 
     if (req.query.StaffOrganizationID) {
       $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
@@ -490,7 +490,6 @@ const methods = {
         });
 
         if (!obj) {
-
           await axios
             .get(
               'http://164.115.24.111/api/staff/listAllStaff?text_search='+StaffNumber.toString()+'&limit=1&page=1'
