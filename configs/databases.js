@@ -9,8 +9,12 @@ const sequelize = new Sequelize(
     host: config.DbHostname ? config.DbHostname : "host.docker.internal",
     port: config.DbPort,
     dialect: "mssql",
-    schema: 'aidm',
+    schema: "aidm",
     operatorsAlias: false,
+    dialectOptions: {
+      options: { "requestTimeout": 600000 },
+      requestTimeout: 600000,
+    },
     pool: {
       max: 5,
       min: 0,

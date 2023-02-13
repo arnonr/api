@@ -410,7 +410,11 @@ const methods = {
       try {
         let obj = null;
         obj = await db.findOne({
-          where: { Username: data.Username, isRemove: 0, isActive: 1 },
+          where: {
+            Username: data.Username,
+            isRemove: 0,
+            isActive: 1,
+          },
           include: [
             { all: true },
             {
@@ -435,6 +439,7 @@ const methods = {
               isActive: 1,
             },
           });
+
           if (staff) {
             obj = await db.findOne({
               where: { StaffID: staff.StaffID },
@@ -452,7 +457,6 @@ const methods = {
                 },
               ],
             });
-            console.log(obj);
           } else {
             reject(ErrorUnauthorized("Username not found"));
           }
@@ -771,7 +775,7 @@ const methods = {
 
         await transporter.sendMail({
           from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: 'tongfreedom@gmail.com', // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          to: "tongfreedom@gmail.com", // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +

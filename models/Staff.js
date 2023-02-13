@@ -153,14 +153,19 @@ Staff.init(
     },
     StaffNumber: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสบุคลากร",
       validate: {
         isUnique: function (value, next) {
           let self = this;
           Staff.findOne({ where: { StaffNumber: value, isRemove: 0 } })
             .then(function (data) {
-              if (data && self.StaffID !== data.StaffID) {
+              if (
+                data &&
+                self.StaffID != null &&
+                data &&
+                self.StaffID !== data.StaffID
+              ) {
                 throw new Error("Staff Number already in use!");
               }
               return next();
@@ -451,6 +456,11 @@ Staff.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
+    },
+    isCard: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "1 = เจ้าหน้าที่ทั่วไป / 2 = เจ้าหน้าที่มีบัตร",
     },
     StaffFullName: {
       type: DataTypes.VIRTUAL(DataTypes.STRING),
