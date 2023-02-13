@@ -387,7 +387,7 @@ const methods = {
               codeLastest = "0001";
             }
 
-            data.StaffNumber = prefix + codeLastest;
+            // data.StaffNumber = prefix + codeLastest;
           }
         }
 
@@ -423,6 +423,64 @@ const methods = {
 
         // await User.update(data, { where: { id: id }, individualHooks: true });
         resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
+  generateStaffNumber(StaffID, isCard) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log("FREEDOM")
+        let data = await Staff.findOne({ where: { StaffID: StaffID } });
+        // Generate StaffNumber
+        let org = await Organization.findOne({
+          where: { OrganizationID: data.StaffOrganizationID },
+        });
+
+        let province = await Province.findOne({
+          where: { ProvinceID: org.OrganizationProvinceID },
+          include: { model: AIZone, as: "AIZone" },
+        });
+
+        let text1 = province.AIZone.AIZoneENCode;
+        if (isCard == 1) {
+          text1 = "F";
+        }
+        let text2 = dayjs().locale("th").format("BB");
+        let text3 = data.StaffPositionTypeID;
+        let prefix = text1 + text2 + text3;
+
+        let staffCheck = await Staff.max("StaffNumber", {
+          where: {
+            StaffNumber: {
+              [Op.startsWith]: prefix,
+            },
+          },
+        });
+
+        let codeLastest = null;
+        if (staffCheck) {
+          codeLastest = staffCheck.substr(-4);
+          codeLastest = parseInt(codeLastest) + 1;
+          let number = 4 - parseInt(String(codeLastest).length);
+
+          if (number != 0) {
+            codeLastest = String(codeLastest);
+            for (let i = 1; i <= number; i++) {
+              codeLastest = "0" + codeLastest;
+            }
+          }
+        } else {
+          codeLastest = "0001";
+        }
+
+        let StaffNumber = prefix + codeLastest;
+
+        resolve({
+          StaffNumber: StaffNumber,
+        });
       } catch (error) {
         reject(ErrorBadRequest(error.message));
       }
@@ -492,12 +550,14 @@ const methods = {
         if (!obj) {
           await axios
             .get(
-              'http://164.115.24.111/api/staff/listAllStaff?text_search='+StaffNumber.toString()+'&limit=1&page=1'
+              "http://164.115.24.111/api/staff/listAllStaff?text_search=" +
+                StaffNumber.toString() +
+                "&limit=1&page=1"
             )
             .then(async (response) => {
               let { items } = response.data;
 
-              console.log(items)
+              console.log(items);
 
               if (items.length > 0) {
                 let staffNew = new Staff();
@@ -551,7 +611,6 @@ const methods = {
                 staffNew.CreatedUserID = 1;
                 staffNew.createdAt = Date.now();
                 await staffNew.save();
-
 
                 let res = await this.findById(staffNew.StaffID);
                 resolve(res);

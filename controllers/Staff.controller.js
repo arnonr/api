@@ -73,9 +73,20 @@ const methods = {
     }
   },
 
+  
+
   async onUpdateMobilePhone(req, res) {
     try {
       const result = await Service.update(req.params.id, req.body);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  async onGenerateStaffNumber(req, res) {
+    try {
+      let result = await Service.generateStaffNumber(req.query.StaffID, req.query.isCard);
       res.success(result);
     } catch (error) {
       res.error(error);

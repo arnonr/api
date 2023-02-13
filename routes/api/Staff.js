@@ -42,6 +42,11 @@ const upload = multer({
 });
 
 router.get(
+  "/generate-staff-number",
+  controllers.onGenerateStaffNumber
+);
+
+router.get(
   "/",
   // checkPermission(resource, "read"),
   controllers.onGetAll
@@ -84,6 +89,7 @@ router.get(
   "/staff-by-number/:id",
   controllers.onGetByStaffNumber
 );
+
 
 
 router.put(
