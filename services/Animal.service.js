@@ -2328,6 +2328,8 @@ const methods = {
           } else {
             type2 = "C";
           }
+          // หลักที่ 1-6 ตัวเลข , หลักที่ 7 ตัว N เท่านั้น, หลักที่ 8 ตัว C หรือ B หรือ G, หลักที่ 9-13 ตัวเลข
+          // เช่น 221602ND09884
 
           let prefixID2 = year + ProvinceAndAmphur + type1 + type2;
 
