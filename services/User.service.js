@@ -24,7 +24,7 @@ const Province = require("../models/Province");
 const methods = {
   async scopeSearch(req, limit, offset) {
     // Where
-    $where = {};
+    let $where = {};
 
     let $WhereStaff = {};
 
@@ -61,10 +61,21 @@ const methods = {
     }
 
     if (req.query.UserID) $where["UserID"] = req.query.UserID;
-    if (req.query.Username)
-      $where["Username"] = {
-        [Op.like]: "%" + req.query.Username + "%",
-      };
+    // if (req.query.Username)
+    //   $where["Username"] = {
+    //     [Op.like]: "%" + req.query.Username + "%",
+    //   };
+
+    if (req.query.Username) {
+      $where[Op.or] = [
+        { Username: {[Op.like]: "%" + req.query.Username + "%" }},
+        { "$Staff.StaffGivenName$": {[Op.like]: "%" + req.query.Username + "%" }},
+        { "$Staff.StaffSurname$": {[Op.like]: "%" + req.query.Username + "%" }},
+        { "$Staff.StaffNumber$": {[Op.like]: "%" + req.query.Username + "%" }},
+      ];
+      // $WhereStaff = { StaffOrganizationID: { [Op.in]: orgArr1 } };
+    }
+
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
     if (req.query.GroupID) $where["GroupID"] = req.query.GroupID;
 
