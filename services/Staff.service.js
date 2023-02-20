@@ -346,6 +346,10 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
 
+        if(data.StaffNumber == undefined){
+          console.log(data.StaffNumber)
+          data.StaffNumber = null
+        }
         if (data.hasOwnProperty("isFlag")) {
           if (data.isFlag == "NewRegister") {
             // Generate StaffNumber
