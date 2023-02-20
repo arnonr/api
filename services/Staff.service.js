@@ -386,6 +386,9 @@ const methods = {
             } else {
               codeLastest = "0001";
             }
+            if(data.StaffNumber == "undefined"){
+              data.StaffNumber = null;
+            }
 
             // data.StaffNumber = prefix + codeLastest;
           }
