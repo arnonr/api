@@ -1714,10 +1714,21 @@ const methods = {
 
     if (req.query.AnimalSexID) $where["AnimalSexID"] = req.query.AnimalSexID;
 
-    if (req.query.AnimalTypeID)
+    if (req.query.AnimalTypeID) {
+      let animaltype = JSON.parse(req.query.AnimalTypeID);
+
+      let test = animaltype.find((x) => {
+        return x == 3 || x == 4;
+      });
+
+      if (test) {
+        animaltype.push(42);
+      }
+
       $where["AnimalTypeID"] = {
-        [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        [Op.in]: animaltype,
       };
+    }
 
     if (req.query.AnimalName)
       $where["AnimalName"] = {
@@ -3233,23 +3244,23 @@ const methods = {
         // req.aniTypeCode1
         // req.aniTypeCode2
         let AnimalTypeID = null;
-        if((req.query.aniTypeCode1 == '01') && (req.query.aniTypeCode2 == 1)){
+        if (req.query.aniTypeCode1 == "01" && req.query.aniTypeCode2 == 1) {
           AnimalTypeID = 1;
         }
 
-        if((req.query.aniTypeCode1 == '02') && (req.query.aniTypeCode2 == 1)){
+        if (req.query.aniTypeCode1 == "02" && req.query.aniTypeCode2 == 1) {
           AnimalTypeID = 3;
         }
 
-        if((req.query.aniTypeCode1 == '02') && (req.query.aniTypeCode2 == 2)){
+        if (req.query.aniTypeCode1 == "02" && req.query.aniTypeCode2 == 2) {
           AnimalTypeID = 4;
         }
 
-        if((req.query.aniTypeCode1 == '10') && (req.query.aniTypeCode2 == 1)){
+        if (req.query.aniTypeCode1 == "10" && req.query.aniTypeCode2 == 1) {
           AnimalTypeID = 5;
         }
 
-        if((req.query.aniTypeCode1 == '10') && (req.query.aniTypeCode2 == 2)){
+        if (req.query.aniTypeCode1 == "10" && req.query.aniTypeCode2 == 2) {
           AnimalTypeID = 6;
         }
 
