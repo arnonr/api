@@ -25,11 +25,28 @@ const methods = {
         [Op.like]: "%" + req.query.BreederID + "%",
       };
 
-    if (req.query.AnimalTypeID) $where["AnimalTypeID"] = req.query.AnimalTypeID;
+    // if (req.query.AnimalTypeID) $where["AnimalTypeID"] = req.query.AnimalTypeID;
+
+    if (req.query.AnimalTypeID) {
+      let animaltype = JSON.parse(req.query.AnimalTypeID);
+
+      let test = animaltype.find((x) => {
+        return x == 3 || x == 4;
+      });
+
+      if (test) {
+        animaltype.push(42);
+      }
+
+      $where["AnimalTypeID"] = {
+        [Op.in]: animaltype,
+      };
+    }
 
     if (req.query.SourceTypeID) $where["SourceTypeID"] = req.query.SourceTypeID;
     if (req.query.CountryID) $where["CountryID"] = req.query.CountryID;
-    if (req.query.SourceOrganizationID) $where["SourceOrganizationID"] = req.query.SourceOrganizationID;
+    if (req.query.SourceOrganizationID)
+      $where["SourceOrganizationID"] = req.query.SourceOrganizationID;
     if (req.query.SemenSexing) $where["SemenSexing"] = req.query.SemenSexing;
 
     if (req.query.ProduceDate) $where["ProduceDate"] = req.query.ProduceDate;
@@ -63,7 +80,95 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [{ all: true, required: false }];
+    query["include"] = [
+      {
+        association: "Animal",
+        required: false,
+      },
+      {
+        association: "AnimalType",
+        attributes: ["AnimalTypeID", "AnimalTypeName"],
+        required: false,
+      },
+      {
+        association: "AnimalBreed1",
+        attributes: [
+          "AnimalBreedID",
+          "AnimalBreedCode",
+          "AnimalBreedShortName",
+          "AnimalBreedName",
+          "AnimalBreedNameEN",
+        ],
+        required: false,
+      },
+      {
+        association: "AnimalBreed2",
+        attributes: [
+          "AnimalBreedID",
+          "AnimalBreedCode",
+          "AnimalBreedShortName",
+          "AnimalBreedName",
+          "AnimalBreedNameEN",
+        ],
+        required: false,
+      },
+      {
+        association: "AnimalBreed3",
+        attributes: [
+          "AnimalBreedID",
+          "AnimalBreedCode",
+          "AnimalBreedShortName",
+          "AnimalBreedName",
+          "AnimalBreedNameEN",
+        ],
+        required: false,
+      },
+      {
+        association: "AnimalBreed4",
+        attributes: [
+          "AnimalBreedID",
+          "AnimalBreedCode",
+          "AnimalBreedShortName",
+          "AnimalBreedName",
+          "AnimalBreedNameEN",
+        ],
+        required: false,
+      },
+      {
+        association: "AnimalBreed5",
+        attributes: [
+          "AnimalBreedID",
+          "AnimalBreedCode",
+          "AnimalBreedShortName",
+          "AnimalBreedName",
+          "AnimalBreedNameEN",
+        ],
+        required: false,
+      },
+
+      {
+        association: "SourceType",
+        attributes: ["SourceTypeID", "SourceTypeCode", "SourceTypeName"],
+        required: false,
+      },
+
+      {
+        association: "Country",
+        attributes: ["CountryID", "CountryCode", "CountryName"],
+        required: false,
+      },
+      {
+        association: "Organization",
+        attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
+        required: false,
+      },
+      {
+        association: "Staff",
+        attributes: ["StaffID","StaffNumber","StaffGivenName","StaffSurname"],
+        required: false,
+      },
+      // { all: true, required: false }
+    ];
 
     return { query: query };
   },

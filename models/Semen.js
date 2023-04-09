@@ -6,47 +6,58 @@ class Semen extends Model {
     this.belongsTo(models.Animal, {
       foreignKey: "BreederID",
       as: "Animal",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.AnimalType, {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID1",
       as: "AnimalBreed1",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID2",
       as: "AnimalBreed2",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID3",
       as: "AnimalBreed3",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID4",
       as: "AnimalBreed4",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID5",
       as: "AnimalBreed5",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.SourceType, {
       foreignKey: "SourceTypeID",
       as: "SourceType",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Country, {
       foreignKey: "CountryID",
       as: "Country",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Organization, {
       foreignKey: "SourceOrganizationID",
       as: "Organization",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
       as: "Staff",
+      foreignKeyConstraint: true,
     });
   }
   // Custom JSON Response

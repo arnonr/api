@@ -9,51 +9,62 @@ class Staff extends Model {
     this.belongsTo(models.Title, {
       foreignKey: "StaffTitleID",
       as: "Title",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Gender, {
       foreignKey: "StaffGenderID",
       as: "Gender",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.MarriedStatus, {
       foreignKey: "StaffMarriedStatusID",
       as: "MarriedStatus",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Organization, {
       foreignKey: "StaffOrganizationID",
       as: "Organization",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.PositionType, {
       foreignKey: "StaffPositionTypeID",
       as: "PositionType",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Position, {
       foreignKey: "StaffPositionID",
       as: "Position",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Tumbol, {
       foreignKey: "StaffTumbolID",
       as: "Tumbol",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Amphur, {
       foreignKey: "StaffAmphurID",
       as: "Amphur",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Province, {
       foreignKey: "StaffProvinceID",
       as: "Province",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Education, {
       foreignKey: "StaffEducationID",
       as: "Education",
+      foreignKeyConstraint: true,
     });
 
     this.hasMany(models.CardRequestLog, {
       foreignKey: "StaffID",
       as: "CardRequestLog",
+      foreignKeyConstraint: true,
     });
   }
 
