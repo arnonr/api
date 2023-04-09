@@ -344,20 +344,20 @@ const methods = {
             let rows = result[0],
               count = rows.length;
 
-            // let rows1 = rows.map((data) => {
-            //   data = {
-            //     ...data.toJSON(),
-            //     CardRequestLog: data.toJSON().CardRequestLog[0],
-            //   };
+            let rows1 = rows.map((data) => {
+              data = {
+                ...data.toJSON(),
+                CardRequestLog: data.toJSON().CardRequestLog[0],
+              };
 
-            //   return data;
-            // });
+              return data;
+            });
 
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
               currPage: +req.query.page || 1,
-              rows: rows,
+              rows: rows1,
             });
           })
           .catch((error) => {
