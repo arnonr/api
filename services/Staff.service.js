@@ -69,33 +69,123 @@ const methods = {
     //   }
     // }
 
-    if (req.query.StaffOrganizationID) {
-      $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+    // Old
 
-      if (req.query.OrganizationAllChild == 1) {
-        let organization1 = `WITH cte AS (
-          select     OrganizationID,
-                     ParentOrganizationID
-          from       aidm.aidm.Organization
-          where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
-          union all
-          select     o.OrganizationID,
-                     o.ParentOrganizationID
-          from       aidm.aidm.Organization o
-          inner join cte e
-                  on o.ParentOrganizationID = e.OrganizationID
-        )
-        SELECT * FROM cte;`;
-        const res1 = await sequelize.query(organization1);
-        let orgArr1 = [req.query.StaffOrganizationID];
-        res1[0].map((r) => {
-          orgArr1.push(r.OrganizationID);
-        });
-        $where["StaffOrganizationID"] = {
-          [Op.in]: orgArr1,
-        };
-      }
+    // if (req.query.StaffOrganizationID) {
+    //   $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+
+    //   if (req.query.OrganizationAllChild == 1) {
+    //     let organization1 = `WITH cte AS (
+    //       select     OrganizationID,
+    //                  ParentOrganizationID
+    //       from       aidm.aidm.Organization
+    //       where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
+    //       union all
+    //       select     o.OrganizationID,
+    //                  o.ParentOrganizationID
+    //       from       aidm.aidm.Organization o
+    //       inner join cte e
+    //               on o.ParentOrganizationID = e.OrganizationID
+    //     )
+    //     SELECT * FROM cte;`;
+    //     const res1 = await sequelize.query(organization1);
+    //     let orgArr1 = [req.query.StaffOrganizationID];
+    //     res1[0].map((r) => {
+    //       orgArr1.push(r.OrganizationID);
+    //     });
+    //     $where["StaffOrganizationID"] = {
+    //       [Op.in]: orgArr1,
+    //     };
+    //   }
+    // }
+
+    if (req.query.StaffOrganizationID) {
+      // $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+      // let StaffOrganizationID = req.query.StaffOrganizationID;
+
+      let org = await Organization.findByPk(req.query.StaffOrganizationID, {
+        include: [
+          {
+            model: Province,
+            as: "Province",
+          },
+        ],
+      });
+
+      let province = await Province.findAll({
+        where: { AIZoneID: org.Province.AIZoneID },
+      });
+
+      let res5 = [];
+      province.map((p) => {
+        res5.push(p.ProvinceID);
+      });
+
+      let org1 = await Organization.findAll({
+        where: { OrganizationProvinceID: { [Op.in]: res5 } },
+      });
+
+      let res6 = [];
+      org1.map((r) => {
+        res6.push(r.OrganizationID);
+      });
+
+      $where["StaffOrganizationID"] = {
+        [Op.in]: res6,
+      };
+
+      // if (req.query.OrganizationAllChild == 1) {
+      //   let organization1 = `WITH cte AS (
+      //     select     OrganizationID,
+      //                ParentOrganizationID
+      //     from       aidm.aidm.Organization
+      //     where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
+      //     union all
+      //     select     o.OrganizationID,
+      //                o.ParentOrganizationID
+      //     from       aidm.aidm.Organization o
+      //     inner join cte e
+      //             on o.ParentOrganizationID = e.OrganizationID
+      //   )
+      //   SELECT * FROM cte;`;
+      //   const res1 = await sequelize.query(organization1);
+      //   let orgArr1 = [req.query.StaffOrganizationID];
+      //   res1[0].map((r) => {
+      //     orgArr1.push(r.OrganizationID);
+      //   });
+      //   $where["StaffOrganizationID"] = {
+      //     [Op.in]: orgArr1,
+      //   };
+      // }
     }
+
+    // if (req.query.AIZoneID == true) {
+    //   $where["StaffOrganizationID"] = req.query.StaffOrganizationID;
+
+    //   if (req.query.OrganizationAllChild == 1) {
+    //     let organization1 = `WITH cte AS (
+    //       select     OrganizationID,
+    //                  ParentOrganizationID
+    //       from       aidm.aidm.Organization
+    //       where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
+    //       union all
+    //       select     o.OrganizationID,
+    //                  o.ParentOrganizationID
+    //       from       aidm.aidm.Organization o
+    //       inner join cte e
+    //               on o.ParentOrganizationID = e.OrganizationID
+    //     )
+    //     SELECT * FROM cte;`;
+    //     const res1 = await sequelize.query(organization1);
+    //     let orgArr1 = [req.query.StaffOrganizationID];
+    //     res1[0].map((r) => {
+    //       orgArr1.push(r.OrganizationID);
+    //     });
+    //     $where["StaffOrganizationID"] = {
+    //       [Op.in]: orgArr1,
+    //     };
+    //   }
+    // }
 
     if (req.query.StaffNumber) {
       $where["StaffNumber"] = {
@@ -251,7 +341,6 @@ const methods = {
 
     query["include"] = [
       // { all: true, required: false },
-      
 
       {
         association: "Title",
@@ -315,7 +404,7 @@ const methods = {
       // },
       {
         association: "Organization",
-        attributes: ["OrganizationID", "OrganizationCode","OrganizationName"],
+        attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
         required: false,
       },
 
@@ -406,9 +495,9 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
 
-        if(data.StaffNumber == undefined){
-          console.log(data.StaffNumber)
-          data.StaffNumber = null
+        if (data.StaffNumber == undefined) {
+          console.log(data.StaffNumber);
+          data.StaffNumber = null;
         }
         if (data.hasOwnProperty("isFlag")) {
           if (data.isFlag == "NewRegister") {
@@ -450,7 +539,7 @@ const methods = {
             } else {
               codeLastest = "0001";
             }
-            if(data.StaffNumber == "undefined"){
+            if (data.StaffNumber == "undefined") {
               data.StaffNumber = null;
             }
 
@@ -499,7 +588,7 @@ const methods = {
   generateStaffNumber(StaffID, isCard) {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("FREEDOM")
+        console.log("FREEDOM");
         let data = await Staff.findOne({ where: { StaffID: StaffID } });
         // Generate StaffNumber
         let org = await Organization.findOne({
