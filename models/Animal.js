@@ -21,38 +21,47 @@ class Animal extends Model {
     this.belongsTo(models.AnimalSex, {
       foreignKey: "AnimalSexID",
       as: "AnimalSex",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Farm, {
       foreignKey: "FarmID",
       as: "AnimalFarm",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalFatherID",
       as: "AnimalFather",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalMotherID",
       as: "AnimalMother",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID1",
       as: "AnimalBreed1",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID2",
       as: "AnimalBreed2",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID3",
       as: "AnimalBreed3",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID4",
       as: "AnimalBreed4",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.AnimalBreed, {
       foreignKey: "AnimalBreedID5",
       as: "AnimalBreed5",
+      foreignKeyConstraint: true,
     });
 
     // this.belongsTo(models.BornType, {
@@ -63,37 +72,45 @@ class Animal extends Model {
     this.belongsTo(models.Farm, {
       foreignKey: "SourceFarmID",
       as: "SourceFarm",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Organization, {
       foreignKey: "OrganizationID",
       as: "Organization",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.OrganizationZone, {
       foreignKey: "OrganizationZoneID",
       as: "OrganizationZone",
+      foreignKeyConstraint: true,
     });
 
     // Project
     this.belongsToMany(models.Project, {
+      // as: "Project",
       through: models.AnimalToProject,
       foreignKey: "AnimalID",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.AnimalStatus, {
       foreignKey: "AnimalStatusID",
       as: "AnimalStatus",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.AnimalType, {
       foreignKey: "AnimalTypeID",
       as: "AnimalType",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.ProductionStatus, {
       foreignKey: "ProductionStatusID",
       as: "ProductionStatus",
+      foreignKeyConstraint: true,
     });
 
     // this.belongsTo(models.GiveBirth, {
@@ -435,7 +452,7 @@ class Animal extends Model {
       AnimalAge: age,
       AnimalBreedAll: animalJson.AnimalBreedAll,
       AnimalStatus: statusText,
-      AnimalStatusText: statusText + " ผสม",
+      AnimalStatusText: statusText,
       FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
       AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
