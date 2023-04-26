@@ -482,7 +482,8 @@ class Animal extends Model {
           ...data,
           AIID: null,
           TransferEmbryoID: embryo.TransferEmbryoID,
-          PAR: embryo.PAR,
+          PAR: animalJson.AnimalPar,
+          // PAR: embryo.PAR,
           TimeNo: embryo.TimeNo,
           AIDate: null,
           EmbryoDate: embryo.TransferDate,
@@ -517,7 +518,9 @@ class Animal extends Model {
           ...data,
           AIID: ai.AIID,
           TransferEmbryoID: null,
-          PAR: ai.PAR,
+
+          PAR: animalJson.AnimalPar,
+          // PAR: ai.PAR,
           TimeNo: ai.TimeNo,
           AIDate: ai.AIDate,
           ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
@@ -551,7 +554,9 @@ class Animal extends Model {
         ...data,
         AIID: ai.AIID,
         TransferEmbryoID: null,
-        PAR: ai.PAR,
+        // PAR: ai.PAR,
+
+        PAR: animalJson.AnimalPar,
         TimeNo: ai.TimeNo,
         AIDate: ai.AIDate,
         ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
@@ -583,7 +588,9 @@ class Animal extends Model {
         ...data,
         AIID: null,
         TransferEmbryoID: embryo.TransferEmbryoID,
-        PAR: embryo.PAR,
+        // PAR: embryo.PAR,
+
+        PAR: animalJson.AnimalPar,
         TimeNo: embryo.TimeNo,
         AIDate: null,
         EmbryoDate: embryo.TransferDate,
@@ -601,7 +608,7 @@ class Animal extends Model {
         ...data,
         AIID: null,
         TransferEmbryoID: null,
-        PAR: null,
+        PAR: animalJson.AnimalPar,
         TimeNo: null,
         AIDate: null,
         EmbryoDate: null,
@@ -953,7 +960,7 @@ Animal.init(
         // 7 ตรวจระบบสืบพันธุ์
         // 8 ติดตามลูกโคหลังคลอด
         // 9 หย่านม
-// 
+        //
         if (status1.includes(this.AnimalStatusID)) {
           status = [1];
         } else if (
@@ -963,7 +970,7 @@ Animal.init(
           status = [1, 2, 3, 4, 5, 6, 7];
         } else if (this.ProductionStatusID == 6) {
           status = [1, 4, 5, 6];
-        } else if (this.ProductionStatusID ==                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 1) {
+        } else if (this.ProductionStatusID == 1) {
           status = [1, 2, 3, 4, 6, 7];
         } else if (this.ProductionStatusID == 2) {
           status = [1, 2, 3, 4, 5, 6, 7, 8, 9];
