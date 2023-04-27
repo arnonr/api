@@ -68,10 +68,18 @@ const methods = {
 
     if (req.query.Username) {
       $where[Op.or] = [
-        { Username: {[Op.like]: "%" + req.query.Username + "%" }},
-        { "$Staff.StaffGivenName$": {[Op.like]: "%" + req.query.Username + "%" }},
-        { "$Staff.StaffSurname$": {[Op.like]: "%" + req.query.Username + "%" }},
-        { "$Staff.StaffNumber$": {[Op.like]: "%" + req.query.Username + "%" }},
+        { Username: { [Op.like]: "%" + req.query.Username + "%" } },
+        {
+          "$Staff.StaffGivenName$": {
+            [Op.like]: "%" + req.query.Username + "%",
+          },
+        },
+        {
+          "$Staff.StaffSurname$": { [Op.like]: "%" + req.query.Username + "%" },
+        },
+        {
+          "$Staff.StaffNumber$": { [Op.like]: "%" + req.query.Username + "%" },
+        },
       ];
       // $WhereStaff = { StaffOrganizationID: { [Op.in]: orgArr1 } };
     }
@@ -779,8 +787,8 @@ const methods = {
           secure: false,
           auth: {
             // ข้อมูลการเข้าสู่ระบบ
-            user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
-            pass: "zsetdnqrizeqtvwu", // email password
+            user: "cwie@kmutnb.ac.th", // email user ของเรา
+            pass: "xhqqcypawtnyfnhl", // email password
           },
         });
 
@@ -789,7 +797,9 @@ const methods = {
           to: "tongfreedom@gmail.com", // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
-            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href=''>http://localhost:8080/new-password?token=" +
+            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://localhost:8080/new-password?token=" +
+            obj.ResetPasswordToken +
+            "'>http://localhost:8080/new-password?token=" +
             obj.ResetPasswordToken +
             "</a>", // html body
         });
