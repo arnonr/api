@@ -476,12 +476,13 @@ Staff.init(
     StaffFullName: {
       type: DataTypes.VIRTUAL(DataTypes.STRING),
       get() {
+        let StaffNumber = "";
+        if (this.StaffNumber != null) {
+          StaffNumber = this.StaffNumber;
+        }
+
         let fullname =
-          this.StaffNumber +
-          " " +
-          this.StaffGivenName +
-          " " +
-          this.StaffSurname;
+          StaffNumber + " " + this.StaffGivenName + " " + this.StaffSurname;
         return fullname.trim();
       },
     },
