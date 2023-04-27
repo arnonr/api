@@ -235,6 +235,7 @@ const methods = {
         }
 
         const obj = new db(data);
+        obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
