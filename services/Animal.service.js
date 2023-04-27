@@ -1925,17 +1925,21 @@ const methods = {
     query["include"] = [
       { all: true, required: false },
       {
+        // association: "Project",
         model: Project,
         where: WhereProject,
+        // attributes: ["EducationID", "EducationName"],
       },
       {
-        model: Farm,
-        as: "AnimalFarm",
+        association: "AnimalFarm",
+        // model: Farm,
+        // as: "AnimalFarm",
         where: WhereAnimalFarm,
         required: req.query.FarmName ? true : true,
         include: {
-          model: Farmer,
-          as: "Farmer",
+          // model: Farmer,
+          // as: "Farmer",
+          association: "Farmer",
           required: req.query.FarmerName ? true : false,
           where: WhereFarmer,
         },
@@ -1956,6 +1960,7 @@ const methods = {
             let rows = result[0],
               count = result[1];
 
+
             rows = await Promise.all(
               rows.map(async (data) => {
                 let projectArray = [];
@@ -1967,17 +1972,21 @@ const methods = {
                   data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
                 }
 
+                // รหัสใบหู, ชื่อ
+                
+                
                 data = {
                   ...data.toJSON(),
                   Projects: projectArray,
                   ProjectID: JSON.parse(data.toJSON().ProjectID),
                   EventLatest: await data.EventLatest(),
+
+                  // EventLatest: data.EventLatest(),
                 };
 
                 return data;
               })
             );
-            //
 
             resolve({
               total: count,

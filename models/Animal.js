@@ -622,8 +622,10 @@ class Animal extends Model {
 
   // Custom JSON Response
   toJSON() {
+    let animal = this.get();
     return {
-      ...this.get(),
+      ...animal,
+      AnimalEarIDAndName: animal.AnimalEarID + "," + animal.AnimalName,
       // AnimalToProject: undefined,
     };
   }
