@@ -143,11 +143,16 @@ const methods = {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
+        
+        // await db.update(
+        //   { isRemove: 1, isActive: 0 },
+        //   { where: { BCSCheckupID: id } }
+        // );
+        obj.isRemove = 1;
+        obj.isActive = 0;
 
-        await db.update(
-          { isRemove: 1, isActive: 0 },
-          { where: { BCSCheckupID: id } }
-        );
+        await obj.save();
+
         resolve();
       } catch (error) {
         reject(error);
