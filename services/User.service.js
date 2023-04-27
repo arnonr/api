@@ -797,9 +797,9 @@ const methods = {
           to: "tongfreedom@gmail.com", // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
-            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://localhost:8080/new-password?token=" +
+            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://bblp-aidm.dld.go.th/new-password?token=" +
             obj.ResetPasswordToken +
-            "'>http://localhost:8080/new-password?token=" +
+            "'>http://bblp-aidm.dld.go.th/new-password?token=" +
             obj.ResetPasswordToken +
             "</a>", // html body
         });
