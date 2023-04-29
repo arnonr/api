@@ -1702,10 +1702,13 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalNationalID + "%",
       };
 
-    if (req.query.AnimalEarID)
-      $where["AnimalEarID"] = {
-        [Op.like]: "%" + req.query.AnimalEarID + "%",
-      };
+    if (req.query.AnimalEarID){
+      $where["AnimalEarID"] = req.query.AnimalEarID;
+    }
+      
+    // $where["AnimalEarID"] = {
+    //   [Op.like]: "%" + req.query.AnimalEarID + "%",
+    // };
 
     if (req.query.AnimalMicrochip)
       $where["AnimalMicrochip"] = {
@@ -1960,7 +1963,6 @@ const methods = {
             let rows = result[0],
               count = result[1];
 
-
             rows = await Promise.all(
               rows.map(async (data) => {
                 let projectArray = [];
@@ -1973,8 +1975,7 @@ const methods = {
                 }
 
                 // รหัสใบหู, ชื่อ
-                
-                
+
                 data = {
                   ...data.toJSON(),
                   Projects: projectArray,
