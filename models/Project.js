@@ -71,21 +71,21 @@ Project.init(
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "ชื่อโครงการ (ภาษาไทย)",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Project.findOne({ where: { ProjectName: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.ProjectID !== data.ProjectID) {
-                throw new Error("Project Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+      // validate: {
+      //   isUnique: function (value, next) {
+      //     let self = this;
+      //     Project.findOne({ where: { ProjectName: value, isRemove: 0 } })
+      //       .then(function (data) {
+      //         if (data && self.ProjectID !== data.ProjectID) {
+      //           throw new Error("Project Name already in use!");
+      //         }
+      //         return next();
+      //       })
+      //       .catch(function (err) {
+      //         return next(err);
+      //       });
+      //   },
+      // },
     },
     ProjectNameEN: {
       type: DataTypes.STRING(255),
