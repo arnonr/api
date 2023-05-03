@@ -787,8 +787,13 @@ const methods = {
           secure: false,
           auth: {
             // ข้อมูลการเข้าสู่ระบบ
-            user: "cwie@kmutnb.ac.th", // email user ของเรา
-            pass: "xhqqcypawtnyfnhl", // email password
+            // user: "bblp.datadev@gmail.com", // email user ของเรา
+            // pass: "biotech6",
+            user: "tongfreedom@gmail.com", // email user ของเรา
+            pass: "gqmubppxipviaxzm",
+           
+            // user: "cwie@kmutnb.ac.th", // email user ของเรา
+            // pass: "xhqqcypawtnyfnhl", // email password
           },
         });
 
