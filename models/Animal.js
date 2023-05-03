@@ -557,7 +557,7 @@ class Animal extends Model {
         // PAR: ai.PAR,
 
         PAR: animalJson.AnimalPar,
-        TimeNo: ai.TimeNo,
+        TimeNo: this.ProductionStatusID == 2 ? 0 : ai.TimeNo,
         AIDate: ai.AIDate,
         ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
         ThaiEventLatest: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
@@ -591,7 +591,7 @@ class Animal extends Model {
         // PAR: embryo.PAR,
 
         PAR: animalJson.AnimalPar,
-        TimeNo: embryo.TimeNo,
+        TimeNo: this.ProductionStatusID == 2 ? 0 : embryo.TimeNo,
         AIDate: null,
         EmbryoDate: embryo.TransferDate,
         ThaiEmbryoDate: dayjs(embryo.TransferDate)
