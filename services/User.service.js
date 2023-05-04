@@ -789,17 +789,17 @@ const methods = {
             // ข้อมูลการเข้าสู่ระบบ
             // user: "bblp.datadev@gmail.com", // email user ของเรา
             // pass: "biotech6",
-            user: "tongfreedom@gmail.com", // email user ของเรา
-            pass: "gqmubppxipviaxzm",
+            //user: "tongfreedom@gmail.com", // email user ของเรา
+            //pass: "gqmubppxipviaxzm",
            
-            // user: "cwie@kmutnb.ac.th", // email user ของเรา
-            // pass: "xhqqcypawtnyfnhl", // email password
+            user: "cwie@kmutnb.ac.th", // email user ของเรา
+            pass: "xhqqcypawtnyfnhl", // email password
           },
         });
 
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
           from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-          to: "tongfreedom@gmail.com", // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+          to: data.email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
             "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://bblp-aidm.dld.go.th/new-password?token=" +
@@ -808,6 +808,8 @@ const methods = {
             obj.ResetPasswordToken +
             "</a>", // html body
         });
+
+        console.log('Email sent Successfully' + info.response);
 
         // let info = await transporter.sendMail({
         //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
@@ -821,7 +823,7 @@ const methods = {
 
         // let res = methods.findById(inserted.UserID);
 
-        let res = {};
+        let res = {'data': obj };
 
         resolve(res);
       } catch (error) {
