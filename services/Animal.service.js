@@ -1794,13 +1794,13 @@ const methods = {
     // วันที่ขึ้นทะเบียน
 
     //
-    // if (req.query.ProjectID) {
-    //   WhereProject = {
-    //     ProjectID: {
-    //       [Op.in]: JSON.parse(req.query.ProjectID),
-    //     },
-    //   };
-    // }
+    if (req.query.ProjectID) {
+      WhereProject = {
+        ProjectID: {
+          [Op.in]: JSON.parse(req.query.ProjectID),
+        },
+      };
+    }
 
     let WhereFarmer = null;
     if (req.query.FarmerName) {
@@ -1988,6 +1988,305 @@ const methods = {
                 return data;
               })
             );
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  // 
+  scopeSearchIDAndName(req, limit, offset) {
+    // Where
+    let $where = {};
+
+    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
+    if (req.query.ProductionStatusID)
+      $where["ProductionStatusID"] = req.query.ProductionStatusID;
+
+    if (req.query.AnimalStatusID)
+      $where["AnimalStatusID"] = req.query.AnimalStatusID;
+
+    if (req.query.AnimalIdentificationID)
+      $where["AnimalIdentificationID"] = {
+        [Op.like]: "%" + req.query.AnimalIdentificationID + "%",
+      };
+
+    if (req.query.AnimalNationalID)
+      $where["AnimalNationalID"] = {
+        [Op.like]: "%" + req.query.AnimalNationalID + "%",
+      };
+
+    if (req.query.AnimalEarID){
+      $where["AnimalEarID"] = req.query.AnimalEarID;
+    }
+      
+    // $where["AnimalEarID"] = {
+    //   [Op.like]: "%" + req.query.AnimalEarID + "%",
+    // };
+
+    if (req.query.AnimalMicrochip)
+      $where["AnimalMicrochip"] = {
+        [Op.like]: "%" + req.query.AnimalMicrochip + "%",
+      };
+
+    if (req.query.AnimalSexID) $where["AnimalSexID"] = req.query.AnimalSexID;
+
+    if (req.query.AnimalTypeID) {
+      let animaltype = JSON.parse(req.query.AnimalTypeID);
+
+      let test = animaltype.find((x) => {
+        return x == 3 || x == 4;
+      });
+
+      if (test) {
+        animaltype.push(42);
+      }
+
+      $where["AnimalTypeID"] = {
+        [Op.in]: animaltype,
+      };
+    }
+
+    if (req.query.AnimalName)
+      $where["AnimalName"] = {
+        [Op.like]: "%" + req.query.AnimalName + "%",
+      };
+
+    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
+    let WhereAnimalFarm = null;
+
+    if (req.query.FarmName) {
+      WhereAnimalFarm = {
+        FarmName: {
+          [Op.like]: "%" + req.query.FarmName + "%",
+        },
+      };
+    }
+
+    if (req.query.FarmProvinceID) {
+      WhereAnimalFarm = {
+        FarmProvinceID: req.query.FarmProvinceID,
+      };
+    }
+
+    if (req.query.FarmAmphurID) {
+      WhereAnimalFarm = {
+        FarmAmphurID: req.query.FarmAmphurID,
+      };
+    }
+
+    if (req.query.FarmTumbolID) {
+      WhereAnimalFarm = {
+        FarmTumbolID: req.query.FarmTumbolID,
+      };
+    }
+
+    //
+    if (req.query.ProjectID) {
+      WhereProject = {
+        ProjectID: {
+          [Op.in]: JSON.parse(req.query.ProjectID),
+        },
+      };
+    }
+
+    let WhereFarmer = null;
+    if (req.query.FarmerName) {
+      WhereFarmer = where(fn("concat", col("GivenName"), col("Surname")), {
+        [Op.like]: `%${req.query.FarmerName}%`,
+      });
+    }
+
+    if (req.query.AnimalFirstBreed)
+      $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
+    if (req.query.AnimalFatherID)
+      $where["AnimalFatherID"] = req.query.AnimalFatherID;
+    if (req.query.AnimalMotherID)
+      $where["AnimalMotherID"] = req.query.AnimalMotherID;
+
+    if (req.query.AnimalBornType)
+      $where["AnimalBornType"] = req.query.AnimalBornType;
+    if (req.query.AnimalBornTypeID)
+      $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
+
+    if (req.query.AnimalSource) $where["AnimalSource"] = req.query.AnimalSource;
+
+    if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
+    if (req.query.OrganizationID)
+      $where["OrganizationID"] = req.query.OrganizationID;
+    if (req.query.OrganizationZoneID)
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+    if (req.query.AnimalAgeStart) {
+      let date1 = dayjs()
+        .subtract(req.query.AnimalAgeStart, "year")
+        .format("YYYY-MM-DD");
+
+      $where["AnimalBirthDate"] = { [Op.lte]: date1 };
+
+      if (req.query.AnimalAgeTo) {
+        let date2 = dayjs()
+          .subtract(parseInt(req.query.AnimalAgeTo) + 1, "year")
+          .format("YYYY-MM-DD");
+        $where["AnimalBirthDate"] = {
+          [Op.and]: { [Op.lte]: date1, [Op.gte]: date2 },
+        };
+      }
+    }
+
+    let AnimalBreedArr = [];
+
+    if (req.query.AnimalBreedID1) {
+      AnimalBreedArr.push(req.query.AnimalBreedID1);
+    }
+
+    if (req.query.AnimalBreedID2) {
+      AnimalBreedArr.push(req.query.AnimalBreedID2);
+    }
+
+    if (req.query.AnimalBreedID3) {
+      AnimalBreedArr.push(req.query.AnimalBreedID3);
+    }
+
+    if (req.query.AnimalBreedID4) {
+      AnimalBreedArr.push(req.query.AnimalBreedID4);
+    }
+
+    if (req.query.AnimalBreedID5) {
+      AnimalBreedArr.push(req.query.AnimalBreedID5);
+    }
+
+    $where[Op.and] = [];
+    AnimalBreedArr.forEach((value) => {
+      $where[Op.and].push({
+        [Op.or]: {
+          AnimalBreedID1: value,
+          AnimalBreedID2: value,
+          AnimalBreedID3: value,
+          AnimalBreedID4: value,
+          AnimalBreedID5: value,
+        },
+      });
+    });
+
+    // ช่วงวันเกิด
+    if (req.query.AnimalBirthDateStart) {
+      $where["AnimalBirthDate"] = {
+        [Op.between]: [
+          req.query.AnimalBirthDateStart,
+          req.query.AnimalBirthDateEnd,
+        ],
+      };
+    }
+
+    // ProjectID
+    let WhereProject = null;
+    if (req.query.ProjectID) {
+      WhereProject = {
+        ProjectID: {
+          [Op.in]: JSON.parse(req.query.ProjectID),
+        },
+      };
+    }
+
+    if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    if (req.query.CreatedUserID)
+      $where["CreatedUserID"] = req.query.CreatedUserID;
+    if (req.query.UpdatedUserID)
+      $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+    $where["isRemove"] = 0;
+    const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+    // Order
+    $order = [["AnimalID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy)
+      $order = [
+        [
+          req.query.orderByField,
+          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+        ],
+      ];
+    query["order"] = $order;
+
+    if (!isNaN(limit)) query["limit"] = limit;
+
+    if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [
+      // { all: true, required: false },
+      // {
+      //   // association: "Project",
+      //   model: Project,
+      //   where: WhereProject,
+      //   // attributes: ["EducationID", "EducationName"],
+      // },
+      // {
+      //   association: "AnimalFarm",
+      //   // model: Farm,
+      //   // as: "AnimalFarm",
+      //   where: WhereAnimalFarm,
+      //   required: req.query.FarmName ? true : true,
+      //   include: {
+      //     // model: Farmer,
+      //     // as: "Farmer",
+      //     association: "Farmer",
+      //     required: req.query.FarmerName ? true : false,
+      //     where: WhereFarmer,
+      //   },
+      // },
+    ];
+
+    return { query: query };
+  },
+  findAllIDandName(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearchIDAndName(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+          .then(async (result) => {
+            let rows = result[0],
+              count = result[1];
+
+            // rows = await Promise.all(
+            //   rows.map(async (data) => {
+            //     let projectArray = [];
+            //     data.Projects.forEach((element) => {
+            //       projectArray.push(element.ProjectName);
+            //     });
+
+            //     if (data.GiveBirthSelfID != null) {
+            //       data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
+            //     }
+
+            //     // รหัสใบหู, ชื่อ
+
+            //     data = {
+            //       ...data.toJSON(),
+            //       Projects: projectArray,
+            //       ProjectID: JSON.parse(data.toJSON().ProjectID),
+            //       EventLatest: await data.EventLatest(),
+
+            //       // EventLatest: data.EventLatest(),
+            //     };
+
+            //     return data;
+            //   })
+            // );
 
             resolve({
               total: count,

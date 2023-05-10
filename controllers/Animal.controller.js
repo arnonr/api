@@ -10,6 +10,14 @@ const methods = {
       res.error(error);
     }
   },
+  async onGetAllIDandName(req, res) {
+    try {
+      let result = await Service.findAllIDandName(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 
   async onGetById(req, res) {
     try {

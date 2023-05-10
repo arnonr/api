@@ -47,6 +47,12 @@ router.get(
 );
 
 router.get(
+  "/id-and-name",
+  controllers.onGetAllIDandName
+);
+
+
+router.get(
   "/generate-number",
   controllers.onGenerateNumber
 );
