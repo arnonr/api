@@ -263,8 +263,28 @@ const methods = {
         const obj = new db(data);
         const inserted = await obj.save();
 
+        // 5 10 15
+
+        let animalStatusID = "";
+        let animal = await Animal.findByPk(inserted.AnimalI);
+        if (animal.AinmalTypeID == 1) {
+          animalStatusID = 5;
+        }
+
+        if ((animal.AinmalTypeID == 3) || (animal.AinmalTypeID == 42)) {
+          animalStatusID = 10;
+        }
+
+        if (animal.AinmalTypeID == 17) {
+          animalStatusID = 15;
+        }
+
         await Animal.update(
-          { ProductionStatusID: 2, AnimalPar: inserted.PAR + 1 },
+          {
+            ProductionStatusID: 2,
+            AnimalPar: inserted.PAR + 1,
+            AnimalStatusID: animalStatusID,
+          },
           { where: { AnimalID: inserted.AnimalID } }
         );
 
