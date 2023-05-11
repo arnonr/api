@@ -1017,6 +1017,76 @@ Animal.init(
         return age;
       },
     },
+    // AnimalBreedAll: {
+    //   type: DataTypes.VIRTUAL,
+    //   get() {
+    //     let animalBreed = "";
+
+    //     if (this.AnimalBreedID1 != null && this.AnimalBreed1 != undefined) {
+    //       let breed = this.AnimalBreed1.toJSON();
+
+    //       animalBreed =
+    //         animalBreed +
+    //         this.AnimalBreedPercent1.toString().substring(
+    //           0,
+    //           this.AnimalBreedPercent1.length - 1
+    //         ) +
+    //         breed.AnimalBreedShortName +
+    //         " ";
+    //     }
+
+    //     if (this.AnimalBreedID2 != null && this.AnimalBreed2 != undefined) {
+    //       let breed = this.AnimalBreed2.toJSON();
+    //       animalBreed =
+    //         animalBreed +
+    //         this.AnimalBreedPercent2.toString().substring(
+    //           0,
+    //           this.AnimalBreedPercent2.length - 1
+    //         ) +
+    //         breed.AnimalBreedShortName +
+    //         " ";
+    //     }
+
+    //     if (this.AnimalBreedID3 != null && this.AnimalBreed3 != undefined) {
+    //       let breed = this.AnimalBreed3.toJSON();
+    //       animalBreed =
+    //         animalBreed +
+    //         this.AnimalBreedPercent3.toString().substring(
+    //           0,
+    //           this.AnimalBreedPercent3.length - 1
+    //         ) +
+    //         breed.AnimalBreedShortName +
+    //         " ";
+    //     }
+
+    //     if (this.AnimalBreedID4 != null && this.AnimalBreed4 != undefined) {
+    //       let breed = this.AnimalBreed4.toJSON();
+    //       animalBreed =
+    //         animalBreed +
+    //         this.AnimalBreedPercent4.toString().substring(
+    //           0,
+    //           this.AnimalBreedPercent4.length - 1
+    //         ) +
+    //         breed.AnimalBreedShortName +
+    //         " ";
+    //     }
+
+    //     if (this.AnimalBreedID5 != null && this.AnimalBreed5 != undefined) {
+    //       let breed = this.AnimalBreed5.toJSON();
+    //       animalBreed =
+    //         animalBreed +
+    //         this.AnimalBreedPercent5.toString().substring(
+    //           0,
+    //           this.AnimalBreedPercent5.length - 1
+    //         ) +
+    //         breed.AnimalBreedShortName +
+    //         " ";
+    //     }
+
+    //     return animalBreed.trim();
+    //   },
+    // },
+    // AnimalBreedAllWithPercent:
     AnimalBreedAll: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -1032,55 +1102,55 @@ Animal.init(
               this.AnimalBreedPercent1.length - 1
             ) +
             breed.AnimalBreedShortName +
-            " ";
+            " " +this.AnimalBreedPercent1+"%";
         }
 
         if (this.AnimalBreedID2 != null && this.AnimalBreed2 != undefined) {
           let breed = this.AnimalBreed2.toJSON();
           animalBreed =
-            animalBreed +
+            animalBreed + ", "+
             this.AnimalBreedPercent2.toString().substring(
               0,
               this.AnimalBreedPercent2.length - 1
             ) +
             breed.AnimalBreedShortName +
-            " ";
+            " " +this.AnimalBreedPercent2+"% ";
         }
 
         if (this.AnimalBreedID3 != null && this.AnimalBreed3 != undefined) {
           let breed = this.AnimalBreed3.toJSON();
           animalBreed =
-            animalBreed +
+            animalBreed + ", "+
             this.AnimalBreedPercent3.toString().substring(
               0,
               this.AnimalBreedPercent3.length - 1
             ) +
             breed.AnimalBreedShortName +
-            " ";
+            " " +this.AnimalBreedPercent3+"%, ";
         }
 
         if (this.AnimalBreedID4 != null && this.AnimalBreed4 != undefined) {
           let breed = this.AnimalBreed4.toJSON();
           animalBreed =
-            animalBreed +
+            animalBreed + ", "+
             this.AnimalBreedPercent4.toString().substring(
               0,
               this.AnimalBreedPercent4.length - 1
             ) +
             breed.AnimalBreedShortName +
-            " ";
+            " " +this.AnimalBreedPercent4+"%, ";
         }
 
         if (this.AnimalBreedID5 != null && this.AnimalBreed5 != undefined) {
           let breed = this.AnimalBreed5.toJSON();
           animalBreed =
-            animalBreed +
+            animalBreed + ", "+
             this.AnimalBreedPercent5.toString().substring(
               0,
               this.AnimalBreedPercent5.length - 1
             ) +
             breed.AnimalBreedShortName +
-            " ";
+            " " +this.AnimalBreedPercent5+"%, ";
         }
 
         return animalBreed.trim();
