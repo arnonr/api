@@ -428,6 +428,20 @@ class Animal extends Model {
       ? this.AnimalStatus.AnimalStatusName
       : null;
 
+    let giveBirthDateLatest = "-";
+    let giveBirth = await GiveBirth.findOne({
+      where: {
+        AnimalID: this.AnimalID,
+        PAR: this.AnimalPar - 1,
+      },
+    });
+
+    if (giveBirth) {
+      giveBirthDateLatest = dayjs(giveBirth.GiveBirthDate)
+        .locale("th")
+        .format("DD/MM/BBBB");
+    }
+
     if (this.ProductionStatusID == 1) {
       statusText = statusText + " แท้ง";
     } else if (this.ProductionStatusID == 2) {
@@ -453,6 +467,7 @@ class Animal extends Model {
       AnimalBreedAll: animalJson.AnimalBreedAll,
       AnimalStatus: statusText,
       AnimalStatusText: statusText,
+      giveBirthDateLatest: giveBirthDateLatest,
       FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
       AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
     };
