@@ -561,6 +561,8 @@ class Animal extends Model {
         AIDate: ai.AIDate,
         ThaiAIDate: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
         ThaiEventLatest: dayjs(ai.AIDate).locale("th").format("DD/MM/BBBB"),
+        ThaiAIDateDiff: dayjs().diff(dayjs(ai.AIDate), "day"),
+
         EmbryoDate: null,
         PregnancyStatus: pregResult,
         PregnancyTimeNo: pregnancyTimeNo,
