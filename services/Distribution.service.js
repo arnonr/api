@@ -1,6 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Distribution"),
+  Animal = require("../models/Animal"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
@@ -177,6 +178,13 @@ const methods = {
         //check เงื่อนไขตรงนี้ได้
         const obj = new db(data);
         const inserted = await obj.save();
+
+        if((inserted.DistributionType == 'DROP') || (inserted.DistributionType == 'DEATH')){
+          let animal = await Animal.findByPk(inserted.AnimalID);
+          animal.isActive = 0;
+          animal.save();
+         
+        }
 
         let res = methods.findById(inserted.DistributionID);
 
