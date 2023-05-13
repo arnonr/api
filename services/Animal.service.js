@@ -2168,18 +2168,18 @@ const methods = {
       AnimalBreedArr.push(req.query.AnimalBreedID5);
     }
 
-    $where[Op.and] = [];
-    AnimalBreedArr.forEach((value) => {
-      $where[Op.and].push({
-        [Op.or]: {
-          AnimalBreedID1: value,
-          AnimalBreedID2: value,
-          AnimalBreedID3: value,
-          AnimalBreedID4: value,
-          AnimalBreedID5: value,
-        },
-      });
-    });
+    // $where[Op.and] = [];
+    // AnimalBreedArr.forEach((value) => {
+    //   $where[Op.and].push({
+    //     [Op.or]: {
+    //       AnimalBreedID1: value,
+    //       AnimalBreedID2: value,
+    //       AnimalBreedID3: value,
+    //       AnimalBreedID4: value,
+    //       AnimalBreedID5: value,
+    //     },
+    //   });
+    // });
 
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {
@@ -2203,27 +2203,27 @@ const methods = {
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
-      $where["CreatedUserID"] = req.query.CreatedUserID;
-    if (req.query.UpdatedUserID)
-      $where["UpdatedUserID"] = req.query.UpdatedUserID;
+    //   $where["CreatedUserID"] = req.query.CreatedUserID;
+    // if (req.query.UpdatedUserID)
+    //   $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
-    $order = [["AnimalID", "ASC"]];
-    if (req.query.orderByField && req.query.orderBy)
-      $order = [
-        [
-          req.query.orderByField,
-          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
-        ],
-      ];
-    query["order"] = $order;
+    // $order = [["AnimalID", "ASC"]];
+    // if (req.query.orderByField && req.query.orderBy)
+    //   $order = [
+    //     [
+    //       req.query.orderByField,
+    //       req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+    //     ],
+    //   ];
+    // query["order"] = $order;
 
-    if (!isNaN(limit)) query["limit"] = limit;
+    // if (!isNaN(limit)) query["limit"] = limit;
 
-    if (!isNaN(offset)) query["offset"] = offset;
+    // if (!isNaN(offset)) query["offset"] = offset;
 
     // query["include"] = [
     //   // { all: true, required: false },
@@ -2249,11 +2249,17 @@ const methods = {
     //   // },
     // ];
 
-    // query['attributes'] = [
-    //   'AnimalIdentificationID',
-    //   // models.sequelize.literal("first_name || ' ' || last_name")
-    //   // 'AnimalEarID'
-    // ];
+    query['attributes'] = [
+      'AnimalIdentificationID',
+      'AnimalEarID',
+      'AnimalName',
+      [fn("concat", col("AnimalEarID"),", ", col("AnimalName")), 'Fullname'],
+      // fn('DISTINCT',col('Animal.AnimalEarID')),
+      // 'AnimalIdentificationID','AnimalEarID ','AnimalName'
+      // models.sequelize.literal("first_name || ' ' || last_name")
+      // 'AnimalEarID'
+    ];
+    query['group'] = ['AnimalIdentificationID','AnimalEarID','AnimalName']
     // AnimalID: item.AnimalID,
     //       AnimalIdentificationID: item.AnimalIdentificationID,
     //       Fullname: item.AnimalEarID + ", " + item.AnimalName,
