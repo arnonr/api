@@ -2225,29 +2225,39 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      // { all: true, required: false },
-      // {
-      //   // association: "Project",
-      //   model: Project,
-      //   where: WhereProject,
-      //   // attributes: ["EducationID", "EducationName"],
-      // },
-      // {
-      //   association: "AnimalFarm",
-      //   // model: Farm,
-      //   // as: "AnimalFarm",
-      //   where: WhereAnimalFarm,
-      //   required: req.query.FarmName ? true : true,
-      //   include: {
-      //     // model: Farmer,
-      //     // as: "Farmer",
-      //     association: "Farmer",
-      //     required: req.query.FarmerName ? true : false,
-      //     where: WhereFarmer,
-      //   },
-      // },
-    ];
+    // query["include"] = [
+    //   // { all: true, required: false },
+    //   // {
+    //   //   // association: "Project",
+    //   //   model: Project,
+    //   //   where: WhereProject,
+    //   //   // attributes: ["EducationID", "EducationName"],
+    //   // },
+    //   // {
+    //   //   association: "AnimalFarm",
+    //   //   // model: Farm,
+    //   //   // as: "AnimalFarm",
+    //   //   where: WhereAnimalFarm,
+    //   //   required: req.query.FarmName ? true : true,
+    //   //   include: {
+    //   //     // model: Farmer,
+    //   //     // as: "Farmer",
+    //   //     association: "Farmer",
+    //   //     required: req.query.FarmerName ? true : false,
+    //   //     where: WhereFarmer,
+    //   //   },
+    //   // },
+    // ];
+
+    // query['attributes'] = [
+    //   'AnimalIdentificationID',
+    //   // models.sequelize.literal("first_name || ' ' || last_name")
+    //   // 'AnimalEarID'
+    // ];
+    // AnimalID: item.AnimalID,
+    //       AnimalIdentificationID: item.AnimalIdentificationID,
+    //       Fullname: item.AnimalEarID + ", " + item.AnimalName,
+    // attributes: ['foo', 'bar']
 
     return { query: query };
   },
