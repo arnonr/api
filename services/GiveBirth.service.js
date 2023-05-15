@@ -266,7 +266,7 @@ const methods = {
         // 5 10 15
 
         let animalStatusID = "";
-        let animal = await Animal.findByPk(inserted.AnimalI);
+        let animal = await Animal.findByPk(inserted.AnimalID);
         if (animal.AnimalTypeID == 1) {
           animalStatusID = 5;
         }
