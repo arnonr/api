@@ -1702,10 +1702,10 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalNationalID + "%",
       };
 
-    if (req.query.AnimalEarID){
+    if (req.query.AnimalEarID) {
       $where["AnimalEarID"] = req.query.AnimalEarID;
     }
-      
+
     // $where["AnimalEarID"] = {
     //   [Op.like]: "%" + req.query.AnimalEarID + "%",
     // };
@@ -1793,14 +1793,13 @@ const methods = {
 
     // วันที่ขึ้นทะเบียน
 
-    //
-    if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
-      };
-    }
+    // if (req.query.ProjectID) {
+    //   WhereProject = {
+    //     ProjectID: {
+    //       [Op.in]: JSON.parse(req.query.ProjectID),
+    //     },
+    //   };
+    // }
 
     let WhereFarmer = null;
     if (req.query.FarmerName) {
@@ -1901,6 +1900,15 @@ const methods = {
       };
     }
 
+    let WhereAIZone = null;
+    if (req.query.AIZoneID) {
+      WhereAIZone = {
+        AIZoneID: {
+          [Op.in]: JSON.parse(req.query.AIZoneID),
+        },
+      };
+    }
+
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -1939,13 +1947,27 @@ const methods = {
         // as: "AnimalFarm",
         where: WhereAnimalFarm,
         required: req.query.FarmName ? true : true,
-        include: {
-          // model: Farmer,
-          // as: "Farmer",
-          association: "Farmer",
-          required: req.query.FarmerName ? true : false,
-          where: WhereFarmer,
-        },
+        include: [
+          {
+            // model: Farmer,
+            // as: "Farmer",
+            association: "Farmer",
+            required: req.query.FarmerName ? true : false,
+            where: WhereFarmer,
+          },
+          {
+            association: "AIZone",
+            required: req.query.AIZoneID ? true : false,
+            where: WhereAIZone,
+            // attributes: ["EducationID", "EducationName"],
+          },
+        ],
+
+        // {
+        //   model: AIZone,
+        //   where: WhereAIZone,
+        //   // attributes: ["EducationID", "EducationName"],
+        // },
       },
     ];
 
@@ -2004,7 +2026,7 @@ const methods = {
       }
     });
   },
-  // 
+  //
   scopeSearchIDAndName(req, limit, offset) {
     // Where
     let $where = {};
@@ -2027,10 +2049,10 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalNationalID + "%",
       };
 
-    if (req.query.AnimalEarID){
+    if (req.query.AnimalEarID) {
       $where["AnimalEarID"] = req.query.AnimalEarID;
     }
-      
+
     // $where["AnimalEarID"] = {
     //   [Op.like]: "%" + req.query.AnimalEarID + "%",
     // };
@@ -2090,15 +2112,6 @@ const methods = {
     if (req.query.FarmTumbolID) {
       WhereAnimalFarm = {
         FarmTumbolID: req.query.FarmTumbolID,
-      };
-    }
-
-    //
-    if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
       };
     }
 
@@ -2203,11 +2216,11 @@ const methods = {
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
-    //   $where["CreatedUserID"] = req.query.CreatedUserID;
-    // if (req.query.UpdatedUserID)
-    //   $where["UpdatedUserID"] = req.query.UpdatedUserID;
+      //   $where["CreatedUserID"] = req.query.CreatedUserID;
+      // if (req.query.UpdatedUserID)
+      //   $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
-    $where["isRemove"] = 0;
+      $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
@@ -2249,17 +2262,18 @@ const methods = {
     //   // },
     // ];
 
-    query['attributes'] = [
-      'AnimalIdentificationID',
-      'AnimalEarID',
-      'AnimalName',
-      [fn("concat", col("AnimalEarID"),", ", col("AnimalName")), 'Fullname'],
+    query["attributes"] = [
+      "AnimalIdentificationID",
+      "AnimalEarID",
+      "AnimalName",
+      "AnimalSexID",
+      [fn("concat", col("AnimalEarID"), ", ", col("AnimalName")), "Fullname"],
       // fn('DISTINCT',col('Animal.AnimalEarID')),
       // 'AnimalIdentificationID','AnimalEarID ','AnimalName'
       // models.sequelize.literal("first_name || ' ' || last_name")
       // 'AnimalEarID'
     ];
-    query['group'] = ['AnimalIdentificationID','AnimalEarID','AnimalName']
+    query["group"] = ["AnimalIdentificationID", "AnimalEarID", "AnimalName"];
     // AnimalID: item.AnimalID,
     //       AnimalIdentificationID: item.AnimalIdentificationID,
     //       Fullname: item.AnimalEarID + ", " + item.AnimalName,
