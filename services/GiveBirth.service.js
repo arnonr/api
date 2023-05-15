@@ -271,7 +271,7 @@ const methods = {
           animalStatusID = 5;
         }
 
-        if ((animal.AnimalTypeID == 3) || (animal.AnimalTypeID == 42)) {
+        if (animal.AnimalTypeID == 3 || animal.AnimalTypeID == 42) {
           animalStatusID = 10;
         }
 
@@ -346,13 +346,20 @@ const methods = {
           { where: { GiveBirthID: id } }
         );
 
-        await Animal.update(
-          {
-            ProductionStatusID: 1,
-            AnimalPar: inserted.PAR - 1,
-          },
-          { where: { AnimalID: obj.AnimalID } }
-        );
+        //
+        let animal = await Animal.findByPk(obj.AnimalID);
+
+        animal.ProductionStatusID = 1;
+        animal.AnimalPar = Animal.AnimalPar - 1;
+        animal.save();
+        
+        // await Animal.update(
+        //   {
+        //     ProductionStatusID: 1,
+        //     AnimalPar: obj.PAR - 1,
+        //   },
+        //   { where: { AnimalID: obj.AnimalID } }
+        // );
 
         // if(Animal.AnimalPar == 0){
         //   await Animal.update(
@@ -363,7 +370,6 @@ const methods = {
         //     { where: { AnimalID: obj.AnimalID } }
         //   );
         // }
-        
 
         resolve();
       } catch (error) {
