@@ -2,6 +2,7 @@ const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Distribution"),
   Animal = require("../models/Animal"),
+  Farm = require("../models/Farm"),
   { Op } = require("sequelize");
 
 const Staff = require("../models/Staff");
@@ -184,8 +185,14 @@ const methods = {
           animal.isActive = 0;
           animal.save();
         }else if((inserted.DistributionType == 'SALE') || (inserted.DistributionType == 'TRANSFER')){
+
+          let farm = await Farm.findByPk(inserted.DestinationFarmID);
+
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.FarmID = inserted.DestinationFarmID;
+
+          animal.OrganizationID =  farm.OrganizationID;
+          animal.OrganizationZoneID =  farm.OrganizationZoneID;
           animal.isActive = 1;
           animal.save();
         }else{
