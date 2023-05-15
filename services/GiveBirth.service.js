@@ -345,6 +345,26 @@ const methods = {
           { isRemove: 1, isActive: 0 },
           { where: { GiveBirthID: id } }
         );
+
+        await Animal.update(
+          {
+            ProductionStatusID: 1,
+            AnimalPar: inserted.PAR - 1,
+          },
+          { where: { AnimalID: obj.AnimalID } }
+        );
+
+        // if(Animal.AnimalPar == 0){
+        //   await Animal.update(
+        //     {
+        //       ProductionStatusID: 1,
+        //       AnimalPar: inserted.PAR + 1,
+        //     },
+        //     { where: { AnimalID: obj.AnimalID } }
+        //   );
+        // }
+        
+
         resolve();
       } catch (error) {
         reject(error);
