@@ -2273,7 +2273,7 @@ const methods = {
       // models.sequelize.literal("first_name || ' ' || last_name")
       // 'AnimalEarID'
     ];
-    query["group"] = ["AnimalIdentificationID", "AnimalEarID", "AnimalName"];
+    query["group"] = ["AnimalIdentificationID", "AnimalEarID", "AnimalName","AnimalSexID"];
     // AnimalID: item.AnimalID,
     //       AnimalIdentificationID: item.AnimalIdentificationID,
     //       Fullname: item.AnimalEarID + ", " + item.AnimalName,
