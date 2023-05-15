@@ -183,7 +183,7 @@ const methods = {
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.isActive = 0;
           animal.save();
-        }else if(inserted.DistributionType == 'SALE'){
+        }else if((inserted.DistributionType == 'SALE') || (inserted.DistributionType == 'TRANSFER')){
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.FarmID = inserted.DestinationFarmID;
           animal.isActive = 1;
