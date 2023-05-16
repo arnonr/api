@@ -329,34 +329,34 @@ class Animal extends Model {
       if (JSON.parse(this.ProjectID).includes(3)) {
         let day = dayjs().diff(dayjs(this.AnimalBirthDate), "day");
 
-        if (day >= 800) {
-          let checkThaiblack = await Thaiblack.findOne({
-            where: { AnimalID: this.AnimalID, ThaiblackRound: 4 },
-          });
-          if (!checkThaiblack) {
-            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 800 วัน`);
-          }
-        } else if (day >= 600) {
-          let checkThaiblack = await Thaiblack.findOne({
-            where: { AnimalID: this.AnimalID, ThaiblackRound: 3 },
-          });
-          if (!checkThaiblack) {
-            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 600 วัน`);
-          }
-        } else if (day >= 400) {
-          let checkThaiblack = await Thaiblack.findOne({
-            where: { AnimalID: this.AnimalID, ThaiblackRound: 2 },
-          });
-          if (!checkThaiblack) {
-            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 400 วัน`);
-          }
-        } else if (day >= 210) {
-          let checkThaiblack = await Thaiblack.findOne({
-            where: { AnimalID: this.AnimalID, ThaiblackRound: 1 },
-          });
-          if (!checkThaiblack) {
-            noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 210 วัน`);
-          }
+        // if (day >= 800) {
+        //   let checkThaiblack = await Thaiblack.findOne({
+        //     where: { AnimalID: this.AnimalID, ThaiblackRound: 4 },
+        //   });
+        //   if (!checkThaiblack) {
+        //     noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 800 วัน`);
+        //   }
+        // } else if (day >= 600) {
+        //   let checkThaiblack = await Thaiblack.findOne({
+        //     where: { AnimalID: this.AnimalID, ThaiblackRound: 3 },
+        //   });
+        //   if (!checkThaiblack) {
+        //     noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 600 วัน`);
+        //   }
+        // } else if (day >= 400) {
+        //   let checkThaiblack = await Thaiblack.findOne({
+        //     where: { AnimalID: this.AnimalID, ThaiblackRound: 2 },
+        //   });
+        //   if (!checkThaiblack) {
+        //     noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 400 วัน`);
+        //   }
+        // } else if (day >= 210) {
+        //   let checkThaiblack = await Thaiblack.findOne({
+        //     where: { AnimalID: this.AnimalID, ThaiblackRound: 1 },
+        //   });
+        //   if (!checkThaiblack) {
+        //     noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 210 วัน`);
+        //   }
         } else {
         }
       }
