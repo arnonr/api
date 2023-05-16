@@ -357,8 +357,8 @@ class Animal extends Model {
         //   if (!checkThaiblack) {
         //     noti.push(`ครบกำหนดบันทึก Thaiblack รอบ 210 วัน`);
         //   }
-        } else {
-        }
+        // } else {
+        // }
       }
 
       // Red Goat
