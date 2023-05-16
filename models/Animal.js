@@ -1008,7 +1008,7 @@ Animal.init(
         } else if (this.ProductionStatusID == 2) {
           status = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         } else if (this.ProductionStatusID == 5) {
-          status = [1, 2, 3, 4, 5, 6, 7];
+          status = [1, 2, 3, 4, 5, 7];
         } else {
           status = [1, 2, 3, 4, 5, 6, 7];
           // ยังไม่มีสถานะ

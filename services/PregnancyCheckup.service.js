@@ -201,11 +201,11 @@ const methods = {
 
         let productionStatusID = null;
         let embTransStatusId = null;
-        if (inserted.PregnancyCheckStatusID == 1) {
+        if (obj.PregnancyCheckStatusID == 1) {
           productionStatusID = 6;
           embTransStatusId = 1;
           embBirthStatusId = 2;
-        } else if (inserted.PregnancyCheckStatusID == 2) {
+        } else if (obj.PregnancyCheckStatusID == 2) {
           productionStatusID = 5;
           embTransStatusId = 2;
           embBirthStatusId = 1;
@@ -217,7 +217,7 @@ const methods = {
 
         await Animal.update(
           { ProductionStatusID: productionStatusID },
-          { where: { AnimalID: inserted.AnimalID } }
+          { where: { AnimalID: obj.AnimalID } }
         );
 
         let res = methods.findById(inserted.PregnancyCheckupID);
@@ -260,6 +260,29 @@ const methods = {
         data.PregnancyCheckupID = parseInt(id);
 
         await db.update(data, { where: { PregnancyCheckupID: id } });
+
+
+        let productionStatusID = null;
+        let embTransStatusId = null;
+        if (obj.PregnancyCheckStatusID == 1) {
+          productionStatusID = 6;
+          embTransStatusId = 1;
+          embBirthStatusId = 2;
+        } else if (obj.PregnancyCheckStatusID == 2) {
+          productionStatusID = 5;
+          embTransStatusId = 2;
+          embBirthStatusId = 1;
+        } else {
+          productionStatusID = 3;
+          embTransStatusId = 99;
+          embBirthStatusId = 2;
+        }
+
+        await Animal.update(
+          { ProductionStatusID: productionStatusID },
+          { where: { AnimalID: obj.AnimalID } }
+        );
+
 
         let res = methods.findById(data.PregnancyCheckupID);
 
