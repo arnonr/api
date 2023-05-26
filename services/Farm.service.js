@@ -68,7 +68,7 @@ const methods = {
 
     if (req.query.OrganizationZoneID)
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-    if (req.query.AIZoneID) $where["FarmProvinceID"] = req.query.AIZoneID;
+    if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
     if (req.query.FarmStatusID) $where["FarmStatusID"] = req.query.FarmStatusID;
 
     if (req.query.FarmRegisterStartDate) {
@@ -125,14 +125,14 @@ const methods = {
           req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
         ],
       ];
+
     query["order"] = $order;
 
-    if (!isNaN(limit)) query["limit"] = limit;
+    // if (!isNaN(limit)) query["limit"] = limit;
 
-    if (!isNaN(offset)) query["offset"] = offset;
+    // if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
+    let include = [
       {
         model: Project,
         where: WhereProject,
@@ -144,6 +144,17 @@ const methods = {
       },
     ];
 
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+      } else {
+        include.unshift({ all: true, required: false });
+      }
+    } else {
+      include.unshift({ all: true, required: false });
+    }
+
+    query["include"] = include;
+
     return { query: query };
   },
 
@@ -154,11 +165,14 @@ const methods = {
 
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll({ ..._q.query, limit: limit, offset: offset }),
+          db.count(_q.query),
+        ])
           .then(async (result) => {
             let rows = result[0],
               count = rows.length;
-        
+
             rows = await Promise.all(
               rows.map(async (data) => {
                 let projectArray = [];
@@ -178,10 +192,11 @@ const methods = {
             );
 
             resolve({
-              total: count,
-              lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
               rows: rows,
+              totalPage: Math.ceil(result[1] / limit),
+              totalData: result[1],
+              currPage: +req.query.page || 1,
+              total: result[1],
             });
           })
           .catch((error) => {

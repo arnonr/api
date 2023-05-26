@@ -38,7 +38,9 @@ const methods = {
       });
 
       // $where["OrganizationID"] = { [Op.in]: orgArr };
-      $where["OrganizationID"] = { [Op.and]: [{ [Op.in]: orgArr }, {[Op.not]: 2 }] };
+      $where["OrganizationID"] = {
+        [Op.and]: [{ [Op.in]: orgArr }, { [Op.not]: 2 }],
+      };
     }
 
     if (req.query.OrganizationCode)
@@ -100,7 +102,17 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    let include = [];
+
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+      } else {
+        include.unshift({ all: true, required: false });
+      }
+    } else {
+      include.unshift({ all: true, required: false });
+    }
+    query["include"] = include;
 
     return { query: query };
   },

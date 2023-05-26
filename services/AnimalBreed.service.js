@@ -57,7 +57,18 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    let include = [];
+
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+      } else {
+        include.unshift({ all: true, required: false });
+      }
+    } else {
+      include.unshift({ all: true, required: false });
+    }
+
+    query["include"] = include;
 
     return { query: query };
   },

@@ -1980,10 +1980,13 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
+        Promise.all([
+          db.findAll({ ..._q.query, limit: limit, offset: offset }),
+          db.count(_q.query),
+        ])
           .then(async (result) => {
             let rows = result[0],
-              count = result[1];
+              count = rows.length;
 
             rows = await Promise.all(
               rows.map(async (data) => {
@@ -1998,24 +2001,36 @@ const methods = {
 
                 // รหัสใบหู, ชื่อ
 
-                data = {
+                let res = {
                   ...data.toJSON(),
                   Projects: projectArray,
                   ProjectID: JSON.parse(data.toJSON().ProjectID),
-                  EventLatest: await data.EventLatest(),
-
+                  
                   // EventLatest: data.EventLatest(),
                 };
 
-                return data;
+                if (req.query.includeEventLatest) {
+                  if (req.query.includeEventLatest == "false") {
+
+                  } else {
+                    res.EventLatest = await data.EventLatest();
+                  }
+                } else {
+                  res.EventLatest = await data.EventLatest();
+                }
+
+                return res;
               })
             );
 
             resolve({
               total: count,
-              lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
+              lastPage: Math.ceil(result[1] / limit),
               rows: rows,
+              totalPage: Math.ceil(result[1] / limit),
+              totalData: result[1],
+              currPage: +req.query.page || 1,
+              total: result[1],
             });
           })
           .catch((error) => {
@@ -2274,7 +2289,13 @@ const methods = {
       // models.sequelize.literal("first_name || ' ' || last_name")
       // 'AnimalEarID'
     ];
-    query["group"] = ["AnimalID","AnimalIdentificationID", "AnimalEarID", "AnimalName","AnimalSexID"];
+    query["group"] = [
+      "AnimalID",
+      "AnimalIdentificationID",
+      "AnimalEarID",
+      "AnimalName",
+      "AnimalSexID",
+    ];
     // AnimalID: item.AnimalID,
     //       AnimalIdentificationID: item.AnimalIdentificationID,
     //       Fullname: item.AnimalEarID + ", " + item.AnimalName,

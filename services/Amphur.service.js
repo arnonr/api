@@ -11,9 +11,9 @@ const methods = {
     if (req.query.AmphurID) $where["AmphurID"] = req.query.AmphurID;
 
     if (req.query.AmphurCode)
-    $where["AmphurCode"] = {
-      [Op.like]: "%" + req.query.AmphurCode + "%",
-    };
+      $where["AmphurCode"] = {
+        [Op.like]: "%" + req.query.AmphurCode + "%",
+      };
 
     if (req.query.AmphurName)
       $where["AmphurName"] = {
@@ -50,7 +50,18 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = { all: true, required: false };
+    let include = [];
+
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+      } else {
+        include.unshift({ all: true, required: false });
+      }
+    } else {
+      include.unshift({ all: true, required: false });
+    }
+
+    query["include"] = include;
 
     return { query: query, required: false };
   },
@@ -129,7 +140,7 @@ const methods = {
         await db.update(data, { where: { AmphurID: id } });
 
         let res = methods.findById(data.AmphurID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));

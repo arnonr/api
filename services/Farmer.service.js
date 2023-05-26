@@ -291,7 +291,7 @@ const methods = {
             const obj = new db(data);
             const inserted = await obj.save();
             let res = methods.findById(inserted.FarmerID);
-            resolve(res);
+            resolve({'res': res,'dataFromAPI': data1});
           } else {
             reject(ErrorNotFound("IdentificationNumber Not Found"));
           }
