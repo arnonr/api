@@ -339,9 +339,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      // { all: true, required: false },
-
+    let include = [
       {
         association: "Title",
         attributes: ["TitleID", "TitleName"],
@@ -357,11 +355,6 @@ const methods = {
         attributes: ["MarriedStatusID", "MarriedStatusName"],
         required: false,
       },
-      // {
-      //   association: "Organization",
-      //   attributes: ["OrganizationID", "OrganizationName"],
-      //   required: false,
-      // },
       {
         association: "PositionType",
         attributes: ["PositionTypeID", "PositionTypeName"],
@@ -392,28 +385,29 @@ const methods = {
         attributes: ["EducationID", "EducationName"],
         required: false,
       },
-      // {
-      //   association: "CardRequestLog",
-      //   limit: 1,
-      //   order: [
-      //     ["RequestDate", "DESC"],
-      //     ["CardRequestID", "DESC"],
-      //   ],
-      //   separate: true,
-      //   required: false,
-      // },
       {
         association: "Organization",
         attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
         required: false,
       },
-
-      // {
-      //   model: Organization,
-      //   as: "Organization",
-      //   required: false,
-      // }
     ];
+
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+        include = [
+          {
+            association: "Title",
+            attributes: ["TitleID", "TitleName"],
+            required: false,
+          },
+        ];
+      } else {
+      }
+    } else {
+      // include.unshift({ all: true, required: false });
+    }
+
+    query["include"] = include;
     return { query: query };
   },
 

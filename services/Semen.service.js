@@ -80,7 +80,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
+    let include = [
       {
         association: "Animal",
         required: false,
@@ -164,11 +164,27 @@ const methods = {
       },
       {
         association: "Staff",
-        attributes: ["StaffID","StaffNumber","StaffGivenName","StaffSurname"],
+        attributes: [
+          "StaffID",
+          "StaffNumber",
+          "StaffGivenName",
+          "StaffSurname",
+        ],
         required: false,
       },
       // { all: true, required: false }
     ];
+
+    if (req.query.includeAll) {
+      if (req.query.includeAll == "false") {
+        include = [];
+      } else {
+      }
+    } else {
+      // include.unshift({ all: true, required: false });
+    }
+
+    query["include"] = include;
 
     return { query: query };
   },

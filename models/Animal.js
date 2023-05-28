@@ -992,25 +992,29 @@ Animal.init(
           // โคสาว
           status = [1];
         } else if (
-          this.ProductionStatusID == 4 ||
           this.ProductionStatusID == 3
         ) {
           // ถ้าคลอดหรีอแท้งน้อยกว่า 30 วัน ให้ขึ้นแจ้งเตืิอน
           // giveBirthDateLatest
           // AB Lastest
+          status = [1, 2, 3, 4, 6, 7];
+          //
+        }  else if (
+          this.ProductionStatusID == 4
+        ) {
           status = [1, 2, 3, 4, 5, 6, 7];
           //
         } else if (this.ProductionStatusID == 6) {
           //
-          status = [1, 4, 5, 6];
+          status = [1, 4, 6];
         } else if (this.ProductionStatusID == 1) {
-          status = [1, 2, 3, 4, 6, 7];
+          status = [1, 2, 3, 4, 7];
         } else if (this.ProductionStatusID == 2) {
-          status = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          status = [1, 2, 3, 4, 6, 7, 8, 9];
         } else if (this.ProductionStatusID == 5) {
-          status = [1, 2, 3, 4, 5, 7];
+          status = [1, 2, 3, 4, 6,7];
         } else {
-          status = [1, 2, 3, 4, 5, 6, 7];
+          status = [1, 2, 3, 4, 6, 7];
           // ยังไม่มีสถานะ
         }
 

@@ -26,7 +26,15 @@ const methods = {
       };
 
     if (req.query.IsExtend) $where["IsExtend"] = req.query.IsExtend;
-    if (req.query.ProjectLevel) $where["ProjectLevel"] = req.query.ProjectLevel;
+    if (req.query.ProjectLevel) {
+      // $where["ProjectLevel"] = req.query.ProjectLevel;
+      $where["ProjectLevel"] = {
+        [Op.or]: [
+          req.query.ProjectLevel,
+          'ALL'
+        ]
+      };
+    }
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
