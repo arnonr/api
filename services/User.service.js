@@ -388,7 +388,7 @@ const methods = {
             from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
             to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
             subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
-            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://bblp-aidm.dld.go.th/'>http://bblp-aidm.dld.go.th/</a>", // html body
+            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/'>http://biotech-cbg.dld.go.th/</a>", // html body
           });
         }
 
@@ -449,6 +449,7 @@ const methods = {
           ],
         });
 
+
         // ตรวจสอบว่ามี username
         if (!obj) {
           let staff = await Staff.findOne({
@@ -481,6 +482,7 @@ const methods = {
           }
         }
 
+
         // ตรวจสอบ Password
         if (!obj.validPassword(data.Password)) {
           reject(ErrorUnauthorized("Password is invalid."));
@@ -507,6 +509,7 @@ const methods = {
         loginLog.save();
 
         let animalTypeArray = [];
+        console.log(obj)
         obj.toJSON().AnimalTypes.forEach((element) => {
           animalTypeArray.push(element.AnimalTypeName);
         });
@@ -802,9 +805,9 @@ const methods = {
           to: data.email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
           subject: "Password Reset", // หัวข้ออีเมล
           html:
-            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://bblp-aidm.dld.go.th/new-password?token=" +
+            "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" +
             obj.ResetPasswordToken +
-            "'>http://bblp-aidm.dld.go.th/new-password?token=" +
+            "'>http://biotech-cbg.dld.go.th/new-password?token=" +
             obj.ResetPasswordToken +
             "</a>", // html body
         });
@@ -818,7 +821,7 @@ const methods = {
         //   // text: "d", // plain text body
         //   html:
         //     "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> รหัสผ่านใหม่ของท่านคือ : " +
-        //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
+        //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://biotech-cbg.dld.go.th/", // html body
         // });
 
         // let res = methods.findById(inserted.UserID);

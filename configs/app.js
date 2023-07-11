@@ -13,5 +13,5 @@ module.exports = {
   DbUsername: process.env.DB_USERNAME,
   DbPassword: process.env.DB_PASSWORD,
   DbDatabase: process.env.DB_NAME,
-  UploadPath:  "http://bblp-aidm.dld.go.th/api/static/uploads"//process.env.UPLOAD_PATH,
+  UploadPath:  "http://biotech-cbg.dld.go.th/api/static/uploads"//process.env.UPLOAD_PATH,
 }
