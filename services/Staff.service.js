@@ -700,7 +700,7 @@ const methods = {
         if (!obj) {
           await axios
             .get(
-              "http://164.115.24.111/api/staff/listAllStaff?text_search=" +
+              "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
                 StaffNumber.toString() +
                 "&limit=1&page=1"
             )
