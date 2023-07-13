@@ -189,7 +189,7 @@ Staff.init(
     },
     StaffIdentificationNumber: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "หมายเลขประจำตัวประชาชน",
       // validate: {
       //   isUnique: function (value, next) {
@@ -211,22 +211,22 @@ Staff.init(
     },
     StaffTitleID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "คำนำหน้าชื่อ",
     },
     StaffGivenName: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "ชื่อ",
     },
     StaffSurname: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "นามสกุล",
     },
     StaffGenderID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "เพศ",
     },
     StaffBirthDate: {
@@ -241,17 +241,17 @@ Staff.init(
     },
     StaffOrganizationID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "รหัสหน่วยงานที่สังกัด",
     },
     StaffPositionTypeID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "ประเภทบุคลากร",
     },
     StaffPositionID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "ตำแหน่งงาน",
     },
     StaffResponsible: {
@@ -366,7 +366,7 @@ Staff.init(
     },
     StaffEmail: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "อีเมล",
     },
     StaffTelephone: {
