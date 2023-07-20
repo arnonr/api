@@ -707,8 +707,6 @@ const methods = {
             .then(async (response) => {
               let { items } = response.data;
 
-              console.log(items);
-
               if (items.length > 0) {
                 let staffNew = new Staff();
 
@@ -755,6 +753,7 @@ const methods = {
                 let position = await Position.findOne({
                   where: { PositionCode: items[0].emStaffPosition },
                 });
+
                 if (Position) {
                   staffNew.StaffPositionID = position.PositionID;
                 }
@@ -773,7 +772,44 @@ const methods = {
               console.log(err);
             });
         } else {
-          let res = { ...obj.toJSON() };
+            let res = { ...obj.toJSON() };
+            if(obj.StaffPositionID == null){
+                await axios
+                .get(
+                  "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+                    StaffNumber.toString() +
+                    "&limit=1&page=1"
+                )
+                .then(async (response) => {
+                  let { items } = response.data;
+    
+                  if (items.length > 0) {
+                    let staffEdit = await db.findByPk(obj.StaffID);
+    
+                    let position = await Position.findOne({
+                      where: { PositionCode: items[0].emStaffPosition },
+                    });
+    
+                    if (Position) {
+                        staffEdit.StaffPositionID = position.PositionID;
+                    }
+                    
+                    await staffEdit.save();
+    
+                    let res1 = await this.findById(staffNew.StaffID);
+                    res = { ...res1.toJSON() };
+                  } else {
+                    resolve(false);
+                  }
+                })
+                .catch((err) => {
+                  resolve(false);
+                  console.log(err);
+                });
+            }
+            
+
+         
           if (res.CardRequestLog.length != 0) {
             res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
           }
