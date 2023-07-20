@@ -449,7 +449,6 @@ const methods = {
           ],
         });
 
-
         // ตรวจสอบว่ามี username
         if (!obj) {
           let staff = await Staff.findOne({
@@ -482,7 +481,6 @@ const methods = {
           }
         }
 
-
         // ตรวจสอบ Password
         if (!obj.validPassword(data.Password)) {
           reject(ErrorUnauthorized("Password is invalid."));
@@ -509,7 +507,6 @@ const methods = {
         loginLog.save();
 
         let animalTypeArray = [];
-        console.log(obj)
         obj.toJSON().AnimalTypes.forEach((element) => {
           animalTypeArray.push(element.AnimalTypeName);
         });
@@ -741,7 +738,6 @@ const methods = {
   forgotPassword(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        // TEST
         const obj = await db.findOne({
           where: {
             Username: data.email,
@@ -749,6 +745,8 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("email: not found"));
+
+        console.log("TEST")
 
         let chars =
           "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -821,7 +819,7 @@ const methods = {
         //   // text: "d", // plain text body
         //   html:
         //     "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> รหัสผ่านใหม่ของท่านคือ : " +
-        //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://biotech-cbg.dld.go.th/", // html body
+        //     password + "<br> กรุณาเปลี่ยนรหัสผ่านหลังจากเข้าใช้งาน <br> Link : http://bblp-aidm.dld.go.th/", // html body
         // });
 
         // let res = methods.findById(inserted.UserID);
