@@ -159,7 +159,7 @@ Staff.init(
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false,
+      allowNull: true,
       comment: "เลขไอดีอ้างอิง",
     },
     StaffNumber: {
@@ -436,25 +436,25 @@ Staff.init(
     },
     isActive: {
       type: DataTypes.TINYINT(1),
-      allowNull: false,
+      allowNull: true,
       defaultValue: 1,
       comment: "1 = เปิดการใช้งาน / 0 = ปิดการใช้งาน",
     },
     isRemove: {
       type: DataTypes.TINYINT(1),
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       comment: "1 = ถูกลบ",
     },
     CreatedUserID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "เลขไอดีอ้างอิง ผู้ใช้งานที่เพิ่มข้อมูล",
     },
     createdAt: {
       field: "CreatedDatetime",
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
     },
     UpdatedUserID: {
