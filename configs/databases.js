@@ -2,18 +2,33 @@ const config = require("../configs/app");
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  config.DbDatabase ? config.DbDatabase : "aidm",
-  config.DbUsername ? config.DbUsername : "aidm",
-  config.DbPassword ? config.DbPassword : "2022@aidm",
+  "AIDM_Final",
+  "cbg_aidm_db",
+  "Yjjbkiti1w0QAlYVWgPqruZdZ2jDSL",
+  //   config.DbDatabase ? config.DbDatabase : "aidm",
+  //   config.DbUsername ? config.DbUsername : "aidm",
+  //   config.DbPassword ? config.DbPassword : "2022@aidm",
   {
-    host: config.DbHostname ? config.DbHostname : "host.docker.internal",
-    port: config.DbPort,
+    logging: console.log,
+    host: "122.155.195.17", //config.DbHostname ? config.DbHostname : "host.docker.internal",
+    port: "1433",
     dialect: "mssql",
-    schema: "aidm",
-    operatorsAlias: false,
+    // schema: "",
+    // operatorsAlias: false,
     dialectOptions: {
-      options: { "requestTimeout": 600000 },
-      requestTimeout: 600000,
+        instanceName: "MSSQLSERVER",
+      options: {
+        encrypt: false,
+      },
+    //   requestTimeout: 600000,
+      //   authentication: {
+      //     type: "ntlm",
+      //     options: {
+      //       server: "http://122.155.195.17",
+      //       userName: "ARNON",
+      //       password: "21eba814IX795vqnrMi7M5aIBklxUZ",
+      //     },
+      //   },
     },
     pool: {
       max: 5,
