@@ -151,6 +151,7 @@ AbortCheckup.init(
       allowNull: true,
       comment: "วัน-เวลาที่แก้ไขข้อมูลล่าสุด",
     },
+    
     ThaiAbortDate: {
       type: DataTypes.VIRTUAL,
       get() {

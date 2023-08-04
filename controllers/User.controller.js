@@ -87,9 +87,8 @@ const methods = {
       // console.log(req.socket.remoteAddress);
       // console.log(req.ip)
       // console.log(clientIp);
-      let useragent = req.useragent;
+      // let useragent = req.useragent;
       let detectResult = req.device;
-
       let result = await Service.login(req.body, req.ip, detectResult);
       res.success(result);
     } catch (error) {

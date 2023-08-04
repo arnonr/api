@@ -1868,6 +1868,7 @@ const methods = {
     }
 
     $where[Op.and] = [];
+
     AnimalBreedArr.forEach((value) => {
       $where[Op.and].push({
         [Op.or]: {
@@ -1879,6 +1880,7 @@ const methods = {
         },
       });
     });
+
 
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {

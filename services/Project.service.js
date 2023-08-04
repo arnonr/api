@@ -29,10 +29,7 @@ const methods = {
     if (req.query.ProjectLevel) {
       // $where["ProjectLevel"] = req.query.ProjectLevel;
       $where["ProjectLevel"] = {
-        [Op.or]: [
-          req.query.ProjectLevel,
-          'ALL'
-        ]
+        [Op.or]: [req.query.ProjectLevel, "ALL"],
       };
     }
     if (req.query.OrganizationID)
@@ -96,7 +93,7 @@ const methods = {
     ];
 
     if (req.query.includeAll) {
-      if (req.query.includeAll == 'false') {
+      if (req.query.includeAll == "false") {
       } else {
         include.unshift({ all: true, required: false });
       }

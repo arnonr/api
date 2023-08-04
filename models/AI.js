@@ -11,43 +11,54 @@ class AI extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
+      foreignKeyConstraint: true,
     });
 
     this.belongsTo(models.Staff, {
       foreignKey: "ResponsibilityStaffID",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Project, {
       foreignKey: "ProjectID",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Semen, {
       foreignKey: "SemenID",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GoatEstralActivity, {
       foreignKey: "GoatEstralActivityID",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.Animal, {
       foreignKey: "BreederAnimalID",
       as: "BreederAnimal",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GunDepth, {
       foreignKey: "GunDepthID1",
       as: "GunDepth1",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GunDepth, {
       foreignKey: "GunDepthID2",
       as: "GunDepth2",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GunDepth, {
       foreignKey: "GunDepthID3",
       as: "GunDepth3",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GunDepth, {
       foreignKey: "GunDepthID4",
       as: "GunDepth4",
+      foreignKeyConstraint: true,
     });
     this.belongsTo(models.GunDepth, {
       foreignKey: "GunDepthID5",
       as: "GunDepth5",
+      foreignKeyConstraint: true,
     });
 
     // ตาราง AI
@@ -55,6 +66,7 @@ class AI extends Model {
     this.belongsTo(models.BCS, {
       foreignKey: "BCSID",
       as: "BCS",
+      foreignKeyConstraint: true,
     });
 
     // ตาราง AI
@@ -64,6 +76,7 @@ class AI extends Model {
 
     this.hasOne(models.GiveBirth, {
       foreignKey: "AIID",
+      foreignKeyConstraint: true,
     });
   }
 

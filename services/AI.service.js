@@ -229,6 +229,10 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update({ isRemove: 1, isActive: 0 }, { where: { AIID: id } });
+
+
+        // Set AnimalPar และสถานะสัตว์
+
         resolve();
       } catch (error) {
         reject(error);

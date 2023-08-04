@@ -1040,6 +1040,7 @@ Animal.init(
         return status;
       },
     },
+    
     AnimalAge: {
       type: DataTypes.VIRTUAL,
       get() {

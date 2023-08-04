@@ -14,6 +14,7 @@ const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
 const AnimalStatus = require("../models/AnimalStatus");
 const AnimalSex = require("../models/AnimalSex");
+const AnimalType = require("../models/AnimalType");
 const ProductionStatus = require("../models/ProductionStatus");
 const AI = require("../models/AI");
 const Province = require("../models/Province");
@@ -2458,126 +2459,256 @@ const methods = {
     });
   },
 
+  GenerateNumber(FarmID, BirthDate, AnimalTypeID) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let farm = await Farm.findByPk(FarmID, {
+          include: { all: true, required: false },
+        });
+
+        let AnimalEarGenerate = "";
+        let AnimalNationalID = "";
+
+        if (farm) {
+          let year = String(new Date().getFullYear()).slice(2);
+
+          let ProvinceAndAmphur = farm.Amphur.AmphurCode.slice(0, 4);
+
+          let AnimalTypeCode = await AnimalType.findByPk(AnimalTypeID);
+          AnimalTypeCode = AnimalTypeCode.AnimalTypeCode.slice(1);
+
+          // Running Number
+          let prefixID = year + ProvinceAndAmphur + AnimalTypeCode;
+
+          // Running Number
+          let animal = await Animal.max("AnimalEarID", {
+            where: {
+              AnimalEarID: {
+                [Op.startsWith]: prefixID,
+              },
+            },
+          });
+
+          if (animal) {
+            let codeLastest = animal.substr(-6);
+            codeLastest = parseInt(codeLastest) + 1;
+            let number = 6 - parseInt(String(codeLastest).length);
+
+            if (number != 0) {
+              codeLastest = String(codeLastest);
+              for (let i = 1; i <= number; i++) {
+                codeLastest = "0" + codeLastest;
+              }
+            }
+            AnimalEarGenerate = prefixID + codeLastest;
+          } else {
+            AnimalEarGenerate = prefixID + "000001";
+          }
+
+          //
+          // year
+          // ProvinceAndAmphur
+
+          // N,M
+          let type1 = "N";
+
+          // C,D,B,G animalType
+          let type2 = null;
+          if (AnimalTypeID == 1) {
+            type2 = "C";
+          } else if (AnimalTypeID == 3 || AnimalTypeID == 4) {
+            type2 = "B";
+          } else if (AnimalTypeID == 17 || AnimalTypeID == 18) {
+            type2 = "G";
+          } else {
+            type2 = "C";
+          }
+
+          let prefixID2 = year + ProvinceAndAmphur + type1 + type2;
+
+          let animal2 = await Animal.max("AnimalNationalID", {
+            where: {
+              AnimalNationalID: {
+                [Op.startsWith]: prefixID2,
+              },
+            },
+          });
+
+          if (animal2) {
+            let codeLastest = animal.substr(-5);
+            codeLastest = parseInt(codeLastest) + 1;
+            let number = 5 - parseInt(String(codeLastest).length);
+
+            if (number != 0) {
+              codeLastest = String(codeLastest);
+              for (let i = 1; i <= number; i++) {
+                codeLastest = "0" + codeLastest;
+              }
+            }
+
+            AnimalNationalID = prefixID2 + codeLastest;
+          } else {
+            AnimalNationalID = prefixID2 + "00001";
+          }
+        } else {
+          reject(ErrorNotFound("Farm ID: not found"));
+        }
+
+        resolve({
+          AnimalNumberGenerate: AnimalEarGenerate,
+          AnimalEarGenerate: AnimalEarGenerate,
+          AnimalNationalID: AnimalNationalID,
+        });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
   report99(req) {
     return new Promise(async (resolve, reject) => {
       try {
-        // console.log("ARNON")
-        // let orgType = await OrganizationType.findAll();
-        // let org = await Organization.findAll();
+        // Get All animal
+        let animal = await Animal.findAll({where: {AnimalIdentificationID: null}});
 
-        // org.forEach(el => {
-        //   let index = orgType.find((ot) => {
-        //     console.log(ot.OrganizationTypeCode)
-        //     console.log(el.OrganizationTypeID)
-        //     return ot.OrganizationTypeCode == el.OrganizationTypeID
-        //   })
-        //   console.log(index)
-        //   el.OrganizationTypeID = index.OrganizationTypeID
-        //   el.save();
-        // });
+        for (let index = 0; index < animal.length; index++) {
+          const el = animal[index];
 
-        // let province = await Province.findAll();
-        // let org = await Organization.findAll();
+          // let number = this.GenerateNumber(
+          //   el.FarmID,
+          //   el.BirthDate,
+          //   el.AnimalTypeID
+          // );
+          //
 
-        // org.forEach(el => {
-        //   let index = province.find((pv) => {
-        //     return pv.ProvinceCode.substring(0, 2) == el.OrganizationProvinceID
-        //   })
-        //   if(index){
-        //     el.OrganizationProvinceID = index.ProvinceID
-        //     el.save();
-        //   }
+          // Generate 15 หลัก
+          let AnimalIdentificationID = null;
+          let farm1 = await Farm.findByPk(el.FarmID);
 
-        // });
+          let year1 = null;
+          if (el.AnimalDateJoin) {
+            year1 = dayjs(el.AnimalDateJoin).format('YY');
+          } else {
+            year1 = dayjs().format('YY');
+          }
 
-        // let tumbol = await Tumbol.findAll();
+          let ProvinceAndAmphur1 = farm1.FarmAmphurID;
 
-        // let id = 63008;
+          let AnimalTypeCode1 = await AnimalType.findByPk(el.AnimalTypeID);
+          AnimalTypeCode1 = AnimalTypeCode1.AnimalTypeCode.slice(1);
 
-        // let org = await Farm.findByPk(id);
-
-        // org.forEach(el => {
-        //   let index = tumbol.find((pv) => {
-        //     return pv.TumbolCode.substring(0, 6) == el.FarmTumbolID
-        //   })
-        //   if(index){
-        //     el.FarmProvinceID = index.ProvinceID
-        //     el.FarmAmphurID = index.AmphurID
-        //     el.FarmTumbolID = index.TumbolID
-        //     el.FarmZipCode = index.Zipcode
-        //     el.save();
-        //   }
-
-        // });
-
-        // let tumbol = await Tumbol.findAll();
-        // let org = await Organization.findAll();
-
-        // org.forEach(el => {
-        //   let index = tumbol.find((pv) => {
-        //     return pv.TumbolID == el.OrganizationTumbolID
-        //   })
-        //   if(index){
-        //     // el.OrganizationTumbolID = index.TumbolID
-        //     el.OrganizationZipCode = index.Zipcode
-        //     el.save();
-        //   }
-
-        // });
-
-        // let orgParent = await Organization.findAll();
-        // let org = await Organization.findAll();
-
-        // org.forEach(el => {
-        //   let index = orgParent.find((pv) => {
-        //     return pv.OrganizationCode == el.ParentOrganizationID
-        //   })
-        //   if(index){
-        //     el.ParentOrganizationID = index.OrganizationID
-        //     el.save();
-        //   }
-
-        // });
-
-        // let semen = await Semen.findAll({ where: { BreederID: 1 } });
-        // let animal = await Animal.findAll();
-
-        // if (semen) {
-        //   semen.forEach((el) => {
-        //     let index = animal.find((pv) => {
-        //       return pv.AnimalIdentificationID == el.SemenNumber;
-        //     });
-
-        //     if (index) {
-        //       el.BreederID = index.AnimalID;
-        //       el.save();
-        //     }
-        //   });
-        // }
-
-        let project = Project.findAll();
-
-        (await project).forEach((e) => {
-          let type = JSON.parse(e.AnimalTypeID);
-
-          type.forEach(async (t) => {
-            let pa = new ProjectToAnimalType({
-              ProjectID: e.ProjectID,
-              AnimalTypeID: t,
-              CreatedUserID: 1,
-              CreatedDatetime: Date.now(),
-            });
-
-            await pa.save();
+          let prefixID1 = String(year1) + String(ProvinceAndAmphur1) + String(AnimalTypeCode1);
+       
+          let animal1 = await Animal.max("AnimalIdentificationID", {
+            where: {
+              AnimalIdentificationID: {
+                [Op.startsWith]: prefixID1,
+              },
+            },
           });
-        });
 
-        resolve({});
+          if (animal1) {
+            let codeLastest1 = animal1.substr(-6);
+            codeLastest1 = parseInt(codeLastest1) + 1;
+            var number1 = 6 - parseInt(String(codeLastest1).length);
+
+            if (number1 != 0) {
+              codeLastest1 = String(codeLastest1);
+              for (let i = 1; i <= number1; i++) {
+                codeLastest1 = "0" + codeLastest1;
+              }
+            }
+
+            AnimalIdentificationID = String(prefixID1) + String(codeLastest1);
+          } else {
+            AnimalIdentificationID = String(prefixID1) + String("000001");
+          }
+
+          //
+
+          // let AnimalNationalID = null;
+          // let farm = await Farm.findByPk(el.FarmID);
+
+          // let year = dayjs().format('YY');
+          // let ProvinceAndAmphur = farm.FarmAmphurID;
+
+          // let AnimalTypeCode = await AnimalType.findByPk(el.AnimalTypeID);
+          // AnimalTypeCode = AnimalTypeCode.AnimalTypeCode.slice(1);
+
+          // // Running Number
+
+          // let type1 = "N";
+          // // C,D,B,G animalType
+          // let type2 = null;
+          // if (el.AnimalTypeID == 1) {
+          //   type2 = "C";
+          // } else if (el.AnimalTypeID == 3 || el.AnimalTypeID == 4) {
+          //   type2 = "B";
+          // } else if (el.AnimalTypeID == 17 || el.AnimalTypeID == 18) {
+          //   type2 = "G";
+          // } else {
+          //   type2 = "C";
+          // }
+
+          // let prefixID2 = String(year) + String(ProvinceAndAmphur) + type1 + type2;
+
+          // let animal2 = await Animal.max("AnimalNationalID", {
+          //   where: {
+          //     AnimalNationalID: {
+          //       [Op.startsWith]: prefixID2,
+          //     },
+          //   },
+          // });
+
+          // if (animal2) {
+          //   let codeLastest = animal2.substr(-5);
+          //   codeLastest = parseInt(codeLastest) + 1;
+          //   var number = 5 - parseInt(String(codeLastest).length);
+
+          //   if (number != 0) {
+          //     codeLastest = String(codeLastest);
+          //     for (let i = 1; i <= number; i++) {
+          //       codeLastest = "0" + codeLastest;
+          //     }
+          //   }
+
+          //   AnimalNationalID = prefixID2 + codeLastest;
+          // } else {
+          //   AnimalNationalID = prefixID2 + "00001";
+          // }
+
+          //
+
+          // el.AnimalNationalID = AnimalNationalID;
+          el.AnimalIdentificationID = AnimalIdentificationID;
+          // console.log(el.AnimalNationalID);
+          await el.save();
+        }
+
+        // For Animal
+        // Generate New Number
+        // Save New Number
+
+        resolve({Animal: animal});
       } catch (error) {
         reject(ErrorNotFound(error));
       }
     });
   },
 };
+
+// repot99(req){
+//       return new Promise(async (resolve, reject) => {
+//       try {
+
+//         let staff = Staff.findAll({where: {CreatedDatetime: {[Op.like]: '%2023-10%'}}})
+
+//         resolve({message: 'success'});
+//       } catch (error) {
+//         reject(ErrorNotFound(error));
+//       }
+//     });
+//   },
+// }
 
 module.exports = { ...methods };
