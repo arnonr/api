@@ -98,7 +98,7 @@ Major.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "Major",
   }

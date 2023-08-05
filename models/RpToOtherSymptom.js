@@ -68,7 +68,7 @@ RpToOtherSymptom.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "RpToOtherSymptom",
   }

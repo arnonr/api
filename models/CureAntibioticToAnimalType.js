@@ -68,7 +68,7 @@ CureAntibioticToAnimalType.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "CureAntibioticToAnimalType",
   }

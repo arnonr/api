@@ -169,7 +169,7 @@ Users.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     modelName: "users",
     // hooks: {
     //   beforeSave: (user) => {

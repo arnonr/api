@@ -118,7 +118,7 @@ Disease.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "Disease",
   }

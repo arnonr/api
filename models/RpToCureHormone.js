@@ -73,7 +73,7 @@ RpToCureHormone.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "RpToCureHormone",
   }

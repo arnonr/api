@@ -110,7 +110,7 @@ DiseaseResult.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "DiseaseResult",
   }

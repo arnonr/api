@@ -135,7 +135,7 @@ ChangeStaffInfoLog.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "ChangeStaffInfoLog",
   }

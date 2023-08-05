@@ -115,7 +115,7 @@ Group.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "Group",
   }

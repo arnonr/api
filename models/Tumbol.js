@@ -159,7 +159,7 @@ Tumbol.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "Tumbol",
   }

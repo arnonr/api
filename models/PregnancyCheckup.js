@@ -162,7 +162,7 @@ PregnancyCheckup.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "PregnancyCheckup",
   }

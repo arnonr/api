@@ -100,7 +100,7 @@ DonorCollectEmbryoDetail.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "DonorCollectEmbryoDetail",
   }

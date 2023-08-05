@@ -97,7 +97,7 @@ FarmType.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     modelName: "farm_types",
   }
 );

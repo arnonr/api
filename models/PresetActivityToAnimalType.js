@@ -70,7 +70,7 @@ PresetActivityToAnimalType.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "PresetActivityToAnimalType",
   }

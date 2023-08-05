@@ -41,7 +41,7 @@ CAToVC.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "CAToVC",
   }

@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
     age: { type: Number },
     birthday: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: false }
 )
 
 // Apply the uniqueValidator plugin to userSchema.

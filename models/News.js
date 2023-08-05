@@ -91,7 +91,7 @@ News.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "News",
   }

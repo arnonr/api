@@ -95,7 +95,7 @@ FeedProgramAnimal.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     paranoid: true,
     // indexes: [

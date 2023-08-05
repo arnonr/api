@@ -118,7 +118,7 @@ CauseEnvironment.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "CauseEnvironment",
   }

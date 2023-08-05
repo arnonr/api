@@ -118,7 +118,7 @@ GroupAuthorize.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "GroupAuthorize",
   }

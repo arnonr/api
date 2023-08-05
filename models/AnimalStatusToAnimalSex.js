@@ -68,7 +68,7 @@ AnimalStatusToAnimalSex.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "AnimalStatusToAnimalSex",
   }

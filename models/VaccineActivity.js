@@ -172,7 +172,7 @@ VaccineActivity.init(
   },
   {
     sequelize,
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true,
     modelName: "VaccineActivity",
   }
