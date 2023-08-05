@@ -2422,6 +2422,13 @@ const methods = {
           }
         });
 
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
         const obj = new db(data);
         if (!obj.AnimalNationalID) {
           obj.AnimalNationalID = null;
@@ -2550,6 +2557,13 @@ const methods = {
             data[b] = found.toFixed(3);
           }
         });
+
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
 
         await db.update(data, { where: { AnimalID: id } });
 
@@ -3053,7 +3067,7 @@ const methods = {
   //         var ProjectIDList = [...data.ProjectID];
   //         data.ProjectID = JSON.stringify(data.ProjectID);
   //       }
-  //       const obj = new db(data);
+  //       var date = new Date(); // Or the date you'd like converted.
   //       if (!obj.AnimalNationalID) {
   //         obj.AnimalNationalID = null;
   //       }

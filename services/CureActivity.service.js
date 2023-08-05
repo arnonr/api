@@ -186,6 +186,13 @@ const methods = {
           data.VaccineID = JSON.stringify(data.VaccineID);
         }
 
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
         const obj = new db(data);
         // console.log(obj.CureNextDate);
         // obj.CureNextDate = dayjs(obj.CureNextDate).format("YYYY-MM-DD")
@@ -229,6 +236,13 @@ const methods = {
 
         // Update
         data.CureActivityID = parseInt(id);
+
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
 
         await db.update(data, { where: { CureActivityID: id } });
 

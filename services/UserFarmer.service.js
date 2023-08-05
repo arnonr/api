@@ -138,6 +138,15 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
+
+        var date = new Date(); // Or the date you'd like converted.
+
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.createdAt = isoDateTime;
+
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
@@ -183,6 +192,13 @@ const methods = {
         if (data.Password) {
           data.Password = obj.passwordHash(data.Password);
         }
+
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
 
         await db.update(data, { where: { UserFarmerID: id } });
 
@@ -324,7 +340,7 @@ const methods = {
   //         let AnimalTypeIDList = [...data.AnimalTypeID];
   //         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-  //         const obj = new db(data);
+  //         var date = new Date(); // Or the date you'd like converted.
   //         obj.Password = obj.passwordHash(obj.Password);
   //         const inserted = await obj.save();
 
@@ -372,7 +388,7 @@ const methods = {
   //     // return new Promise(async (resolve, reject) => {
   //     //   try {
   //     //     //   validate Data
-  //     //     const obj = new db(data);
+  //     //     var date = new Date(); // Or the date you'd like converted.
   //     //     obj.password = obj.passwordHash(obj.password);
   //     //     const inserted = await obj.save();
 

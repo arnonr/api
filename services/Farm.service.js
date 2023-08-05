@@ -249,6 +249,13 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
 
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
         const obj = new db(data);
         obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
         const inserted = await obj.save();
@@ -313,6 +320,13 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
+
         await db.update(data, { where: { FarmID: id } });
 
         if (data.ProjectID === null) {

@@ -11,7 +11,6 @@ const methods = {
     if (req.query.CountryID) $where["CountryID"] = req.query.CountryID;
 
     if (req.query.CountryCode)
-
       $where["CountryCode"] = {
         [Op.like]: "%" + req.query.CountryCode + "%",
       };
@@ -106,7 +105,6 @@ const methods = {
 
         data.createdAt = isoDateTime;
 
-
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -135,7 +133,6 @@ const methods = {
         ).toISOString();
 
         data.updatedAt = isoDateTime;
-
 
         await db.update(data, { where: { CountryID: id } });
 

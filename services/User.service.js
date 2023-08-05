@@ -242,6 +242,13 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
@@ -307,6 +314,13 @@ const methods = {
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
         data.ResetPasswordToken = null;
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
+
         await db.update(data, { where: { UserID: id } });
 
         if (data.AnimalTypeID === null) {
@@ -541,6 +555,13 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
         const inserted = await obj.save();
@@ -589,7 +610,14 @@ const methods = {
     // return new Promise(async (resolve, reject) => {
     //   try {
     //     //   validate Data
-    //     const obj = new db(data);
+    //     var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+data.createdAt = isoDateTime;
+
+        const obj = new db(data);
     //     obj.password = obj.passwordHash(obj.password);
     //     const inserted = await obj.save();
 

@@ -49,10 +49,7 @@ const methods = {
     const _q = methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count(_q.query),
-        ])
+        Promise.all([db.findAll(_q.query), db.count(_q.query)])
           .then((result) => {
             const rows = result[0],
               count = result[1];
@@ -89,6 +86,14 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
+
+        var date = new Date(); // Or the date you'd like converted.
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.createdAt = isoDateTime;
+
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -110,6 +115,13 @@ const methods = {
 
         // Update
         data.ConcentrateID = parseInt(id);
+
+         var date = new Date();
+        var isoDateTime = new Date(
+          date.getTime() - date.getTimezoneOffset() * 60000
+        ).toISOString();
+
+        data.updatedAt = isoDateTime;
 
         await db.update(data, { where: { ConcentrateID: id } });
 
