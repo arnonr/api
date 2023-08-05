@@ -320,12 +320,12 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
-        var date = new Date();
+        var date = new Date().toISOString();
         // var isoDateTime = new Date(
         //   date.getTime() - date.getTimezoneOffset() * 60000
         // ).toISOString();
 
-        data.updatedAt = isoDateTime;
+        data.updatedAt = date;
 
         // data
         await db.update(data, { where: { FarmID: id } });
