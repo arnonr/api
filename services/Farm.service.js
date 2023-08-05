@@ -321,9 +321,9 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
         var date = new Date();
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
+        // var isoDateTime = new Date(
+        //   date.getTime() - date.getTimezoneOffset() * 60000
+        // ).toISOString();
 
         data.updatedAt = isoDateTime;
 
