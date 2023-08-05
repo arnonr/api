@@ -193,12 +193,8 @@ const methods = {
           data.Password = obj.passwordHash(data.Password);
         }
 
-         var date = new Date();
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.updatedAt = isoDateTime;
+         var date = new Date().toISOString();
+        data.updatedAt = date;
 
         await db.update(data, { where: { UserFarmerID: id } });
 

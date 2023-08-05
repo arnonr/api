@@ -242,12 +242,8 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+        var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
@@ -314,12 +310,8 @@ data.createdAt = isoDateTime;
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
         data.ResetPasswordToken = null;
-         var date = new Date();
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.updatedAt = isoDateTime;
+         var date = new Date().toISOString();
+        data.updatedAt = date;
 
         await db.update(data, { where: { UserID: id } });
 
@@ -555,12 +547,8 @@ data.createdAt = isoDateTime;
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+        var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
@@ -610,12 +598,8 @@ data.createdAt = isoDateTime;
     // return new Promise(async (resolve, reject) => {
     //   try {
     //     //   validate Data
-    //     var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+    //     var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
     //     obj.password = obj.passwordHash(obj.password);

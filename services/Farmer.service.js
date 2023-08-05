@@ -166,12 +166,8 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+        var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -195,12 +191,8 @@ data.createdAt = isoDateTime;
         // Update
         data.FarmerID = parseInt(id);
 
-         var date = new Date();
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.updatedAt = isoDateTime;
+         var date = new Date().toISOString();
+        data.updatedAt = date;
 
         await db.update(data, { where: { FarmerID: id } });
 
@@ -302,12 +294,8 @@ data.createdAt = isoDateTime;
               FarmerRegisterStatus: 2,
             };
 
-            var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+            var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
             const inserted = await obj.save();
@@ -392,12 +380,8 @@ data.createdAt = isoDateTime;
                   where: { FarmerID: farmer.FarmerID },
                 });
               } else {
-                var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-data.createdAt = isoDateTime;
+                var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
                 const inserted = await obj.save();

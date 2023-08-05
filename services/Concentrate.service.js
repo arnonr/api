@@ -116,12 +116,8 @@ const methods = {
         // Update
         data.ConcentrateID = parseInt(id);
 
-         var date = new Date();
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.updatedAt = isoDateTime;
+         var date = new Date().toISOString();
+        data.updatedAt = date;
 
         await db.update(data, { where: { ConcentrateID: id } });
 
