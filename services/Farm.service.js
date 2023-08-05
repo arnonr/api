@@ -249,12 +249,8 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
 
-        var date = new Date(); // Or the date you'd like converted.
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.createdAt = isoDateTime;
+        var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
         obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
@@ -321,10 +317,6 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
         var date = new Date().toISOString();
-        // var isoDateTime = new Date(
-        //   date.getTime() - date.getTimezoneOffset() * 60000
-        // ).toISOString();
-
         data.updatedAt = date;
 
         // data

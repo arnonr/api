@@ -141,11 +141,8 @@ const methods = {
 
         var date = new Date(); // Or the date you'd like converted.
 
-        var isoDateTime = new Date(
-          date.getTime() - date.getTimezoneOffset() * 60000
-        ).toISOString();
-
-        data.createdAt = isoDateTime;
+        var date = new Date().toISOString();
+        data.createdAt = date;
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
