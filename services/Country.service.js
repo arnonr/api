@@ -98,6 +98,7 @@ const methods = {
       try {
         //check เงื่อนไขตรงนี้ได้
 
+        delete data["CountryID"];
         var date = new Date().toISOString();
         data.createdAt = date;
 
