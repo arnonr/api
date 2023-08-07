@@ -504,12 +504,15 @@ const methods = {
 
         // ip ::ffff:
 
+        var date = new Date().toISOString();
+
         let loginLog = new LoginLog({
           UserID: obj.UserID,
           IPAddress: ip.substring(7),
           LoginDatetime: Date.now(),
           Device: JSON.stringify(device),
           CreatedUserID: obj.UserID,
+          createdAt: date
         });
 
         loginLog.save();
