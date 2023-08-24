@@ -360,7 +360,7 @@ const methods = {
 
             if (!searchFTPOne) {
               var date = new Date().toISOString();
-            
+
               const obj1 = FarmToProject.create({
                 FarmID: obj.FarmID,
                 ProjectID: ProjectID,
@@ -412,10 +412,22 @@ const methods = {
         // });
 
         let farm = await db.max("FarmIdentificationNumber", {
+          //   where: {
+          //     FarmProvinceID: req.query.ProvinceID,
+          //     FarmAmphurID: req.query.AmphurID,
+          //     FarmTumbolID: req.query.TumbolID,
+          //   },
           where: {
-            FarmProvinceID: req.query.ProvinceID,
-            FarmAmphurID: req.query.AmphurID,
-            FarmTumbolID: req.query.TumbolID,
+            FarmIdentificationNumber: {
+              // LIKE: req.query.ProvinceID+req.query.AmphurID+req.query.TumbolID+'%'
+              [Op.like]:
+                req.query.ProvinceID +
+                req.query.AmphurID +
+                req.query.TumbolID +
+                "%",
+            },
+            // FarmAmphurID: req.query.AmphurID,
+            // FarmTumbolID: req.query.TumbolID,
           },
         });
         // console.log(farm)
@@ -424,6 +436,8 @@ const methods = {
 
         if (farm) {
           var FarmNumberGenerate = parseInt(farm) + 1;
+          console.log(FarmNumberGenerate);
+          //   tumbol.TumbolCode.substring(0, 6) + "0001"
         } else {
           // let organization = await Organization.findByPk(OrganizationID);
           // if (!organization) {
@@ -433,6 +447,7 @@ const methods = {
 
           FarmNumberGenerate = parseInt(
             tumbol.TumbolCode.substring(0, 6) + "0001"
+            // req.query.TumbolID + "0001"
           );
           // }
         }
