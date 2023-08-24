@@ -53,6 +53,7 @@ FarmToProject.init(
       type: DataTypes.DATE,
       allowNull: false,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
+
     },
     UpdatedUserID: {
       type: DataTypes.INTEGER(11),

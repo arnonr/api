@@ -254,6 +254,7 @@ const methods = {
 
         const obj = new db(data);
         obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
+        console.log();
         const inserted = await obj.save();
 
         // insert ProjectToAnimalType
@@ -322,7 +323,6 @@ const methods = {
         // data
         await db.update(data, { where: { FarmID: id } });
 
-
         console.log(data.UpdatedUserID + "FREEDOM20");
 
         if (data.ProjectID === null) {
@@ -359,10 +359,13 @@ const methods = {
             });
 
             if (!searchFTPOne) {
+              var date = new Date().toISOString();
+            
               const obj1 = FarmToProject.create({
                 FarmID: obj.FarmID,
                 ProjectID: ProjectID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: date,
               });
             }
           });
@@ -404,7 +407,7 @@ const methods = {
     // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
     return new Promise(async (resolve, reject) => {
       try {
-        // let farm = await db.max("FarmIdentificationNumber", {
+        // let farm1 = await db.max("FarmIdentificationNumber", {
         //   where: { OrganizationID: OrganizationID },
         // });
 
@@ -415,6 +418,7 @@ const methods = {
             FarmTumbolID: req.query.TumbolID,
           },
         });
+        // console.log(farm)
 
         // จากจังหวัด อำเภอ ตำบล1
 
