@@ -51,9 +51,8 @@ FarmToProject.init(
     createdAt: {
       field: "CreatedDatetime",
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "วัน-เวลาที่เพิ่มข้อมูล",
-
     },
     UpdatedUserID: {
       type: DataTypes.INTEGER(11),

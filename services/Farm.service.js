@@ -359,13 +359,11 @@ const methods = {
             });
 
             if (!searchFTPOne) {
-              var date = new Date().toISOString();
-
               const obj1 = FarmToProject.create({
                 FarmID: obj.FarmID,
                 ProjectID: ProjectID,
                 CreatedUserID: data.UpdatedUserID,
-                createdAt: date,
+                // createdAt: null,
               });
             }
           });
