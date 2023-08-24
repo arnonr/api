@@ -421,8 +421,6 @@ const methods = {
             FarmIdentificationNumber: {
               // LIKE: req.query.ProvinceID+req.query.AmphurID+req.query.TumbolID+'%'
               [Op.like]:
-                req.query.ProvinceID +
-                req.query.AmphurID +
                 req.query.TumbolID +
                 "%",
             },
