@@ -41,7 +41,7 @@ const methods = {
     if (req.query.AnimalTypeID) {
       WhereAnimalType = {
         AnimalTypeID: {
-          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+            [Op.in]: JSON.parse(req.query.AnimalTypeID),
         },
       };
     }
