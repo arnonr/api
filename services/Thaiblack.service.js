@@ -1,22 +1,23 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Thaiblack"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
-    if (req.query.ThaiblackID)
-      $where["ThaiblackID"] = req.query.ThaiblackID;
+    if (req.query.ThaiblackID) $where["ThaiblackID"] = req.query.ThaiblackID;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
-    if (req.query.ThaiblackRound) $where["ThaiblackRound"] = req.query.ThaiblackRound;
+    if (req.query.ThaiblackRound)
+      $where["ThaiblackRound"] = req.query.ThaiblackRound;
 
-    if (req.query.ThaiblackDate) $where["ThaiblackDate"] = req.query.ThaiblackDate;
-   
+    if (req.query.ThaiblackDate)
+      $where["ThaiblackDate"] = req.query.ThaiblackDate;
+
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
 
@@ -44,9 +45,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -60,7 +59,7 @@ const methods = {
       ...dataJson,
     };
 
-    return data
+    return data;
   },
 
   find(req) {
@@ -78,11 +77,11 @@ const methods = {
             let rows = result[0],
               count = result[2];
 
-              rows = await Promise.all(
-                rows.map(async (data) => {
-                  return this.getData(data);
-                })
-              );
+            rows = await Promise.all(
+              rows.map(async (data) => {
+                return this.getData(data);
+              })
+            );
 
             resolve({
               total: count,
@@ -122,8 +121,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -147,8 +145,7 @@ const methods = {
         // Update
         data.ThaiblackID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { ThaiblackID: id } });
 
@@ -168,7 +165,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { ThaiblackID: id } }
         );
         resolve();

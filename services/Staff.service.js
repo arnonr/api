@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Staff"),
-  { Op, query } = require("sequelize");
+  { Op, query, fn } = require("sequelize");
 
 const Sequelize = require("sequelize"),
   { sequelize } = require("../configs/databases");
@@ -567,8 +567,7 @@ const methods = {
         // Update
         data.StaffID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, {
           where: { StaffID: id },
@@ -650,7 +649,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { StaffID: id } }
         );
         resolve();
@@ -778,44 +777,42 @@ const methods = {
               console.log(err);
             });
         } else {
-            let res = { ...obj.toJSON() };
-            if(obj.StaffPositionID == null){
-                await axios
-                .get(
-                  "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
-                    StaffNumber.toString() +
-                    "&limit=1&page=1"
-                )
-                .then(async (response) => {
-                  let { items } = response.data;
-    
-                  if (items.length > 0) {
-                    let staffEdit = await db.findByPk(obj.StaffID);
-    
-                    let position = await Position.findOne({
-                      where: { PositionCode: items[0].emStaffPosition },
-                    });
-    
-                    if (Position) {
-                        staffEdit.StaffPositionID = position.PositionID;
-                    }
-                    
-                    await staffEdit.save();
-    
-                    let res1 = await this.findById(staffNew.StaffID);
-                    res = { ...res1.toJSON() };
-                  } else {
-                    resolve(false);
-                  }
-                })
-                .catch((err) => {
-                  resolve(false);
-                  console.log(err);
-                });
-            }
-            
+          let res = { ...obj.toJSON() };
+          if (obj.StaffPositionID == null) {
+            await axios
+              .get(
+                "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+                  StaffNumber.toString() +
+                  "&limit=1&page=1"
+              )
+              .then(async (response) => {
+                let { items } = response.data;
 
-         
+                if (items.length > 0) {
+                  let staffEdit = await db.findByPk(obj.StaffID);
+
+                  let position = await Position.findOne({
+                    where: { PositionCode: items[0].emStaffPosition },
+                  });
+
+                  if (Position) {
+                    staffEdit.StaffPositionID = position.PositionID;
+                  }
+
+                  await staffEdit.save();
+
+                  let res1 = await this.findById(staffNew.StaffID);
+                  res = { ...res1.toJSON() };
+                } else {
+                  resolve(false);
+                }
+              })
+              .catch((err) => {
+                resolve(false);
+                console.log(err);
+              });
+          }
+
           if (res.CardRequestLog.length != 0) {
             res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
           }
@@ -837,7 +834,7 @@ const methods = {
 
         // Update
         await db.update(
-          { StaffMobilePhone: data.StaffMobilePhone },
+          { StaffMobilePhone: data.StaffMobilePhone, updatedAt: fn("GETDATE") },
           {
             where: { StaffID: id },
             individualHooks: true,

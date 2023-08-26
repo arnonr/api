@@ -6,7 +6,7 @@ const config = require("../configs/app"),
     ErrorNotFound,
     ErrorUnauthorized,
   } = require("../configs/errorMethods"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 const nodemailer = require("nodemailer");
 
 const Sequelize = require("sequelize"),
@@ -138,11 +138,9 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-
         var date = new Date(); // Or the date you'd like converted.
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
@@ -190,8 +188,7 @@ const methods = {
           data.Password = obj.passwordHash(data.Password);
         }
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { UserFarmerID: id } });
 
@@ -211,7 +208,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { UserFarmerID: id } }
         );
 

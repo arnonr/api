@@ -6,7 +6,7 @@ const config = require("../configs/app"),
     ErrorNotFound,
     ErrorUnauthorized,
   } = require("../configs/errorMethods"),
-  { Op, where } = require("sequelize");
+  { Op, where, fn } = require("sequelize");
 const nodemailer = require("nodemailer");
 
 const Sequelize = require("sequelize"),
@@ -242,8 +242,7 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
@@ -255,6 +254,7 @@ const methods = {
             UserID: inserted.UserID,
             AnimalTypeID: AnimalTypeID,
             CreatedUserID: data.CreatedUserID,
+            createdAt: fn("GETDATE"),
           });
         });
 
@@ -310,8 +310,7 @@ const methods = {
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
         data.ResetPasswordToken = null;
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { UserID: id } });
 
@@ -352,6 +351,7 @@ const methods = {
                 UserID: obj.UserID,
                 AnimalTypeID: AnimalTypeID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -416,7 +416,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { UserID: id } }
         );
 
@@ -512,7 +512,7 @@ const methods = {
           LoginDatetime: Date.now(),
           Device: JSON.stringify(device),
           CreatedUserID: obj.UserID,
-          createdAt: date
+          createdAt: date,
         });
 
         loginLog.save();
@@ -567,6 +567,7 @@ const methods = {
             UserID: inserted.UserID,
             AnimalTypeID: AnimalTypeID,
             CreatedUserID: data.CreatedUserID,
+            createdAt: fn("GETDATE"),
           });
         });
 
@@ -602,9 +603,9 @@ const methods = {
     //   try {
     //     //   validate Data
     //     var date = new Date().toISOString();
-        data.createdAt = date;
+    data.createdAt = fn("GETDATE");
 
-        const obj = new db(data);
+    const obj = new db(data);
     //     obj.password = obj.passwordHash(obj.password);
     //     const inserted = await obj.save();
 
@@ -763,7 +764,7 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("email: not found"));
 
-        console.log("TEST")
+        console.log("TEST");
 
         let chars =
           "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -809,7 +810,7 @@ const methods = {
             // pass: "biotech6",
             //user: "tongfreedom@gmail.com", // email user ของเรา
             //pass: "gqmubppxipviaxzm",
-           
+
             user: "cwie@kmutnb.ac.th", // email user ของเรา
             pass: "xhqqcypawtnyfnhl", // email password
           },
@@ -827,7 +828,7 @@ const methods = {
             "</a>", // html body
         });
 
-        console.log('Email sent Successfully' + info.response);
+        console.log("Email sent Successfully" + info.response);
 
         // let info = await transporter.sendMail({
         //   from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
@@ -841,7 +842,7 @@ const methods = {
 
         // let res = methods.findById(inserted.UserID);
 
-        let res = {'data': obj };
+        let res = { data: obj };
 
         resolve(res);
       } catch (error) {

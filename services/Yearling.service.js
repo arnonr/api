@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Yearling"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
@@ -132,7 +132,7 @@ const methods = {
                   let giveBirth = await GiveBirth.findByPk(
                     data.ChildAnimal.GiveBirthSelfID
                   );
-        
+
                   data.ThaiGiveBirthDate = giveBirth.ThaiGiveBirthDate;
                   data.PAR = giveBirth.PAR;
                 }
@@ -199,8 +199,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -224,13 +223,15 @@ const methods = {
         // Update
         data.YearlingID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { YearlingID: id } });
 
         // Update AnimalBornWeight
-        await Animal.update({AnimalBornWeight: data.Weight}, { where: { AnimalID: obj.AnimalID } });
+        await Animal.update(
+          { AnimalBornWeight: data.Weight, updatedAt: fn("GETDATE") },
+          { where: { AnimalID: obj.AnimalID } }
+        );
 
         let res = methods.findById(data.YearlingID);
 
@@ -248,7 +249,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { YearlingID: id } }
         );
         resolve();

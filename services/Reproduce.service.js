@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Reproduce"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const RpToLeftOvarySymptom = require("../models/RpToLeftOvarySymptom");
 const RpToRightOvarySymptom = require("../models/RpToRightOvarySymptom");
@@ -442,8 +442,7 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-
-        console.log(data)
+        console.log(data);
 
         //check เงื่อนไขตรงนี้ได้
         if (data.LeftOvarySymptomID) {
@@ -567,8 +566,7 @@ const methods = {
         }
 
         // return
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -582,6 +580,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               OvarySymptomID: LeftOvarySymptomID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -593,6 +592,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               OvarySymptomID: RightOvarySymptomID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -604,6 +604,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               OtherSymptomID: OtherSymptomID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -615,6 +616,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               VaginaSymptomID: VaginaSymptomID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -626,6 +628,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               CauseAnimalID: CauseAnimalID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -636,6 +639,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               CauseEnvironmentID: CauseEnvironmentID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -646,6 +650,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               CauseFeederID: CauseFeederID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -656,6 +661,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               CauseHealthID: CauseHealthID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -667,6 +673,7 @@ const methods = {
               CureAntibioticID: CureAntibioticID[0],
               Amount: CureAntibioticID[1],
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -678,6 +685,7 @@ const methods = {
               CureHormoneID: CureHormoneID[0],
               Amount: CureHormoneID[1],
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -689,6 +697,7 @@ const methods = {
               CureVitaminID: CureVitaminID[0],
               Amount: CureVitaminID[1],
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -699,6 +708,7 @@ const methods = {
               ReproduceID: inserted.ReproduceID,
               ReproduceSuggestionID: ReproduceSuggestionID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -843,8 +853,7 @@ const methods = {
           );
         }
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { ReproduceID: id } });
 
@@ -886,6 +895,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 OvarySymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -930,6 +940,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 OvarySymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -973,6 +984,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 VaginaSymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1016,6 +1028,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 OtherSymptomID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1060,6 +1073,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 CauseAnimalID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1104,6 +1118,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 CauseEnvironmentID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1148,6 +1163,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 CauseFeederID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1192,6 +1208,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 CauseHealthID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1245,6 +1262,7 @@ const methods = {
                 CureAntibioticID: ID[0],
                 Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             } else {
               searchOne.Amount = ID[1];
@@ -1302,6 +1320,7 @@ const methods = {
                 CureHormoneID: ID[0],
                 Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             } else {
               searchOne.Amount = ID[1];
@@ -1358,6 +1377,7 @@ const methods = {
                 CureVitaminID: ID[0],
                 Amount: ID[1],
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             } else {
               searchOne.Amount = ID[1];
@@ -1406,6 +1426,7 @@ const methods = {
                 ReproduceID: obj.ReproduceID,
                 ReproduceSuggestionID: ID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -1428,7 +1449,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { ReproduceID: id } }
         );
 

@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Vaccine"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const VcToAnimalType = require("../models/VcToAnimalType");
 const AnimalType = require("../models/AnimalType");
@@ -151,8 +151,7 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -163,6 +162,7 @@ const methods = {
             VaccineID: inserted.VaccineID,
             AnimalTypeID: AnimalTypeID,
             CreatedUserID: data.CreatedUserID,
+            createdAt: fn("GETDATE"),
           });
         });
 
@@ -194,8 +194,7 @@ const methods = {
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { VaccineID: id } });
 
@@ -238,6 +237,7 @@ const methods = {
                 VaccineID: obj.VaccineID,
                 AnimalTypeID: AnimalTypeID,
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -257,7 +257,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { VaccineID: id } }
         );
 

@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/TMRFormula"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const TMRFormulaToConcentrate = require("../models/TMRFormulaToConcentrate");
 const Concentrate = require("../models/Concentrate");
@@ -220,8 +220,7 @@ const methods = {
         let RoughagesIDList = [...data.RoughagesID];
         data.RoughagesID = JSON.stringify(data.RoughagesID);
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -233,6 +232,7 @@ const methods = {
             ConcentrateID: ConcentrateID[0],
             Amount: ConcentrateID[1],
             CreatedUserID: data.CreatedUserID,
+            createdAt: fn("GETDATE"),
           });
         });
 
@@ -243,6 +243,7 @@ const methods = {
             RoughagesID: RoughagesID[0],
             Amount: RoughagesID[1],
             CreatedUserID: data.CreatedUserID,
+            createdAt: fn("GETDATE"),
           });
         });
 
@@ -284,8 +285,7 @@ const methods = {
           data.RoughagesID = JSON.stringify(data.RoughagesID);
         }
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { TMRFormulaID: id } });
 
@@ -327,14 +327,14 @@ const methods = {
                 ConcentrateID: ConcentrateID[0],
                 Amount: ConcentrateID[1],
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
-            }else{
+            } else {
               searchTTCOne.Amount = ConcentrateID[1];
               await searchTTCOne.save();
             }
           });
         }
-
 
         if (data.RoughagesID) {
           // ค้นหา table junction
@@ -374,8 +374,9 @@ const methods = {
                 RoughagesID: RoughagesID[0],
                 Amount: RoughagesID[1],
                 CreatedUserID: data.UpdatedUserID,
+                createdAt: fn("GETDATE"),
               });
-            }else{
+            } else {
               searchTTROne.Amount = RoughagesID[1];
               await searchTTROne.save();
             }
@@ -383,7 +384,7 @@ const methods = {
         }
 
         let res = methods.findById(data.TMRFormulaID);
-        
+
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
@@ -398,17 +399,17 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { TMRFormulaID: id } }
         );
 
         const obj1 = TMRFormulaToConcentrate.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { TMRFormulaID: id } }
         );
 
         const obj2 = TMRFormulaToRoughages.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { TMRFormulaID: id } }
         );
 

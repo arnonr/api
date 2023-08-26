@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models"),
-  { Op, literal } = require("sequelize");
+  { Op, literal, fn } = require("sequelize");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -2569,7 +2569,9 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         // Get All animal
-        let animal = await Animal.findAll({where: {AnimalIdentificationID: null}});
+        let animal = await Animal.findAll({
+          where: { AnimalIdentificationID: null },
+        });
 
         for (let index = 0; index < animal.length; index++) {
           const el = animal[index];
@@ -2587,9 +2589,9 @@ const methods = {
 
           let year1 = null;
           if (el.AnimalDateJoin) {
-            year1 = dayjs(el.AnimalDateJoin).format('YY');
+            year1 = dayjs(el.AnimalDateJoin).format("YY");
           } else {
-            year1 = dayjs().format('YY');
+            year1 = dayjs().format("YY");
           }
 
           let ProvinceAndAmphur1 = farm1.FarmAmphurID;
@@ -2597,8 +2599,11 @@ const methods = {
           let AnimalTypeCode1 = await AnimalType.findByPk(el.AnimalTypeID);
           AnimalTypeCode1 = AnimalTypeCode1.AnimalTypeCode.slice(1);
 
-          let prefixID1 = String(year1) + String(ProvinceAndAmphur1) + String(AnimalTypeCode1);
-       
+          let prefixID1 =
+            String(year1) +
+            String(ProvinceAndAmphur1) +
+            String(AnimalTypeCode1);
+
           let animal1 = await Animal.max("AnimalIdentificationID", {
             where: {
               AnimalIdentificationID: {
@@ -2689,7 +2694,7 @@ const methods = {
         // Generate New Number
         // Save New Number
 
-        resolve({Animal: animal});
+        resolve({ Animal: animal });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
