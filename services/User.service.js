@@ -504,15 +504,13 @@ const methods = {
 
         // ip ::ffff:
 
-        var date = new Date().toISOString();
-
         let loginLog = new LoginLog({
           UserID: obj.UserID,
           IPAddress: ip.substring(7),
           LoginDatetime: Date.now(),
           Device: JSON.stringify(device),
           CreatedUserID: obj.UserID,
-          createdAt: date,
+          createdAt: fn("GETDATE"),
         });
 
         loginLog.save();
@@ -550,8 +548,7 @@ const methods = {
         let AnimalTypeIDList = [...data.AnimalTypeID];
         data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         obj.Password = obj.passwordHash(obj.Password);
@@ -602,7 +599,6 @@ const methods = {
     // return new Promise(async (resolve, reject) => {
     //   try {
     //     //   validate Data
-    //     var date = new Date().toISOString();
     data.createdAt = fn("GETDATE");
 
     const obj = new db(data);

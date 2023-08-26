@@ -317,7 +317,7 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
-        // var date = new Date().toISOString();
+        
         data.updatedAt = fn('GETDATE');
 
         // data

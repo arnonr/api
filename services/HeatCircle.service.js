@@ -109,7 +109,6 @@ const methods = {
         // Update
         data.HeatCircleID = parseInt(id);
 
-        var date = new Date().toISOString();
         data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { HeatCircleID: id } });

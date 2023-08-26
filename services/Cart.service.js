@@ -201,7 +201,6 @@ const methods = {
         // Update
         data.CartID = parseInt(id);
 
-        var date = new Date().toISOString();
         data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { CartID: id } });

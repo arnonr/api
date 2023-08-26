@@ -541,8 +541,7 @@ const methods = {
           }
         }
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
 

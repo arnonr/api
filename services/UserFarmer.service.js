@@ -138,8 +138,6 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        var date = new Date(); // Or the date you'd like converted.
-
         data.createdAt = fn("GETDATE");
 
         const obj = new db(data);

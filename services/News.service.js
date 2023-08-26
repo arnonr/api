@@ -119,7 +119,6 @@ const methods = {
         // Update
         data.NewsID = parseInt(id);
 
-        var date = new Date().toISOString();
         data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { NewsID: id } });

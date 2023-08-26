@@ -208,7 +208,6 @@ const methods = {
         let AnimalSexIDList = [...data.AnimalSexID];
         data.AnimalSexID = JSON.stringify(data.AnimalSexID);
 
-        var date = new Date().toISOString();
         data.createdAt = fn("GETDATE");
 
         const obj = new db(data);

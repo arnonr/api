@@ -89,7 +89,6 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
         data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
@@ -114,7 +113,6 @@ const methods = {
         // Update
         data.MenuID = parseInt(id);
 
-        var date = new Date().toISOString();
         data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { MenuID: id } });

@@ -85,7 +85,6 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
         data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
