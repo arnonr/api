@@ -1,14 +1,15 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/OrganizationZone"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
     $where = {};
 
-    if (req.query.OrganizationZoneID) $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+    if (req.query.OrganizationZoneID)
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
     if (req.query.OrganizationZoneCode)
       $where["OrganizationZoneCode"] = {
         [Op.like]: "%" + req.query.OrganizationZoneCode + "%",
@@ -88,8 +89,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -112,9 +112,8 @@ const methods = {
 
         // Update
         data.OrganizationZoneID = parseInt(id);
-        
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { OrganizationZoneID: id } });
 
@@ -134,7 +133,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { OrganizationZoneID: id } }
         );
         resolve();

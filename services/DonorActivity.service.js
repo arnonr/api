@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/DonorActivity"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Animal = require("../models/Animal");
 const Donor = require("../models/Donor");
@@ -123,8 +123,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -148,8 +147,7 @@ const methods = {
         // Update
         data.DonorActivityID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { DonorActivityID: id } });
 
@@ -169,7 +167,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { DonorActivityID: id } }
         );
         resolve();
@@ -601,6 +599,7 @@ const methods = {
           ExcludeDate: data.ExcludeDate,
           ExcludeResponsibilityStaffID: data.ExcludeResponsibilityStaffID,
           UpdatedUserID: data.UpdatedUserID,
+          updatedAt: fn("GETDATE"),
         };
 
         const obj = await db.update(data1, {
@@ -628,6 +627,7 @@ const methods = {
           ExcludeDate: null,
           ExcludeResponsibilityStaffID: null,
           UpdatedUserID: data.UpdatedUserID,
+          updatedAt: fn("GETDATE"),
         };
 
         const obj = await db.update(data1, {

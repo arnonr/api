@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/DiseaseActivity"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
@@ -91,7 +91,9 @@ const methods = {
       DiseaseActivityDate: dj.DiseaseActivityDate,
       ThaiDiseaseActivityDate: dj.ThaiDiseaseActivityDate,
       FarmID: dj.FarmID,
-      FarmIdentificationNumber: dj.Farm ? dj.Farm.FarmIdentificationNumber : null,
+      FarmIdentificationNumber: dj.Farm
+        ? dj.Farm.FarmIdentificationNumber
+        : null,
       FarmName: dj.Farm ? dj.Farm.FarmName : null,
       DiseaseID: dj.DiseaseID,
       DiseaseName: dj.Disease ? dj.Disease.DiseaseName : null,
@@ -152,9 +154,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id, {
-          include: [
-            { all: true, required: false },
-          ],
+          include: [{ all: true, required: false }],
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
@@ -171,8 +171,7 @@ const methods = {
   insert(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -196,8 +195,7 @@ const methods = {
         // Update
         data.DiseaseActivityID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { DiseaseActivityID: id } });
 
@@ -217,7 +215,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { DiseaseActivityID: id } }
         );
 

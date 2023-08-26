@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/DewormActivity"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
@@ -19,7 +19,7 @@ const methods = {
 
     if (req.query.AnimalID) {
       $where["AnimalID"] = {
-        [Op.or]: [
+        [2]: [
           { [Op.like]: "%," + req.query.AnimalID + ",%" },
           { [Op.like]: "[" + req.query.AnimalID + ",%" },
           { [Op.like]: "%," + req.query.AnimalID + "]" },
@@ -172,8 +172,7 @@ const methods = {
         }
         data.AnimalID = JSON.stringify(data.AnimalID);
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -205,8 +204,7 @@ const methods = {
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { DewormActivityID: id } });
 
@@ -226,7 +224,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updateAt: fn("GETDATE") },
           { where: { DewormActivityID: id } }
         );
         resolve();

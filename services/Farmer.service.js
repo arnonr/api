@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Farmer"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 var FormData = require("form-data");
 
 const Farmer = require("../models/Farmer");
@@ -166,8 +166,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -191,8 +190,7 @@ const methods = {
         // Update
         data.FarmerID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { FarmerID: id } });
 
@@ -212,7 +210,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { FarmerID: id } }
         );
         resolve();
@@ -294,13 +292,12 @@ const methods = {
               FarmerRegisterStatus: 2,
             };
 
-            var date = new Date().toISOString();
-        data.createdAt = date;
+            data.createdAt = fn("GETDATE");
 
-        const obj = new db(data);
+            const obj = new db(data);
             const inserted = await obj.save();
             let res = methods.findById(inserted.FarmerID);
-            resolve({'res': res,'dataFromAPI': data1});
+            resolve({ res: res, dataFromAPI: data1 });
           } else {
             reject(ErrorNotFound("IdentificationNumber Not Found"));
           }
@@ -376,14 +373,14 @@ const methods = {
               };
 
               if (farmer) {
+                data.updatedAt = fn("GETDATE");
                 await Farmer.update(data, {
                   where: { FarmerID: farmer.FarmerID },
                 });
               } else {
-                var date = new Date().toISOString();
-        data.createdAt = date;
+                data.createdAt = fn("GETDATE");
 
-        const obj = new db(data);
+                const obj = new db(data);
                 const inserted = await obj.save();
               }
             }

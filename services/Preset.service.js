@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Preset"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 
@@ -26,8 +26,7 @@ const methods = {
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
 
-    if (req.query.AnimalTypeID)
-      $where["AnimalTypeID"] = req.query.AnimalTypeID;
+    if (req.query.AnimalTypeID) $where["AnimalTypeID"] = req.query.AnimalTypeID;
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
@@ -116,8 +115,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -141,8 +139,7 @@ const methods = {
         // Update
         data.PresetID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { PresetID: id } });
 
@@ -162,7 +159,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { PresetID: id } }
         );
         resolve();

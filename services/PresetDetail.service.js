@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/PresetDetail"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 
@@ -10,13 +10,15 @@ const methods = {
     // Where
     $where = {};
 
-    if (req.query.PresetDetailID) $where["PresetDetailID"] = req.query.PresetDetailID;
+    if (req.query.PresetDetailID)
+      $where["PresetDetailID"] = req.query.PresetDetailID;
 
     if (req.query.PresetID) $where["PresetID"] = req.query.PresetID;
 
     if (req.query.Day) $where["Day"] = req.query.Day;
     if (req.query.Time) $where["Time"] = req.query.Time;
-    if (req.query.PresetActivityID) $where["PresetActivityID"] = req.query.PresetActivityID;
+    if (req.query.PresetActivityID)
+      $where["PresetActivityID"] = req.query.PresetActivityID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -42,9 +44,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -98,8 +98,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -123,8 +122,7 @@ const methods = {
         // Update
         data.PresetDetailID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { PresetDetailID: id } });
 
@@ -144,7 +142,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { PresetDetailID: id } }
         );
         resolve();

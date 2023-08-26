@@ -3,7 +3,7 @@ const config = require("../configs/app"),
   db = require("../models/Distribution"),
   Animal = require("../models/Animal"),
   Farm = require("../models/Farm"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
 
@@ -98,7 +98,9 @@ const methods = {
         ? dataJson.DistributionReason.DistributionReasonName
         : null,
 
-      SourceFarmName: dataJson.Farm ? `[${dataJson.Farm.FarmIdentificationNumber}] ${dataJson.Farm.FarmName}` : null,
+      SourceFarmName: dataJson.Farm
+        ? `[${dataJson.Farm.FarmIdentificationNumber}] ${dataJson.Farm.FarmName}`
+        : null,
 
       DestinationFarmName: dataJson.DestinationFarm
         ? `[${dataJson.DestinationFarm.FarmIdentificationNumber}] ${dataJson.DestinationFarm.FarmName}`
@@ -177,29 +179,32 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
 
-        if((inserted.DistributionType == 'DROP') || (inserted.DistributionType == 'DEATH')){
+        if (
+          inserted.DistributionType == "DROP" ||
+          inserted.DistributionType == "DEATH"
+        ) {
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.isActive = 0;
           animal.save();
-        }else if((inserted.DistributionType == 'SALE') || (inserted.DistributionType == 'TRANSFER')){
-
+        } else if (
+          inserted.DistributionType == "SALE" ||
+          inserted.DistributionType == "TRANSFER"
+        ) {
           let farm = await Farm.findByPk(inserted.DestinationFarmID);
 
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.FarmID = inserted.DestinationFarmID;
 
-          animal.OrganizationID =  farm.OrganizationID;
-          animal.OrganizationZoneID =  farm.OrganizationZoneID;
+          animal.OrganizationID = farm.OrganizationID;
+          animal.OrganizationZoneID = farm.OrganizationZoneID;
           animal.isActive = 1;
           animal.save();
-        }else{
-
+        } else {
         }
 
         let res = methods.findById(inserted.DistributionID);
@@ -221,8 +226,7 @@ const methods = {
         // Update
         data.DistributionID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { DistributionID: id } });
 
@@ -242,7 +246,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { DistributionID: id } }
         );
         resolve();
