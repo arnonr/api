@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Cart"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
@@ -64,10 +64,8 @@ const methods = {
     let animal = dataJson.Animal.toJSON();
     data = {
       CartID: dataJson.CartID,
-      ...await data.Animal.EventLatest(),
-     Notification: await data.Animal.Notification()
-
-
+      ...(await data.Animal.EventLatest()),
+      Notification: await data.Animal.Notification(),
 
       //       "AIID": 51,
       //       "TransferEmbryoID": null,
@@ -177,10 +175,9 @@ const methods = {
         let res = null;
 
         if (!checkCart) {
-          var date = new Date().toISOString();
-        data.createdAt = date;
+          data.createdAt = fn("GETDATE");
 
-        const obj = new db(data);
+          const obj = new db(data);
           const inserted = await obj.save();
           res = await methods.findById(inserted.CartID);
         } else {
@@ -204,8 +201,8 @@ const methods = {
         // Update
         data.CartID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        var date = new Date().toISOString();
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { CartID: id } });
 
@@ -221,14 +218,15 @@ const methods = {
   delete(data, UserID) {
     return new Promise(async (resolve, reject) => {
       try {
-
         const obj = await db.findOne({
           where: { AnimalID: data.AnimalID, UserID: UserID },
         });
 
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        await db.destroy({ where: { AnimalID: data.AnimalID, UserID: UserID } });
+        await db.destroy({
+          where: { AnimalID: data.AnimalID, UserID: UserID },
+        });
         resolve();
       } catch (error) {
         reject(error);

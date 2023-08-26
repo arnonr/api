@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/CureActivity"),
-  { Op } = require("sequelize");
+  { Op, fn } = require("sequelize");
 const CAToVC = require("../models/CAToVC");
 const CureActivity = require("../models/CureActivity");
 const Vaccine = require("../models/Vaccine");
@@ -44,9 +44,9 @@ const methods = {
 
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
-    whereFarmID = {}
-    if (req.query.FarmID) { 
-      whereFarmID = {FarmID: req.query.FarmID}
+    whereFarmID = {};
+    if (req.query.FarmID) {
+      whereFarmID = { FarmID: req.query.FarmID };
       // $whereFarmID = req.query.FarmID;
       // $where["$Animal.FarmID$"] = JSON.parse(req.query.FarmID);
     }
@@ -186,8 +186,7 @@ const methods = {
           data.VaccineID = JSON.stringify(data.VaccineID);
         }
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         // console.log(obj.CureNextDate);
@@ -195,9 +194,6 @@ const methods = {
         const inserted = await obj.save();
 
         const res = await db.findByPk(inserted.CureActivityID);
-
-  
-   
 
         for (let index = 0; index < VaccineIDList.length; index++) {
           let vc = await Vaccine.findByPk(VaccineIDList[index][0]);
@@ -233,8 +229,7 @@ const methods = {
         // Update
         data.CureActivityID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { CureActivityID: id } });
 
@@ -271,7 +266,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { CureActivityID: id } }
         );
 

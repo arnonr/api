@@ -102,7 +102,7 @@ const methods = {
 
         const obj = new db(data);
         const inserted = await obj.save();
-
+        
         const res = await db.findByPk(inserted.LoginLogID);
 
         resolve(res);

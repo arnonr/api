@@ -249,8 +249,7 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
 
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn('GETDATE');
 
         const obj = new db(data);
         obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
@@ -264,6 +263,7 @@ const methods = {
               FarmID: inserted.FarmID,
               ProjectID: ProjectID,
               CreatedUserID: data.CreatedUserID,
+              createdAt: fn('GETDATE')
             });
           });
         }
@@ -317,13 +317,13 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
-        var date = new Date().toISOString();
-        data.updatedAt = date;
+        // var date = new Date().toISOString();
+        data.updatedAt = fn('GETDATE');
 
         // data
         await db.update(data, { where: { FarmID: id } });
 
-        console.log(data.UpdatedUserID + "FREEDOM20");
+        // console.log(data.UpdatedUserID + "FREEDOM20");
 
         if (data.ProjectID === null) {
           FarmToProject.destroy({

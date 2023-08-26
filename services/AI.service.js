@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/AI"),
-  { Op } = require("sequelize");
+  { Op,fn } = require("sequelize");
 const AI = require("../models/AI");
 
 const Animal = require("../models/Animal");
@@ -184,14 +184,13 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        var date = new Date().toISOString();
-        data.createdAt = date;
+        data.createdAt = fn('GETDATE');
 
         const obj = new db(data);
         const inserted = await obj.save();
 
         await Animal.update(
-          { ProductionStatusID: 4 },
+          { ProductionStatusID: 4,updatedAt: fn('GETDATE') },
           { where: { AnimalID: inserted.AnimalID } }
         );
 
@@ -214,8 +213,7 @@ const methods = {
         // Update
         data.AIID = parseInt(id);
 
-         var date = new Date().toISOString();
-        data.updatedAt = date;
+        data.updatedAt = fn('GETDATE');
 
         await db.update(data, { where: { AIID: id } });
 
@@ -234,7 +232,7 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        await db.update({ isRemove: 1, isActive: 0 }, { where: { AIID: id } });
+        await db.update({ isRemove: 1, isActive: 0,updatedAt: fn('GETDATE') }, { where: { AIID: id } });
 
 
         // Set AnimalPar และสถานะสัตว์
