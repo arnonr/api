@@ -31,6 +31,11 @@ const methods = {
       $where["ProjectLevel"] = {
         [Op.or]: [req.query.ProjectLevel, "ALL"],
       };
+      
+
+    //   $where["ProjectLevel"] = {
+    //     [Op.or]: [req.query.ProjectLevel, "ALL"],
+    //   };
     }
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
