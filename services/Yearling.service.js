@@ -199,8 +199,8 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        data.createdAt = fn("GETDATE");
 
+        data.createdAt = fn("GETDATE");
         const obj = new db(data);
         const inserted = await obj.save();
 
@@ -224,14 +224,15 @@ const methods = {
         data.YearlingID = parseInt(id);
 
         data.updatedAt = fn("GETDATE");
+        data.createdAt = fn("GETDATE");
 
         await db.update(data, { where: { YearlingID: id } });
 
-        // Update AnimalBornWeight
-        await Animal.update(
-          { AnimalBornWeight: data.Weight, updatedAt: fn("GETDATE") },
-          { where: { AnimalID: obj.AnimalID } }
-        );
+        // // Update AnimalBornWeight
+        // await Animal.update(
+        //   { AnimalBornWeight: data.Weight, updatedAt: fn("GETDATE") },
+        //   { where: { AnimalID: obj.AnimalID } }
+        // );
 
         let res = methods.findById(data.YearlingID);
 

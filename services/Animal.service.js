@@ -2445,6 +2445,7 @@ const methods = {
             // Weigth: null,
             // ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
+            createdAt: fn("GETDATE")
           };
           var yearling = new Yearling(data);
           const inserted1 = await yearling.save();
