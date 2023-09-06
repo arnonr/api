@@ -1881,7 +1881,6 @@ const methods = {
       });
     });
 
-
     // ช่วงวันเกิด
     if (req.query.AnimalBirthDateStart) {
       $where["AnimalBirthDate"] = {
@@ -1990,40 +1989,43 @@ const methods = {
             let rows = result[0],
               count = rows.length;
 
-            rows = await Promise.all(
-              rows.map(async (data) => {
-                let projectArray = [];
-                data.Projects.forEach((element) => {
-                  projectArray.push(element.ProjectName);
-                });
+            if (!req.query.noEventLatest) {
+              rows = await Promise.all(
+                rows.map(async (data) => {
+                  let projectArray = [];
+                  data.Projects.forEach((element) => {
+                    projectArray.push(element.ProjectName);
+                  });
 
-                if (data.GiveBirthSelfID != null) {
-                  data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
-                }
+                  if (data.GiveBirthSelfID != null) {
+                    data.GiveBirthSelf = GiveBirth.findByPk(
+                      data.GiveBirthSelfID
+                    );
+                  }
 
-                // รหัสใบหู, ชื่อ
+                  // รหัสใบหู, ชื่อ
 
-                let res = {
-                  ...data.toJSON(),
-                  Projects: projectArray,
-                  ProjectID: JSON.parse(data.toJSON().ProjectID),
-                  
-                  // EventLatest: data.EventLatest(),
-                };
+                  let res = {
+                    ...data.toJSON(),
+                    Projects: projectArray,
+                    ProjectID: JSON.parse(data.toJSON().ProjectID),
 
-                if (req.query.includeEventLatest) {
-                  if (req.query.includeEventLatest == "false") {
+                    // EventLatest: data.EventLatest(),
+                  };
 
+                  if (req.query.includeEventLatest) {
+                    if (req.query.includeEventLatest == "false") {
+                    } else {
+                      res.EventLatest = await data.EventLatest();
+                    }
                   } else {
                     res.EventLatest = await data.EventLatest();
                   }
-                } else {
-                  res.EventLatest = await data.EventLatest();
-                }
 
-                return res;
-              })
-            );
+                  return res;
+                })
+              );
+            }
 
             resolve({
               total: count,
@@ -2422,7 +2424,7 @@ const methods = {
           }
         });
 
-        data.createdAt = fn('GETDATE');
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         if (!obj.AnimalNationalID) {
@@ -2445,7 +2447,7 @@ const methods = {
             // Weigth: null,
             // ResponsibilityStaffID: inserted.CreatedUserID,
             CreatedUserID: inserted.CreatedUserID,
-            createdAt: fn("GETDATE")
+            createdAt: fn("GETDATE"),
           };
           var yearling = new Yearling(data);
           const inserted1 = await yearling.save();
@@ -2458,7 +2460,7 @@ const methods = {
               AnimalID: inserted.AnimalID,
               ProjectID: ProjectID,
               CreatedUserID: data.CreatedUserID,
-              createdAt: fn('GETDATE')
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -2555,7 +2557,7 @@ const methods = {
           }
         });
 
-        data.updatedAt = fn('GETDATE');
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { AnimalID: id } });
 
@@ -2599,7 +2601,7 @@ const methods = {
                 AnimalID: obj.AnimalID,
                 ProjectID: ProjectID,
                 CreatedUserID: data.UpdatedUserID,
-                createdAt: fn('GETDATE')
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -2620,7 +2622,7 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 ,updatedAt: fn('GETDATE')},
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { AnimalID: id } }
         );
 
