@@ -568,6 +568,8 @@ const methods = {
 
         data.updatedAt = fn("GETDATE");
 
+     
+
         await db.update(data, {
           where: { StaffID: id },
           individualHooks: true,
