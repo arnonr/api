@@ -1893,12 +1893,15 @@ const methods = {
 
     // ProjectID
     let WhereProject = null;
+
     if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
-      };
+      if ((req.query.ProjectID != "[]")) {
+        WhereProject = {
+          ProjectID: {
+            [Op.in]: JSON.parse(req.query.ProjectID),
+          },
+        };
+      }
     }
 
     let WhereAIZone = null;
@@ -2008,8 +2011,7 @@ const methods = {
                   let res = {
                     ...data.toJSON(),
                     Projects: projectArray,
-                    ProjectID: JSON.parse(data.toJSON().ProjectID),
-
+                    ProjectID: data.toJSON().ProjectID,
                     // EventLatest: data.EventLatest(),
                   };
 
