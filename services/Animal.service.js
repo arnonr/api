@@ -1720,12 +1720,30 @@ const methods = {
     if (req.query.AnimalTypeID) {
       let animaltype = JSON.parse(req.query.AnimalTypeID);
 
-      let test = animaltype.find((x) => {
+      let test1 = animaltype.find((x) => {
+        return x == 1 || x == 2;
+      });
+      if (test1) {
+        animaltype.push(41);
+        animaltype.push(42);
+      }
+
+      let test2 = animaltype.find((x) => {
         return x == 3 || x == 4;
       });
 
-      if (test) {
-        animaltype.push(42);
+      if (test2) {
+        animaltype.push(43);
+        animaltype.push(44);
+      }
+
+      let test3 = animaltype.find((x) => {
+        return x == 5 || x == 6;
+      });
+
+      if (test2) {
+        animaltype.push(45);
+        animaltype.push(46);
       }
 
       $where["AnimalTypeID"] = {
