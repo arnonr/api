@@ -1741,7 +1741,7 @@ const methods = {
         return x == 5 || x == 6;
       });
 
-      if (test2) {
+      if (test3) {
         animaltype.push(45);
         animaltype.push(46);
       }
