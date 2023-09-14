@@ -1895,7 +1895,7 @@ const methods = {
     let WhereProject = null;
 
     if (req.query.ProjectID) {
-      if ((req.query.ProjectID != "[]")) {
+      if (req.query.ProjectID != "[]") {
         WhereProject = {
           ProjectID: {
             [Op.in]: JSON.parse(req.query.ProjectID),
@@ -2679,8 +2679,7 @@ const methods = {
               },
             },
           });
-
-          if (animal) {
+          if (animal && animal != null && animal != 'null') {
             let codeLastest = animal.substr(-6);
             codeLastest = parseInt(codeLastest) + 1;
             let number = 6 - parseInt(String(codeLastest).length);
@@ -2704,11 +2703,11 @@ const methods = {
           let type1 = "N";
           // C,D,B,G animalType
           let type2 = null;
-          if (AnimalTypeID == 1) {
+          if (AnimalTypeID == 1 || AnimalTypeID == 2 || AnimalTypeID == 41 || AnimalTypeID == 42) {
             type2 = "C";
-          } else if (AnimalTypeID == 3 || AnimalTypeID == 4) {
+          } else if (AnimalTypeID == 3 || AnimalTypeID == 4 || AnimalTypeID == 43 || AnimalTypeID == 44) {
             type2 = "B";
-          } else if (AnimalTypeID == 17 || AnimalTypeID == 18) {
+          } else if (AnimalTypeID == 17 || AnimalTypeID == 18 || AnimalTypeID == 45 || AnimalTypeID == 46) {
             type2 = "G";
           } else {
             type2 = "C";
@@ -2726,7 +2725,7 @@ const methods = {
             },
           });
 
-          if (animal2) {
+          if (animal2 && animal != null && animal != 'null') {
             let codeLastest = animal.substr(-5);
             codeLastest = parseInt(codeLastest) + 1;
             let number = 5 - parseInt(String(codeLastest).length);
@@ -3110,6 +3109,233 @@ const methods = {
   // },
 
   findByFarmID(req) {
+    // const limit = +(req.query.size || config.pageLimit);
+    const limit = 500;
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch1(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
+          .then(async (result) => {
+            let rows = result[0],
+              count = rows.length;
+            //
+            let noti = {
+              noti1: 0,
+              noti1Animal: [],
+              noti2: 0,
+              noti2Animal: [],
+              noti3: 0,
+              noti3Animal: [],
+              noti4: 0,
+              noti4Animal: [],
+              noti5: 0,
+              noti5Animal: [],
+              noti6: 0,
+              noti6Animal: [],
+              noti7: 0,
+              noti7Animal: [],
+              noti8: 0,
+              noti8Animal: [],
+              noti9: 0,
+              noti9Animal: [],
+              noti10: 0,
+              noti10Animal: [],
+            };
+
+            let countAnimal = {
+              all: 0,
+              child: 0,
+              young: 0,
+              girl: 0,
+              father: 0,
+              mother: 0,
+            };
+
+            const getWithPromiseAll = async () => {
+              let data = await Promise.all(
+                rows.map(async (data) => {
+                  let projectArray = [];
+                  data.Projects.forEach((element) => {
+                    projectArray.push(element.ProjectName);
+                  });
+
+                  // data คือตัวสัตว์
+                  let data1 = await data.EventLatest();
+                  // data1
+
+                  let cart = await Cart.findOne({
+                    where: {
+                      AnimalID: data.AnimalID,
+                      UserID: req.body.GetUserID,
+                    },
+                  });
+
+                  data1.cart = cart ? true : false;
+
+                  data1.Notification = await data.Notification();
+                  // noti1 = ครบกำหนดคลอด,
+                  // noti2 = ครบกำหนดตรวจท้อง,
+                  // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+                  // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+                  // noti5 = อายุมากกว่ากําหนด
+                  // noti6 = แจ้งเตือนกลับสัด
+                  // noti7 = ผสมซ้ำเกิน 3 ครั้ง
+                  // noti8 = เลยกำหนดคลอด
+                  // noti9 = Thai Black
+                  // noti10 = แดงสุราษฏร์
+
+                  if (data1.Notification.includes("ครบกำหนดคลอด")) {
+                    noti.noti1 += 1;
+                    noti.noti1Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  console.log(data1.Notification);
+                  if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
+                    noti.noti2 += 1;
+                    noti.noti2Animal.push(data1.AnimalID);
+                    console.log(noti.noti2);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดติดตามลูกเกิดหลังคลอด"
+                    )
+                  ) {
+                    noti.noti3 += 1;
+                    noti.noti3Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
+                    )
+                  ) {
+                    noti.noti4 += 1;
+                    noti.noti4Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
+                    noti.noti6 += 1;
+                    noti.noti6Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
+                    noti.noti5 += 1;
+                    noti.noti5Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
+                    noti.noti7 += 1;
+                    noti.noti7Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("เลยกำหนดคลอด")) {
+                    noti.noti8 += 1;
+                    noti.noti8Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 600 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 400 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
+                    )
+                  ) {
+                    noti.noti9 += 1;
+                    noti.noti9Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
+                    )
+                  ) {
+                    noti.noti10 += 1;
+                    noti.noti10Animal.push(data1.AnimalID);
+                    // noti10Animal
+                  }
+
+                  countAnimal.all = countAnimal.all + 1;
+                  countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
+                    ? countAnimal.child + 1
+                    : countAnimal.child;
+
+                  countAnimal.young = [2, 7, 12].includes(data.AnimalStatusID)
+                    ? countAnimal.young + 1
+                    : countAnimal.young;
+
+                  countAnimal.girl = [3, 8, 13].includes(data.AnimalStatusID)
+                    ? countAnimal.girl + 1
+                    : countAnimal.girl;
+
+                  countAnimal.father = [4, 9, 14].includes(data.AnimalStatusID)
+                    ? countAnimal.father + 1
+                    : countAnimal.father;
+
+                  countAnimal.mother = [5, 10, 15].includes(data.AnimalStatusID)
+                    ? countAnimal.mother + 1
+                    : countAnimal.mother;
+
+                  return data1;
+                })
+              );
+
+              return data;
+            };
+
+            let animal = await getWithPromiseAll();
+
+            console.log(noti);
+            // noti1 = ครบกำหนดคลอด,
+            // noti2 = ครบกำหนดตรวจท้อง,
+            // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+            // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+            // noti5 = อายุมากกว่ากําหนด
+            // noti6 = แจ้งเตือนกลับสัด
+            // noti7 = ผสมซ้ำเกิน 3 ครั้ง
+            // noti8 = เลยกำหนดคลอด
+            // noti9 = Thai Black
+            // noti10 = แดงสุราษฏร์
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: animal,
+              noti,
+              countAnimal,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  findByFarmIDOld(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch1(req, limit, offset);
@@ -3192,9 +3418,7 @@ const methods = {
                   }
 
                   console.log(data1.Notification);
-                  console.log("FREEDOM6");
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
-                    console.log("FREEDOM5");
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
                     console.log(noti.noti2);
