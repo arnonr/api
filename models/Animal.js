@@ -383,7 +383,10 @@ class Animal extends Model {
         }
       }
     }
-
+    return {
+        eventLatest: eventLatest,
+        noti: noti
+    }
     return noti;
   }
 
@@ -963,6 +966,11 @@ Animal.init(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "วันเข้่าฝูง",
+    },
+    Notifications: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+      comment: "แจ้งเตือน",
     },
     AnimalSecretStatus: {
       type: DataTypes.VIRTUAL,

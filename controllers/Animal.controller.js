@@ -123,6 +123,34 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onUpdateAnimalEvent(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.GetUserID = decoded.id;
+      
+      let result = await Service.updateAnimalEvent(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+
+  async onUpdateAnimalNotification(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.GetUserID = decoded.id;
+      
+      let result = await Service.updateAnimalNotification(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  
+
 };
 
 module.exports = { ...methods };

@@ -40,69 +40,36 @@ const upload = multer({
   limits: { fieldSize: 10 * 1024 * 1024 }, //10MB
 });
 
+router.get("/", controllers.onGetAll);
 
-router.get(
-  "/",
-  controllers.onGetAll
-);
+router.get("/id-and-name", controllers.onGetAllIDandName);
 
-router.get(
-  "/id-and-name",
-  controllers.onGetAllIDandName
-);
+router.get("/generate-number", controllers.onGenerateNumber);
 
+router.get("/get-latest-number", controllers.onGetLatestNumber);
 
-router.get(
-  "/generate-number",
-  controllers.onGenerateNumber
-);
+router.get("/generate-breed", controllers.onGenerateBreed);
 
-router.get(
-  "/get-latest-number",
-  controllers.onGetLatestNumber
-);
+router.get("/get-by-farm-id", controllers.onGetByFarmID);
 
-router.get(
-  "/generate-breed",
-  controllers.onGenerateBreed
-);
+router.get("/update-animal-event", controllers.onUpdateAnimalEvent);
 
-router.get(
-  "/get-by-farm-id",
-  controllers.onGetByFarmID
-);
+router.get("/update-animal-notification", controllers.onUpdateAnimalNotification);
 
-router.get(
-  "/:id",
-  controllers.onGetById
-);
+router.get("/:id", controllers.onGetById);
 
 router.get(
   "/:id/export-registered-animal",
   controllers.onExportRegisteredAnimal
 );
 
+router.post("/", controllers.onInsert);
 
-router.post(
-  "/",
-  controllers.onInsert
-);
+router.put("/:id", controllers.onUpdate);
 
-router.put(
-  "/:id",
-  controllers.onUpdate
-);
-
-router.delete(
-  "/:id",
-  controllers.onDelete
-);
+router.delete("/:id", controllers.onDelete);
 
 // ต้องตรวจสอบอะไรก่อน 1.สิทธิ์ 2.ขนาดไฟล์ ประเภทไฟล์ 3. บันทึกลง Database
-router.post(
-  "/photo/:id",
-  upload.single("photo_url"),
-  controllers.onPhoto
-);
+router.post("/photo/:id", upload.single("photo_url"), controllers.onPhoto);
 
 module.exports = router;

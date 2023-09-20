@@ -62,10 +62,11 @@ const methods = {
   async getData(data) {
     let dataJson = data.toJSON();
     let animal = dataJson.Animal.toJSON();
-    data = {
+    let noti = await dataJson.Animal.Notification();
+    let data1 = {
       CartID: dataJson.CartID,
       ...(await data.Animal.EventLatest()),
-      Notification: await data.Animal.Notification(),
+      Notification: noti,
 
       //       "AIID": 51,
       //       "TransferEmbryoID": null,
@@ -88,7 +89,7 @@ const methods = {
       // },
       // User: undefined,
     };
-    return data;
+    return data1;
   },
 
   find(req) {

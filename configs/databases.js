@@ -20,7 +20,9 @@ const sequelize = new Sequelize(
       instanceName: "MSSQLSERVER",
       options: {
         encrypt: false,
+        requestTimeout: 1000000000,
       },
+    //   options: { "requestTimeout": 300000 }
       //   requestTimeout: 600000,
       //   authentication: {
       //     type: "ntlm",
@@ -31,12 +33,12 @@ const sequelize = new Sequelize(
       //     },
       //   },
     },
-    timezone: '+07:00',
+    timezone: "+07:00",
     pool: {
       max: 5,
       min: 0,
-      acquire: 30000,
-      idle: 1000,
+      acquire: 1000000000,
+      idle: 1000000,
     },
     define: {
       timestamps: false,
