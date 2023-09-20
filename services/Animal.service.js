@@ -2965,6 +2965,12 @@ const methods = {
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
+    if (req.query.AnimalIDArray) {
+      $where["AnimalID"] = {
+        [Op.in]: JSON.parse(req.query.AnimalIDArray),
+      }
+    }
+
     // if (req.query.GetUserID)
     // $where["AnimalMotherID"] = req.query.GetUserID;
 
@@ -3042,12 +3048,42 @@ const methods = {
     // ProjectID
     let WhereProject = null;
     if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
-      };
+      if (req.query.ProjectID != "[]") {
+        WhereProject = {
+          ProjectID: {
+            [Op.in]: JSON.parse(req.query.ProjectID),
+          },
+        };
+      }
     }
+
+    let WhereFarm = {};
+
+    if (req.query.FarmProvinceID) {
+      WhereFarm["FarmProvinceID"] = req.query.FarmProvinceID;
+    }
+
+    if (req.query.FarmAmphurID) {
+      WhereFarm["FarmAmphurID"] = req.query.FarmAmphurID;
+    }
+
+    if (req.query.FarmTumbolID) {
+      WhereFarm["FarmTumbolID"] = req.query.FarmTumbolID;
+    }
+
+    if (req.query.FarmOrganizationID) {
+      WhereFarm["OrganizationID"] = req.query.FarmOrganizationID;
+    }
+
+    if (req.query.FarmAIZoneID) {
+      WhereFarm["AIZoneID"] = req.query.FarmAIZoneID;
+    }
+
+    if (req.query.FarmOrganizationZoneID) {
+      WhereFarm["OrganizationZoneID"] = req.query.FarmOrganizationZoneID;
+    }
+
+    // FarmAIZoneID
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
@@ -3078,6 +3114,11 @@ const methods = {
       {
         model: Project,
         where: WhereProject,
+      },
+      {
+        model: Farm,
+        where: WhereFarm,
+        as: "AnimalFarm",
       },
     ];
 
@@ -3142,8 +3183,8 @@ const methods = {
   // },
 
   findByFarmID(req) {
-    // const limit = +(req.query.size || config.pageLimit);
-    const limit = 500;
+    const limit = +(req.query.size || config.pageLimit);
+    // const limit = 500;
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch1(req, limit, offset);
     return new Promise(async (resolve, reject) => {
@@ -3208,235 +3249,6 @@ const methods = {
                   data1.cart = cart ? true : false;
 
                   data1.Notification = test.noti;
-                  // noti1 = ครบกำหนดคลอด,
-                  // noti2 = ครบกำหนดตรวจท้อง,
-                  // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
-                  // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
-                  // noti5 = อายุมากกว่ากําหนด
-                  // noti6 = แจ้งเตือนกลับสัด
-                  // noti7 = ผสมซ้ำเกิน 3 ครั้ง
-                  // noti8 = เลยกำหนดคลอด
-                  // noti9 = Thai Black
-                  // noti10 = แดงสุราษฏร์
-
-                  if (data1.Notification.includes("ครบกำหนดคลอด")) {
-                    noti.noti1 += 1;
-                    noti.noti1Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  console.log(data1.Notification);
-                  if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
-                    noti.noti2 += 1;
-                    noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2);
-                    // noti7Animal
-                  }
-
-                  if (
-                    data1.Notification.includes(
-                      "ครบกําหนดติดตามลูกเกิดหลังคลอด"
-                    )
-                  ) {
-                    noti.noti3 += 1;
-                    noti.noti3Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (
-                    data1.Notification.includes(
-                      "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
-                    )
-                  ) {
-                    noti.noti4 += 1;
-                    noti.noti4Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
-                    noti.noti6 += 1;
-                    noti.noti6Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
-                    noti.noti5 += 1;
-                    noti.noti5Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
-                    noti.noti7 += 1;
-                    noti.noti7Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (data1.Notification.includes("เลยกำหนดคลอด")) {
-                    noti.noti8 += 1;
-                    noti.noti8Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
-                    ) ||
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก Thaiblack รอบ 600 วัน"
-                    ) ||
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก Thaiblack รอบ 400 วัน"
-                    ) ||
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
-                    )
-                  ) {
-                    noti.noti9 += 1;
-                    noti.noti9Animal.push(data1.AnimalID);
-                    // noti7Animal
-                  }
-
-                  if (
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
-                    ) ||
-                    data1.Notification.includes(
-                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
-                    )
-                  ) {
-                    noti.noti10 += 1;
-                    noti.noti10Animal.push(data1.AnimalID);
-                    // noti10Animal
-                  }
-
-                  countAnimal.all = countAnimal.all + 1;
-                  countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
-                    ? countAnimal.child + 1
-                    : countAnimal.child;
-
-                  countAnimal.young = [2, 7, 12].includes(data.AnimalStatusID)
-                    ? countAnimal.young + 1
-                    : countAnimal.young;
-
-                  countAnimal.girl = [3, 8, 13].includes(data.AnimalStatusID)
-                    ? countAnimal.girl + 1
-                    : countAnimal.girl;
-
-                  countAnimal.father = [4, 9, 14].includes(data.AnimalStatusID)
-                    ? countAnimal.father + 1
-                    : countAnimal.father;
-
-                  countAnimal.mother = [5, 10, 15].includes(data.AnimalStatusID)
-                    ? countAnimal.mother + 1
-                    : countAnimal.mother;
-
-                  return data1;
-                })
-              );
-
-              return data;
-            };
-
-            let animal = await getWithPromiseAll();
-
-            console.log(noti);
-            // noti1 = ครบกำหนดคลอด,
-            // noti2 = ครบกำหนดตรวจท้อง,
-            // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
-            // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
-            // noti5 = อายุมากกว่ากําหนด
-            // noti6 = แจ้งเตือนกลับสัด
-            // noti7 = ผสมซ้ำเกิน 3 ครั้ง
-            // noti8 = เลยกำหนดคลอด
-            // noti9 = Thai Black
-            // noti10 = แดงสุราษฏร์
-
-            resolve({
-              total: count,
-              lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
-              rows: animal,
-              noti,
-              countAnimal,
-            });
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
-  findByFarmIDOld(req) {
-    const limit = +(req.query.size || config.pageLimit);
-    const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch1(req, limit, offset);
-    return new Promise(async (resolve, reject) => {
-      try {
-        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
-          .then(async (result) => {
-            let rows = result[0],
-              count = rows.length;
-            //
-            let noti = {
-              noti1: 0,
-              noti1Animal: [],
-              noti2: 0,
-              noti2Animal: [],
-              noti3: 0,
-              noti3Animal: [],
-              noti4: 0,
-              noti4Animal: [],
-              noti5: 0,
-              noti5Animal: [],
-              noti6: 0,
-              noti6Animal: [],
-              noti7: 0,
-              noti7Animal: [],
-              noti8: 0,
-              noti8Animal: [],
-              noti9: 0,
-              noti9Animal: [],
-              noti10: 0,
-              noti10Animal: [],
-            };
-
-            let countAnimal = {
-              all: 0,
-              child: 0,
-              young: 0,
-              girl: 0,
-              father: 0,
-              mother: 0,
-            };
-
-            const getWithPromiseAll = async () => {
-              let data = await Promise.all(
-                rows.map(async (data) => {
-                  let projectArray = [];
-                  data.Projects.forEach((element) => {
-                    projectArray.push(element.ProjectName);
-                  });
-
-                  // data คือตัวสัตว์
-                  //   let data1 = await data.EventLatest();
-
-                  let test = await data.Notification();
-                  let data1 = test.eventLatest;
-                  // data1
-
-                  let cart = await Cart.findOne({
-                    where: {
-                      AnimalID: data.AnimalID,
-                      UserID: req.body.GetUserID,
-                    },
-                  });
-
-                  data1.cart = cart ? true : false;
-
-                  data1.Notification = await test.noti;
                   // noti1 = ครบกำหนดคลอด,
                   // noti2 = ครบกำหนดตรวจท้อง,
                   // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
@@ -3948,439 +3760,6 @@ const methods = {
 
   //
 
-  scopeSearch2(req, limit, offset) {
-    // Where
-    let $where = {};
-
-    if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
-
-    // if (req.query.GetUserID)
-    // $where["AnimalMotherID"] = req.query.GetUserID;
-
-    if (req.query.ProductionStatusID)
-      $where["ProductionStatusID"] = req.query.ProductionStatusID;
-
-    if (req.query.AnimalStatusID)
-      $where["AnimalStatusID"] = req.query.AnimalStatusID;
-
-    if (req.query.AnimalIdentificationID)
-      $where["AnimalIdentificationID"] = {
-        [Op.like]: "%" + req.query.AnimalIdentificationID + "%",
-      };
-
-    if (req.query.AnimalNationalID)
-      $where["AnimalNationalID"] = {
-        [Op.like]: "%" + req.query.AnimalNationalID + "%",
-      };
-
-    if (req.query.AnimalEarID)
-      $where["AnimalEarID"] = {
-        [Op.like]: "%" + req.query.AnimalEarID + "%",
-      };
-
-    if (req.query.AnimalMicrochip)
-      $where["AnimalMicrochip"] = {
-        [Op.like]: "%" + req.query.AnimalMicrochip + "%",
-      };
-
-    if (req.query.AnimalSexID) $where["AnimalSexID"] = req.query.AnimalSexID;
-
-    if (req.query.AnimalTypeID)
-      $where["AnimalTypeID"] = {
-        [Op.in]: JSON.parse(req.query.AnimalTypeID),
-      };
-
-    if (req.query.AnimalName)
-      $where["AnimalName"] = {
-        [Op.like]: "%" + req.query.AnimalName + "%",
-      };
-
-    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
-
-    if (req.query.AnimalFirstBreed)
-      $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
-    if (req.query.AnimalFatherID)
-      $where["AnimalFatherID"] = req.query.AnimalFatherID;
-    if (req.query.AnimalMotherID)
-      $where["AnimalMotherID"] = req.query.AnimalMotherID;
-
-    if (req.query.AnimalBornType)
-      $where["AnimalBornType"] = req.query.AnimalBornType;
-    if (req.query.AnimalBornTypeID)
-      $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
-    if (req.query.AnimalSource)
-      $where["AnimalBornTypeID"] = req.query.AnimalSource;
-    if (req.query.SourceFarmID) $where["SourceFarmID"] = req.query.SourceFarmID;
-    if (req.query.OrganizationID)
-      $where["OrganizationID"] = req.query.OrganizationID;
-    if (req.query.OrganizationZoneID)
-      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-
-    // Breed
-
-    // ช่วงวันเกิด
-    if (req.query.AnimalBirthDateStart) {
-      $where["AnimalBirthDate"] = {
-        [Op.between]: [
-          req.query.AnimalBirthDateStart,
-          req.query.AnimalBirthDateEnd,
-        ],
-      };
-    }
-
-    // ProjectID
-    let WhereProject = null;
-    if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
-      };
-    }
-
-    if (req.query.isActive) $where["isActive"] = req.query.isActive;
-    if (req.query.CreatedUserID)
-      $where["CreatedUserID"] = req.query.CreatedUserID;
-    if (req.query.UpdatedUserID)
-      $where["UpdatedUserID"] = req.query.UpdatedUserID;
-
-    $where["isRemove"] = 0;
-    const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
-    // Order
-    $order = [["AnimalID", "ASC"]];
-    if (req.query.orderByField && req.query.orderBy)
-      $order = [
-        [
-          req.query.orderByField,
-          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
-        ],
-      ];
-    query["order"] = $order;
-
-    if (!isNaN(limit)) query["limit"] = limit;
-
-    if (!isNaN(offset)) query["offset"] = offset;
-
-    query["include"] = [
-      { all: true, required: false },
-      {
-        model: Project,
-        where: WhereProject,
-      },
-    ];
-
-    return { query: query };
-  },
-  updateAnimalEvent(req) {
-    // const limit = 10000000;
-    const limit = +(req.query.size || config.pageLimit);
-    const offset = +(limit * ((req.query.page || 1) - 1));
-    const _q = methods.scopeSearch2(req, limit, offset);
-    return new Promise(async (resolve, reject) => {
-      try {
-        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
-          .then(async (result) => {
-            // const MyView = sequelize.define('my_view', {});
-            let rows = result[0],
-              count = rows.length;
-            //
-            let noti = {
-              noti1: 0,
-              noti1Animal: [],
-              noti2: 0,
-              noti2Animal: [],
-              noti3: 0,
-              noti3Animal: [],
-              noti4: 0,
-              noti4Animal: [],
-              noti5: 0,
-              noti5Animal: [],
-              noti6: 0,
-              noti6Animal: [],
-              noti7: 0,
-              noti7Animal: [],
-              noti8: 0,
-              noti8Animal: [],
-              noti9: 0,
-              noti9Animal: [],
-              noti10: 0,
-              noti10Animal: [],
-            };
-
-            let countAnimal = {
-              all: 0,
-              child: 0,
-              young: 0,
-              girl: 0,
-              father: 0,
-              mother: 0,
-            };
-
-            const getWithPromiseAll = async () => {
-              let data2 = await Promise.all(
-                rows.map(async (data) => {
-                  let projectArray = [];
-                  data.Projects.forEach((element) => {
-                    projectArray.push(element.ProjectName);
-                  });
-
-                  //   "AnimalID": 10909,
-                  //   "AnimalEarID": "231301011000045",
-                  //   "AnimalName": "กก",
-                  //   "AnimalTypeID": 1,
-                  //   "AnimalSecretStatus": [
-                  //     1
-                  //   ],
-                  //   "AnimalAge": "0-7",
-                  //   "AnimalBreedAll": "ABM 75%, WAG 25%",
-                  //   "AnimalStatus": "ลูกโค",
-                  //   "AnimalStatusText": "ลูกโค",
-                  //   "giveBirthDateLatest": "-",
-                  //   "FarmName": "กลุ่มพัฒนาระบบข้อมูลและเครือข่ายชีวภาพการปศุสัตว์",
-                  //   "AnimalSex": "เพศเมีย",
-                  //   "AIID": null,
-                  //   "TransferEmbryoID": null,
-                  //   "PAR": null,
-                  //   "TimeNo": null,
-                  //   "AIDate": null,
-                  //   "EmbryoDate": null,
-                  //   "PregnancyStatus": null,
-                  //   "PregnancyTimeNo": null,
-                  //   "cart": false,
-                  //   "Notification": []
-                  let statusText = data.AnimalStatus
-                    ? data.AnimalStatus.AnimalStatusName
-                    : "-";
-                  if (data.ProductionStatusID == 1) {
-                    statusText = statusText + " แท้ง";
-                  } else if (data.ProductionStatusID == 2) {
-                    statusText = statusText + " คลอด";
-                  } else if (data.ProductionStatusID == 3) {
-                    statusText = statusText + " รอตรวจซ้ำ";
-                  } else if (data.ProductionStatusID == 4) {
-                    statusText = statusText + " ผสม";
-                  } else if (data.ProductionStatusID == 5) {
-                    statusText = statusText + " ไม่ท้อง";
-                  } else if (data.ProductionStatusID == 6) {
-                    statusText = statusText + " ท้อง";
-                  } else {
-                  }
-
-                  let data1 = {
-                    AnimalID: data.AnimalID,
-                    AnimalEarID: data.AnimalEarID,
-                    AnimalName: data.AnimalName,
-                    AnimalTypeID: data.animalTypeID,
-                    AnimalSecretStatus: data.AnimalSecretStatus,
-                    AnimalAge: data.AnimalAge,
-                    AnimalBreedAll: data.AnimalBreedAll,
-                    AnimalStatus: statusText,
-                    AnimalStatusText: statusText,
-                    giveBirthDateLatest: "-",
-                    FarmName: data.AnimalFarm ? data.AnimalFarm.FarmName : "-",
-                    AnimalSex: data.AnimalSex
-                      ? data.AnimalSex.AnimalSexName
-                      : "-",
-                    AIID: null,
-                    //   giveBirthDateLatest: giveBirthDateLatest,
-                    TransferEmbryoID: null,
-                    PAR: null,
-                    TimeNo: null,
-                    AIDate: null,
-                    EmbryoDate: null,
-                    PregnancyStatus: null,
-                    PregnancyTimeNo: null,
-                    cart: false,
-                    Notification: data.notification,
-                  };
-
-                  return data1;
-
-                  // data คือตัวสัตว์
-                  //   let data1 = await data.EventLatest();
-                  //   // data1
-
-                  //   let cart = await Cart.findOne({
-                  //     where: {
-                  //       AnimalID: data.AnimalID,
-                  //       UserID: req.body.GetUserID,
-                  //     },
-                  //   });
-
-                  //   data1.cart = cart ? true : false;
-
-                  //   data1.Notification = await data.Notification();
-                  //   //   noti1 = ครบกำหนดคลอด,
-                  //   //   noti2 = ครบกำหนดตรวจท้อง,
-                  //   //   noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
-                  //   //   noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
-                  //   //   noti5 = อายุมากกว่ากําหนด
-                  //   //   noti6 = แจ้งเตือนกลับสัด
-                  //   //   noti7 = ผสมซ้ำเกิน 3 ครั้ง
-                  //   //   noti8 = เลยกำหนดคลอด
-                  //   //   noti9 = Thai Black
-                  //   //   noti10 = แดงสุราษฏร์
-
-                  //   if (data1.Notification.includes("ครบกำหนดคลอด")) {
-                  //     noti.noti1 += 1;
-                  //     noti.noti1Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   console.log(data1.Notification);
-                  //   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
-                  //     noti.noti2 += 1;
-                  //     noti.noti2Animal.push(data1.AnimalID);
-                  //     console.log(noti.noti2);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (
-                  //     data1.Notification.includes(
-                  //       "ครบกําหนดติดตามลูกเกิดหลังคลอด"
-                  //     )
-                  //   ) {
-                  //     noti.noti3 += 1;
-                  //     noti.noti3Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (
-                  //     data1.Notification.includes(
-                  //       "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
-                  //     )
-                  //   ) {
-                  //     noti.noti4 += 1;
-                  //     noti.noti4Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
-                  //     noti.noti6 += 1;
-                  //     noti.noti6Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
-                  //     noti.noti5 += 1;
-                  //     noti.noti5Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
-                  //     noti.noti7 += 1;
-                  //     noti.noti7Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (data1.Notification.includes("เลยกำหนดคลอด")) {
-                  //     noti.noti8 += 1;
-                  //     noti.noti8Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
-                  //     ) ||
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก Thaiblack รอบ 600 วัน"
-                  //     ) ||
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก Thaiblack รอบ 400 วัน"
-                  //     ) ||
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
-                  //     )
-                  //   ) {
-                  //     noti.noti9 += 1;
-                  //     noti.noti9Animal.push(data1.AnimalID);
-                  //     // noti7Animal
-                  //   }
-
-                  //   if (
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
-                  //     ) ||
-                  //     data1.Notification.includes(
-                  //       "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
-                  //     )
-                  //   ) {
-                  //     noti.noti10 += 1;
-                  //     noti.noti10Animal.push(data1.AnimalID);
-                  //     // noti10Animal
-                  //   }
-
-                  //   countAnimal.all = countAnimal.all + 1;
-                  //   countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
-                  //     ? countAnimal.child + 1
-                  //     : countAnimal.child;
-
-                  //   countAnimal.young = [2, 7, 12].includes(data.AnimalStatusID)
-                  //     ? countAnimal.young + 1
-                  //     : countAnimal.young;
-
-                  //   countAnimal.girl = [3, 8, 13].includes(data.AnimalStatusID)
-                  //     ? countAnimal.girl + 1
-                  //     : countAnimal.girl;
-
-                  //   countAnimal.father = [4, 9, 14].includes(data.AnimalStatusID)
-                  //     ? countAnimal.father + 1
-                  //     : countAnimal.father;
-
-                  //   countAnimal.mother = [5, 10, 15].includes(data.AnimalStatusID)
-                  //     ? countAnimal.mother + 1
-                  //     : countAnimal.mother;
-
-                  //   AnimalID = 1
-                  // const obj1 = await db.findByPk(data.AnimalID);
-                  // obj1.notification =
-                  // let updateALl
-
-                  // สร้างตาราง notification
-                  // noti1Animal
-
-                  // let animal
-
-                  //   return data1;
-                })
-              );
-              return data2;
-            };
-
-            let animal = await getWithPromiseAll();
-
-            console.log(noti);
-            // noti1 = ครบกำหนดคลอด,
-            // noti2 = ครบกำหนดตรวจท้อง,
-            // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
-            // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
-            // noti5 = อายุมากกว่ากําหนด
-            // noti6 = แจ้งเตือนกลับสัด
-            // noti7 = ผสมซ้ำเกิน 3 ครั้ง
-            // noti8 = เลยกำหนดคลอด
-            // noti9 = Thai Black
-            // noti10 = แดงสุราษฏร์
-
-            resolve({
-              total: count,
-              lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
-              rows: animal,
-              noti,
-              countAnimal,
-            });
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  },
-
   updateAnimalNotification(req) {
     const limit = 500000;
     let offset = 1;
@@ -4601,6 +3980,239 @@ const methods = {
             };
 
             let animal = await getWithPromiseAll();
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: animal,
+              noti,
+              countAnimal,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  findByFarmID1(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    // const limit = 500;
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch1(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
+          .then(async (result) => {
+            let rows = result[0],
+              count = rows.length;
+            //
+            let noti = {
+              noti1: 0,
+              noti1Animal: [],
+              noti2: 0,
+              noti2Animal: [],
+              noti3: 0,
+              noti3Animal: [],
+              noti4: 0,
+              noti4Animal: [],
+              noti5: 0,
+              noti5Animal: [],
+              noti6: 0,
+              noti6Animal: [],
+              noti7: 0,
+              noti7Animal: [],
+              noti8: 0,
+              noti8Animal: [],
+              noti9: 0,
+              noti9Animal: [],
+              noti10: 0,
+              noti10Animal: [],
+            };
+
+            let countAnimal = {
+              all: 0,
+              child: 0,
+              young: 0,
+              girl: 0,
+              father: 0,
+              mother: 0,
+            };
+
+            const getWithPromiseAll = async () => {
+              let data = await Promise.all(
+                rows.map(async (data) => {
+                  let projectArray = [];
+                  data.Projects.forEach((element) => {
+                    projectArray.push(element.ProjectName);
+                  });
+
+                  let data1 = data;
+                  if (data.Notifications != null && data.Notifications != "") {
+                    data1.Notification = data.Notifications.split(",");
+                  } else {
+                    data1.Notification = [];
+                  }
+
+                  // data คือตัวสัตว์
+                  //   let test = await data.Notification();
+                  //   let data1 = test.eventLatest;
+                  // data1
+
+                  let cart = await Cart.findOne({
+                    where: {
+                      AnimalID: data.AnimalID,
+                      UserID: req.body.GetUserID,
+                    },
+                  });
+
+                  data1.cart = cart ? true : false;
+
+                  //   data1.Notification = test.noti;
+                  // noti1 = ครบกำหนดคลอด,
+                  // noti2 = ครบกำหนดตรวจท้อง,
+                  // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+                  // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+                  // noti5 = อายุมากกว่ากําหนด
+                  // noti6 = แจ้งเตือนกลับสัด
+                  // noti7 = ผสมซ้ำเกิน 3 ครั้ง
+                  // noti8 = เลยกำหนดคลอด
+                  // noti9 = Thai Black
+                  // noti10 = แดงสุราษฏร์
+
+                  if (data1.Notification.includes("ครบกำหนดคลอด")) {
+                    noti.noti1 += 1;
+                    noti.noti1Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  console.log(data1.Notification);
+                  if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
+                    noti.noti2 += 1;
+                    noti.noti2Animal.push(data1.AnimalID);
+                    console.log(noti.noti2);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดติดตามลูกเกิดหลังคลอด"
+                    )
+                  ) {
+                    noti.noti3 += 1;
+                    noti.noti3Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"
+                    )
+                  ) {
+                    noti.noti4 += 1;
+                    noti.noti4Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("อายุมากกว่ากําหนด")) {
+                    noti.noti6 += 1;
+                    noti.noti6Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("แจ้งเตือนกลับสัด")) {
+                    noti.noti5 += 1;
+                    noti.noti5Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("ผสมซ้ำเกิน 3 ครั้ง")) {
+                    noti.noti7 += 1;
+                    noti.noti7Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (data1.Notification.includes("เลยกำหนดคลอด")) {
+                    noti.noti8 += 1;
+                    noti.noti8Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 800 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 600 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 400 วัน"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก Thaiblack รอบ 210 วัน"
+                    )
+                  ) {
+                    noti.noti9 += 1;
+                    noti.noti9Animal.push(data1.AnimalID);
+                    // noti7Animal
+                  }
+
+                  if (
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 1 ปี"
+                    ) ||
+                    data1.Notification.includes(
+                      "ครบกำหนดบันทึก แดงสุราษฏร์ รอบ 30 วัน"
+                    )
+                  ) {
+                    noti.noti10 += 1;
+                    noti.noti10Animal.push(data1.AnimalID);
+                    // noti10Animal
+                  }
+
+                  countAnimal.all = countAnimal.all + 1;
+                  countAnimal.child = [1, 6, 11].includes(data.AnimalStatusID)
+                    ? countAnimal.child + 1
+                    : countAnimal.child;
+
+                  countAnimal.young = [2, 7, 12].includes(data.AnimalStatusID)
+                    ? countAnimal.young + 1
+                    : countAnimal.young;
+
+                  countAnimal.girl = [3, 8, 13].includes(data.AnimalStatusID)
+                    ? countAnimal.girl + 1
+                    : countAnimal.girl;
+
+                  countAnimal.father = [4, 9, 14].includes(data.AnimalStatusID)
+                    ? countAnimal.father + 1
+                    : countAnimal.father;
+
+                  countAnimal.mother = [5, 10, 15].includes(data.AnimalStatusID)
+                    ? countAnimal.mother + 1
+                    : countAnimal.mother;
+
+                  return data1;
+                })
+              );
+
+              return data;
+            };
+
+            let animal = await getWithPromiseAll();
+            // noti1 = ครบกำหนดคลอด,
+            // noti2 = ครบกำหนดตรวจท้อง,
+            // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
+            // noti4 = ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด
+            // noti5 = อายุมากกว่ากําหนด
+            // noti6 = แจ้งเตือนกลับสัด
+            // noti7 = ผสมซ้ำเกิน 3 ครั้ง
+            // noti8 = เลยกำหนดคลอด
+            // noti9 = Thai Black
+            // noti10 = แดงสุราษฏร์
 
             resolve({
               total: count,

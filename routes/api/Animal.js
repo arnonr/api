@@ -51,6 +51,7 @@ router.get("/get-latest-number", controllers.onGetLatestNumber);
 router.get("/generate-breed", controllers.onGenerateBreed);
 
 router.get("/get-by-farm-id", controllers.onGetByFarmID);
+router.get("/get-by-farm-id-1", controllers.onGetByFarmID1);
 
 router.get("/update-animal-event", controllers.onUpdateAnimalEvent);
 

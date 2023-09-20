@@ -104,6 +104,18 @@ const methods = {
     }
   },
 
+  async onGetByFarmID1(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.GetUserID = decoded.id;
+      
+      let result = await Service.findByFarmID1(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onExportRegisteredAnimal(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
