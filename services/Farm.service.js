@@ -33,12 +33,19 @@ const methods = {
       };
 
     if (req.query.FarmAnimalType) {
+      if (req.query.FarmAnimalType == 98) {
+        $where["FarmAnimalType"] = {
+          [Op.is]: null,
+        };
+      } else if (req.query.FarmAnimalType == 99) {
+        $where["FarmAnimalType"] = {
+          [Op.not]: null,
+        };
+      } else {
         $where["FarmAnimalType"] = {
           [Op.like]: "%" + req.query.FarmAnimalType + "%",
         };
-    //   $where["FarmAnimalType"] = {
-    //     [Op.like]: "%1%",
-    //   };
+      }
     }
 
     if (req.query.FarmName)
