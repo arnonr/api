@@ -2245,6 +2245,7 @@ const methods = {
 
     // ProjectID
     let WhereProject = null;
+
     if (req.query.ProjectID) {
       WhereProject = {
         ProjectID: {
@@ -3820,14 +3821,14 @@ const methods = {
                   //   await data.EventLatest();
                   // data1
 
-                  let cart = await Cart.findOne({
-                    where: {
-                      AnimalID: data.AnimalID,
-                      UserID: req.body.GetUserID,
-                    },
-                  });
+                //   let cart = await Cart.findOne({
+                //     where: {
+                //       AnimalID: data.AnimalID,
+                //       UserID: req.body.GetUserID,
+                //     },
+                //   });
 
-                  data1.cart = cart ? true : false;
+                //   data1.cart = cart ? true : false;
 
                   data1.Notification = test.noti;
 
@@ -4063,14 +4064,14 @@ const methods = {
                   //   let data1 = test.eventLatest;
                   // data1
 
-                  let cart = await Cart.findOne({
-                    where: {
-                      AnimalID: data.AnimalID,
-                      UserID: req.body.GetUserID,
-                    },
-                  });
+                //   let cart = await Cart.findOne({
+                //     where: {
+                //       AnimalID: data.AnimalID,
+                //       UserID: req.body.GetUserID,
+                //     },
+                //   });
 
-                  data1.cart = cart ? true : false;
+                //   data1.cart = cart ? true : false;
 
                   //   data1.Notification = test.noti;
                   // noti1 = ครบกำหนดคลอด,
