@@ -32,6 +32,15 @@ const methods = {
         [Op.like]: "%" + req.query.FarmIdentificationNumber + "%",
       };
 
+    if (req.query.FarmAnimalType) {
+        $where["FarmAnimalType"] = {
+          [Op.like]: "%" + req.query.FarmAnimalType + "%",
+        };
+    //   $where["FarmAnimalType"] = {
+    //     [Op.like]: "%1%",
+    //   };
+    }
+
     if (req.query.FarmName)
       $where["FarmName"] = {
         [Op.like]: "%" + req.query.FarmName + "%",
@@ -249,7 +258,15 @@ const methods = {
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
 
-        data.createdAt = fn('GETDATE');
+        if (data.FarmAnimalType) {
+          if (!Array.isArray(data.FarmAnimalType)) {
+            reject(ErrorBadRequest("ชนิดสัตว์ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          data.FarmAnimalType = JSON.stringify(data.FarmAnimalType);
+        }
+
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         obj.FarmIdentificationNumber = obj.FarmIdentificationNumber.toString();
@@ -263,7 +280,7 @@ const methods = {
               FarmID: inserted.FarmID,
               ProjectID: ProjectID,
               CreatedUserID: data.CreatedUserID,
-              createdAt: fn('GETDATE')
+              createdAt: fn("GETDATE"),
             });
           });
         }
@@ -317,8 +334,16 @@ const methods = {
           var ProjectIDList = [...data.ProjectID];
           data.ProjectID = JSON.stringify(data.ProjectID);
         }
-        
-        data.updatedAt = fn('GETDATE');
+
+        if (data.FarmAnimalType) {
+          if (!Array.isArray(data.FarmAnimalType)) {
+            reject(ErrorBadRequest("ชนิดสัตว์ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          data.FarmAnimalType = JSON.stringify(data.FarmAnimalType);
+        }
+
+        data.updatedAt = fn("GETDATE");
 
         // data
         await db.update(data, { where: { FarmID: id } });
@@ -359,14 +384,13 @@ const methods = {
             });
 
             if (!searchFTPOne) {
-
-                var date1 = new Date();
+              var date1 = new Date();
 
               const obj1 = FarmToProject.create({
                 FarmID: obj.FarmID,
                 ProjectID: ProjectID,
                 CreatedUserID: data.UpdatedUserID,
-                createdAt: fn('GETDATE')
+                createdAt: fn("GETDATE"),
               });
             }
           });
@@ -421,9 +445,7 @@ const methods = {
           where: {
             FarmIdentificationNumber: {
               // LIKE: req.query.ProvinceID+req.query.AmphurID+req.query.TumbolID+'%'
-              [Op.like]:
-                req.query.TumbolID +
-                "%",
+              [Op.like]: req.query.TumbolID + "%",
             },
             // FarmAmphurID: req.query.AmphurID,
             // FarmTumbolID: req.query.TumbolID,

@@ -189,6 +189,11 @@ Farm.init(
       allowNull: false,
       comment: "รหัสสถานะฟาร์ม",
     },
+    FarmAnimalType: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "ชนิดสัตว์",
+    },
     FarmTelephoneNumber: {
       type: DataTypes.STRING(255),
       allowNull: true,
