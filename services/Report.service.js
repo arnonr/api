@@ -739,65 +739,188 @@ const methods = {
         let animalStatusID = null;
         if (
           req.query.AnimalTypeID.includes(1) ||
-          req.query.AnimalTypeID.includes(2)
+          req.query.AnimalTypeID.includes(2) ||
+          req.query.AnimalTypeID.includes(41) ||
+          req.query.AnimalTypeID.includes(42)
         ) {
           animalStatusID = 4;
         }
 
         if (
           req.query.AnimalTypeID.includes(3) ||
-          req.query.AnimalTypeID.includes(4)
+          req.query.AnimalTypeID.includes(4) ||
+          req.query.AnimalTypeID.includes(43) ||
+          req.query.AnimalTypeID.includes(44)
         ) {
           animalStatusID = 9;
         }
 
         if (
           req.query.AnimalTypeID.includes(17) ||
-          req.query.AnimalTypeID.includes(18)
+          req.query.AnimalTypeID.includes(18) ||
+          req.query.AnimalTypeID.includes(45) ||
+          req.query.AnimalTypeID.includes(46)
         ) {
           animalStatusID = 14;
         }
+
+        // const animal = await Animal.findAll({
+        //   attributes: {
+        //     include: [
+        //       [
+        //         literal(`(
+        //         SELECT Weight
+        //         FROM ProgressCheckup
+        //         WHERE
+        //           ProgressCheckup.AnimalID = Animal.AnimalID
+        //         ORDER BY ProgressCheckupID DESC
+        //         LIMIT 1
+        //     )`),
+        //         "Weight",
+        //       ],
+        //       [
+        //         literal(`(
+        //         SELECT Height
+        //         FROM ProgressCheckup
+        //         WHERE
+        //           ProgressCheckup.AnimalID = Animal.AnimalID
+        //         ORDER BY ProgressCheckupID DESC
+        //         LIMIT 1
+        //     )`),
+        //         "Height",
+        //       ],
+        //       [
+        //         literal(`(
+        //         SELECT SemenNumber
+        //         FROM Semen
+        //         WHERE
+        //           Semen.BreederID = Animal.AnimalID
+        //         ORDER BY SemenID DESC
+        //         LIMIT 1
+        //     )`),
+        //         "SemenNumber",
+        //       ],
+        //     ],
+        //   },
+        //   where: { AnimalStatusID: animalStatusID },
+        //   include: [
+        //     {
+        //       model: Farm,
+        //       as: "AnimalFarm",
+        //       ...query,
+        //     },
+        //     {
+        //       model: AnimalBreed,
+        //       as: "AnimalBreed1",
+        //     },
+        //     {
+        //       model: AnimalBreed,
+        //       as: "AnimalBreed2",
+        //     },
+        //     {
+        //       model: AnimalBreed,
+        //       as: "AnimalBreed3",
+        //     },
+        //     {
+        //       model: AnimalBreed,
+        //       as: "AnimalBreed4",
+        //     },
+        //     {
+        //       model: AnimalBreed,
+        //       as: "AnimalBreed5",
+        //     },
+        //     {
+        //       model: Animal,
+        //       as: "AnimalFather",
+        //     },
+        //     {
+        //       model: Animal,
+        //       as: "AnimalMother",
+        //     },
+        //     {
+        //       model: AnimalStatus,
+        //       as: "AnimalStatus",
+        //     },
+        //   ],
+        // });
 
         const animal = await Animal.findAll({
           attributes: {
             include: [
               [
+                // Note the wrapping parentheses in the call below!
                 literal(`(
-                SELECT Weight
-                FROM ProgressCheckup
-                WHERE
-                  ProgressCheckup.AnimalID = Animal.AnimalID
-                ORDER BY ProgressCheckupID DESC
-                LIMIT 1
-            )`),
+                            SELECT TOP (1) Weight
+                            FROM ProgressCheckup
+                            WHERE
+                                ProgressCheckup.AnimalID = Animal.AnimalID
+                            ORDER BY ProgressCheckupID DESC
+                        )`),
                 "Weight",
               ],
               [
                 literal(`(
-                SELECT Height
-                FROM ProgressCheckup
-                WHERE
-                  ProgressCheckup.AnimalID = Animal.AnimalID
-                ORDER BY ProgressCheckupID DESC
-                LIMIT 1
-            )`),
+                                SELECT TOP (1) Height
+                                FROM ProgressCheckup
+                                WHERE
+                                  ProgressCheckup.AnimalID = Animal.AnimalID
+                                ORDER BY ProgressCheckupID DESC
+                            )`),
                 "Height",
               ],
               [
                 literal(`(
-                SELECT SemenNumber
-                FROM Semen
-                WHERE
-                  Semen.BreederID = Animal.AnimalID
-                ORDER BY SemenID DESC
-                LIMIT 1
-            )`),
+                        SELECT TOP (1) SemenNumber
+                        FROM Semen
+                        WHERE
+                          Semen.BreederID = Animal.AnimalID
+                        ORDER BY SemenID DESC
+                    )`),
                 "SemenNumber",
               ],
             ],
           },
-          where: { AnimalStatusID: animalStatusID },
+          //   attributes: {
+          //     include: [
+          //       [
+          //         literal(`(
+          //         SELECT Weight
+          //         FROM ProgressCheckup
+          //         WHERE
+          //           ProgressCheckup.AnimalID = Animal.AnimalID
+          //         ORDER BY ProgressCheckupID DESC
+          //         LIMIT 1
+          //     )`),
+          //         "Weight",
+          //       ],
+          //       [
+          //         literal(`(
+          //         SELECT Height
+          //         FROM ProgressCheckup
+          //         WHERE
+          //           ProgressCheckup.AnimalID = Animal.AnimalID
+          //         ORDER BY ProgressCheckupID DESC
+          //         LIMIT 1
+          //     )`),
+          //         "Height",
+          //       ],
+          //     //   [
+          //     //     literal(`(
+          //     //     SELECT SemenNumber
+          //     //     FROM Semen
+          //     //     WHERE
+          //     //       Semen.BreederID = Animal.AnimalID
+          //     //     ORDER BY SemenID DESC
+          //     //     LIMIT 1
+          //     // )`),
+          //     //     "SemenNumber",
+          //     //   ],
+          //     ],
+          //   },
+          where: { AnimalStatusID: animalStatusID, isActive: 1 },
           include: [
+            // น้ำเชื้อ
+            // น้ำหนัก ส่วนสูง
             {
               model: Farm,
               as: "AnimalFarm",
@@ -955,6 +1078,7 @@ const methods = {
               model: Animal,
               as: "Animal",
               where: {
+                isActive: 1,
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
@@ -1009,6 +1133,7 @@ const methods = {
         });
 
         let res = [];
+
         ai.forEach((el) => {
           res.push({
             AnimalID: el.AnimalID,
@@ -2656,7 +2781,8 @@ const methods = {
                 }
 
                 if (a.hasOwnProperty("countGiveBirthAmount")) {
-                  a.countGiveBirthAmount = a.countGiveBirthAmount + f.countGiveBirthAmount;
+                  a.countGiveBirthAmount =
+                    a.countGiveBirthAmount + f.countGiveBirthAmount;
                 } else {
                   a.countGiveBirthAmount = f.countGiveBirthAmount;
                 }
