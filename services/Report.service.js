@@ -74,22 +74,31 @@ const methods = {
         let AnimalStatusID = [];
 
         if (AnimalTypeID.includes(1) || AnimalTypeID.includes(2)) {
-          AnimalStatusID = [5, 3, 1];
+          AnimalStatusID = [5, 3, 2, 1];
         } else if (AnimalTypeID.includes(3) || AnimalTypeID.includes(4)) {
-          AnimalStatusID = [10, 8, 6];
+          AnimalStatusID = [10, 8, 7, 6];
         } else if (AnimalTypeID.includes(17) || AnimalTypeID.includes(18)) {
-          AnimalStatusID = [15, 13, 11];
+          AnimalStatusID = [15, 13, 12, 11];
         } else {
         }
 
         let mom = 0;
         let young = 0;
+        let child2 = 0;
         let child = 0;
         let total = 0;
 
         let farms = await Farm.findAll({
           ...query,
+          FarmAnimalType: 1,
           include: { model: Province, as: "Province", queryProvince },
+        });
+
+        let animal = await Animal.findAll({
+          where: {
+            AnimalSexID: 2,
+            AnimalTypeID: { [Op.in]: AnimalTypeID },
+          },
         });
 
         farms = await Promise.all(
@@ -99,48 +108,50 @@ const methods = {
               FarmName: e.FarmName,
               mom: 0,
               young: 0,
+              child2: 0,
               child: 0,
               total: 0,
             };
 
             // แม่พันธุ์
-            let animalStatus1 = await Animal.findAll({
-              where: {
-                FarmID: e.FarmID,
-                AnimalStatusID: AnimalStatusID[0],
-                AnimalSexID: 2,
-                AnimalTypeID: { [Op.in]: AnimalTypeID },
-              },
+
+            let animalFarm = animal.filter((x) => {
+              return x.FarmID == e.FarmID;
             });
 
-            // สาว
-            let animalStatus2 = await Animal.findAll({
-              where: {
-                FarmID: e.FarmID,
-                AnimalStatusID: AnimalStatusID[1],
-                AnimalSexID: 2,
-                AnimalTypeID: { [Op.in]: AnimalTypeID },
-              },
-            });
+            let animalStatus1 = [];
+            let animalStatus2 = [];
+            let animalStatus3 = [];
+            let animalStatus4 = [];
 
-            // ลูกโค
-            let animalStatus3 = await Animal.findAll({
-              where: {
-                FarmID: e.FarmID,
-                AnimalStatusID: AnimalStatusID[2],
-                AnimalSexID: 2,
-                AnimalTypeID: { [Op.in]: AnimalTypeID },
-              },
-            });
+            if (animalFarm.length != 0) {
+              animalStatus1 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[0];
+              });
+
+              animalStatus2 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[1];
+              });
+
+              animalStatus3 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[2];
+              });
+
+              animalStatus4 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[3];
+              });
+            }
 
             f.mom = animalStatus1.length;
             f.young = animalStatus2.length;
-            f.child = animalStatus3.length;
+            f.child2 = animalStatus3.length;
+            f.child = animalStatus4.length;
 
-            f.total = f.mom + f.young + f.child;
+            f.total = f.mom + f.young + f.child2 + f.child;
 
             mom += f.mom;
             young += f.young;
+            child2 += f.child2;
             child += f.child;
             total += f.total;
 
@@ -151,6 +162,7 @@ const methods = {
         let data = {
           Mom: mom,
           Young: young,
+          Child2: child2,
           Child: child,
           Total: total,
           Farms: farms,
