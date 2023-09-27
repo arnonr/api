@@ -17,6 +17,7 @@ const AnimalSex = require("../models/AnimalSex");
 const AnimalType = require("../models/AnimalType");
 const ProductionStatus = require("../models/ProductionStatus");
 const AI = require("../models/AI");
+const AIZone = require("../models/AIZone");
 const Province = require("../models/Province");
 const Amphur = require("../models/Amphur");
 const Tumbol = require("../models/Tumbol");
@@ -26,6 +27,7 @@ const ProjectToAnimalType = require("../models/ProjectToAnimalType");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const GiveBirth = require("../models/GiveBirth");
+const AbortCheckup = require("../models/AbortCheckup");
 const AnimalBreed = require("../models/AnimalBreed");
 const ProgressCheckup = require("../models/ProgressCheckup");
 const TransferEmbryo = require("../models/TransferEmbryo");
@@ -398,7 +400,7 @@ const methods = {
           include: [
             { model: Semen },
             { model: GiveBirth },
-            { model: Staff},
+            { model: Staff },
             {
               model: PregnancyCheckup,
               include: {
@@ -467,6 +469,7 @@ const methods = {
       }
     });
   },
+
   report3(req) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -2465,6 +2468,259 @@ const methods = {
           preg4: pregTotal[3],
           Farm: res,
         });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  //   รายงายที่ 14 รายงานหน้าแรก
+  report14(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Search
+        let $where = {};
+
+        // ZoneID อ้างจากจังหวัด
+
+        if (req.query.ProvinceID)
+          $where["FarmProvinceID"] = req.query.ProvinceID;
+
+        if (req.query.AmphurID) $where["FarmAmphurID"] = req.query.AmphurID;
+
+        if (req.query.TumbolID) $where["FarmTumbolID"] = req.query.TumbolID;
+
+        $whereProvince = {};
+        if (req.query.ZoneID)
+          $whereProvince["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+        if (req.query.AIZoneID) $whereProvince["AIZoneID"] = req.query.AIZoneID;
+
+        if (req.query.OrganizationID)
+          $where["OrganizationID"] = req.query.OrganizationID;
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryProvince =
+          Object.keys($whereProvince).length > 0
+            ? { where: $whereProvince }
+            : {};
+
+        let AnimalTypeID = JSON.parse(req.query.AnimalTypeID);
+        let AnimalStatusID = [];
+
+        if (AnimalTypeID.includes(1) || AnimalTypeID.includes(2)) {
+          AnimalStatusID = [5, 3, 2, 1];
+        } else if (AnimalTypeID.includes(3) || AnimalTypeID.includes(4)) {
+          AnimalStatusID = [10, 8, 7, 6];
+        } else if (AnimalTypeID.includes(17) || AnimalTypeID.includes(18)) {
+          AnimalStatusID = [15, 13, 12, 11];
+        } else {
+        }
+
+        let mom = 0;
+        let young = 0;
+        let child2 = 0;
+        let child = 0;
+        let total = 0;
+
+        let AiZone = await AIZone.findAll({
+          where: { isActive: 1 },
+          raw: true,
+        });
+
+        let farms = await Farm.findAll({
+          ...query,
+          FarmAnimalType: 1,
+          include: { model: Province, as: "Province", queryProvince },
+          raw: true,
+        });
+
+        let animal = await Animal.findAll({
+          where: {
+            AnimalSexID: 2,
+            AnimalTypeID: { [Op.in]: AnimalTypeID },
+          },
+          raw: true,
+        });
+
+        let ai = await AI.findAll({
+          where: { isActive: 1 },
+        });
+
+        let transferEmbryo = await TransferEmbryo.findAll({
+          where: { isActive: 1 },
+        });
+
+        let pregnancyCheckup = await PregnancyCheckup.findAll({
+          where: { isActive: 1, PregnancyCheckStatusID: 1 },
+        });
+
+        let giveBirth = await GiveBirth.findAll({
+          where: { isActive: 1 },
+        });
+
+        let abort = await AbortCheckup.findAll({
+          where: { isActive: 1 },
+        });
+
+        farms = await Promise.all(
+          farms.map(async (e) => {
+            let f = {
+              FarmIdentificationNumber: e.FarmIdentificationNumber,
+              FarmName: e.FarmName,
+              mom: 0,
+              young: 0,
+              child2: 0,
+              child: 0,
+              total: 0,
+              countAI: 0,
+              countTransferEmbryo: 0,
+              countPregnancy: 0,
+              countGiveBirth: 0,
+              countAbort: 0,
+              countGiveBirthAmount: 0,
+            };
+
+            // แม่พันธุ์
+            let animalFarm = animal.filter((x) => {
+              return x.FarmID == e.FarmID;
+            });
+
+            animalFarm.map((x) => {
+              let aiCheck = ai.filter((e) => {
+                return x.AnimalID == e.AnimalID;
+              });
+
+              let transferEmbryoCheck = transferEmbryo.filter((e) => {
+                return x.AnimalID == e.AnimalID;
+              });
+
+              let pregnancyCheckupCheck = pregnancyCheckup.filter((e) => {
+                return x.AnimalID == e.AnimalID;
+              });
+
+              let giveBirthCheck = giveBirth.filter((e) => {
+                return x.AnimalID == e.AnimalID;
+              });
+
+              giveBirthCheck.forEach((e) => {
+                f.countGiveBirthAmount = e.Amount + f.countGiveBirthAmount;
+              });
+
+              let abortCheck = abort.filter((e) => {
+                return x.AnimalID == e.AnimalID;
+              });
+
+              f.countAI = f.countAI + aiCheck.length;
+              f.countTransferEmbryo =
+                f.countTransferEmbryo + transferEmbryoCheck.length;
+              f.countPregnancy =
+                f.countPregnancy + pregnancyCheckupCheck.length;
+              f.countGiveBirth = f.countGiveBirth + giveBirthCheck.length;
+              f.countGiveBirthAmount = f.countGiveBirthAmount;
+              f.countAbort = f.countAbort + abortCheck.length;
+            });
+
+            AiZone = AiZone.map((a) => {
+              if (e.AIZoneID == a.AIZoneID) {
+                if (a.hasOwnProperty("countFarm")) {
+                  a.countFarm = a.countFarm + 1;
+                } else {
+                  a.countFarm = 1;
+                }
+
+                if (a.hasOwnProperty("countAI")) {
+                  a.countAI = a.countAI + f.countAI;
+                } else {
+                  a.countAI = f.countAI;
+                }
+
+                if (a.hasOwnProperty("countTransferEmbryo")) {
+                  a.countTransferEmbryo =
+                    a.countTransferEmbryo + f.countTransferEmbryo;
+                } else {
+                  a.countTransferEmbryo = f.countTransferEmbryo;
+                }
+
+                if (a.hasOwnProperty("countPregnancy")) {
+                  a.countPregnancy = a.countPregnancy + f.countPregnancy;
+                } else {
+                  a.countPregnancy = f.countPregnancy;
+                }
+
+                if (a.hasOwnProperty("countGiveBirth")) {
+                  a.countGiveBirth = a.countGiveBirth + f.countGiveBirth;
+                } else {
+                  a.countGiveBirth = f.countGiveBirth;
+                }
+
+                if (a.hasOwnProperty("countGiveBirthAmount")) {
+                  a.countGiveBirthAmount = a.countGiveBirthAmount + f.countGiveBirthAmount;
+                } else {
+                  a.countGiveBirthAmount = f.countGiveBirthAmount;
+                }
+
+                if (a.hasOwnProperty("countAbort")) {
+                  a.countAbort = a.countAbort + f.countAbort;
+                } else {
+                  a.countAbort = f.countAbort;
+                }
+              }
+              return a;
+            });
+
+            let animalStatus1 = [];
+            let animalStatus2 = [];
+            let animalStatus3 = [];
+            let animalStatus4 = [];
+
+            if (animalFarm.length != 0) {
+              animalStatus1 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[0];
+              });
+
+              animalStatus2 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[1];
+              });
+
+              animalStatus3 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[2];
+              });
+
+              animalStatus4 = animalFarm.filter((x) => {
+                return x.AnimalStatusID == AnimalStatusID[3];
+              });
+            }
+
+            f.mom = animalStatus1.length;
+            f.young = animalStatus2.length;
+            f.child2 = animalStatus3.length;
+            f.child = animalStatus4.length;
+
+            f.total = f.mom + f.young + f.child2 + f.child;
+
+            mom += f.mom;
+            young += f.young;
+            child2 += f.child2;
+            child += f.child;
+            total += f.total;
+
+            return f;
+          })
+        );
+
+        let data = {
+          Mom: mom,
+          Young: young,
+          Child2: child2,
+          Child: child,
+          Total: total,
+          Farms: farms,
+          FarmCount: farms.length,
+          AiZone: AiZone,
+        };
+        resolve(data);
       } catch (error) {
         reject(ErrorNotFound(error));
       }
