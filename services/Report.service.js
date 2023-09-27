@@ -345,25 +345,13 @@ const methods = {
         // Search
         // ZoneID อ้างจากจังหวัด
         let $where = {};
-        if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+        // if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+        if (req.query.AnimalEarID)
+          $where["AnimalEarID"] = req.query.AnimalEarID;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
-        query["include"] = [
-          { all: true, required: false },
-          // {
-          //   model: AnimalStatus,
-          //   as: "AnimalStatus"
-          // },
-          // {
-          //   model: ProductionStatus,
-          //   as: "ProductionStatus"
-          // },
-          // {
-          //   model: Farm,
-          //   as: "AnimalFarm"
-          // },
-        ];
+        query["include"] = [{ all: true, required: false }];
 
         let animal = await Animal.findOne({
           ...query,
@@ -380,7 +368,6 @@ const methods = {
         };
 
         if (animal.AnimalFatherID) {
-          console.log(animal.AnimalFatherID);
           animalFather = await Animal.findOne({
             where: { AnimalID: animal.AnimalFatherID },
             include: {
@@ -406,10 +393,24 @@ const methods = {
         }
 
         //
-        let ai = await AI.findAll({ AnimalID: animal.AnimalID });
+        let ai = await AI.findAll({
+          where: { AnimalID: animal.AnimalID },
+          include: [
+            { model: Semen },
+            { model: GiveBirth },
+            { model: Staff},
+            {
+              model: PregnancyCheckup,
+              include: {
+                model: PregnancyCheckStatus,
+              },
+            },
+          ],
+        });
 
         let AIrows = ai.map((data) => {
           let dataJson = data.toJSON();
+          console.log(dataJson.PregnancyCheckups[0]);
           data = {
             PAR: dataJson.PAR,
             TimeNo: dataJson.TimeNo,
@@ -1853,7 +1854,6 @@ const methods = {
             }
           } else {
             let aiItem = sortAI(el);
-            console.log(aiItem);
             if (!_.isEmpty(aiItem)) {
               res.push({
                 FarmID: el.Animal.FarmID,
@@ -2698,7 +2698,6 @@ const methods = {
 
           // el.AnimalNationalID = AnimalNationalID;
           el.AnimalIdentificationID = AnimalIdentificationID;
-          // console.log(el.AnimalNationalID);
           await el.save();
         }
 
