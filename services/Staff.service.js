@@ -288,12 +288,27 @@ const methods = {
       $where["StaffPositionTypeID"] = req.query.StaffPositionTypeID;
     if (req.query.StaffPositionID)
       $where["StaffPositionID"] = req.query.StaffPositionID;
-    if (req.query.StaffTumbolID)
-      $where["StaffTumbolID"] = req.query.StaffTumbolID;
-    if (req.query.StaffAmphurID)
-      $where["StaffAmphurID"] = req.query.StaffAmphurID;
-    if (req.query.StaffProvinceID)
-      $where["StaffProvinceID"] = req.query.StaffProvinceID;
+
+    //   ที่ตั้งของหน่วยงาน
+    let $whereOrganization = [];
+    if (req.query.StaffProvinceID) {
+      $whereOrganization = {
+        OrganizationProvinceID: req.query.StaffProvinceID,
+      };
+    }
+
+    if (req.query.StaffAmphurID) {
+      $whereOrganization = {
+        OrganizationAmphurID: req.query.StaffAmphurID,
+      };
+    }
+
+    if (req.query.StaffTumbolID) {
+      //   $where["StaffTumbolID"] = req.query.StaffTumbolID;
+      $whereOrganization = {
+        OrganizationTumbolID: req.query.StaffTumbolID,
+      };
+    }
 
     if (req.query.StaffEmail)
       $where["StaffEmail"] = {
@@ -388,7 +403,8 @@ const methods = {
       {
         association: "Organization",
         attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
-        required: false,
+        where: $whereOrganization,
+        required: true,
       },
     ];
 
@@ -408,6 +424,7 @@ const methods = {
     }
 
     query["include"] = include;
+
     return { query: query };
   },
 
@@ -426,6 +443,7 @@ const methods = {
           .then((result) => {
             let rows = result[0],
               count = rows.length;
+            console.log(count);
 
             // let rows1 = rows.map((data) => {
             //   data = {
@@ -567,8 +585,6 @@ const methods = {
         data.StaffID = parseInt(id);
 
         data.updatedAt = fn("GETDATE");
-
-     
 
         await db.update(data, {
           where: { StaffID: id },
