@@ -151,8 +151,8 @@ const methods = {
 
   async onUpdateAnimalNotification(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.GetUserID = decoded.id;
+    //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+    //   req.body.GetUserID = decoded.id;
       
       let result = await Service.updateAnimalNotification(req);
       res.success(result);
