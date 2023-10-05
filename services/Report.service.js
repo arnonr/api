@@ -2526,7 +2526,7 @@ const methods = {
         let aiTotal = ai.length;
         let pregTotal = [0, 0, 0, 0];
 
-        const sortAI = (el) => {
+        const sortAI = ai.map((el) => {
           let pregnancyCheckup = "-";
           if (el.PregnancyCheckups.length != 0) {
             let pc = el.PregnancyCheckups[el.PregnancyCheckups.length - 1];
@@ -2561,7 +2561,9 @@ const methods = {
           };
 
           return resSort;
-        };
+        });
+
+        console.log(sortAI)
 
         // ai.forEach((el) => {
         //   let latestArr = res[res.length - 1];
@@ -2595,6 +2597,7 @@ const methods = {
           preg2: pregTotal[1],
           preg3: pregTotal[2],
           preg4: pregTotal[3],
+          sd:'dsadasd',
           //   Farm: res,
           ai: sortAI,
         });

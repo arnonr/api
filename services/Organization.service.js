@@ -1,6 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Organization"),
+  Province = require("../models/Province"),
   { Op, fn } = require("sequelize");
 
 const Sequelize = require("sequelize"),
@@ -66,14 +67,47 @@ const methods = {
     if (req.query.OrganizationTypeID)
       $where["OrganizationTypeID"] = req.query.OrganizationTypeID;
 
-    if (req.query.OrganizationZoneID)
-      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+    // if (req.query.OrganizationZoneID)
+    //   $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
 
-    if (req.query.ProvinceID) $where["ProvinceID"] = req.query.ProvinceID;
+    if (req.query.OrganizationAiZoneID) {
+      let province = await Province.findAll({
+        where: {
+          AIZoneID: req.query.OrganizationAiZoneID,
+        },
+      });
 
-    if (req.query.AmphurID) $where["AmphurID"] = req.query.AmphurID;
+      let province_id_arr = province.map((x) => {
+        return x.ProvinceID;
+      });
 
-    if (req.query.TumbolID) $where["TumbolID"] = req.query.TumbolID;
+      $where["OrganizationProvinceID"] = {
+        [Op.in]: province_id_arr,
+      };
+    }
+
+    if (req.query.OrganizationZoneID) {
+      let province = await Province.findAll({
+        where: {
+          OrganizationZoneID: req.query.OrganizationZoneID,
+        },
+      });
+
+      let province_id_arr = province.map((x) => {
+        return x.ProvinceID;
+      });
+
+      $where["OrganizationProvinceID"] = {
+        [Op.in]: province_id_arr,
+      };
+    }
+
+    if (req.query.ProvinceID)
+      $where["OrganizationProvinceID"] = req.query.ProvinceID;
+
+    if (req.query.AmphurID) $where["OrganizationAmphurID"] = req.query.AmphurID;
+
+    if (req.query.TumbolID) $where["OrganizationTumbolID"] = req.query.TumbolID;
 
     if (req.query.OrganizationZipCode)
       $where["OrganizationZipCode"] = req.query.OrganizationZipCode;

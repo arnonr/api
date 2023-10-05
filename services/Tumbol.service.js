@@ -24,7 +24,7 @@ const methods = {
       };
 
     if (req.query.ProvinceID) $where["ProvinceID"] = req.query.ProvinceID;
-    if (req.query.AmphurID) $where["ProvinceID"] = req.query.AmphurID;
+    if (req.query.AmphurID) $where["AmphurID"] = req.query.AmphurID;
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
