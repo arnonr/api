@@ -2418,11 +2418,26 @@ const methods = {
           $whereFarm["OrganizationID"] = req.query.OrganizationID;
         }
 
-        if (req.query.ProjectID) {
-          $whereAI["ProjectID"] = req.query.ProjectID;
+        if (req.query.AIStartDate) {
+          $whereAI["AIDate"] = {
+            [Op.between]: [req.query.AIStartDate, req.query.AIEndDate],
+          };
+        }
+
+        let WhereProject = null;
+
+        if (req.query.Projects) {
+          if (req.query.Projects != "[]") {
+            WhereProject = {
+              ProjectID: {
+                [Op.in]: JSON.parse(req.query.Projects),
+              },
+            };
+          }
         }
 
         let provinceIDArr = [];
+
         if (!req.query.ProvinceID) {
           if (req.query.OrganizationZoneID) {
             const province = await Province.findAll({
@@ -2506,6 +2521,10 @@ const methods = {
                     { model: Province, as: "Province" },
                   ],
                 },
+                {
+                  model: Project,
+                  where: WhereProject,
+                },
               ],
             },
             {
@@ -2563,7 +2582,7 @@ const methods = {
           return resSort;
         });
 
-        console.log(sortAI)
+        console.log(sortAI);
 
         // ai.forEach((el) => {
         //   let latestArr = res[res.length - 1];
@@ -2597,7 +2616,7 @@ const methods = {
           preg2: pregTotal[1],
           preg3: pregTotal[2],
           preg4: pregTotal[3],
-          sd:'dsadasd',
+          sd: "dsadasd",
           //   Farm: res,
           ai: sortAI,
         });
