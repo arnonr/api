@@ -1955,43 +1955,45 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-      {
-        // association: "Project",
-        model: Project,
-        where: WhereProject,
-        // attributes: ["EducationID", "EducationName"],
-      },
-      {
-        association: "AnimalFarm",
-        // model: Farm,
-        // as: "AnimalFarm",
-        where: WhereAnimalFarm,
-        required: req.query.FarmName ? true : true,
-        include: [
-          {
-            // model: Farmer,
-            // as: "Farmer",
-            association: "Farmer",
-            required: req.query.FarmerName ? true : false,
-            where: WhereFarmer,
-          },
-          {
-            association: "AIZone",
-            required: req.query.AIZoneID ? true : false,
-            where: WhereAIZone,
-            // attributes: ["EducationID", "EducationName"],
-          },
-        ],
+    if (!req.query.includeAll) {
+      query["include"] = [
+        { all: true, required: false },
+        {
+          // association: "Project",
+          model: Project,
+          where: WhereProject,
+          // attributes: ["EducationID", "EducationName"],
+        },
+        {
+          association: "AnimalFarm",
+          // model: Farm,
+          // as: "AnimalFarm",
+          where: WhereAnimalFarm,
+          required: req.query.FarmName ? true : true,
+          include: [
+            {
+              // model: Farmer,
+              // as: "Farmer",
+              association: "Farmer",
+              required: req.query.FarmerName ? true : false,
+              where: WhereFarmer,
+            },
+            {
+              association: "AIZone",
+              required: req.query.AIZoneID ? true : false,
+              where: WhereAIZone,
+              // attributes: ["EducationID", "EducationName"],
+            },
+          ],
 
-        // {
-        //   model: AIZone,
-        //   where: WhereAIZone,
-        //   // attributes: ["EducationID", "EducationName"],
-        // },
-      },
-    ];
+          // {
+          //   model: AIZone,
+          //   where: WhereAIZone,
+          //   // attributes: ["EducationID", "EducationName"],
+          // },
+        },
+      ];
+    }
 
     return { query: query };
   },
@@ -2010,41 +2012,43 @@ const methods = {
             let rows = result[0],
               count = rows.length;
 
-            if (!req.query.noEventLatest) {
-              rows = await Promise.all(
-                rows.map(async (data) => {
-                  let projectArray = [];
-                  data.Projects.forEach((element) => {
-                    projectArray.push(element.ProjectName);
-                  });
+            if (!req.query.includeAll) {
+              if (!req.query.noEventLatest) {
+                rows = await Promise.all(
+                  rows.map(async (data) => {
+                    let projectArray = [];
+                    data.Projects.forEach((element) => {
+                      projectArray.push(element.ProjectName);
+                    });
 
-                  if (data.GiveBirthSelfID != null) {
-                    data.GiveBirthSelf = GiveBirth.findByPk(
-                      data.GiveBirthSelfID
-                    );
-                  }
+                    if (data.GiveBirthSelfID != null) {
+                      data.GiveBirthSelf = GiveBirth.findByPk(
+                        data.GiveBirthSelfID
+                      );
+                    }
 
-                  // รหัสใบหู, ชื่อ
+                    // รหัสใบหู, ชื่อ
 
-                  let res = {
-                    ...data.toJSON(),
-                    Projects: projectArray,
-                    ProjectID: data.toJSON().ProjectID,
-                    // EventLatest: data.EventLatest(),
-                  };
+                    let res = {
+                      ...data.toJSON(),
+                      Projects: projectArray,
+                      ProjectID: data.toJSON().ProjectID,
+                      // EventLatest: data.EventLatest(),
+                    };
 
-                  if (req.query.includeEventLatest) {
-                    if (req.query.includeEventLatest == "false") {
+                    if (req.query.includeEventLatest) {
+                      if (req.query.includeEventLatest == "false") {
+                      } else {
+                        res.EventLatest = await data.EventLatest();
+                      }
                     } else {
                       res.EventLatest = await data.EventLatest();
                     }
-                  } else {
-                    res.EventLatest = await data.EventLatest();
-                  }
 
-                  return res;
-                })
-              );
+                    return res;
+                  })
+                );
+              }
             }
 
             resolve({

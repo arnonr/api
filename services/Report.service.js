@@ -351,6 +351,9 @@ const methods = {
         if (req.query.AnimalEarID)
           $where["AnimalEarID"] = req.query.AnimalEarID;
 
+        if (req.query.AnimalID)
+          $where["AnimalID"] = req.query.AnimalID;
+
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         query["include"] = [{ all: true, required: false }];
