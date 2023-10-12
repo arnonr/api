@@ -3115,7 +3115,7 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      { all: true, required: false },
+    //   { all: true, required: false },
       {
         model: Project,
         where: WhereProject,
@@ -3126,6 +3126,18 @@ const methods = {
         as: "AnimalFarm",
       },
     ];
+
+    // query["include"] = [
+    //   {
+    //     model: Project,
+    //     where: WhereProject,
+    //   },
+    //   {
+    //     model: Farm,
+    //     where: WhereFarm,
+    //     as: "AnimalFarm",
+    //   },
+    // ];
 
     return { query: query };
   },
@@ -3189,7 +3201,6 @@ const methods = {
 
   findByFarmID(req) {
     const limit = +(req.query.size || config.pageLimit);
-    // const limit = 500;
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch1(req, limit, offset);
     return new Promise(async (resolve, reject) => {
@@ -4274,6 +4285,7 @@ const methods = {
               return data;
             };
 
+            // let animal = [];
             let animal = await getWithPromiseAll();
             // noti1 = ครบกำหนดคลอด,
             // noti2 = ครบกำหนดตรวจท้อง,

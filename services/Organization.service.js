@@ -71,13 +71,15 @@ const methods = {
     //   $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
 
     if (req.query.OrganizationAiZoneID) {
-      let province = await Province.findAll({
+
+
+      let province1 = await Province.findAll({
         where: {
           AIZoneID: req.query.OrganizationAiZoneID,
         },
       });
 
-      let province_id_arr = province.map((x) => {
+      let province_id_arr = province1.map((x) => {
         return x.ProvinceID;
       });
 
