@@ -100,11 +100,13 @@ const methods = {
     let WhereProject = null;
 
     if (req.query.ProjectID) {
-      WhereProject = {
-        ProjectID: {
-          [Op.in]: JSON.parse(req.query.ProjectID),
-        },
-      };
+      if (JSON.parse(req.query.ProjectID).length != 0) {
+        WhereProject = {
+          ProjectID: {
+            [Op.in]: JSON.parse(req.query.ProjectID),
+          },
+        };
+      }
     }
 
     let WhereFullName = null;
