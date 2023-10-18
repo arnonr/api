@@ -1836,10 +1836,13 @@ const methods = {
 
     if (req.query.AnimalFirstBreed)
       $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
+
     if (req.query.AnimalFatherID)
       $where["AnimalFatherID"] = req.query.AnimalFatherID;
     if (req.query.AnimalMotherID)
       $where["AnimalMotherID"] = req.query.AnimalMotherID;
+
+
 
     if (req.query.AnimalBornType)
       $where["AnimalBornType"] = req.query.AnimalBornType;
