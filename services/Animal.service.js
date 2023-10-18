@@ -1786,6 +1786,12 @@ const methods = {
       };
     }
 
+    // if (req.query.AIZoneID) {
+    //   WhereAnimalFarm = {
+    //     AIZoneID: 1
+    //   };
+    // }
+
     // if (req.query.FarmName) {
     //   $where["$AnimalFarm.FarmName$"] = {
     //     [Op.like]: "%" + req.query.FarmName + "%",
@@ -1925,9 +1931,7 @@ const methods = {
     let WhereAIZone = null;
     if (req.query.AIZoneID) {
       WhereAIZone = {
-        AIZoneID: {
-          [Op.in]: JSON.parse(req.query.AIZoneID),
-        },
+        AIZoneID: req.query.AIZoneID,
       };
     }
 
@@ -1959,10 +1963,8 @@ const methods = {
       query["include"] = [
         { all: true, required: false },
         {
-          // association: "Project",
           model: Project,
           where: WhereProject,
-          // attributes: ["EducationID", "EducationName"],
         },
         {
           association: "AnimalFarm",
@@ -1982,6 +1984,9 @@ const methods = {
               association: "AIZone",
               required: req.query.AIZoneID ? true : false,
               where: WhereAIZone,
+
+              // if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+              //   where: WhereAIZone,
               // attributes: ["EducationID", "EducationName"],
             },
           ],
@@ -3089,7 +3094,6 @@ const methods = {
     }
 
     // FarmAIZoneID
-
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
@@ -3115,7 +3119,7 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-    //   { all: true, required: false },
+      //   { all: true, required: false },
       {
         model: Project,
         where: WhereProject,
