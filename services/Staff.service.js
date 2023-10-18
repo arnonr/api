@@ -816,6 +816,14 @@ const methods = {
                     staffEdit.StaffPositionID = position.PositionID;
                   }
 
+                  let dep = await Organization.findOne({
+                    where: { OrganizationCode: items[0].staffOrgId },
+                  });
+                  if (dep) {
+                    staffEdit.StaffOrganizationID = dep.OrganizationID;
+                  }
+
+                  
                   await staffEdit.save();
 
                   let res1 = await this.findById(staffNew.StaffID);
