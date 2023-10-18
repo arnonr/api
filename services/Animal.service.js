@@ -7,6 +7,8 @@ const { count } = require("../models/Animal");
 const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
 const Farm = require("../models/Farm");
+const AnimalBreed = require("../models/AnimalBreed");
+const AnimalStatus = require("../models/AnimalStatus");
 const AnimalType = require("../models/AnimalType");
 const AnimalSex = require("../models/AnimalSex");
 const AnimalGroupType = require("../models/AnimalGroupType");
@@ -2972,7 +2974,7 @@ const methods = {
   scopeSearch1(req, limit, offset) {
     // Where
     let $where = {};
-    
+
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
     if (req.query.AnimalIDArray) {
@@ -3119,7 +3121,7 @@ const methods = {
     if (!isNaN(offset)) query["offset"] = offset;
 
     query["include"] = [
-      //   { all: true, required: false },
+      // { all: true, required: false },
       {
         model: Project,
         where: WhereProject,
@@ -3130,6 +3132,35 @@ const methods = {
         as: "AnimalFarm",
       },
     ];
+
+    if (req.query.includeAnimalBreed) {
+      query["include"].push(
+        {
+          model: AnimalBreed,
+          as: "AnimalBreed1",
+        },
+        {
+          model: AnimalBreed,
+          as: "AnimalBreed2",
+        },
+        {
+          model: AnimalBreed,
+          as: "AnimalBreed3",
+        },
+        {
+          model: AnimalBreed,
+          as: "AnimalBreed4",
+        },
+        {
+          model: AnimalBreed,
+          as: "AnimalBreed5",
+        },
+        {
+          model: AnimalStatus,
+          as: "AnimalStatus",
+        }
+      );
+    }
 
     // query["include"] = [
     //   {
@@ -3286,11 +3317,9 @@ const methods = {
                     // noti7Animal
                   }
 
-                  console.log(data1.Notification);
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2);
                     // noti7Animal
                   }
 
@@ -3400,7 +3429,6 @@ const methods = {
 
             let animal = await getWithPromiseAll();
 
-            console.log(noti);
             // noti1 = ครบกำหนดคลอด,
             // noti2 = ครบกำหนดตรวจท้อง,
             // noti3 = ครบกำหนดติดตาทลูกเกิดหลังคลอด
@@ -3436,8 +3464,6 @@ const methods = {
         let animal = await db.findByPk(req.params.id, {
           include: [{ all: true }, { model: Farm, as: "AnimalFarm" }],
         });
-
-        console.log(animal);
 
         let ai = await AI.findAll({
           where: { AnimalID: req.params.id, isRemove: 0 },
@@ -3871,7 +3897,6 @@ const methods = {
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2);
                     // noti7Animal
                   }
 
@@ -4108,7 +4133,6 @@ const methods = {
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2);
                     // noti7Animal
                   }
 
@@ -4413,11 +4437,9 @@ const methods = {
                     // noti7Animal
                   }
 
-                  console.log(data1.Notification);
                   if (data1.Notification.includes("ครบกําหนดตรวจท้อง")) {
                     noti.noti2 += 1;
                     noti.noti2Animal.push(data1.AnimalID);
-                    console.log(noti.noti2);
                     // noti7Animal
                   }
 

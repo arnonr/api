@@ -427,6 +427,8 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
+    console.log(animalJson.AnimalBreedAll+"FREDOM20")
+
     let statusText = this.AnimalStatus
       ? this.AnimalStatus.AnimalStatusName
       : null;
@@ -1130,7 +1132,6 @@ Animal.init(
     //     return animalBreed.trim();
     //   },
     // },
-    // AnimalBreedAllWithPercent:
     AnimalBreedAll: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -1210,6 +1211,8 @@ Animal.init(
             this.AnimalBreedPercent5 +
             "%, ";
         }
+
+
 
         return animalBreed.trim();
       },
