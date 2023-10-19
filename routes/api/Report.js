@@ -116,4 +116,9 @@ router.get(
   controllers.onGetReport14
 );
 
+router.get(
+  "/report15",
+  controllers.onGetReport15
+);
+
 module.exports = router;
