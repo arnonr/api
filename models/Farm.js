@@ -98,21 +98,21 @@ Farm.init(
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "ชื่อฟาร์ม",
-      validate: {
-        isUnique: function (value, next) {
-          let self = this;
-          Farm.findOne({ where: { FarmName: value, isRemove: 0 } })
-            .then(function (data) {
-              if (data && self.FarmID !== data.FarmID) {
-                throw new Error("Farm Name already in use!");
-              }
-              return next();
-            })
-            .catch(function (err) {
-              return next(err);
-            });
-        },
-      },
+    //   validate: {
+    //     isUnique: function (value, next) {
+    //       let self = this;
+    //       Farm.findOne({ where: { FarmName: value, isRemove: 0 } })
+    //         .then(function (data) {
+    //           if (data && self.FarmID !== data.FarmID) {
+    //             throw new Error("Farm Name already in use!");
+    //           }
+    //           return next();
+    //         })
+    //         .catch(function (err) {
+    //           return next(err);
+    //         });
+    //     },
+    //   },
     },
     FarmAddress: {
       type: DataTypes.STRING(500),
