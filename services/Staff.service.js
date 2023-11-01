@@ -590,17 +590,17 @@ const methods = {
 
     //   ที่ตั้งของหน่วยงาน
     let $whereOrganization = [];
-    // if (req.query.StaffProvinceID) {
-    //   $whereOrganization["OrganizationProvinceID"] = req.query.StaffProvinceID;
-    // }
+    if (req.query.StaffProvinceID) {
+      $whereOrganization["OrganizationProvinceID"] = req.query.StaffProvinceID;
+    }
 
-    // if (req.query.StaffAmphurID) {
-    //   $whereOrganization[" OrganizationAmphurID"] = req.query.StaffAmphurID;
-    // }
+    if (req.query.StaffAmphurID) {
+      $whereOrganization[" OrganizationAmphurID"] = req.query.StaffAmphurID;
+    }
 
-    // if (req.query.StaffTumbolID) {
-    //   $whereOrganization[" OrganizationTumbolID"] = req.query.StaffTumbolID;
-    // }
+    if (req.query.StaffTumbolID) {
+      $whereOrganization[" OrganizationTumbolID"] = req.query.StaffTumbolID;
+    }
 
     if (req.query.StaffEmail)
       $where["StaffEmail"] = {
