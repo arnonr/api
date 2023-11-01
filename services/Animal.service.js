@@ -1842,8 +1842,6 @@ const methods = {
     if (req.query.AnimalMotherID)
       $where["AnimalMotherID"] = req.query.AnimalMotherID;
 
-
-
     if (req.query.AnimalBornType)
       $where["AnimalBornType"] = req.query.AnimalBornType;
     if (req.query.AnimalBornTypeID)
@@ -3808,7 +3806,7 @@ const methods = {
   },
 
   //
-  updateAnimalStatus(req) {
+  updateAnimalStatusOld(req) {
     const limit = 500000;
     let offset = 1;
     const _q = methods.scopeSearch1(req, limit, offset);
@@ -4269,6 +4267,293 @@ const methods = {
               rows: animal,
               noti,
               countAnimal,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  updateAnimalStatus(req) {
+    const limit = 500000;
+    let offset = 1;
+    const _q = methods.scopeSearch1(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([await db.findAll(_q.query), db.count(_q.query)])
+          .then(async (result) => {
+            let rows = result[0],
+              count = rows.length;
+
+            const getWithPromiseAll = async () => {
+              //
+
+              for (let i = 0; i < rows.length; i++) {
+                let status = null;
+                if (
+                  rows[i].AnimalTypeID == 1 ||
+                  rows[i].AnimalTypeID == 2 ||
+                  rows[i].AnimalTypeID == 41 ||
+                  rows[i].AnimalTypeID == 42
+                ) {
+                  let count_day = dayjs().diff(
+                    dayjs(rows[i].AnimalBirthDate),
+                    "day"
+                  );
+                  if (count_day < 120) {
+                    status = 1;
+                  } else if (count_day < 360) {
+                    status = 2;
+                  } else if (count_day < 720) {
+                    status = 3;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 17;
+                    } else {
+                      if (rows[i].AnimalPar != 0) {
+                        status = 5;
+                      }
+                    }
+                  } else {
+                    status = 5;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 4;
+                    } else {
+                      if (rows[i].AnimalPar == 0) {
+                        status = 3;
+                      }
+                    }
+                  }
+                }
+
+                if (
+                  rows[i].AnimalTypeID == 3 ||
+                  rows[i].AnimalTypeID == 4 ||
+                  rows[i].AnimalTypeID == 43 ||
+                  rows[i].AnimalTypeID == 44
+                ) {
+                  let count_day = dayjs().diff(
+                    dayjs(rows[i].AnimalBirthDate),
+                    "day"
+                  );
+                  if (count_day < 120) {
+                    status = 6;
+                  } else if (count_day < 360) {
+                    status = 7;
+                  } else if (count_day < 720) {
+                    status = 8;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 18;
+                    } else {
+                      if (rows[i].AnimalPar != 0) {
+                        status = 10;
+                      }
+                    }
+                  } else {
+                    status = 10;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 9;
+                    } else {
+                      if (rows[i].AnimalPar == 0) {
+                        status = 8;
+                      }
+                    }
+                  }
+                }
+
+                if (
+                  rows[i].AnimalTypeID == 17 ||
+                  rows[i].AnimalTypeID == 18 ||
+                  rows[i].AnimalTypeID == 45 ||
+                  rows[i].AnimalTypeID == 46
+                ) {
+                  let count_day = dayjs().diff(
+                    dayjs(rows[i].AnimalBirthDate),
+                    "day"
+                  );
+                  if (count_day < 120) {
+                    status = 11;
+                  } else if (count_day < 360) {
+                    status = 12;
+                  } else if (count_day < 720) {
+                    status = 13;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 19;
+                    } else {
+                      if (rows[i].AnimalPar != 0) {
+                        status = 15;
+                      }
+                    }
+                  } else {
+                    status = 15;
+                    if (rows[i].AnimalSexID == 1) {
+                      status = 14;
+                    } else {
+                      if (rows[i].AnimalPar == 0) {
+                        status = 13;
+                      }
+                    }
+                  }
+                }
+
+                // if (rows[i].AnimalID == 14624) {
+                    console.log(rows[i].AnimalID)
+                  await db.update(
+                    {
+                      AnimalStatusID: status,
+                    },
+                    {
+                      // Clause
+                      where: {
+                        AnimalID: rows[i].AnimalID,
+                      },
+                    }
+                  );
+                // }
+              }
+
+              //   let data = await Promise.all(
+
+              //     for(let i=0; i < rows.length;i++){
+              //         console.log("FREEDOm")
+              //     }
+
+              //     rows.map(async (data) => {
+              //       let status = null;
+              //       if (
+              //         data.AnimalTypeID == 1 ||
+              //         data.AnimalTypeID == 2 ||
+              //         data.AnimalTypeID == 41 ||
+              //         data.AnimalTypeID == 42
+              //       ) {
+              //         let count_day = dayjs().diff(
+              //           dayjs(data.AnimalBirthDate),
+              //           "day"
+              //         );
+              //         if (count_day < 120) {
+              //           status = 1;
+              //         } else if (count_day < 360) {
+              //           status = 2;
+              //         } else if (count_day < 720) {
+              //           status = 3;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 17;
+              //           } else {
+              //             if (data.AnimalPar != 0) {
+              //               status = 5;
+              //             }
+              //           }
+              //         } else {
+              //           status = 5;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 4;
+              //           } else {
+              //             if (data.AnimalPar == 0) {
+              //               status = 3;
+              //             }
+              //           }
+              //         }
+              //       }
+
+              //       if (
+              //         data.AnimalTypeID == 3 ||
+              //         data.AnimalTypeID == 4 ||
+              //         data.AnimalTypeID == 43 ||
+              //         data.AnimalTypeID == 44
+              //       ) {
+              //         let count_day = dayjs().diff(
+              //           dayjs(data.AnimalBirthDate),
+              //           "day"
+              //         );
+              //         if (count_day < 120) {
+              //           status = 6;
+              //         } else if (count_day < 360) {
+              //           status = 7;
+              //         } else if (count_day < 720) {
+              //           status = 8;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 18;
+              //           } else {
+              //             if (data.AnimalPar != 0) {
+              //               status = 10;
+              //             }
+              //           }
+              //         } else {
+              //           status = 10;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 9;
+              //           } else {
+              //             if (data.AnimalPar == 0) {
+              //               status = 8;
+              //             }
+              //           }
+              //         }
+              //       }
+
+              //       if (
+              //         data.AnimalTypeID == 5 ||
+              //         data.AnimalTypeID == 6 ||
+              //         data.AnimalTypeID == 45 ||
+              //         data.AnimalTypeID == 46
+              //       ) {
+              //         let count_day = dayjs().diff(
+              //           dayjs(data.AnimalBirthDate),
+              //           "day"
+              //         );
+              //         if (count_day < 120) {
+              //           status = 11;
+              //         } else if (count_day < 360) {
+              //           status = 12;
+              //         } else if (count_day < 720) {
+              //           status = 13;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 19;
+              //           } else {
+              //             if (data.AnimalPar != 0) {
+              //               status = 15;
+              //             }
+              //           }
+              //         } else {
+              //           status = 15;
+              //           if (data.AnimalSexID == 1) {
+              //             status = 14;
+              //           } else {
+              //             if (data.AnimalPar == 0) {
+              //               status = 13;
+              //             }
+              //           }
+              //         }
+              //       }
+
+              //       console.log(data.AnimalID)
+
+              //     //   await db.update(
+              //     //     {
+              //     //       AnimalStatusID: status,
+              //     //     },
+              //     //     {
+              //     //       // Clause
+              //     //       where: {
+              //     //         AnimalID: data.AnimalID,
+              //     //       },
+              //     //     }
+              //     //   );
+              //     })
+              //   );
+
+            //   return data;
+            };
+
+            let animal = await getWithPromiseAll();
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: animal,
             });
           })
           .catch((error) => {

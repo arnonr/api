@@ -54,6 +54,7 @@ router.get("/get-by-farm-id", controllers.onGetByFarmID);
 router.get("/get-by-farm-id-1", controllers.onGetByFarmID1);
 
 router.get("/update-animal-event", controllers.onUpdateAnimalEvent);
+router.get("/update-animal-status", controllers.onUpdateAnimalStatus);
 
 router.get("/update-animal-notification", controllers.onUpdateAnimalNotification);
 

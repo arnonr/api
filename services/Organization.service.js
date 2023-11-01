@@ -170,7 +170,7 @@ const methods = {
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
+              currPage: req.query.page ? +req.query.page : 1,
               rows: rows,
             });
           })

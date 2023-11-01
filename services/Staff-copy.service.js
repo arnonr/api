@@ -24,301 +24,6 @@ const buddhistEra = require("dayjs/plugin/buddhistEra");
 dayjs.extend(buddhistEra);
 
 const methods = {
-  //   async scopeSearch(req, limit, offset) {
-  //     // Where
-  //     // $where = {};
-
-  //     // if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
-
-  //     // //
-  //     // let user = await User.findByPk(req.query.GetedUserID, {
-  //     //   include: [
-  //     //     {
-  //     //       model: Staff,
-  //     //       as: "Staff",
-  //     //       include: [{ model: Organization, as: "Organization" }],
-  //     //     },
-  //     //   ],
-  //     // });
-
-  //     // if (req.query.StaffOrganizationID) {
-  //     //   let org = await Organization.findByPk(req.query.StaffOrganizationID, {
-  //     //     include: [
-  //     //       {
-  //     //         model: Province,
-  //     //         as: "Province",
-  //     //       },
-  //     //     ],
-  //     //   });
-
-  //     //   let province = await Province.findAll({
-  //     //     where: { AIZoneID: org.Province.AIZoneID },
-  //     //   });
-
-  //     //   let res5 = [];
-  //     //   province.map((p) => {
-  //     //     res5.push(p.ProvinceID);
-  //     //   });
-
-  //     //   let org1 = await Organization.findAll({
-  //     //     // where: { OrganizationProvinceID: { [Op.in]: res5 } },
-  //     //   });
-
-  //     //   let res6 = [];
-  //     //   org1.map((r) => {
-  //     //     res6.push(r.OrganizationID);
-  //     //   });
-
-  //     //   $where["StaffOrganizationID"] = {
-  //     //     [Op.in]: res6,
-  //     //   };
-
-  //     //   // if (req.query.OrganizationAllChild == 1) {
-  //     //   //   let organization1 = `WITH cte AS (
-  //     //   //     select     OrganizationID,
-  //     //   //                ParentOrganizationID
-  //     //   //     from       aidm.aidm.Organization
-  //     //   //     where      ParentOrganizationID = ${req.query.StaffOrganizationID} AND isRemove = 0
-  //     //   //     union all
-  //     //   //     select     o.OrganizationID,
-  //     //   //                o.ParentOrganizationID
-  //     //   //     from       aidm.aidm.Organization o
-  //     //   //     inner join cte e
-  //     //   //             on o.ParentOrganizationID = e.OrganizationID
-  //     //   //   )
-  //     //   //   SELECT * FROM cte;`;
-  //     //   //   const res1 = await sequelize.query(organization1);
-  //     //   //   let orgArr1 = [req.query.StaffOrganizationID];
-  //     //   //   res1[0].map((r) => {
-  //     //   //     orgArr1.push(r.OrganizationID);
-  //     //   //   });
-  //     //   //   $where["StaffOrganizationID"] = {
-  //     //   //     [Op.in]: orgArr1,
-  //     //   //   };
-  //     //   // }
-  //     // }
-
-  //     // if (req.query.OrganizationID) {
-  //     //   $where["StaffOrganizationID"] = req.query.OrganizationID;
-  //     // }
-
-  //     // if (req.query.StaffNumber) {
-  //     //   $where["StaffNumber"] = {
-  //     //     [Op.like]: "%" + req.query.StaffNumber + "%",
-  //     //   };
-  //     // }
-
-  //     // if (req.query.StaffIdentificationNumber)
-  //     //   $where["StaffIdentificationNumber"] = {
-  //     //     [Op.like]: "%" + req.query.StaffIdentificationNumber + "%",
-  //     //   };
-
-  //     // if (req.query.StaffTitleID) $where["StaffTitleID"] = req.query.StaffTitleID;
-
-  //     // if (req.query.StaffGivenName)
-  //     //   $where["StaffGivenName"] = {
-  //     //     [Op.like]: "%" + req.query.StaffGivenName + "%",
-  //     //   };
-  //     // if (req.query.StaffSurname)
-  //     //   $where["StaffSurname"] = {
-  //     //     [Op.like]: "%" + req.query.StaffSurname + "%",
-  //     //   };
-
-  //     // if (req.query.GenderID) $where["StaffGenderID"] = req.query.StaffGenderID;
-  //     // if (req.query.StaffMarriedStatusID)
-  //     //   $where["StaffMarriedStatusID"] = req.query.StaffMarriedStatusID;
-  //     // if (req.query.StaffPositionTypeID)
-  //     //   $where["StaffPositionTypeID"] = req.query.StaffPositionTypeID;
-  //     // if (req.query.StaffPositionID)
-  //     //   $where["StaffPositionID"] = req.query.StaffPositionID;
-
-  //     // //   ที่ตั้งของหน่วยงาน
-  //     // let $whereOrganization = [];
-
-  //     // if (req.query.StaffEmail)
-  //     //   $where["StaffEmail"] = {
-  //     //     [Op.like]: "%" + req.query.StaffEmail + "%",
-  //     //   };
-
-  //     // if (req.query.StaffStartDate) {
-  //     //   $where[Op.or] = [
-  //     //     {
-  //     //       StaffStartDate: {
-  //     //         [Op.between]: [req.query.StaffStartDate, req.query.StaffEndDate],
-  //     //       },
-  //     //     },
-  //     //     {
-  //     //       StaffEndDate: {
-  //     //         [Op.between]: [req.query.StaffStartDate, req.query.StaffEndDate],
-  //     //       },
-  //     //     },
-  //     //   ];
-  //     // }
-
-  //     // if (req.query.isActive) $where["isActive"] = req.query.isActive;
-  //     // if (req.query.CreatedUserID)
-  //     //   $where["CreatedUserID"] = req.query.CreatedUserID;
-  //     // if (req.query.UpdatedUserID)
-  //     //   $where["UpdatedUserID"] = req.query.UpdatedUserID;
-
-  //     // $where["isRemove"] = 0;
-  //     // const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
-  //     // const queryOrganization =
-  //     //   Object.keys($whereOrganization).length > 0
-  //     //     ? { where: $whereOrganization }
-  //     //     : {};
-
-  //     // // Order
-  //     // $order = [["StaffID", "ASC"]];
-  //     // if (req.query.orderByField && req.query.orderBy)
-  //     //   $order = [
-  //     //     [
-  //     //       req.query.orderByField,
-  //     //       req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
-  //     //     ],
-  //     //   ];
-  //     // query["order"] = $order;
-
-  //     // if (!isNaN(limit)) query["limit"] = limit;
-
-  //     // if (!isNaN(offset)) query["offset"] = offset;
-
-  //     // let include = [
-  //     //   {
-  //     //     association: "Title",
-  //     //     attributes: ["TitleID", "TitleName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Gender",
-  //     //     attributes: ["GenderID", "GenderName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "MarriedStatus",
-  //     //     attributes: ["MarriedStatusID", "MarriedStatusName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "PositionType",
-  //     //     attributes: ["PositionTypeID", "PositionTypeName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Position",
-  //     //     attributes: ["PositionID", "PositionName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Tumbol",
-  //     //     attributes: ["TumbolID", "TumbolName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Amphur",
-  //     //     attributes: ["AmphurID", "AmphurName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Province",
-  //     //     attributes: ["ProvinceID", "ProvinceName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Education",
-  //     //     attributes: ["EducationID", "EducationName"],
-  //     //     required: false,
-  //     //   },
-  //     //   {
-  //     //     association: "Organization",
-  //     //     attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
-  //     //     ...queryOrganization,
-  //     //     required: true,
-  //     //   },
-  //     // ];
-
-  //     // if (req.query.includeAll) {
-  //     //   if (req.query.includeAll == "false") {
-  //     //     include = [
-  //     //       {
-  //     //         association: "Title",
-  //     //         attributes: ["TitleID", "TitleName"],
-  //     //         required: false,
-  //     //       },
-  //     //     ];
-
-  //     //     if (req.query.includeOrganization == "true") {
-  //     //       include = [
-  //     //         {
-  //     //           association: "Title",
-  //     //           attributes: ["TitleID", "TitleName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Gender",
-  //     //           attributes: ["GenderID", "GenderName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "MarriedStatus",
-  //     //           attributes: ["MarriedStatusID", "MarriedStatusName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "PositionType",
-  //     //           attributes: ["PositionTypeID", "PositionTypeName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Position",
-  //     //           attributes: ["PositionID", "PositionName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Tumbol",
-  //     //           attributes: ["TumbolID", "TumbolName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Amphur",
-  //     //           attributes: ["AmphurID", "AmphurName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Province",
-  //     //           attributes: ["ProvinceID", "ProvinceName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           association: "Education",
-  //     //           attributes: ["EducationID", "EducationName"],
-  //     //           required: false,
-  //     //         },
-  //     //         {
-  //     //           model: Organization,
-  //     //           as: "Organization",
-  //     //         //   attributes: [
-  //     //         //     "OrganizationID",
-  //     //         //     "OrganizationCode",
-  //     //         //     "OrganizationName",
-  //     //         //   ],
-  //     //         //   ...queryOrganization,
-  //     //         //   required: true,
-  //     //         },
-  //     //       ];
-  //     //     }
-  //     //   } else {
-  //     //   }
-  //     // }
-
-  //     let query;
-  //     // query["include"] = [];
-
-  //     // return { query: query };
-  //     return { query: query };
-  //   },
-
   async scopeSearch(req, limit, offset) {
     // Where
     $where = {};
@@ -723,22 +428,76 @@ const methods = {
               required: false,
             },
             {
-              association: "Organization",
-              attributes: [
-                "OrganizationID",
-                "OrganizationCode",
-                "OrganizationName",
-                "OrganizationProvinceID"
-              ],
-              ...queryOrganization,
-              required: true,
+              association: "Gender",
+              attributes: ["GenderID", "GenderName"],
+              required: false,
             },
+            {
+              association: "MarriedStatus",
+              attributes: ["MarriedStatusID", "MarriedStatusName"],
+              required: false,
+            },
+            {
+              association: "PositionType",
+              attributes: ["PositionTypeID", "PositionTypeName"],
+              required: false,
+            },
+            {
+              association: "Position",
+              attributes: ["PositionID", "PositionName"],
+              required: false,
+            },
+            {
+              association: "Tumbol",
+              attributes: ["TumbolID", "TumbolName"],
+              required: false,
+            },
+            {
+              association: "Amphur",
+              attributes: ["AmphurID", "AmphurName"],
+              required: false,
+            },
+            {
+              association: "Province",
+              attributes: ["ProvinceID", "ProvinceName"],
+              required: false,
+            },
+            {
+              association: "Education",
+              attributes: ["EducationID", "EducationName"],
+              required: false,
+            },
+            // {
+            //   association: "Organization",
+            //   attributes: [
+            //     "OrganizationID",
+            //     "OrganizationCode",
+            //     "OrganizationName",
+            //   ],
+            //   ...queryOrganization,
+            //   required: true,
+            // },
           ];
         }
       } else {
       }
     } else {
+      // include.unshift({ all: true, required: false });
     }
+
+    // include = [
+    //   {
+    //     association: "Organization",
+    //     attributes: [
+    //       "OrganizationID",
+    //       "OrganizationCode",
+    //       "OrganizationName",
+    //       "OrganizationProvinceID",
+    //     ],
+    //     ...queryOrganization,
+    //     required: true,
+    //   },
+    // ];
 
     query["include"] = include;
 
@@ -752,19 +511,29 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([
-          Staff.findAll({ model: Organization, as: "Organization" }),
+          db.findAll(_q.query),
           delete _q.query.include,
           (_q.query["distinct"] = true),
           1,
         ])
           .then((result) => {
-            let rows = result[0];
-            let count = rows.length;
+            let rows = result[0],
+              count = rows.length;
+            console.log(count);
+
+            // let rows1 = rows.map((data) => {
+            //   data = {
+            //     ...data.toJSON(),
+            //     CardRequestLog: data.toJSON().CardRequestLog[0],
+            //   };
+
+            //   return data;
+            // });
 
             resolve({
               total: count,
               lastPage: Math.ceil(count / limit),
-              currPage: req.query.page ? +req.query.page : 1,
+              currPage: +req.query.page || 1,
               rows: rows,
             });
           })
@@ -911,6 +680,7 @@ const methods = {
   generateStaffNumber(StaffID, isCard) {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log("FREEDOM");
         let data = await Staff.findOne({ where: { StaffID: StaffID } });
         // Generate StaffNumber
         let org = await Organization.findOne({
@@ -918,7 +688,7 @@ const methods = {
         });
 
         let province = await Province.findOne({
-          //   where: { ProvinceID: org.OrganizationProvinceID },
+          where: { ProvinceID: org.OrganizationProvinceID },
           include: { model: AIZone, as: "AIZone" },
         });
 

@@ -96,7 +96,7 @@ const methods = {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.body.GetUserID = decoded.id;
-      
+
       let result = await Service.findByFarmID(req);
       res.success(result);
     } catch (error) {
@@ -108,7 +108,7 @@ const methods = {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.body.GetUserID = decoded.id;
-      
+
       let result = await Service.findByFarmID1(req);
       res.success(result);
     } catch (error) {
@@ -140,7 +140,7 @@ const methods = {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.body.GetUserID = decoded.id;
-      
+
       let result = await Service.updateAnimalEvent(req);
       res.success(result);
     } catch (error) {
@@ -148,12 +148,11 @@ const methods = {
     }
   },
 
-
   async onUpdateAnimalNotification(req, res) {
     try {
-    //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-    //   req.body.GetUserID = decoded.id;
-      
+      //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      //   req.body.GetUserID = decoded.id;
+
       let result = await Service.updateAnimalNotification(req);
       res.success(result);
     } catch (error) {
@@ -161,8 +160,17 @@ const methods = {
     }
   },
 
-  
+  async onUpdateAnimalStatus(req, res) {
+    try {
+      //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      //   req.body.GetUserID = decoded.id;
 
+      let result = await Service.updateAnimalStatus(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 };
 
 module.exports = { ...methods };

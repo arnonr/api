@@ -3158,6 +3158,10 @@ const methods = {
           $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
         }
 
+        if (req.query.StaffID) {
+          $where["ResponsibilityStaffID"] = req.query.StaffID;
+        }
+
         if (req.query.StartDate) {
           $where["CheckupDate"] = {
             [Op.between]: [
