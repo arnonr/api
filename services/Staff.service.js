@@ -728,7 +728,7 @@ const methods = {
                 "OrganizationID",
                 "OrganizationCode",
                 "OrganizationName",
-                "OrganizationProvinceID"
+                "OrganizationProvinceID",
               ],
               ...queryOrganization,
               required: true,
@@ -1024,11 +1024,11 @@ const methods = {
             },
           ],
         });
-
-        if (!obj) {
+        http: if (!obj) {
           await axios
             .get(
-              "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+              //   "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+              "http://164.115.25.101/api2/staff/listAllStaff?text_search=" +
                 StaffNumber.toString() +
                 "&limit=1&page=1"
             )
@@ -1104,7 +1104,7 @@ const methods = {
           if (obj.StaffPositionID == null) {
             await axios
               .get(
-                "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+                "http://164.115.25.101/api2/staff/listAllStaff?text_search=" +
                   StaffNumber.toString() +
                   "&limit=1&page=1"
               )
