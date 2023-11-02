@@ -63,6 +63,43 @@ const methods = {
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
     $where["isRemove"] = 0;
+
+    let AnimalBreedArr = [];
+
+    if (req.query.AnimalBreedID1) {
+      AnimalBreedArr.push(req.query.AnimalBreedID1);
+    }
+
+    if (req.query.AnimalBreedID2) {
+      AnimalBreedArr.push(req.query.AnimalBreedID2);
+    }
+
+    if (req.query.AnimalBreedID3) {
+      AnimalBreedArr.push(req.query.AnimalBreedID3);
+    }
+
+    if (req.query.AnimalBreedID4) {
+      AnimalBreedArr.push(req.query.AnimalBreedID4);
+    }
+
+    if (req.query.AnimalBreedID5) {
+      AnimalBreedArr.push(req.query.AnimalBreedID5);
+    }
+
+    $where[Op.and] = [];
+
+    AnimalBreedArr.forEach((value) => {
+      $where[Op.and].push({
+        [Op.or]: {
+          AnimalBreedID1: value,
+          AnimalBreedID2: value,
+          AnimalBreedID3: value,
+          AnimalBreedID4: value,
+          AnimalBreedID5: value,
+        },
+      });
+    });
+
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
     // Order
