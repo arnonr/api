@@ -113,15 +113,21 @@ const methods = {
     //   ที่ตั้งของหน่วยงาน
     let $whereOrganization = {};
     if (req.query.StaffProvinceID) {
-      $whereOrganization["OrganizationProvinceID"] = Number(req.query.StaffProvinceID);
+      $whereOrganization["OrganizationProvinceID"] = Number(
+        req.query.StaffProvinceID
+      );
     }
 
     if (req.query.StaffAmphurID) {
-      $whereOrganization[" OrganizationAmphurID"] = Number(req.query.StaffAmphurID);
+      $whereOrganization[" OrganizationAmphurID"] = Number(
+        req.query.StaffAmphurID
+      );
     }
 
     if (req.query.StaffTumbolID) {
-      $whereOrganization[" OrganizationTumbolID"] = Number(req.query.StaffTumbolID);
+      $whereOrganization[" OrganizationTumbolID"] = Number(
+        req.query.StaffTumbolID
+      );
     }
 
     if (req.query.StaffEmail)
@@ -230,7 +236,7 @@ const methods = {
       },
     ];
 
-    console.log(queryOrganization)
+    console.log(queryOrganization);
 
     if (req.query.includeAll) {
       if (req.query.includeAll == "false") {
@@ -346,6 +352,20 @@ const methods = {
           console.log(data.StaffNumber);
           data.StaffNumber = null;
         }
+
+        let checkStaff = await Staff.findOne({
+          where: {
+            staffOrganizationID: data.StaffOrganizationID,
+            StaffNumber: data.StaffNumber,
+            StaffIdentificationNumber: data.StaffIdentificationNumber,
+            isRemove: 0,
+          },
+        });
+
+        if (checkStaff) {
+          throw new Error("Duplicate Staff");
+        }
+
         if (data.hasOwnProperty("isFlag")) {
           if (data.isFlag == "NewRegister") {
             // Generate StaffNumber
