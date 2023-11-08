@@ -575,6 +575,8 @@ const methods = {
       $where["StaffGivenName"] = {
         [Op.like]: "%" + req.query.StaffGivenName + "%",
       };
+
+
     if (req.query.StaffSurname)
       $where["StaffSurname"] = {
         [Op.like]: "%" + req.query.StaffSurname + "%",
@@ -752,7 +754,8 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([
-          Staff.findAll({ model: Organization, as: "Organization" }),
+          db.findAll(_q.query),
+        //   Staff.findAll({ model: Organization, as: "Organization" }),
           delete _q.query.include,
           (_q.query["distinct"] = true),
           1,
