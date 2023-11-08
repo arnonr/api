@@ -309,7 +309,7 @@ const methods = {
           var AnimalTypeIDList = [...data.AnimalTypeID];
           data.AnimalTypeID = JSON.stringify(data.AnimalTypeID);
         }
-        data.ResetPasswordToken = null;
+        // data.ResetPasswordToken = null;
         data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { UserID: id } });
@@ -760,7 +760,6 @@ const methods = {
 
         if (!obj) reject(ErrorNotFound("email: not found"));
 
-        console.log("TEST");
 
         let chars =
           "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
