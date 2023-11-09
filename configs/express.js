@@ -79,7 +79,8 @@ module.exports = async (app) => {
   require("../configs/passport");
 
   // Static file
-  app.use("/static", express.static(path.join(__dirname, "../public")));
+//   app.use("/static", express.static(path.join(__dirname, "../public")));
+  app.use("*/static", express.static(__dirname + '/public'));
 //   app.use('/static', express.static(path.join(__dirname, 'public')))
 //   app.use('/static', express.static('public'))
   // http://localhost:3000/static/uploads/images/users/user-1-1652789767517.jpeg
