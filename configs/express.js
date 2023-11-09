@@ -1,8 +1,9 @@
 const express = require("express"),
   // morgan ไว้ show log ใน console
   morgan = require("morgan"),
-  cors = require("cors");
-(passport = require("passport")), (path = require("path"));
+  cors = require("cors"),
+passport = require("passport"), 
+path = require("path");
 
 //
 const DeviceDetector = require("node-device-detector");
@@ -79,6 +80,8 @@ module.exports = async (app) => {
 
   // Static file
   app.use("/static", express.static(path.join(__dirname, "../public")));
+//   app.use('/static', express.static(path.join(__dirname, 'public')))
+//   app.use('/static', express.static('public'))
   // http://localhost:3000/static/uploads/images/users/user-1-1652789767517.jpeg
 
   // Custom Response Format
