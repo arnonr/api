@@ -84,6 +84,12 @@ const methods = {
       };
     }
 
+    if (req.query.StaffStatus) {
+      $where["StaffStatus"] = {
+        [Op.like]: "%" + req.query.StaffStatus + "%",
+      };
+    }
+
     if (req.query.StaffIdentificationNumber)
       $where["StaffIdentificationNumber"] = {
         [Op.like]:
@@ -457,7 +463,7 @@ const methods = {
 
         await db.update(data, {
           where: { StaffID: id },
-            individualHooks: true,
+          individualHooks: true,
         });
 
         let res = methods.findById(data.StaffID);
