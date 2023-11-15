@@ -28,6 +28,8 @@ const methods = {
 
     let $WhereStaff = {};
 
+    let $WhereOrganization = {};
+
     let user = await db.findByPk(req.query.GetedUserID, {
       include: [
         {
@@ -113,6 +115,8 @@ const methods = {
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
+    // AIZoneID ต้องมาจากจากราง staff->organization
+
     // Order
     $order = [["UserID", "ASC"]];
     if (req.query.orderByField && req.query.orderBy)
@@ -123,6 +127,54 @@ const methods = {
         ],
       ];
     query["order"] = $order;
+
+    if (req.query.OrganizationAiZoneID) {
+      let province1 = await Province.findAll({
+        where: {
+          AIZoneID: req.query.OrganizationAiZoneID,
+        },
+      });
+
+      let province_id_arr = province1.map((x) => {
+        return x.ProvinceID;
+      });
+
+      $WhereOrganization["OrganizationProvinceID"] = {
+        [Op.in]: province_id_arr,
+      };
+    }
+
+    if (req.query.OrganizationZoneID) {
+      let province = await Province.findAll({
+        where: {
+          OrganizationZoneID: req.query.OrganizationZoneID,
+        },
+      });
+
+      let province_id_arr = province.map((x) => {
+        return x.ProvinceID;
+      });
+
+      $WhereOrganization["OrganizationProvinceID"] = {
+        [Op.in]: province_id_arr,
+      };
+    }
+
+    if (req.query.OrganizationProvinceID)
+      $WhereOrganization["OrganizationProvinceID"] =
+        req.query.OrganizationProvinceID;
+
+    if (req.query.OrganizationAmphurID)
+      $WhereOrganization["OrganizationAmphurID"] =
+        req.query.OrganizationAmphurID;
+
+    if (req.query.OrganizationTumbolID)
+      $WhereOrganization["OrganizationTumbolID"] =
+        req.query.OrganizationTumbolID;
+
+    if (req.query.OrganizationID)
+      $WhereOrganization["OrganizationID"] =
+        req.query.OrganizationID;
 
     query["include"] = [
       { all: true, required: false },
@@ -136,6 +188,11 @@ const methods = {
         as: "Staff",
         where: $WhereStaff,
         required: true,
+        include: {
+          model: Organization,
+          as: "Organization",
+          where: $WhereOrganization,
+        },
       },
     ];
 
@@ -759,7 +816,6 @@ const methods = {
         });
 
         if (!obj) reject(ErrorNotFound("email: not found"));
-
 
         let chars =
           "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
