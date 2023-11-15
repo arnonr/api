@@ -1992,6 +1992,13 @@ const methods = {
               //   where: WhereAIZone,
               // attributes: ["EducationID", "EducationName"],
             },
+            {
+                association: "Organization",
+                required: req.query.OrganizationID ? true : false,
+                // if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+                //   where: WhereAIZone,
+                // attributes: ["EducationID", "EducationName"],
+              },
           ],
 
           // {
