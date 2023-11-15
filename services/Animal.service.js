@@ -2266,7 +2266,7 @@ const methods = {
       };
     }
 
-    if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    // if (req.query.isActive) $where["isActive"] = req.query.isActive;
     if (req.query.CreatedUserID)
       //   $where["CreatedUserID"] = req.query.CreatedUserID;
       // if (req.query.UpdatedUserID)
