@@ -440,10 +440,24 @@ const methods = {
         data.StaffID = parseInt(id);
 
         data.updatedAt = fn("GETDATE");
+        // StaffStatus
+        // if (data.StaffStatus == "ลาออก") {
+        //   data.CardStatus = 0;
+        // }
+        // if (data.StaffStatus == "เกษียณ") {
+        //   data.CardStatus = 0;
+        // } else if (data.CardStartDate == null || data.CardExpireDate == null) {
+        //   data.CardStatus = 2;
+        // } else if (dayjs(data.CardExpireDate).isBefore(dayjs()) == true) {
+        //   data.CardStatus = 3;
+        // } else {
+        //   console.log(dayjs(data.CardExpireDate).isBefore(dayjs()));
+        //   data.CardStatus = 1;
+        // }
 
         await db.update(data, {
           where: { StaffID: id },
-          individualHooks: true,
+            individualHooks: true,
         });
 
         let res = methods.findById(data.StaffID);

@@ -499,8 +499,7 @@ Staff.addHook("beforeUpdate", (staff, options) => {
   let status = staff.CardStatus;
   if (staff.StaffStatus == "ลาออก") {
     status = 0;
-  }
-  if (staff.StaffStatus == "เกษียณ") {
+  }else if (staff.StaffStatus == "เกษียณ") {
     status = 0;
   } else if (staff.CardStartDate == null || staff.CardExpireDate == null) {
     status = 2;
