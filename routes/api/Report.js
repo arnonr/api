@@ -82,6 +82,13 @@ router.get(
 );
 
 router.get(
+  "/report9-1",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetReport91
+);
+
+router.get(
   "/report10",
   // auth.required,
   // checkPermission(resource, "read"),
@@ -116,9 +123,6 @@ router.get(
   controllers.onGetReport14
 );
 
-router.get(
-  "/report15",
-  controllers.onGetReport15
-);
+router.get("/report15", controllers.onGetReport15);
 
 module.exports = router;

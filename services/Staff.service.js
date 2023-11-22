@@ -31,15 +31,18 @@ const methods = {
     if (req.query.StaffID) $where["StaffID"] = req.query.StaffID;
 
     //
-    let user = await User.findByPk(req.query.GetedUserID, {
-      include: [
-        {
-          model: Staff,
-          as: "Staff",
-          include: [{ model: Organization, as: "Organization" }],
-        },
-      ],
-    });
+    let user = null;
+    // if (req.query.GetedUserID) {
+    //   user = await User.findByPk(req.query.GetedUserID, {
+    //     include: [
+    //       {
+    //         model: Staff,
+    //         as: "Staff",
+    //         include: [{ model: Organization, as: "Organization" }],
+    //       },
+    //     ],
+    //   });
+    // }
 
     if (req.query.StaffOrganizationID) {
       let org = await Organization.findByPk(req.query.StaffOrganizationID, {
@@ -125,13 +128,13 @@ const methods = {
     }
 
     if (req.query.StaffAmphurID) {
-      $whereOrganization[" OrganizationAmphurID"] = Number(
+      $whereOrganization["OrganizationAmphurID"] = Number(
         req.query.StaffAmphurID
       );
     }
 
     if (req.query.StaffTumbolID) {
-      $whereOrganization[" OrganizationTumbolID"] = Number(
+      $whereOrganization["OrganizationTumbolID"] = Number(
         req.query.StaffTumbolID
       );
     }
@@ -235,14 +238,9 @@ const methods = {
         association: "Organization",
         attributes: ["OrganizationID", "OrganizationCode", "OrganizationName"],
         ...queryOrganization,
-        // where:{
-        //     OrganizationProvinceID: 92
-        // },
         required: true,
       },
     ];
-
-    console.log(queryOrganization);
 
     if (req.query.includeAll) {
       if (req.query.includeAll == "false") {
@@ -267,10 +265,22 @@ const methods = {
                 "OrganizationID",
                 "OrganizationCode",
                 "OrganizationName",
-                "OrganizationProvinceID",
               ],
               ...queryOrganization,
+              // where:{
+              //     OrganizationProvinceID: 92
+              // },
               required: true,
+
+              //   association: "Organization",
+              //   attributes: [
+              //     "OrganizationID",
+              //     "OrganizationCode",
+              //     "OrganizationName",
+              //     "OrganizationProvinceID",
+              //   ],
+              //   ...queryOrganization,
+              //   required: true,
             },
           ];
         }
@@ -279,6 +289,7 @@ const methods = {
     } else {
     }
 
+    console.log(include);
     query["include"] = include;
 
     return { query: query };

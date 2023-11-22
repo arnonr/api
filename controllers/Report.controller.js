@@ -91,6 +91,14 @@ const methods = {
       res.error(error);
     }
   },
+  async onGetReport91(req, res) {
+    try {
+      let result = await Service.report91(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 
   async onGetReport10(req, res) {
     try {
