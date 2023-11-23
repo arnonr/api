@@ -123,6 +123,14 @@ router.get(
   controllers.onGetReport14
 );
 
+router.get(
+  "/report17",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetReport17
+);
+
+
 router.get("/report15", controllers.onGetReport15);
 
 module.exports = router;
