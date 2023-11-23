@@ -3704,9 +3704,10 @@ const methods = {
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                 SemenNumber: x.AI?.Semen.SemenNumber,
-                AnimalPar: x.AI?.PAR,
-                AIDate: dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB"),
-
+                AnimalPar: x.PAR,
+                AIDate: x.AI?.AIDate
+                ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
+                : "",
                 GiveBirthDate: dayjs(x.GiveBirthDate)
                   .locale("th")
                   .format("DD MMM BB"),
@@ -3715,10 +3716,9 @@ const methods = {
                 BetweenDate: x.PregnancyDay,
                 // PregnancyCheckStatusName:
                 //   x.PregnancyCheckStatus.PregnancyCheckStatusName,
-                BetweenDate1: dayjs(x.GiveBirthDate).diff(
-                  dayjs(x.AI?.AIDate),
-                  "day"
-                ),
+                BetweenDate1: x.AI?.AIDate
+                  ? dayjs(x.GiveBirthDate).diff(dayjs(x.AI?.AIDate), "day")
+                  : "",
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
               });
@@ -3737,20 +3737,19 @@ const methods = {
                     AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
 
                     SemenNumber: x.AI?.Semen.SemenNumber,
-                    AnimalPar: x.AI?.PAR,
-                    AIDate: dayjs(x.AI?.AIDate)
-                      .locale("th")
-                      .format("DD MMM BB"),
+                    AnimalPar: x.PAR,
+                    AIDate: x.AI?.AIDate
+                      ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
+                      : "",
                     GiveBirthDate: dayjs(x.GiveBirthDate)
                       .locale("th")
                       .format("DD MMM BB"),
                     Amount: x.Amount,
                     //   .format("DD MMM BB")
                     BetweenDate: x.PregnancyDay,
-                    BetweenDate1: dayjs(x.GiveBirthDate).diff(
-                      dayjs(x.AI?.AIDate),
-                      "day"
-                    ),
+                    BetweenDate1: x.AI?.AIDate
+                      ? dayjs(x.GiveBirthDate).diff(dayjs(x.AI?.AIDate), "day")
+                      : "",
                     // ,
                     ResponsibilityStaffName:
                       x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
