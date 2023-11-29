@@ -252,6 +252,7 @@ Farm.associate({
   FarmToProject,
   Project,
   Farmer,
+  Staff
 });
 
 Farmer.associate({

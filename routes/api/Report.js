@@ -130,6 +130,13 @@ router.get(
   controllers.onGetReport17
 );
 
+router.get(
+    "/report18",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetReport18
+  );
+
 
 router.get("/report15", controllers.onGetReport15);
 

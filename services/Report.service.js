@@ -3706,13 +3706,13 @@ const methods = {
                 SemenNumber: x.AI?.Semen.SemenNumber,
                 AnimalPar: x.PAR,
                 AIDate: x.AI?.AIDate
-                ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
-                : "",
+                  ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
+                  : "",
                 GiveBirthDate: dayjs(x.GiveBirthDate)
                   .locale("th")
                   .format("DD MMM BB"),
                 Amount: x.Amount,
-
+                ChildGender: x.ChildGender,
                 BetweenDate: x.PregnancyDay,
                 // PregnancyCheckStatusName:
                 //   x.PregnancyCheckStatus.PregnancyCheckStatusName,
@@ -3745,6 +3745,7 @@ const methods = {
                       .locale("th")
                       .format("DD MMM BB"),
                     Amount: x.Amount,
+                    ChildGender: x.ChildGender,
                     //   .format("DD MMM BB")
                     BetweenDate: x.PregnancyDay,
                     BetweenDate1: x.AI?.AIDate
@@ -3801,6 +3802,141 @@ const methods = {
 
         resolve({
           data: breed,
+        });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report18(req) {
+    // report รายงาน สรุปประชากรสัตว์
+    return new Promise(async (resolve, reject) => {
+      try {
+        let $where = {};
+        let $whereAnimal = {};
+        let $whereFarm = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        $whereAnimal["AnimalTypeID"] = {
+          [Op.in]: [1, 2, 41, 42],
+        };
+
+        let WhereProject = null;
+
+        if (req.query.Projects) {
+          if (req.query.Projects != "[]") {
+            WhereProject = {
+              ProjectID: {
+                [Op.in]: JSON.parse(req.query.Projects),
+              },
+            };
+          }
+        }
+
+        let provinceIDArr = [];
+
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if (req.query.StaffID) {
+          $where["ResponsibilityStaffID"] = req.query.StaffID;
+        }
+
+        if (req.query.StartDate) {
+          $where["CheckupDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryFarm =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const animal = await Animal.findAll({
+          ...query,
+          where: {
+            AnimalTypeID: {
+              [Op.in]: JSON.parse(req.query.AnimalTypeID),
+            },
+          },
+          include: [
+            {
+              model: Farm,
+              as: "AnimalFarm",
+              ...queryFarm,
+              include: [
+                {
+                  model: Project,
+                  where: WhereProject,
+                },
+                {
+                  model: Province,
+                  as: "Province",
+                },
+                {
+                  model: Amphur,
+                  as: "Amphur",
+                },
+                {
+                  model: Tumbol,
+                  as: "Tumbol",
+                },
+                {
+                  model: Staff,
+                  as: "Staff",
+                },
+              ],
+            },
+            { model: AnimalStatus, as: "AnimalStatus" },
+          ],
+        });
+
+        resolve({
+          data: animal,
         });
       } catch (error) {
         reject(ErrorNotFound(error));
