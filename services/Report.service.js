@@ -2511,6 +2511,7 @@ const methods = {
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
+                isRemove: 0
               },
               include: [
                 {
@@ -3883,12 +3884,34 @@ const methods = {
         }
 
         if (req.query.StartDate) {
-          $where["AnimalBirthDate"] = {
-            [Op.between]: [
-              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
-              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
-            ],
-          };
+          // createdAt
+          // updateAt
+          // AnimalDatejoin
+
+          //   $where["AnimalBirthDate"] = {
+          //     [Op.between]: [
+          //       dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+          //       dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+          //     ],
+          //   };
+
+        //   $where[Op.or] = [
+        //     {
+        //         CreatedAt: [Op.between]: [
+        //             dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+        //             dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+        //           ],
+        //     }
+        //   ]
+
+          //   $where[Op.or] = {
+          //     ["createdAt"]: {
+          //       [Op.between]: [
+          //         dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+          //         dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+          //       ],
+          //     },
+          //   };
         }
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
