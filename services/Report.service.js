@@ -2511,7 +2511,7 @@ const methods = {
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
-                isRemove: 0
+                isRemove: 0,
               },
               include: [
                 {
@@ -3152,6 +3152,29 @@ const methods = {
 
         if (req.query.StaffID) {
           $where["ResponsibilityStaffID"] = req.query.StaffID;
+        }
+
+        if (req.query.StartDate_Created) {
+          $where["CheckupDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),    
+            ],
+          };
+
+          //   $where["CreatedDatetime"] = {
+          //     // [Op.between]: [
+
+          //     //     fn('GETDATE',dayjs(req.query.StartDate_Created).toISOString()),
+          //     //     fn('GETDATE',dayjs(req.query.EndDate_Created).toISOString())
+          //     //     // dayjs(req.query.EndDate_Created).toISOString(),
+          //     //     // fn("GETDATE")
+          //     //     // parseISO(req.query.StartDate_Created),
+          //     //     // parseISO(req.query.EndDate_Created)
+          //     // //   dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
+          //     // //   dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
+          //     // ],
+          //   };
         }
 
         if (req.query.StartDate) {
@@ -3887,23 +3910,20 @@ const methods = {
           // createdAt
           // updateAt
           // AnimalDatejoin
-
           //   $where["AnimalBirthDate"] = {
           //     [Op.between]: [
           //       dayjs(req.query.StartDate).format("YYYY-MM-DD"),
           //       dayjs(req.query.EndDate).format("YYYY-MM-DD"),
           //     ],
           //   };
-
-        //   $where[Op.or] = [
-        //     {
-        //         CreatedAt: [Op.between]: [
-        //             dayjs(req.query.StartDate).format("YYYY-MM-DD"),
-        //             dayjs(req.query.EndDate).format("YYYY-MM-DD"),
-        //           ],
-        //     }
-        //   ]
-
+          //   $where[Op.or] = [
+          //     {
+          //         CreatedAt: [Op.between]: [
+          //             dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+          //             dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+          //           ],
+          //     }
+          //   ]
           //   $where[Op.or] = {
           //     ["createdAt"]: {
           //       [Op.between]: [
