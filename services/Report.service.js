@@ -3553,7 +3553,7 @@ const methods = {
   },
 
   report17(req) {
-    // report รายงาน สรุปตรวจท้อง
+    // report รายงาน สรุปลูกเกิด
     return new Promise(async (resolve, reject) => {
       try {
         let $where = {};
@@ -3883,7 +3883,7 @@ const methods = {
         }
 
         if (req.query.StartDate) {
-          $where["CheckupDate"] = {
+          $where["AnimalBirthDate"] = {
             [Op.between]: [
               dayjs(req.query.StartDate).format("YYYY-MM-DD"),
               dayjs(req.query.EndDate).format("YYYY-MM-DD"),
