@@ -603,7 +603,7 @@ const methods = {
             },
           ],
         });
-        
+
         if (!obj) {
           await axios
             .get(
@@ -658,18 +658,29 @@ const methods = {
                 staffNew.StaffPositionTypeID = items[0].staffPositionLevel;
                 staffNew.StaffMarriedStatusID = 6;
 
-                let position = await Position.findOne({
-                  where: { PositionCode: items[0].emStaffPosition },
-                });
+                let position = null;
 
-                if (Position) {
+                if (
+                  items[0].emStaffPosition != "" &&
+                  items[0].emStaffPosition != " " &&
+                  items[0].emStaffPosition != null
+                ) {
+                  position = await Position.findOne({
+                    where: { PositionCode: items[0].emStaffPosition },
+                  });
+                }
+
+                if (position != null) {
                   staffNew.StaffPositionID = position.PositionID;
+                } else {
+                  staffNew.StaffPositionID = 5;
                 }
                 staffNew.CreatedUserID = 1;
                 staffNew.createdAt = Date.now();
                 await staffNew.save();
 
                 let res = await this.findById(staffNew.StaffID);
+
                 resolve(res);
               } else {
                 resolve(false);
@@ -694,12 +705,28 @@ const methods = {
                 if (items.length > 0) {
                   let staffEdit = await db.findByPk(obj.StaffID);
 
-                  let position = await Position.findOne({
-                    where: { PositionCode: items[0].emStaffPosition },
-                  });
+                //   let position = await Position.findOne({
+                //     where: { PositionCode: items[0].emStaffPosition },
+                //   });
 
-                  if (Position) {
+                //   if (Position) {
+                //     staffEdit.StaffPositionID = position.PositionID;
+                //   }
+                  let position = null
+                  if (
+                    items[0].emStaffPosition != "" &&
+                    items[0].emStaffPosition != " " &&
+                    items[0].emStaffPosition != null
+                  ) {
+                    position = await Position.findOne({
+                      where: { PositionCode: items[0].emStaffPosition },
+                    });
+                  }
+  
+                  if (position != null) {
                     staffEdit.StaffPositionID = position.PositionID;
+                  } else {
+                    staffEdit.StaffPositionID = 5;
                   }
 
                   let dep = await Organization.findOne({
