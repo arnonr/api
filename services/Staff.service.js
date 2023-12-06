@@ -603,7 +603,8 @@ const methods = {
             },
           ],
         });
-        http: if (!obj) {
+        
+        if (!obj) {
           await axios
             .get(
               //   "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
