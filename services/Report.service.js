@@ -1,7 +1,8 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models"),
-  { Op, literal, fn } = require("sequelize");
+  { Op, literal, fn, DataTypes } = require("sequelize"),
+  sequelize = require("sequelize");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -3155,25 +3156,29 @@ const methods = {
         }
 
         if (req.query.StartDate_Created) {
-          $where["CheckupDate"] = {
-            [Op.between]: [
-              dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
-              dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),    
-            ],
-          };
-
+          //   $where["CheckupDate"] = {
+          //     [Op.between]: [
+          //       dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
+          //       dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
+          //     ],
+          //   };
+          // CONVERT(DATETIME,'2023-10-01')
           //   $where["CreatedDatetime"] = {
-          //     // [Op.between]: [
-
-          //     //     fn('GETDATE',dayjs(req.query.StartDate_Created).toISOString()),
-          //     //     fn('GETDATE',dayjs(req.query.EndDate_Created).toISOString())
-          //     //     // dayjs(req.query.EndDate_Created).toISOString(),
-          //     //     // fn("GETDATE")
-          //     //     // parseISO(req.query.StartDate_Created),
-          //     //     // parseISO(req.query.EndDate_Created)
-          //     // //   dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
-          //     // //   dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
-          //     // ],
+          //     fn('CONVERT',fn.col('checkin_datetime'), 'date')
+          //   }
+          // const parseDate = parseISO(req.query.EndDate_Created);
+          //   $where["CreatedDatetime"] = {
+          //     // [Op.gt]: fn("GETDATE"),
+          //     // [Op.gt]: '2023-01-05',
+          //     [Op.gt]: fn('date','2023-01-05'),
+          // //   where: sequelize.where(sequelize.col('PregnancyCheckStatus.CreatedDatetime'),'>', sequelize.fn('year', '2016')),
+          //     // [PregnancyCheckup].[CreatedDatetime] > N'2023-01-01 00:00:00.000 +07:00';"
+          //     //   fn("GETDATE"),
+          //     // dayjs(req.query.EndDate_Created).toISOString(),
+          //     // fn("GETDATE")
+          //     //   parseISO(req.query.StartDate_Created),
+          //     //   parseISO(req.query.EndDate_Created)
+          //     // dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
           //   };
         }
 
@@ -3193,6 +3198,12 @@ const methods = {
 
         const preg = await PregnancyCheckup.findAll({
           ...query,
+          //   where:where(fn('date', col('CreatedDatetime')), '<=', '2016-10-10'),
+          //   where: where(
+          //     col("CreatedDatetime"),
+          //     '>',
+          //     "2016-10-10"
+          //   ),
           include: [
             {
               model: Animal,
@@ -3253,23 +3264,23 @@ const methods = {
               checkBreed.AnimalID.push({
                 AnimalID: x.Animal.AnimalID,
                 FarmIdentificationNumber:
-                  x.Animal.AnimalFarm.FarmIdentificationNumber,
-                FarmName: x.Animal.AnimalFarm.FarmName,
+                  x.Animal.AnimalFarm?.FarmIdentificationNumber,
+                FarmName: x.Animal.AnimalFarm?.FarmName,
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
-                AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-                SemenNumber: x.AI.Semen.SemenNumber,
-                AnimalPar: x.AI.PAR,
-                AIDate: dayjs(x.AI.AIDate).locale("th").format("DD MMM BB"),
-                CheckupDate: dayjs(x.CheckupDate)
-                  .locale("th")
-                  .format("DD MMM BB"),
+                AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
+                SemenNumber: x.AI?.Semen?.SemenNumber,
+                AnimalPar: x.AI?.PAR,
+                AIDate: dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB"),
+                CheckupDate: x.CheckupDate
+                  ? dayjs(x.CheckupDate).locale("th").format("DD MMM BB")
+                  : null,
                 PregnancyCheckStatusName:
-                  x.PregnancyCheckStatus.PregnancyCheckStatusName,
-                BetweenDate: dayjs(x.CheckupDate).diff(
-                  dayjs(x.AI.AIDate),
-                  "day"
-                ),
+                  x.PregnancyCheckStatus?.PregnancyCheckStatusName,
+                BetweenDate:
+                  x.CheckupDate && x.AI
+                    ? dayjs(x.CheckupDate).diff(dayjs(x.AI?.AIDate), "day")
+                    : null,
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
               });
@@ -3285,20 +3296,22 @@ const methods = {
                     FarmName: x.Animal.AnimalFarm.FarmName,
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
-                    AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-                    SemenNumber: x.AI.Semen.SemenNumber,
-                    AnimalPar: x.AI.PAR,
-                    AIDate: dayjs(x.AI.AIDate).locale("th").format("DD MMM BB"),
-                    Semen: x.AI.SemenNumber,
-                    CheckupDate: dayjs(x.CheckupDate)
+                    AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
+                    SemenNumber: x.AI?.Semen?.SemenNumber,
+                    AnimalPar: x.AI?.PAR,
+                    AIDate: dayjs(x.AI?.AIDate)
                       .locale("th")
                       .format("DD MMM BB"),
+                    Semen: x.AI?.SemenNumber,
+                    CheckupDate: x.CheckupDate
+                      ? dayjs(x.CheckupDate).locale("th").format("DD MMM BB")
+                      : null,
                     PregnancyCheckStatusName:
-                      x.PregnancyCheckStatus.PregnancyCheckStatusName,
-                    BetweenDate: dayjs(x.CheckupDate).diff(
-                      dayjs(x.AI.AIDate),
-                      "day"
-                    ),
+                      x.PregnancyCheckStatus?.PregnancyCheckStatusName,
+                    BetweenDate:
+                      x.CheckupDate && x.AI
+                        ? dayjs(x.CheckupDate).diff(dayjs(x.AI?.AIDate), "day")
+                        : null,
                     ResponsibilityStaffName:
                       x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
                   },
