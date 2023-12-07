@@ -4442,8 +4442,26 @@ const methods = {
                 checkBirth = 1;
               } else {
                 preg["CheckUpdate"] = x.PregnancyCheckups[index].CheckupDate;
+
+                preg["CheckUpdateThai"] = dayjs(
+                  x.PregnancyCheckups[index].CheckupDate
+                )
+                  .locale("th")
+                  .format("DD MMM BB");
+
                 preg["CheckUpStatus"] =
                   x.PregnancyCheckups[index].PregnancyCheckStatusID;
+                if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 1) {
+                  preg["CheckUpStatusText"] = "ท้อง";
+                }
+
+                if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 2) {
+                  preg["CheckUpStatusText"] = "ไม่ท้อง";
+                }
+
+                if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 3) {
+                  preg["CheckUpStatusText"] = "รอตรวจซ้ำ";
+                }
               }
             }
 
@@ -4478,6 +4496,7 @@ const methods = {
             let preg = {};
             preg["CheckUpdate"] = "";
             preg["CheckUpStatus"] = "";
+            preg["CheckUpdateThai"] = "";
 
             animal.push({
               AIID: x.AIID,
