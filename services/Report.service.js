@@ -4516,17 +4516,17 @@ const methods = {
         let set_day = 0;
         // โค
         if (req.query.AnimalTypeID == "[1,2,41,42]") {
-          set_day = 229;
+          set_day = 229; //260
         }
 
         // กระบือ
         if (req.query.AnimalTypeID == "[3,4,43,44]") {
-          set_day = 289;
+          set_day = 289; // 320
         }
 
         // แพะ
-        if (req.query.AnimalTypeID == "[3,4,43,44]") {
-          set_day = 289;
+        if (req.query.AnimalTypeID == "[17,18,45,46]") {
+          set_day = 149; // 180
         }
 
         animal = animal.filter((x) => {
