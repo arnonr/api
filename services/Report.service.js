@@ -2868,6 +2868,8 @@ const methods = {
                 PregnancyCheckup: preg,
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+                PregnancyCheckupDate: "",
+                PregnancyCheckupStatus: "",
               });
             }
           } else {
@@ -2899,6 +2901,8 @@ const methods = {
               PregnancyCheckup: preg,
               ResponsibilityStaffName:
                 x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+              PregnancyCheckupDate: "",
+              PregnancyCheckupStatus: "",
             });
           }
         });
@@ -4490,6 +4494,8 @@ const methods = {
                 PregnancyCheckup: preg,
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+                Birthdate: "",
+                ChildGender: "",
               });
             }
           } else {
@@ -4522,6 +4528,8 @@ const methods = {
               PregnancyCheckup: preg,
               ResponsibilityStaffName:
                 x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+              Birthdate: "",
+              ChildGender: "",
             });
           }
         });
