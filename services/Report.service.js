@@ -2692,6 +2692,10 @@ const methods = {
           provinceIDArr = [req.query.ProvinceID];
         }
 
+        if (req.query.FarmID) {
+          $whereFarm["FarmID"] = req.query.FarmID;
+        }
+
         if (provinceIDArr.length != 0) {
           $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
         }
@@ -2781,6 +2785,18 @@ const methods = {
                       model: Project,
                       where: WhereProject,
                     },
+                    {
+                      model: Province,
+                      as: "Province",
+                    },
+                    {
+                      model: Amphur,
+                      as: "Amphur",
+                    },
+                    {
+                      model: Tumbol,
+                      as: "Tumbol",
+                    },
                   ],
                   //   ...queryFarm,
                 },
@@ -2835,10 +2851,15 @@ const methods = {
                 FarmIdentificationNumber:
                   x.Animal.AnimalFarm.FarmIdentificationNumber,
                 FarmName: x.Animal.AnimalFarm.FarmName,
+                FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
+                FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
+                FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
+                FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                 AnimalPar: x.PAR,
+                SemenNumber: x.Semen.SemenNumber,
                 TimeNo: x.TimeNo,
                 AIDate: x.AIDate
                   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -2861,10 +2882,15 @@ const methods = {
               FarmIdentificationNumber:
                 x.Animal.AnimalFarm.FarmIdentificationNumber,
               FarmName: x.Animal.AnimalFarm.FarmName,
+              FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
+              FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
+              FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
+              FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
               AnimalEarID: x.Animal.AnimalEarID,
               AnimalName: x.Animal.AnimalName,
               AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
               AnimalPar: x.PAR,
+              SemenNumber: x.Semen.SemenNumber,
               TimeNo: x.TimeNo,
               AIDate: x.AIDate
                 ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
