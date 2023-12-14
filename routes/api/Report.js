@@ -165,6 +165,14 @@ router.get(
   controllers.onGetReport22
 );
 
+router.get(
+    "/report23",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetReport23
+  );
+  
+
 router.get("/report15", controllers.onGetReport15);
 
 module.exports = router;
