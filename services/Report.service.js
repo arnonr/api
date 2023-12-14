@@ -4716,8 +4716,8 @@ const methods = {
           GiveBirthSelf = await Animal.findAll({
             where: { GiveBirthSelfID: ai_all[x].GiveBirth.GiveBirthID },
           });
-
-          if (GiveBirthSelf) {
+          
+          if (GiveBirthSelf.length == 0) {
             animal.push({
               AIID: ai_all[x].AIID,
               AnimalID: ai_all[x].Animal.AnimalID,
