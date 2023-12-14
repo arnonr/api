@@ -2006,17 +2006,132 @@ const methods = {
     });
   },
 
+  //   report10(req) {
+  //     // report โคสาวยังไม่ได้รับการผสม ยังไม่เสร็จเอาข้อมูลมาแสดงเฉยๆ
+  //     return new Promise(async (resolve, reject) => {
+  //       try {
+  //         // let $where = {};
+  //         let $whereFarm = {};
+  //         if (req.query.OrganizationID) {
+  //           $whereFarm["OrganizationID"] = req.query.OrganizationID;
+  //         }
+
+  //         let provinceIDArr = [];
+  //         if (!req.query.ProvinceID) {
+  //           if (req.query.OrganizationZoneID) {
+  //             const province = await Province.findAll({
+  //               where: { OrganizationZoneID: req.query.OrganizationZoneID },
+  //             });
+
+  //             province.forEach((p) => {
+  //               provinceIDArr.push(p.ProvinceID);
+  //             });
+  //           }
+
+  //           if (req.query.AIZoneID) {
+  //             provinceIDArr = [];
+  //             const province = await Province.findAll({
+  //               where: { AIZoneID: req.query.AIZoneID },
+  //             });
+
+  //             province.forEach((p) => {
+  //               provinceIDArr.push(p.ProvinceID);
+  //             });
+  //           }
+  //         }
+
+  //         if (req.query.TumbolID) {
+  //           $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+  //         }
+
+  //         if (req.query.AmphurID) {
+  //           $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+  //         }
+
+  //         if (req.query.ProvinceID) {
+  //           provinceIDArr = [req.query.ProvinceID];
+  //         }
+
+  //         if (provinceIDArr.length != 0) {
+  //           $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+  //         }
+
+  //         if (req.query.FarmID) {
+  //           $whereFarm["FarmID"] = req.query.FarmID;
+  //         }
+
+  //         const query =
+  //           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+  //         const animal = await Animal.findAll({
+  //           where: {
+  //             AnimalTypeID: {
+  //               [Op.in]: JSON.parse(req.query.AnimalTypeID),
+  //             },
+  //             // BirthDate: {
+
+  //             // }
+  //           },
+  //           include: [
+  //             {
+  //               model: Farm,
+  //               as: "AnimalFarm",
+  //               // ...query,
+  //             },
+  //           ],
+  //         });
+
+  //         let res = [];
+
+  //         animal.forEach((el) => {
+  //           res.push({
+  //             AnimalID: el.AnimalID,
+  //             AnimalEarID: el.AnimalEarID,
+  //             AnimalName: el.AnimalName,
+  //             ThaiBirthDate: el.ThaiBirthDate,
+  //             AnimalAge: el.AnimalAge,
+  //             Weight: "",
+  //             FarmIdentificationNumber: el.AnimalFarm.FarmIdentificationNumber,
+  //             FarmName: el.AnimalFarm.FarmName,
+  //           });
+  //         });
+
+  //         resolve(res);
+  //       } catch (error) {
+  //         reject(ErrorNotFound(error));
+  //       }
+  //     });
+  //   },
+
   report10(req) {
     // report โคสาวยังไม่ได้รับการผสม ยังไม่เสร็จเอาข้อมูลมาแสดงเฉยๆ
     return new Promise(async (resolve, reject) => {
       try {
-        // let $where = {};
+        let $where = {};
         let $whereFarm = {};
+
         if (req.query.OrganizationID) {
           $whereFarm["OrganizationID"] = req.query.OrganizationID;
         }
 
+        $where["AnimalTypeID"] = {
+          [Op.in]: JSON.parse(req.query.AnimalTypeID),
+        };
+
+        let WhereProject = null;
+
+        if (req.query.Projects) {
+          if (req.query.Projects != "[]") {
+            WhereProject = {
+              ProjectID: {
+                [Op.in]: JSON.parse(req.query.Projects),
+              },
+            };
+          }
+        }
+
         let provinceIDArr = [];
+
         if (!req.query.ProvinceID) {
           if (req.query.OrganizationZoneID) {
             const province = await Province.findAll({
@@ -2052,51 +2167,208 @@ const methods = {
           provinceIDArr = [req.query.ProvinceID];
         }
 
-        if (provinceIDArr.length != 0) {
-          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
-        }
-
         if (req.query.FarmID) {
           $whereFarm["FarmID"] = req.query.FarmID;
         }
 
-        const query =
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        // AnimalSexID
+        // AnimalPar
+        // AnimalStatusID
+        // AnimalAlive = 1
+        // ProductionStatusID
+        $where["AnimalSexID"] = 2;
+        $where["AnimalPar"] = 0;
+
+        if (req.query.AnimalTypeID == "[1,2,41,42]") {
+          $where["AnimalStatusID"] = 3;
+        }
+
+        // กระบือ
+        if (req.query.AnimalTypeID == "[3,4,43,44]") {
+          $where["AnimalStatusID"] = 8;
+        }
+
+        // แพะ
+        if (req.query.AnimalTypeID == "[17,18,45,46]") {
+          $where["AnimalStatusID"] = 13;
+        }
+
+        // ProductionStatusID
+        $where["ProductionStatusID"] = null;
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryFarm =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
 
-        const animal = await Animal.findAll({
-          where: {
-            AnimalTypeID: {
-              [Op.in]: JSON.parse(req.query.AnimalTypeID),
-            },
-            // BirthDate: {
+        let animal = [];
 
-            // }
-          },
+        const item = await Animal.findAll({
+          ...query,
           include: [
             {
               model: Farm,
               as: "AnimalFarm",
-              // ...query,
+              ...queryFarm,
+              include: [
+                {
+                  model: Project,
+                  where: WhereProject,
+                },
+                {
+                  model: Province,
+                  as: "Province",
+                },
+                {
+                  model: Amphur,
+                  as: "Amphur",
+                },
+                {
+                  model: Tumbol,
+                  as: "Tumbol",
+                },
+              ],
             },
+            {
+              model: Animal,
+              as: "AnimalFather",
+            },
+            {
+              model: Animal,
+              as: "AnimalMother",
+            },
+            { model: AnimalStatus, as: "AnimalStatus" },
           ],
         });
 
-        let res = [];
-
-        animal.forEach((el) => {
-          res.push({
-            AnimalID: el.AnimalID,
-            AnimalEarID: el.AnimalEarID,
-            AnimalName: el.AnimalName,
-            ThaiBirthDate: el.ThaiBirthDate,
-            AnimalAge: el.AnimalAge,
-            Weight: "",
-            FarmIdentificationNumber: el.AnimalFarm.FarmIdentificationNumber,
-            FarmName: el.AnimalFarm.FarmName,
-          });
+        const item_all = item.filter((x) => {
+          return true;
         });
 
-        resolve(res);
+        item_all.forEach((x) => {
+          animal.push({
+            AnimalID: x.AnimalID,
+            AnimalSecretStatus: x.AnimalSecretStatus,
+            FarmIdentificationNumber: x.AnimalFarm.FarmIdentificationNumber,
+            FarmName: x.AnimalFarm.FarmName,
+            FarmAddress: x.AnimalFarm?.FarmAddress,
+            FarmProvince: x.AnimalFarm?.Province?.ProvinceName,
+            FarmAmphur: x.AnimalFarm?.Amphur?.AmphurName,
+            FarmTumbol: x.AnimalFarm?.Tumbol?.TumbolName,
+            AnimalEarID: x.AnimalEarID,
+            AnimalName: x.AnimalName,
+            AnimalStatusName: x.AnimalStatus.AnimalStatusName,
+            AnimalAge: x.AnimalAge,
+            AnimalFatherEarID: x.AnimalFather?.AnimalEarID,
+            AnimalMotherEarID: x.AnimalMother?.AnimalEarID,
+            AnimalFather: x.AnimalFather?.AnimalName,
+            AnimalMother: x.AnimalMother?.AnimalName,
+            // AIDate: x.AIDate
+            //   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
+            //   : "",
+            // Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
+            SemenNumber: "",
+            AIDate: "",
+            ResponsibilityStaffName: "",
+          });
+          //   let checkAnimal = animal.find((a) => {
+          //     return x.Animal.AnimalID == a.AnimalID;
+          //   });
+
+          //   if (x.PregnancyCheckups.length != 0) {
+          //     let preg = {};
+          //     let checkBirth = 0;
+
+          //     for (let index = 0; index < x.PregnancyCheckups.length; index++) {
+          //       if (
+          //         x.PregnancyCheckups[index].PregnancyCheckStatusID == 1 ||
+          //         x.PregnancyCheckups[index].PregnancyCheckStatusID == 2
+          //       ) {
+          //         checkBirth = 1;
+          //       } else {
+          //         preg["CheckUpdate"] = x.PregnancyCheckups[index].CheckupDate;
+          //         preg["CheckUpStatus"] =
+          //           x.PregnancyCheckups[index].PregnancyCheckStatusID;
+          //       }
+          //     }
+
+          //     if (checkBirth == 0) {
+          //       animal.push({
+          //         AIID: x.AIID,
+          //         AnimalID: x.Animal.AnimalID,
+          //         AnimalSecretStatus: x.Animal.AnimalSecretStatus,
+          //         FarmIdentificationNumber:
+          //           x.Animal.AnimalFarm.FarmIdentificationNumber,
+          //         FarmName: x.Animal.AnimalFarm.FarmName,
+          //         FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
+          //         FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
+          //         FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
+          //         FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
+          //         AnimalEarID: x.Animal.AnimalEarID,
+          //         AnimalName: x.Animal.AnimalName,
+          //         AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+          //         AnimalPar: x.PAR,
+          //         SemenNumber: x.Semen.SemenNumber,
+          //         TimeNo: x.TimeNo,
+          //         AIDate: x.AIDate
+          //           ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
+          //           : "",
+          //         Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
+          //         PregnancyCheckup: preg,
+          //         ResponsibilityStaffName:
+          //           x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+          //         PregnancyCheckupDate: "",
+          //         PregnancyCheckupStatus: "",
+          //       });
+          //     }
+          //   } else {
+          //     let preg = {};
+          //     preg["CheckUpdate"] = "";
+          //     preg["CheckUpStatus"] = "";
+
+          //     animal.push({
+          //       AIID: x.AIID,
+          //       AnimalID: x.Animal.AnimalID,
+          //       AnimalSecretStatus: x.Animal.AnimalSecretStatus,
+          //       FarmIdentificationNumber:
+          //         x.Animal.AnimalFarm.FarmIdentificationNumber,
+          //       FarmName: x.Animal.AnimalFarm.FarmName,
+          //       FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
+          //       FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
+          //       FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
+          //       FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
+          //       AnimalEarID: x.Animal.AnimalEarID,
+          //       AnimalName: x.Animal.AnimalName,
+          //       AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+          //       AnimalPar: x.PAR,
+          //       SemenNumber: x.Semen.SemenNumber,
+          //       TimeNo: x.TimeNo,
+          //       AIDate: x.AIDate
+          //         ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
+          //         : "",
+          //       Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
+          //       PregnancyCheckup: preg,
+          //       ResponsibilityStaffName:
+          //         x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
+          //       PregnancyCheckupDate: "",
+          //       PregnancyCheckupStatus: "",
+          //     });
+          //   }
+        });
+
+        // if (req.query.Day) {
+        //   animal = animal.filter((x) => {
+        //     return x.Day < Number(req.query.Day) + 1;
+        //   });
+        // }
+
+        resolve({
+          data: animal,
+        });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
@@ -4437,6 +4709,21 @@ const methods = {
         });
 
         ai_all.forEach((x) => {
+          let GiveBirthDay = 0;
+          if (req.query.AnimalTypeID == "[1,2,41,42]") {
+            GiveBirthDay = 260;
+          }
+
+          // กระบือ
+          if (req.query.AnimalTypeID == "[3,4,43,44]") {
+            GiveBirthDay = 320;
+          }
+
+          // แพะ
+          if (req.query.AnimalTypeID == "[17,18,45,46]") {
+            GiveBirthDay = 180;
+          }
+
           if (x.PregnancyCheckups.length != 0) {
             let preg = {};
             let checkBirth = 0;
@@ -4491,6 +4778,11 @@ const methods = {
                   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
                   : "",
                 Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
+                GiveBirthDay: x.AIDate
+                  ? dayjs(dayjs(x.AIDate).add(GiveBirthDay, "day"))
+                      .locale("th")
+                      .format("DD MMM BB")
+                  : "",
                 PregnancyCheckup: preg,
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
@@ -4525,6 +4817,11 @@ const methods = {
                 ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
                 : "",
               Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
+              GiveBirthDay: x.AIDate
+                ? dayjs(dayjs(x.AIDate).add(GiveBirthDay, "day"))
+                    .locale("th")
+                    .format("DD MMM BB")
+                : "",
               PregnancyCheckup: preg,
               ResponsibilityStaffName:
                 x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
@@ -4716,14 +5013,14 @@ const methods = {
           GiveBirthSelf = await Animal.findAll({
             where: { GiveBirthSelfID: ai_all[x].GiveBirth.GiveBirthID },
           });
-          
+
           if (GiveBirthSelf.length == 0) {
             animal.push({
               AIID: ai_all[x].AIID,
               AnimalID: ai_all[x].Animal.AnimalID,
               AnimalSecretStatus: ai_all[x].Animal.AnimalSecretStatus,
               FarmIdentificationNumber:
-              ai_all[x].Animal.AnimalFarm.FarmIdentificationNumber,
+                ai_all[x].Animal.AnimalFarm.FarmIdentificationNumber,
               FarmName: ai_all[x].Animal.AnimalFarm.FarmName,
               FarmAddress: ai_all[x].Animal.AnimalFarm?.FarmAddress,
               FarmProvince: ai_all[x].Animal.AnimalFarm?.Province?.ProvinceName,
@@ -4738,13 +5035,17 @@ const methods = {
               AIDate: ai_all[x].AIDate
                 ? dayjs(ai_all[x].AIDate).locale("th").format("DD MMM BB")
                 : "",
-              Day: ai_all[x].AIDate ? dayjs().diff(dayjs(ai_all[x].AIDate), "day") : "",
+              Day: ai_all[x].AIDate
+                ? dayjs().diff(dayjs(ai_all[x].AIDate), "day")
+                : "",
               GiveBirth: ai_all[x].GiveBirth,
               GiveBirthDate: ai_all[x].GiveBirth.ThaiGiveBirthDate,
               GiveBirthAmount: ai_all[x].GiveBirth.Amount,
               GiveBirthGender: ai_all[x].GiveBirth.ChildGender,
               ResponsibilityStaffName:
-              ai_all[x].Staff?.StaffGivenName + " " + ai_all[x].Staff?.StaffSurname,
+                ai_all[x].Staff?.StaffGivenName +
+                " " +
+                ai_all[x].Staff?.StaffSurname,
             });
           }
         }
