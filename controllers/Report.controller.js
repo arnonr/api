@@ -190,7 +190,6 @@ const methods = {
     }
   },
 
-
   async onGetReport21(req, res) {
     try {
       let result = await Service.report21(req);
@@ -199,7 +198,6 @@ const methods = {
       res.error(error);
     }
   },
-
 
   async onGetReport22(req, res) {
     try {
@@ -210,7 +208,6 @@ const methods = {
     }
   },
 
-
   async onGetReport23(req, res) {
     try {
       let result = await Service.report23(req);
@@ -220,7 +217,14 @@ const methods = {
     }
   },
 
-
+  async onGetReport24(req, res) {
+    try {
+      let result = await Service.report24(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
 
   async onGetReport99(req, res) {
     try {

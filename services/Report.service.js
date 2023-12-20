@@ -6154,6 +6154,14 @@ const methods = {
             {
               model: AI,
               as: "AI",
+              where: {
+                AIDate: {
+                  [Op.between]: [
+                    dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+                    dayjs().format("YYYY-MM-DD"),
+                  ],
+                },
+              },
               include: [
                 {
                   model: Semen,
@@ -6185,38 +6193,84 @@ const methods = {
             raw: true,
           });
 
-          preg_arr[i] = {
-            AIID: preg[i].AIID,
-            AnimalID: preg[i].AnimalID,
-            AnimalSecretStatus: preg[i].Animal.AnimalSecretStatus,
-            FarmIdentificationNumber:
-              preg[i].Animal.AnimalFarm.FarmIdentificationNumber,
-            FarmName: preg[i].Animal.AnimalFarm.FarmName,
-            FarmAddress: preg[i].Animal.AnimalFarm?.FarmAddress,
-            FarmProvince: preg[i].Animal.AnimalFarm?.Province?.ProvinceName,
-            FarmAmphur: preg[i].Animal.AnimalFarm?.Amphur?.AmphurName,
-            FarmTumbol: preg[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
-            AnimalEarID: preg[i].Animal.AnimalEarID,
-            AnimalName: preg[i].Animal.AnimalName,
-            AnimalStatusName: preg[i].Animal.AnimalStatus.AnimalStatusName,
-            AnimalPar: preg[i].AI.PAR,
-            SemenNumber: preg[i].AI.Semen.SemenNumber,
-            TimeNo: preg[i].AI.TimeNo,
-            ThaiAIDate: preg[i].AI.AIDate
-              ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
-              : "",
-            AIDate: preg[i].AI.AIDate,
-            ResponsibilityStaffName:
-              preg[i].Staff?.StaffGivenName + " " + preg[i].Staff?.StaffSurname,
-          };
+          if (preg[i].AnimalID != null) {
+            let check1 = preg_arr.findIndex((j) => {
+              return j != undefined && j.AnimalID == preg[i].Animal.AnimalID;
+            });
 
-          preg_arr[i]["GiveBirth"] = null;
-          if (gb) {
-            preg_arr[i]["GiveBirth"] = gb.GiveBirthDate;
-            // {ม
-            //     GiveBirthID: gb.GiveBirthID,
-            //     GiveBirthDate: gb.GiveBirthDate
-            // };
+            if (check1 >= 0) {
+              if (preg[i].AI.TimeNo > preg_arr[check1].TimeNo) {
+                preg_arr.splice(check1, 1);
+                preg_arr[i] = {
+                  AIID: preg[i].AIID,
+                  AnimalID: preg[i].AnimalID,
+                  AnimalSecretStatus: preg[i].Animal.AnimalSecretStatus,
+                  FarmIdentificationNumber:
+                    preg[i].Animal.AnimalFarm.FarmIdentificationNumber,
+                  FarmName: preg[i].Animal.AnimalFarm.FarmName,
+                  FarmAddress: preg[i].Animal.AnimalFarm?.FarmAddress,
+                  FarmProvince:
+                    preg[i].Animal.AnimalFarm?.Province?.ProvinceName,
+                  FarmAmphur: preg[i].Animal.AnimalFarm?.Amphur?.AmphurName,
+                  FarmTumbol: preg[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
+                  AnimalEarID: preg[i].Animal.AnimalEarID,
+                  AnimalName: preg[i].Animal.AnimalName,
+                  AnimalStatusName:
+                    preg[i].Animal.AnimalStatus.AnimalStatusName,
+                  AnimalPar: preg[i].AI.AinalPar,
+                  SemenNumber: preg[i].AI.Semen.SemenNumber,
+                  TimeNo: preg[i].AI.TimeNo,
+                  ThaiAIDate: preg[i].AI.AIDate
+                    ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
+                    : "",
+                  AIDate: preg[i].AI.AIDate,
+                  ResponsibilityStaffName:
+                    preg[i].Staff?.StaffGivenName +
+                    " " +
+                    preg[i].Staff?.StaffSurname,
+                };
+                preg_arr[i]["GiveBirth"] = null;
+                if (gb) {
+                  preg_arr[i]["GiveBirth"] = gb.GiveBirthDate;
+                }
+              }
+            } else {
+              if (preg[i].Animal != null) {
+                preg_arr[i] = {
+                  AIID: preg[i].AIID,
+                  AnimalID: preg[i].Animal.AnimalID,
+                  AnimalSecretStatus: preg[i].Animal.AnimalSecretStatus,
+                  FarmIdentificationNumber:
+                    preg[i].Animal.AnimalFarm.FarmIdentificationNumber,
+                  FarmName: preg[i].Animal.AnimalFarm.FarmName,
+                  FarmAddress: preg[i].Animal.AnimalFarm?.FarmAddress,
+                  FarmProvince:
+                    preg[i].Animal.AnimalFarm?.Province?.ProvinceName,
+                  FarmAmphur: preg[i].Animal.AnimalFarm?.Amphur?.AmphurName,
+                  FarmTumbol: preg[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
+                  AnimalEarID: preg[i].Animal.AnimalEarID,
+                  AnimalName: preg[i].Animal.AnimalName,
+                  AnimalStatusName:
+                    preg[i].Animal.AnimalStatus.AnimalStatusName,
+                  AnimalPar: preg[i].AI.AinalPar,
+                  SemenNumber: preg[i].AI.Semen.SemenNumber,
+                  TimeNo: preg[i].AI.TimeNo,
+                  ThaiAIDate: preg[i].AI.AIDate
+                    ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
+                    : "",
+                  AIDate: preg[i].AI.AIDate,
+                  ResponsibilityStaffName:
+                    preg[i].Staff?.StaffGivenName +
+                    " " +
+                    preg[i].Staff?.StaffSurname,
+                };
+
+                preg_arr[i]["GiveBirth"] = null;
+                if (gb) {
+                  preg_arr[i]["GiveBirth"] = gb.GiveBirthDate;
+                }
+              }
+            }
           }
         }
 
@@ -6268,12 +6322,12 @@ const methods = {
 
         animal_all = animal_more.length + animal_less_more.length;
 
-        console.log(filter_preg);
-        console.log(sum_result_day1);
-        console.log(animal_more.length);
-        console.log(animal_less_more.length);
-        console.log(animal_all);
-        console.log(animal_median);
+        // console.log(filter_preg);
+        // console.log(sum_result_day1);
+        // console.log(animal_more.length);
+        // console.log(animal_less_more.length);
+        // console.log(animal_all);
+        // console.log(animal_median);
 
         resolve({
           data: [
@@ -6369,30 +6423,6 @@ const methods = {
         }
 
         if (req.query.StartDate_Created) {
-          //   $where["CheckupDate"] = {
-          //     [Op.between]: [
-          //       dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
-          //       dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
-          //     ],
-          //   };
-          // CONVERT(DATETIME,'2023-10-01')
-          //   $where["CreatedDatetime"] = {
-          //     fn('CONVERT',fn.col('checkin_datetime'), 'date')
-          //   }
-          // const parseDate = parseISO(req.query.EndDate_Created);
-          //   $where["CreatedDatetime"] = {
-          //     // [Op.gt]: fn("GETDATE"),
-          //     // [Op.gt]: '2023-01-05',
-          //     [Op.gt]: fn('date','2023-01-05'),
-          // //   where: sequelize.where(sequelize.col('PregnancyCheckStatus.CreatedDatetime'),'>', sequelize.fn('year', '2016')),
-          //     // [PregnancyCheckup].[CreatedDatetime] > N'2023-01-01 00:00:00.000 +07:00';"
-          //     //   fn("GETDATE"),
-          //     // dayjs(req.query.EndDate_Created).toISOString(),
-          //     // fn("GETDATE")
-          //     //   parseISO(req.query.StartDate_Created),
-          //     //   parseISO(req.query.EndDate_Created)
-          //     // dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
-          //   };
         }
 
         if (req.query.StartDate) {
@@ -6405,7 +6435,6 @@ const methods = {
         }
 
         $where["TimeNo"] = 1;
-        $where["AIDate"] = 1;
 
         $where["AIDate"] = {
           [Op.between]: [
@@ -6414,28 +6443,12 @@ const methods = {
           ],
         };
 
-        // ที่เคยคลอด
-
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         const queryFarm =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
 
-        // report รายงานดัชนี
-        // หาช่วงห่างการคลอดลูก(วัน) รับเฉพาะสัตว์ที่ตรวจว่าท้อง /
-        // เมื่อได้สัตว์ที่ตรวจว่าท้องแล้ว ให้นำวันที่ผสมครั้งนั้น - วันคลอดครั้งเก่า
-        // ดึงการผสมครั้งล่าสุด (ได้มาจากการตรวจท้องแล้ว) และการคลอดครั้งที่ผ่านมา
-
-        // ค้นหา AI โดย join AI กับ preg แล้วเอาชุดข้อมูลทึ่ preg == ท้อง /
-        // หาวันคลอดครั้งล่าสุดของสัตว์ตัวนั้น GiveBirth ID มากที่สุด
-        // เอาวันที่ วันที่ผสมครั้งนั้น - วันคลอดครั้งเก่า ได้ค่ามาเก็บไว้ใน array, เก็บ ID สัตว์ด้วย
-
-        // เอาค่าใน array มาหาค่ากลาง และค่าเฉลี่ย,count จำนวนโคจากจำนวนวันที่เก็บ
-        // เอามาเรียงสัตว์ที่ได้ค่าน้อยกว่าและมากกว่าหรือเท่ากับค่าเฉลี่ย
-
-        // ที่เคยคลอดลูก
-
-        const preg = await AI.findAll({
+        const ai = await AI.findAll({
           ...query,
           include: [
             {
@@ -6487,62 +6500,67 @@ const methods = {
           ],
         });
 
-        let preg_arr = [];
+        let ai_arr = [];
 
-        for (let i = 0; i < preg.length; i++) {
-          preg[i].GiveBirth = null;
+        for (let i = 0; i < ai.length; i++) {
+          ai[i].GiveBirth = null;
           let gb = await GiveBirth.findOne({
             where: {
-              AnimalID: preg[i].AnimalID,
+              AnimalID: ai[i].AnimalID,
               AIID: {
-                [Op.ne]: preg[i].AIID,
+                [Op.ne]: ai[i].AIID,
               },
             },
             order: [["GiveBirthID", "DESC"]],
             raw: true,
           });
 
-          preg_arr[i] = {
-            AIID: preg[i].AIID,
-            AnimalID: preg[i].AnimalID,
-            AnimalSecretStatus: preg[i].Animal.AnimalSecretStatus,
-            FarmIdentificationNumber:
-              preg[i].Animal.AnimalFarm.FarmIdentificationNumber,
-            FarmName: preg[i].Animal.AnimalFarm.FarmName,
-            FarmAddress: preg[i].Animal.AnimalFarm?.FarmAddress,
-            FarmProvince: preg[i].Animal.AnimalFarm?.Province?.ProvinceName,
-            FarmAmphur: preg[i].Animal.AnimalFarm?.Amphur?.AmphurName,
-            FarmTumbol: preg[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
-            AnimalEarID: preg[i].Animal.AnimalEarID,
-            AnimalName: preg[i].Animal.AnimalName,
-            AnimalStatusName: preg[i].Animal.AnimalStatus.AnimalStatusName,
-            AnimalPar: preg[i].AI.PAR,
-            SemenNumber: preg[i].AI.Semen.SemenNumber,
-            TimeNo: preg[i].AI.TimeNo,
-            ThaiAIDate: preg[i].AI.AIDate
-              ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
-              : "",
-            AIDate: preg[i].AI.AIDate,
-            ResponsibilityStaffName:
-              preg[i].Staff?.StaffGivenName + " " + preg[i].Staff?.StaffSurname,
-          };
-
-          preg_arr[i]["GiveBirth"] = null;
           if (gb) {
-            preg_arr[i]["GiveBirth"] = gb.GiveBirthDate;
-            // {ม
-            //     GiveBirthID: gb.GiveBirthID,
-            //     GiveBirthDate: gb.GiveBirthDate
-            // };
+            let check = ai_arr.findIndex((j) => {
+              return j != undefined && j.AnimalID == ai[i].Animal.AnimalID;
+            });
+
+            if (check == -1) {
+              ai_arr[i] = {
+                AIID: ai[i].AIID,
+                AnimalID: ai[i].AnimalID,
+                AnimalSecretStatus: ai[i].Animal.AnimalSecretStatus,
+                FarmIdentificationNumber:
+                  ai[i].Animal.AnimalFarm.FarmIdentificationNumber,
+                FarmName: ai[i].Animal.AnimalFarm.FarmName,
+                FarmAddress: ai[i].Animal.AnimalFarm?.FarmAddress,
+                FarmProvince: ai[i].Animal.AnimalFarm?.Province?.ProvinceName,
+                FarmAmphur: ai[i].Animal.AnimalFarm?.Amphur?.AmphurName,
+                FarmTumbol: ai[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
+                AnimalEarID: ai[i].Animal.AnimalEarID,
+                AnimalName: ai[i].Animal.AnimalName,
+                AnimalStatusName: ai[i].Animal.AnimalStatus.AnimalStatusName,
+                AnimalPar: ai[i].PAR,
+                SemenNumber: ai[i].Semen.SemenNumber,
+                TimeNo: ai[i].TimeNo,
+                ThaiAIDate: ai[i].AIDate
+                  ? dayjs(ai[i].AIDate).locale("th").format("DD MMM BB")
+                  : "",
+                AIDate: ai[i].AIDate,
+                ResponsibilityStaffName:
+                  ai[i].Staff?.StaffGivenName + " " + ai[i].Staff?.StaffSurname,
+              };
+              ai_arr[i]["GiveBirthDateOld"] = gb.GiveBirthDate;
+            }
           }
         }
 
-        let filter_preg = preg_arr
+        // console.log(ai_arr);
+
+        let filter_ai = ai_arr
           .filter((x) => {
-            return x.GiveBirth != null;
+            return x.GiveBirthDateOld != null;
           })
           .map((x) => {
-            x.result_day1 = dayjs(x.AIDate).diff(dayjs(x.GiveBirth), "day");
+            x.result_day1 = dayjs(x.AIDate).diff(
+              dayjs(x.GiveBirthDateOld),
+              "day"
+            );
             return x;
           })
           .filter((x) => {
@@ -6554,11 +6572,11 @@ const methods = {
         let animal_less_more = [];
         let result_day1_all = [];
 
-        filter_preg.forEach((x) => {
+        filter_ai.forEach((x) => {
           sum_result_day1 = x.result_day1 + sum_result_day1;
           result_day1_all.push(x.result_day1);
         });
-        sum_result_day1 = sum_result_day1 / filter_preg.length;
+        sum_result_day1 = sum_result_day1 / filter_ai.length;
 
         // result_day1_all
         const median = (arr) => {
@@ -6575,28 +6593,28 @@ const methods = {
 
         let animal_median = median(result_day1_all);
 
-        animal_more = filter_preg.filter((x) => {
+        animal_more = filter_ai.filter((x) => {
           return x.result_day1 >= sum_result_day1;
         });
 
-        animal_less_more = filter_preg.filter((x) => {
+        animal_less_more = filter_ai.filter((x) => {
           return x.result_day1 < sum_result_day1;
         });
 
         animal_all = animal_more.length + animal_less_more.length;
 
-        console.log(filter_preg);
-        console.log(sum_result_day1);
-        console.log(animal_more.length);
-        console.log(animal_less_more.length);
-        console.log(animal_all);
-        console.log(animal_median);
+        // console.log(filter_ai);
+        // console.log(sum_result_day1);
+        // console.log(animal_more.length);
+        // console.log(animal_less_more.length);
+        // console.log(animal_all);
+        // console.log(animal_median);
 
         resolve({
           data: [
             {
-              title: "ช่วงห่างการคลอดลูก(วัน)",
-              AnimalID: filter_preg,
+              title: "ช่วงห่างการคลอดถึงวันผสมครั้งแรก(วัน)",
+              AnimalID: filter_ai,
               all: animal_all,
               median: animal_median,
               avg: parseFloat(sum_result_day1).toFixed(2),
