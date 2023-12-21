@@ -185,11 +185,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          db.count(_q.query),
+          db.findAll({ ..._q.query }),
         ])
           .then(async (result) => {
             let rows = result[0],
-              count = rows.length;
+              count = result[1].length;
 
             rows = await Promise.all(
               rows.map(async (data) => {
@@ -211,10 +211,10 @@ const methods = {
 
             resolve({
               rows: rows,
-              totalPage: Math.ceil(result[1] / limit),
-              totalData: result[1],
+              totalPage: Math.ceil(count / limit),
+              totalData: count,
               currPage: +req.query.page || 1,
-              total: result[1],
+              total: count,
             });
           })
           .catch((error) => {
