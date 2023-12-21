@@ -5403,6 +5403,15 @@ const methods = {
           $where["ResponsibilityStaffID"] = req.query.StaffID;
         }
 
+        if (req.query.StartDate) {
+          $where["AIDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         const queryFarm =
@@ -5463,6 +5472,10 @@ const methods = {
                 { model: PregnancyCheckStatus, as: "PregnancyCheckStatus" },
               ],
             },
+            {
+              model: GiveBirth,
+              required: false,
+            },
           ],
         });
 
@@ -5490,13 +5503,22 @@ const methods = {
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                 SemenNumber: x.Semen.SemenNumber,
-                AnimalPar: x.PAR,
+                AnimalPar: x.PAR > 0 ? x.PAR : 0,
                 AIDate: x.AIDate
                   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
                   : "",
+                AIDateReal: x.AIDate,
                 ResponsibilityStaffName:
                   x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
                 PregnancyCheckStatusName: pregName,
+                GiveBirthDate:
+                  x.GiveBirth != null
+                    ? dayjs(x.GiveBirth.GiveBirthDate)
+                        .locale("th")
+                        .format("DD MMM BB")
+                    : "-",
+                ChildGender:
+                  x.GiveBirth != null ? x.GiveBirth.ChildGender : "-",
               });
               checkBreed.FarmID.push(x.Animal.FarmID);
             } else {
@@ -5519,13 +5541,22 @@ const methods = {
                     AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
 
                     SemenNumber: x.Semen.SemenNumber,
-                    AnimalPar: x.PAR,
+                    AnimalPar: x.PAR > 0 ? x.PAR : 0,
                     AIDate: x.AIDate
                       ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
                       : "",
+                    AIDateReal: x.AIDate,
                     ResponsibilityStaffName:
                       x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
                     PregnancyCheckStatusName: pregName,
+                    GiveBirthDate:
+                      x.GiveBirth != null
+                        ? dayjs(x.GiveBirth.GiveBirthDate)
+                            .locale("th")
+                            .format("DD MMM BB")
+                        : "-",
+                    ChildGender:
+                      x.GiveBirth != null ? x.GiveBirth.ChildGender : "-",
                   },
                 ],
                 FarmID: [x.Animal.FarmID],
@@ -5569,118 +5600,24 @@ const methods = {
               ")";
           }
 
+          x.AnimalID.sort((a, b) => {
+            if (a.AIDateReal < b.AIDateReal) {
+              return -1;
+            }
+            if (a.AIDateReal > b.AIDateReal) {
+              return 1;
+            }
+
+            // names must be equal
+            return 0;
+          });
+
           return x;
         });
 
         resolve({
           data: breed,
         });
-
-        // const ai_all = ai.filter((x) => {
-        //   return true;
-        // });
-
-        // ai_all.forEach((x) => {
-        //   if (x.PregnancyCheckups.length != 0) {
-        //     let preg = {};
-        //     let checkBirth = 0;
-
-        //     for (let index = 0; index < x.PregnancyCheckups.length; index++) {
-        //       if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 2) {
-        //         checkBirth = 1;
-        //       } else {
-        //         preg["CheckUpdate"] = x.PregnancyCheckups[index].CheckupDate;
-
-        //         preg["CheckUpdateThai"] = dayjs(
-        //           x.PregnancyCheckups[index].CheckupDate
-        //         )
-        //           .locale("th")
-        //           .format("DD MMM BB");
-
-        //         preg["CheckUpStatus"] =
-        //           x.PregnancyCheckups[index].PregnancyCheckStatusID;
-        //         if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 1) {
-        //           preg["CheckUpStatusText"] = "ท้อง";
-        //         }
-
-        //         if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 2) {
-        //           preg["CheckUpStatusText"] = "ไม่ท้อง";
-        //         }
-
-        //         if (x.PregnancyCheckups[index].PregnancyCheckStatusID == 3) {
-        //           preg["CheckUpStatusText"] = "รอตรวจซ้ำ";
-        //         }
-        //       }
-        //     }
-
-        //     if (checkBirth == 0) {
-        //       animal.push({
-        //         AIID: x.AIID,
-        //         AnimalID: x.Animal.AnimalID,
-        //         AnimalSecretStatus: x.Animal.AnimalSecretStatus,
-        //         FarmIdentificationNumber:
-        //           x.Animal.AnimalFarm.FarmIdentificationNumber,
-        //         FarmName: x.Animal.AnimalFarm.FarmName,
-        //         FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
-        //         FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
-        //         FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
-        //         FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
-        //         AnimalEarID: x.Animal.AnimalEarID,
-        //         AnimalName: x.Animal.AnimalName,
-        //         AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-        //         AnimalPar: x.PAR,
-        //         SemenNumber: x.Semen.SemenNumber,
-        //         TimeNo: x.TimeNo,
-        //         AIDate: x.AIDate
-        //           ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
-        //           : "",
-        //         Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
-        //         PregnancyCheckup: preg,
-        //         ResponsibilityStaffName:
-        //           x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
-        //         Birthdate: "",
-        //         ChildGender: "",
-        //       });
-        //     }
-        //   } else {
-        //     let preg = {};
-        //     preg["CheckUpdate"] = "";
-        //     preg["CheckUpStatus"] = "";
-        //     preg["CheckUpdateThai"] = "";
-
-        //     animal.push({
-        //       AIID: x.AIID,
-        //       AnimalID: x.Animal.AnimalID,
-        //       AnimalSecretStatus: x.Animal.AnimalSecretStatus,
-        //       FarmIdentificationNumber:
-        //         x.Animal.AnimalFarm.FarmIdentificationNumber,
-        //       FarmName: x.Animal.AnimalFarm.FarmName,
-        //       FarmAddress: x.Animal.AnimalFarm?.FarmAddress,
-        //       FarmProvince: x.Animal.AnimalFarm?.Province?.ProvinceName,
-        //       FarmAmphur: x.Animal.AnimalFarm?.Amphur?.AmphurName,
-        //       FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
-        //       AnimalEarID: x.Animal.AnimalEarID,
-        //       AnimalName: x.Animal.AnimalName,
-        //       AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-        //       AnimalPar: x.PAR,
-        //       SemenNumber: x.Semen.SemenNumber,
-        //       TimeNo: x.TimeNo,
-        //       AIDate: x.AIDate
-        //         ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
-        //         : "",
-        //       Day: x.AIDate ? dayjs().diff(dayjs(x.AIDate), "day") : "",
-        //       PregnancyCheckup: preg,
-        //       ResponsibilityStaffName:
-        //         x.Staff?.StaffGivenName + " " + x.Staff?.StaffSurname,
-        //       Birthdate: "",
-        //       ChildGender: "",
-        //     });
-        //   }
-        // });
-
-        // resolve({
-        //   data: animal,
-        // });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
@@ -6332,7 +6269,7 @@ const methods = {
         resolve({
           data: [
             {
-              title: "ช่วงห่างการคลอดลูก(วัน)",
+              title: "ช่วงห่างการคลอดถึงวันผสมติด (วัน)",
               AnimalID: filter_preg,
               all: animal_all,
               median: animal_median,
@@ -6613,8 +6550,283 @@ const methods = {
         resolve({
           data: [
             {
-              title: "ช่วงห่างการคลอดถึงวันผสมครั้งแรก(วัน)",
+              title: "ช่วงห่างการคลอดถึงวันผสมครั้งแรก (วัน)",
               AnimalID: filter_ai,
+              all: animal_all,
+              median: animal_median,
+              avg: parseFloat(sum_result_day1).toFixed(2),
+              animal_more: animal_more,
+              animal_less_more: animal_less_more,
+              animal_more_count: animal_more.length,
+              animal_less_more_count: animal_less_more.length,
+            },
+          ],
+        });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  report25(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let $where = {};
+        let $whereAnimal = {};
+        let $whereFarm = {};
+
+        if (req.query.OrganizationID) {
+          $whereFarm["OrganizationID"] = req.query.OrganizationID;
+        }
+
+        $whereAnimal["AnimalTypeID"] = {
+          [Op.in]: [1, 2, 41, 42],
+        };
+
+        let WhereProject = null;
+
+        if (req.query.Projects) {
+          if (req.query.Projects != "[]") {
+            WhereProject = {
+              ProjectID: {
+                [Op.in]: JSON.parse(req.query.Projects),
+              },
+            };
+          }
+        }
+
+        let provinceIDArr = [];
+
+        if (!req.query.ProvinceID) {
+          if (req.query.OrganizationZoneID) {
+            const province = await Province.findAll({
+              where: { OrganizationZoneID: req.query.OrganizationZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+
+          if (req.query.AIZoneID) {
+            provinceIDArr = [];
+            const province = await Province.findAll({
+              where: { AIZoneID: req.query.AIZoneID },
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+          }
+        }
+
+        if (req.query.TumbolID) {
+          $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+        }
+
+        if (req.query.AmphurID) {
+          $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+        }
+
+        if (req.query.ProvinceID) {
+          provinceIDArr = [req.query.ProvinceID];
+        }
+
+        if (provinceIDArr.length != 0) {
+          $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
+        }
+
+        if (req.query.StaffID) {
+          $where["ResponsibilityStaffID"] = req.query.StaffID;
+        }
+
+        if (req.query.StartDate_Created) {
+        }
+
+        if (req.query.StartDate) {
+          $where["CheckupDate"] = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        $where["GiveBirthDate"] = {
+          [Op.between]: [
+            dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+            dayjs().format("YYYY-MM-DD"),
+          ],
+        };
+
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        const queryFarm =
+          Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
+
+        const gbm = await GiveBirth.findAll({
+          ...query,
+          include: [
+            {
+              model: Animal,
+              as: "Animal",
+              where: {
+                AnimalTypeID: {
+                  [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                },
+                AnimalStatusID: {
+                  [Op.in]: [5, 10, 15],
+                },
+              },
+              include: [
+                {
+                  model: Farm,
+                  as: "AnimalFarm",
+                  ...queryFarm,
+                  include: [
+                    {
+                      model: Project,
+                      where: WhereProject,
+                    },
+                    {
+                      model: Province,
+                      as: "Province",
+                    },
+                    {
+                      model: Amphur,
+                      as: "Amphur",
+                    },
+                    {
+                      model: Tumbol,
+                      as: "Tumbol",
+                    },
+                  ],
+                  //   ...queryFarm,
+                },
+                { model: AnimalStatus, as: "AnimalStatus" },
+              ],
+            },
+            {
+              model: Staff,
+            },
+          ],
+        });
+
+        let gbm_arr = [];
+
+        for (let i = 0; i < gbm.length; i++) {
+          gbm[i].GiveBirth = null;
+          let gb = await GiveBirth.findOne({
+            where: {
+              AnimalID: gbm[i].AnimalID,
+              GiveBirthID: {
+                [Op.ne]: gbm[i].GiveBirthID,
+              },
+            },
+            order: [["GiveBirthID", "DESC"]],
+            raw: true,
+          });
+
+          if (gb) {
+            let check = gbm_arr.findIndex((j) => {
+              return j != undefined && j.AnimalID == gbm[i].Animal.AnimalID;
+            });
+
+            if (check == -1) {
+              gbm_arr[i] = {
+                AIID: gbm[i].AIID,
+                AnimalID: gbm[i].AnimalID,
+                AnimalSecretStatus: gbm[i].Animal.AnimalSecretStatus,
+                FarmIdentificationNumber:
+                  gbm[i].Animal.AnimalFarm.FarmIdentificationNumber,
+                FarmName: gbm[i].Animal.AnimalFarm.FarmName,
+                FarmAddress: gbm[i].Animal.AnimalFarm?.FarmAddress,
+                FarmProvince: gbm[i].Animal.AnimalFarm?.Province?.ProvinceName,
+                FarmAmphur: gbm[i].Animal.AnimalFarm?.Amphur?.AmphurName,
+                FarmTumbol: gbm[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
+                AnimalEarID: gbm[i].Animal.AnimalEarID,
+                AnimalName: gbm[i].Animal.AnimalName,
+                AnimalStatusName: gbm[i].Animal.AnimalStatus.AnimalStatusName,
+                AnimalPar: gbm[i].PAR,
+                SemenNumber: "",
+                TimeNo: gbm[i].TimeNo,
+                GiveBirthDate: gbm[i].GiveBirthDate
+                  ? dayjs(gbm[i].GiveBirthDate).locale("th").format("DD MMM BB")
+                  : "",
+                AIDate: "",
+                ResponsibilityStaffName:
+                  gbm[i].Staff?.StaffGivenName +
+                  " " +
+                  gbm[i].Staff?.StaffSurname,
+              };
+              gbm_arr[i]["GiveBirthDateOld"] = gb.GiveBirthDate;
+            }
+          }
+        }
+
+        let filter_gbm = gbm_arr
+          .filter((x) => {
+            return x.GiveBirthDateOld != null;
+          })
+          .map((x) => {
+            x.result_day1 = dayjs(x.GiveBirthDate).diff(
+              dayjs(x.GiveBirthDateOld),
+              "day"
+            );
+            return x;
+          })
+          .filter((x) => {
+            return x.result_day1 > 0;
+          });
+
+        let sum_result_day1 = 0;
+        let animal_more = [];
+        let animal_less_more = [];
+        let result_day1_all = [];
+
+        filter_gbm.forEach((x) => {
+          sum_result_day1 = x.result_day1 + sum_result_day1;
+          result_day1_all.push(x.result_day1);
+        });
+        sum_result_day1 = sum_result_day1 / filter_gbm.length;
+
+        // result_day1_all
+        const median = (arr) => {
+          const { length } = arr;
+
+          arr.sort((a, b) => a - b);
+
+          if (length % 2 === 0) {
+            return (arr[length / 2 - 1] + arr[length / 2]) / 2;
+          }
+
+          return arr[(length - 1) / 2];
+        };
+
+        let animal_median = median(result_day1_all);
+
+        animal_more = filter_gbm.filter((x) => {
+          return x.result_day1 >= sum_result_day1;
+        });
+
+        animal_less_more = filter_gbm.filter((x) => {
+          return x.result_day1 < sum_result_day1;
+        });
+
+        animal_all = animal_more.length + animal_less_more.length;
+
+        // console.log(filter_ai);
+        // console.log(sum_result_day1);
+        // console.log(animal_more.length);
+        // console.log(animal_less_more.length);
+        // console.log(animal_all);
+        // console.log(animal_median);
+
+        resolve({
+          data: [
+            {
+              title: "ช่วงห่างการคลอดลูก (วัน)",
+              AnimalID: filter_gbm,
               all: animal_all,
               median: animal_median,
               avg: parseFloat(sum_result_day1).toFixed(2),
