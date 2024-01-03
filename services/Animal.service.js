@@ -2962,6 +2962,8 @@ const methods = {
   photo(id, filename) {
     return new Promise(async (resolve, reject) => {
       try {
+
+        console.log("FREEDOM55")
         // Check ID
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
