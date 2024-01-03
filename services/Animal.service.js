@@ -6,6 +6,7 @@ const { count } = require("../models/Animal");
 
 const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
+const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
 const AnimalBreed = require("../models/AnimalBreed");
 const AnimalStatus = require("../models/AnimalStatus");
@@ -1993,12 +1994,12 @@ const methods = {
               // attributes: ["EducationID", "EducationName"],
             },
             {
-                association: "Organization",
-                required: req.query.OrganizationID ? true : false,
-                // if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
-                //   where: WhereAIZone,
-                // attributes: ["EducationID", "EducationName"],
-              },
+              association: "Organization",
+              required: req.query.OrganizationID ? true : false,
+              // if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+              //   where: WhereAIZone,
+              // attributes: ["EducationID", "EducationName"],
+            },
           ],
 
           // {
@@ -3470,7 +3471,12 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         let animal = await db.findByPk(req.params.id, {
-          include: [{ all: true }, { model: Farm, as: "AnimalFarm" }],
+          include: [
+            { all: true },
+            { model: Farm, as: "AnimalFarm" },
+            { model: Animal, as: "AnimalFather" },
+            { model: Animal, as: "AnimalMother" },
+          ],
         });
 
         let ai = await AI.findAll({
@@ -3717,7 +3723,9 @@ const methods = {
           AnimalBreedAll: animal.AnimalBreedAll,
           AnimalImagePath: animal.AnimalImagePath,
           AnimalDadBreed: "TH890890",
+          AnimalDadName: animal.AnimalFather?.AnimalName,
           AnimaMomBreed: "349872",
+          AnimalMomName: animal.AnimalMother?.AnimalName,
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
           FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
@@ -4407,18 +4415,18 @@ const methods = {
                 }
 
                 // if (rows[i].AnimalID == 14624) {
-                    console.log(rows[i].AnimalID)
-                  await db.update(
-                    {
-                      AnimalStatusID: status,
+                console.log(rows[i].AnimalID);
+                await db.update(
+                  {
+                    AnimalStatusID: status,
+                  },
+                  {
+                    // Clause
+                    where: {
+                      AnimalID: rows[i].AnimalID,
                     },
-                    {
-                      // Clause
-                      where: {
-                        AnimalID: rows[i].AnimalID,
-                      },
-                    }
-                  );
+                  }
+                );
                 // }
               }
 
@@ -4551,7 +4559,7 @@ const methods = {
               //     })
               //   );
 
-            //   return data;
+              //   return data;
             };
 
             let animal = await getWithPromiseAll();
