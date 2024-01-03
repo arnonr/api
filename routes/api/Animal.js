@@ -65,6 +65,9 @@ router.get(
   controllers.onExportRegisteredAnimal
 );
 
+
+router.post("/photo/:id", upload.single("photo_url"), controllers.onPhoto);
+
 router.post("/", controllers.onInsert);
 
 router.put("/:id", controllers.onUpdate);
@@ -72,6 +75,5 @@ router.put("/:id", controllers.onUpdate);
 router.delete("/:id", controllers.onDelete);
 
 // ต้องตรวจสอบอะไรก่อน 1.สิทธิ์ 2.ขนาดไฟล์ ประเภทไฟล์ 3. บันทึกลง Database
-router.post("/photo/:id", upload.single("photo_url"), controllers.onPhoto);
 
 module.exports = router;
