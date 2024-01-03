@@ -3474,8 +3474,58 @@ const methods = {
           include: [
             { all: true },
             { model: Farm, as: "AnimalFarm" },
-            { model: Animal, as: "AnimalFather" },
-            { model: Animal, as: "AnimalMother" },
+            {
+              model: Animal,
+              as: "AnimalFather",
+              include: [
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+              ],
+            },
+            {
+              model: Animal,
+              as: "AnimalMother",
+              include: [
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+              ],
+            },
           ],
         });
 
@@ -3722,13 +3772,14 @@ const methods = {
           AnimalBirthDate: animal.ThaiAnimalBirthDate,
           AnimalBreedAll: animal.AnimalBreedAll,
           AnimalImagePath: animal.AnimalImagePath,
-          AnimalDadBreed: "TH890890",
-          AnimalDadName: animal.AnimalFather?.AnimalName,
-          AnimaMomBreed: "349872",
-          AnimalMomName: animal.AnimalMother?.AnimalName,
+          AnimalDadBreed: animal.AnimalFather?.toJSON().AnimalBreedAll,
+          AnimalDadName: animal.AnimalFather?.toJSON().Fullname,
+          AnimaMomBreed: animal.AnimalMother?.toJSON().AnimalBreedAll,
+          AnimalMomName: animal.AnimalMother?.toJSON().Fullname,
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
           FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
+          Father: animal.AnimalFather.toJSON(),
           // AI
           AI: [...aiRes],
           Disease: disease,

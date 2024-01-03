@@ -384,9 +384,9 @@ class Animal extends Model {
       }
     }
     return {
-        eventLatest: eventLatest,
-        noti: noti
-    }
+      eventLatest: eventLatest,
+      noti: noti,
+    };
     return noti;
   }
 
@@ -427,7 +427,7 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
-    console.log(animalJson.AnimalBreedAll+"FREDOM20")
+    console.log(animalJson.AnimalBreedAll + "FREDOM20");
 
     let statusText = this.AnimalStatus
       ? this.AnimalStatus.AnimalStatusName
@@ -1150,6 +1150,10 @@ Animal.init(
             " " +
             this.AnimalBreedPercent1 +
             "%";
+
+          console.log(this.AnimalName);
+          console.log(this.AnimalBreedID1);
+          console.log(animalBreed + "FREEDOM5");
         }
 
         if (this.AnimalBreedID2 != null && this.AnimalBreed2 != undefined) {
@@ -1211,8 +1215,6 @@ Animal.init(
             this.AnimalBreedPercent5 +
             "%, ";
         }
-
-
 
         return animalBreed.trim();
       },
