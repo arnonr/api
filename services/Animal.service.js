@@ -2969,11 +2969,11 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         // Update
-        var os = require("os");
-        var hostname = os.hostname();
+        // var os = require("os");
+        // var hostname = os.hostname();
 
-        obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
-        obj.save();
+        // obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
+        // obj.save();
 
         resolve();
       } catch (error) {
