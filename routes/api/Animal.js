@@ -66,9 +66,10 @@ router.get(
 );
 
 
-// router.post("/photo/:id", upload.single("photo_url"),controllers.onPhoto);
+router.post("/photo/:id", upload.single("photo_url"))
+// ,controllers.onPhoto);
 
-router.post("/photo/:id",controllers.onPhoto);
+// router.post("/photo/:id",controllers.onPhoto);
 
 router.post("/", controllers.onInsert);
 
