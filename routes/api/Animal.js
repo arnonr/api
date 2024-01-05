@@ -56,7 +56,10 @@ router.get("/get-by-farm-id-1", controllers.onGetByFarmID1);
 router.get("/update-animal-event", controllers.onUpdateAnimalEvent);
 router.get("/update-animal-status", controllers.onUpdateAnimalStatus);
 
-router.get("/update-animal-notification", controllers.onUpdateAnimalNotification);
+router.get(
+  "/update-animal-notification",
+  controllers.onUpdateAnimalNotification
+);
 
 router.get("/:id", controllers.onGetById);
 
@@ -65,11 +68,13 @@ router.get(
   controllers.onExportRegisteredAnimal
 );
 
+// router.post("/photo/:id", upload.single("photo_url"))
+// // ,controllers.onPhoto);
 
-router.post("/photo/:id", upload.single("photo_url"))
-// ,controllers.onPhoto);
-
-// router.post("/photo/:id",controllers.onPhoto);
+router.post(
+  "/photo/:id",
+  controllers.onPhoto
+);
 
 router.post("/", controllers.onInsert);
 

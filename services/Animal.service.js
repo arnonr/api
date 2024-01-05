@@ -3,6 +3,7 @@ const config = require("../configs/app"),
   db = require("../models/Animal"),
   { Op, fn, col, where } = require("sequelize");
 const { count } = require("../models/Animal");
+const path = require("path");
 
 const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
@@ -2959,25 +2960,63 @@ const methods = {
     });
   },
 
-  photo(id, filename) {
+  //   photo(id, filename) {
+  //     return new Promise(async (resolve, reject) => {
+  //       try {
+  //         console.log("FREEDOM55");
+  //         // Check ID
+  //         const obj = await db.findByPk(id);
+  //         if (!obj) reject(ErrorNotFound("id: not found"));
+
+  //         // Update
+  //         // var os = require("os");
+  //         // var hostname = os.hostname();
+
+  //         // obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
+  //         // obj.save();
+
+  //         resolve();
+  //       } catch (error) {
+  //         reject(ErrorBadRequest(error.message));
+  //       }
+  //     });
+  //   },
+
+  photo(data) {
     return new Promise(async (resolve, reject) => {
       try {
+        //
+        let pathFile = null;
+        let real_path = "/images/animal/";
+        if (!data.files || Object.keys(data.files).length === 0) {
+        } else {
+          let uploadFile = data.files["photo_url"];
+          let typeFile = uploadFile.mimetype.split("/");
 
-        console.log("FREEDOM55")
-        // Check ID
-        const obj = await db.findByPk(id);
-        if (!obj) reject(ErrorNotFound("id: not found"));
+          let d = new Date();
+          let date = d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate();
+          let nameFile = date + "-t-" + Date.now() + "." + typeFile[1];
+          let pathUpload = path.resolve(
+            __dirname + "/../public/uploads" + real_path + nameFile
+          );
 
-        // Update
-        // var os = require("os");
-        // var hostname = os.hostname();
+          uploadFile.mv(pathUpload, function (err) {
+            if (err) return err;
+          });
+          pathFile = real_path + nameFile;
 
-        // obj.AnimalImagePath = config.UploadPath + "/images/animal/" + filename;
-        // obj.save();
+          const obj = await db.findByPk(data.params.id);
+          if (!obj) reject(ErrorNotFound("id: not found"));
 
+          // Update
+          obj.AnimalImagePath = config.UploadPath + pathFile;
+          await obj.save();
+
+          resolve(obj);
+        }
         resolve();
       } catch (error) {
-        reject(ErrorBadRequest(error.message));
+        return "error";
       }
     });
   },

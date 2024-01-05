@@ -129,7 +129,9 @@ const methods = {
 
   async onPhoto(req, res) {
     try {
-      const result = await Service.photo(req.params.id, req.file.filename);
+    //   console.log(req.files+"FREEDOM50");
+      const result = await Service.photo(req);
+      //   const result = await Service.photo(req.params.id, req.file.filename);
       res.success(result);
     } catch (error) {
       res.error(error);

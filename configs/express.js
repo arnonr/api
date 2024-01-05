@@ -2,12 +2,17 @@ const express = require("express"),
   // morgan ไว้ show log ใน console
   morgan = require("morgan"),
   cors = require("cors"),
-passport = require("passport"), 
-path = require("path");
+  passport = require("passport"),
+  path = require("path");
 
 //
 const DeviceDetector = require("node-device-detector");
 const ClientHints = require("node-device-detector/client-hints");
+// const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
+// const app = express();
+
+// const app1 = express();
 
 module.exports = async (app) => {
   // Connect MongoDB
@@ -24,7 +29,7 @@ module.exports = async (app) => {
     "http://10.11.1.70",
     "http://10.11.1.70:80",
     "http://122.155.208.221",
-    "http://122.155.208.221:80"
+    "http://122.155.208.221:80",
   ];
   const corsOptions = {
     origin: function (origin, callback) {
@@ -40,7 +45,6 @@ module.exports = async (app) => {
   };
   // app.use(cors(corsOptions));
 
-
   app.use(
     cors({
       origin: "*",
@@ -48,8 +52,17 @@ module.exports = async (app) => {
   );
 
   // Parser Body
-  app.use(express.json());
+  //   app.use(bodyParser.json());
+  //   app.use(bodyParser.urlencoded({ extended: true }));
+  //   app.use(express.json());
+  //   app.use(bodyParser.json());
+  //   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
+  //
+    app.use(fileUpload());
+  //
+
 
   // Logger
   app.use(morgan("dev"));
@@ -77,12 +90,15 @@ module.exports = async (app) => {
 
   // Passport
   require("../configs/passport");
+  console.log(path.join(__dirname, "../public"));
 
   // Static file
-//   app.use("/static", express.static(path.join(__dirname, "../public")));
-  app.use("*/static", express.static(__dirname + '/public'));
-//   app.use('/static', express.static(path.join(__dirname, 'public')))
-//   app.use('/static', express.static('public'))
+  app.use("/static", express.static(path.join(__dirname, "../public")));
+  // app.use(process.env.URL_STATIC, express.static(__dirname + "/public"));
+
+  //   app.use("*/static", express.static(__dirname + '/public'));
+  //   app.use('/static', express.static(path.join(__dirname, 'public')))
+  //   app.use('/static', express.static('public'))
   // http://localhost:3000/static/uploads/images/users/user-1-1652789767517.jpeg
 
   // Custom Response Format
