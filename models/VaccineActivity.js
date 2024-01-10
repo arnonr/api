@@ -76,7 +76,7 @@ VaccineActivity.init(
       comment: "รหัสอ้างอิงวัคซีน",
     },
     Lot: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.STRING,
       allowNull: false,
       comment: "รหัสอ้างอิงวัคซีน",
     },

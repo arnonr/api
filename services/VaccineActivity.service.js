@@ -17,15 +17,28 @@ const methods = {
     if (req.query.VaccineActivityDate)
       $where["VaccineActivityDate"] = req.query.VaccineActivityDate;
 
-    console.log(req.query.AnimalID + "FREEDOM");
+    // if (req.query.AnimalID) {
+    //   $where["AnimalID"] = {
+    //     [Op.or]: [
+    //       { [Op.like]: "%," + req.query.AnimalID + ",%" },
+    //       { [Op.like]: "[" + req.query.AnimalID + ",%" },
+    //       { [Op.like]: "%," + req.query.AnimalID + "]" },
+    //       { [Op.like]: "[" + req.query.AnimalID + "]" },
+    //     ],
+    //   };
+    // }
 
     if (req.query.AnimalID) {
+      //   let con1 = "%," + req.query.AnimalID + ",%";
+      // [10909,10910]
       $where["AnimalID"] = {
         [Op.or]: [
           { [Op.like]: "%," + req.query.AnimalID + ",%" },
-          { [Op.like]: "[" + req.query.AnimalID + ",%" },
+          { [Op.like]: "[[]" + req.query.AnimalID + ",%" },
           { [Op.like]: "%," + req.query.AnimalID + "]" },
-          { [Op.like]: "[" + req.query.AnimalID + "]" },
+          { [Op.like]: "[[]" + req.query.AnimalID + "[]]" },
+          //   { [Op.like]: "%,10909]" },
+          //   { [Op.like]: "[10909]" },
         ],
       };
     }
