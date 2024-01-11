@@ -3146,7 +3146,9 @@ const methods = {
     }
 
     // FarmAIZoneID
+    $where["isActive"] = 1;
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
     if (req.query.UpdatedUserID)
