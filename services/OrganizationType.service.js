@@ -143,6 +143,39 @@ const methods = {
       }
     });
   },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              let d = {
+                OrganizationTypeID: data.OrganizationTypeID,
+                OrganizationTypeCode: data.OrganizationTypeCode,
+                OrganizationTypeName: data.OrganizationTypeName,
+              };
+              return d;
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

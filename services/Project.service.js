@@ -31,11 +31,10 @@ const methods = {
       $where["ProjectLevel"] = {
         [Op.or]: [req.query.ProjectLevel, "ALL"],
       };
-      
 
-    //   $where["ProjectLevel"] = {
-    //     [Op.or]: [req.query.ProjectLevel, "ALL"],
-    //   };
+      //   $where["ProjectLevel"] = {
+      //     [Op.or]: [req.query.ProjectLevel, "ALL"],
+      //   };
     }
     if (req.query.OrganizationID)
       $where["OrganizationID"] = req.query.OrganizationID;
@@ -306,6 +305,44 @@ const methods = {
         });
 
         resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              let d = {
+                "ProjectID": data.ProjectID,
+                "ProjectCode": data.ProjectCode,
+                "ProjectName": data.ProjectName,
+                "StartDate": data.StartDate,
+                "EndDate": data.EndDate,
+                "OrganizationID": data.OrganizationID,
+                "AnimalTypeID": data.AnimalTypeID,
+                "ProjectLevel": data.ProjectLevel,
+              };
+              return d;
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
       } catch (error) {
         reject(error);
       }

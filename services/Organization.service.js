@@ -253,6 +253,46 @@ const methods = {
       }
     });
   },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              let d = {
+                OrganizationID: data.OrganizationID,
+                ParentOrganizationID: data.ParentOrganizationID,
+                OrganizationCode: data.OrganizationCode,
+                OrganizationName: data.OrganizationName,
+                OrganizationTypeID: data.OrganizationTypeID,
+                OrganizationZoneID: data.OrganizationZoneID,
+                OrganizationProvinceID: data.rganizationProvinceID,
+                OrganizationAmphurID: data.OrganizationAmphurID,
+                OrganizationTumbolID: data.OrganizationTumbolID,
+                OrganizationAiZoneID: data.OrganizationAiZoneID,
+              };
+              return d;
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

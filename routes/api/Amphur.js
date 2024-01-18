@@ -6,6 +6,18 @@ const { checkPermission } = require("../accessControl");
 let resource = "user";
 
 router.get(
+  "/selection",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetSelection
+);
+router.get(
+  "/selection",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetSelection
+);
+router.get(
   "/",
   // auth.required,
   // checkPermission(resource, "read"),
@@ -22,7 +34,7 @@ router.post(
   "/",
   // auth.required,
   // checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(

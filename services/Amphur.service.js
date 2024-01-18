@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/Amphur"),
-  { Op,fn } = require("sequelize");
+  { Op, fn } = require("sequelize");
 
 const methods = {
   scopeSearch(req, limit, offset) {
@@ -115,7 +115,7 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        data.createdAt = fn('GETDATE');
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -139,7 +139,7 @@ const methods = {
         // Update
         data.AmphurID = parseInt(id);
 
-        data.updatedAt = fn('GETDATE');
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { AmphurID: id } });
 
@@ -159,10 +159,45 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0,updatedAt: fn('GETDATE') },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { AmphurID: id } }
         );
         resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              let d = {
+                AmphurID: data.AmphurID,
+                AmphurCode: data.AmphurCode,
+                AmphurName: data.AmphurName,
+                AmphurNameEN: data.AmphurNameEN,
+                ProvinceID: data.ProvinceID,
+              };
+              return d;
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
       } catch (error) {
         reject(error);
       }
