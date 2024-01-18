@@ -538,6 +538,215 @@ const methods = {
       }
     });
   },
+
+  //   selection
+  async scopeSearchSelection(req, limit, offset) {
+    // Where
+    var $where = {};
+
+    if (req.query.FarmID) $where["FarmID"] = req.query.FarmID;
+
+    if (req.query.FarmerID) $where["FarmerID"] = req.query.FarmerID;
+
+    if (req.query.FarmType) $where["FarmType"] = req.query.FarmType;
+
+    if (req.query.FarmIdentificationNumber)
+      $where["FarmIdentificationNumber"] = {
+        [Op.like]: "%" + req.query.FarmIdentificationNumber + "%",
+      };
+
+    if (req.query.FarmAnimalType) {
+      if (req.query.FarmAnimalType == 98) {
+        $where["FarmAnimalType"] = {
+          [Op.is]: null,
+        };
+      } else if (req.query.FarmAnimalType == 99) {
+        $where["FarmAnimalType"] = {
+          [Op.not]: null,
+        };
+      } else {
+        $where["FarmAnimalType"] = {
+          [Op.like]: "%" + req.query.FarmAnimalType + "%",
+        };
+      }
+    }
+
+    if (req.query.FarmName)
+      $where["FarmName"] = {
+        [Op.like]: "%" + req.query.FarmName + "%",
+      };
+
+    if (req.query.FarmTumbolID) $where["FarmTumbolID"] = req.query.FarmTumbolID;
+    if (req.query.FarmAmphurID) $where["FarmAmphurID"] = req.query.FarmAmphurID;
+
+    //  get_by_org_province = 1;
+    if (req.query.GetByOrgProvince) {
+      let ProvinceID = null;
+      let user = await User.findByPk(req.body.UserID, {
+        include: [
+          {
+            model: Staff,
+            as: "Staff",
+            include: {
+              model: Organization,
+              as: "Organization",
+            },
+          },
+        ],
+      });
+
+      // ฟาร์ม
+      $where["FarmProvinceID"] = user.Staff.Organization.OrganizationProvinceID;
+    }
+
+    if (req.query.FarmProvinceID)
+      $where["FarmProvinceID"] = req.query.FarmProvinceID;
+
+    if (req.query.OrganizationID)
+      $where["OrganizationID"] = req.query.OrganizationID;
+
+    if (req.query.OrganizationZoneID)
+      $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+    if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+    if (req.query.FarmStatusID) $where["FarmStatusID"] = req.query.FarmStatusID;
+
+    if (req.query.FarmRegisterStartDate) {
+      $where["FarmRegisterDate"] = {
+        [Op.between]: [
+          req.query.FarmRegisterStartDate,
+          req.query.FarmRegisterEndDate,
+        ],
+      };
+    }
+
+    // ProjectID
+    let WhereProject = null;
+
+    if (req.query.ProjectID) {
+      if (JSON.parse(req.query.ProjectID).length != 0) {
+        WhereProject = {
+          ProjectID: {
+            [Op.in]: JSON.parse(req.query.ProjectID),
+          },
+        };
+      }
+    }
+
+    let WhereFullName = null;
+
+    if (req.query.FullName) {
+      WhereFullName = Sequelize.where(
+        Sequelize.fn(
+          "concat",
+          Sequelize.col("GivenName"),
+          " ",
+          Sequelize.col("Surname")
+        ),
+        {
+          [Op.like]: "%" + req.query.FullName.trim() + "%",
+        }
+      );
+    }
+
+    $where["isRemove"] = 0;
+    const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+    // Order
+    $order = [["FarmID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy)
+      $order = [
+        [
+          req.query.orderByField,
+          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+        ],
+      ];
+
+    query["order"] = $order;
+
+    let include = [
+      {
+        model: Farmer,
+        as: "Farmer",
+        where: WhereFullName,
+      },
+    ];
+
+    query["include"] = include;
+
+    return { query: query };
+  },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          db.findAll({ ..._q.query, limit: limit, offset: offset }),
+          db.findAll({ ..._q.query }),
+        ])
+          .then(async (result) => {
+            let rows = result[0],
+              count = result[1].length;
+
+            rows = rows.map((data) => {
+              let number = data.FarmIdentificationNumber
+                ? data.FarmIdentificationNumber
+                : "- ";
+              let name = data.Farmer ? data.Farmer.FullName : "- ";
+
+              let d = {
+                FarmID: data.FarmID,
+                FarmName: data.FarmName,
+                FarmIdentificationNumber: data.FarmIdentificationNumber,
+                Fullname:
+                  "ฟาร์ม " +
+                  data.FarmName +
+                  " (" +
+                  number +
+                  ")" +
+                  " | เจ้าของฟาร์ม " +
+                  name,
+              };
+              return d;
+            });
+
+            // rows = await Promise.all(
+            //   rows.map(async (data) => {
+            //     let projectArray = [];
+
+            //     for (let i = 0; i < data.Projects.length; i++) {
+            //       projectArray.push(data.Projects[i].ProjectName);
+            //     }
+
+            //     data = {
+            //       ...data.toJSON(),
+            //       Projects: projectArray,
+            //       ProjectID: JSON.parse(data.toJSON().ProjectID),
+            //     };
+
+            //     return data;
+            //   })
+            // );
+
+            resolve({
+              rows: rows,
+              totalPage: Math.ceil(count / limit),
+              totalData: count,
+              currPage: +req.query.page || 1,
+              total: count,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

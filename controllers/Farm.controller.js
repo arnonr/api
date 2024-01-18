@@ -2,6 +2,18 @@ const Service = require("../services/Farm.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+  async onGetSelection(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UserID = decoded.id;
+
+      let result = await Service.selection(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);

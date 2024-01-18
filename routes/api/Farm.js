@@ -53,6 +53,14 @@ router.get(
   // checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
+router.get(
+  "/selection",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetSelection
+);
+
 router.get(
   "/:id",
   // auth.required,
