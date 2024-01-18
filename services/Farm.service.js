@@ -669,6 +669,11 @@ const methods = {
         as: "Farmer",
         where: WhereFullName,
       },
+    //   {
+    //     model: Province,
+    //     as: "Farmer",
+    //     where: WhereFullName,
+    //   },
     ];
 
     query["include"] = include;
@@ -683,13 +688,9 @@ const methods = {
 
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          db.findAll({ ..._q.query }),
-        ])
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
           .then(async (result) => {
-            let rows = result[0],
-              count = result[1].length;
+            let rows = result[0];
 
             rows = rows.map((data) => {
               let number = data.FarmIdentificationNumber
@@ -733,10 +734,6 @@ const methods = {
 
             resolve({
               rows: rows,
-              totalPage: Math.ceil(count / limit),
-              totalData: count,
-              currPage: +req.query.page || 1,
-              total: count,
             });
           })
           .catch((error) => {
