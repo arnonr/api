@@ -11,6 +11,20 @@ const methods = {
     }
   },
 
+  
+
+  async onGetAllCount(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.query.GetedUserID = decoded.id;
+
+      let result = await Service.findCount(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);

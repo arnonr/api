@@ -42,16 +42,18 @@ const upload = multer({
 });
 
 router.get(
-    "/selection",
-    // auth.required,
-    // checkPermission(resource, "read"),
-    controllers.onGetSelection
-  );
+  "/selection",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetSelection
+);
 
-  
+router.get("/generate-staff-number", controllers.onGenerateStaffNumber);
+
 router.get(
-  "/generate-staff-number",
-  controllers.onGenerateStaffNumber
+  "/all-count",
+  // checkPermission(resource, "read"),
+  controllers.onGetAllCount
 );
 
 router.get(
@@ -93,14 +95,8 @@ router.post(
   controllers.onPhoto
 );
 
-router.get(
-  "/staff-by-number/:id",
-  controllers.onGetByStaffNumber
-);
+router.get("/staff-by-number/:id", controllers.onGetByStaffNumber);
 
-router.put(
-  "/:id/mobile-phone",
-  controllers.onUpdateMobilePhone
-);
+router.put("/:id/mobile-phone", controllers.onUpdateMobilePhone);
 
 module.exports = router;

@@ -328,6 +328,36 @@ const methods = {
     });
   },
 
+  async findCount(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          db.findAll(_q.query),
+          db.count({ ..._q.query }),
+        ])
+          .then((result) => {
+            let rows = result[0];
+            let count = result[1];
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: req.query.page ? +req.query.page : 1,
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
   findById(id) {
     return new Promise(async (resolve, reject) => {
       try {
