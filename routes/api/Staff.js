@@ -42,6 +42,14 @@ const upload = multer({
 });
 
 router.get(
+    "/selection",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetSelection
+  );
+
+  
+router.get(
   "/generate-staff-number",
   controllers.onGenerateStaffNumber
 );

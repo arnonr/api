@@ -705,14 +705,14 @@ const methods = {
                 if (items.length > 0) {
                   let staffEdit = await db.findByPk(obj.StaffID);
 
-                //   let position = await Position.findOne({
-                //     where: { PositionCode: items[0].emStaffPosition },
-                //   });
+                  //   let position = await Position.findOne({
+                  //     where: { PositionCode: items[0].emStaffPosition },
+                  //   });
 
-                //   if (Position) {
-                //     staffEdit.StaffPositionID = position.PositionID;
-                //   }
-                  let position = null
+                  //   if (Position) {
+                  //     staffEdit.StaffPositionID = position.PositionID;
+                  //   }
+                  let position = null;
                   if (
                     items[0].emStaffPosition != "" &&
                     items[0].emStaffPosition != " " &&
@@ -722,7 +722,7 @@ const methods = {
                       where: { PositionCode: items[0].emStaffPosition },
                     });
                   }
-  
+
                   if (position != null) {
                     staffEdit.StaffPositionID = position.PositionID;
                   } else {
@@ -783,6 +783,38 @@ const methods = {
         resolve(res);
       } catch (error) {
         reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              return {
+                StaffID: data.StaffID,
+                StaffNumber: data.StaffNumber,
+                StaffGivenName: data.StaffGivenName,
+                StaffSurname: data.StaffSurname,
+              };
+            });
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
       }
     });
   },

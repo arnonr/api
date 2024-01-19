@@ -2,11 +2,20 @@ const Service = require("../services/Staff.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+  async onGetSelection(req, res) {
+    try {
+      let result = await Service.selection(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.query.GetedUserID = decoded.id;
-      
+
       let result = await Service.find(req);
       res.success(result);
     } catch (error) {
@@ -73,8 +82,6 @@ const methods = {
     }
   },
 
-  
-
   async onUpdateMobilePhone(req, res) {
     try {
       const result = await Service.update(req.params.id, req.body);
@@ -86,7 +93,10 @@ const methods = {
 
   async onGenerateStaffNumber(req, res) {
     try {
-      let result = await Service.generateStaffNumber(req.query.StaffID, req.query.isCard);
+      let result = await Service.generateStaffNumber(
+        req.query.StaffID,
+        req.query.isCard
+      );
       res.success(result);
     } catch (error) {
       res.error(error);
