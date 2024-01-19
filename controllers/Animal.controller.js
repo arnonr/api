@@ -10,6 +10,16 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onGetAllNotEvent(req, res) {
+    try {
+      let result = await Service.findNotEvent(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAllIDandName(req, res) {
     try {
       let result = await Service.findAllIDandName(req);
@@ -129,7 +139,7 @@ const methods = {
 
   async onPhoto(req, res) {
     try {
-    //   console.log(req.files+"FREEDOM50");
+      //   console.log(req.files+"FREEDOM50");
       const result = await Service.photo(req);
       //   const result = await Service.photo(req.params.id, req.file.filename);
       res.success(result);

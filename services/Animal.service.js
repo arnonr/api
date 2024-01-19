@@ -1710,10 +1710,6 @@ const methods = {
       $where["AnimalEarID"] = req.query.AnimalEarID;
     }
 
-    // $where["AnimalEarID"] = {
-    //   [Op.like]: "%" + req.query.AnimalEarID + "%",
-    // };
-
     if (req.query.AnimalMicrochip)
       $where["AnimalMicrochip"] = {
         [Op.like]: "%" + req.query.AnimalMicrochip + "%",
@@ -2023,7 +2019,7 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          db.count(_q.query),
+        //   db.count(_q.query),
         ])
           .then(async (result) => {
             let rows = result[0],
@@ -2044,7 +2040,7 @@ const methods = {
                       );
                     }
 
-                    // รหัสใบหู, ชื่อ
+                    // // รหัสใบหู, ชื่อ
 
                     let res = {
                       ...data.toJSON(),
@@ -2053,6 +2049,7 @@ const methods = {
                       // EventLatest: data.EventLatest(),
                     };
 
+                    // ทำให้ find aninmal ช้า server พัง
                     if (req.query.includeEventLatest) {
                       if (req.query.includeEventLatest == "false") {
                       } else {
@@ -2086,6 +2083,141 @@ const methods = {
       }
     });
   },
+
+  findNotEvent(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          db.findAll({ ..._q.query, limit: limit, offset: offset }),
+          db.count(_q.query),
+        ])
+          .then(async (result) => {
+            let rows = result[0],
+              count = rows.length;
+
+            // if (!req.query.includeAll) {
+            //   if (!req.query.noEventLatest) {
+            //     // rows = await Promise.all(
+            //     //   rows.map(async (data) => {
+            //     //     let projectArray = [];
+            //     //     // data.Projects.forEach((element) => {
+            //     //     //   projectArray.push(element.ProjectName);
+            //     //     // });
+
+            //     //     // if (data.GiveBirthSelfID != null) {
+            //     //     //   data.GiveBirthSelf = GiveBirth.findByPk(
+            //     //     //     data.GiveBirthSelfID
+            //     //     //   );
+            //     //     // }
+
+            //     //     // // รหัสใบหู, ชื่อ
+
+            //     //     // let res = {
+            //     //     //   ...data.toJSON(),
+            //     //     //   Projects: projectArray,
+            //     //     //   ProjectID: data.toJSON().ProjectID,
+            //     //     //   // EventLatest: data.EventLatest(),
+            //     //     // };
+
+            //     //     return data;
+            //     //   })
+            //     // );
+            //   }
+            // }
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(result[1] / limit),
+              rows: rows,
+              totalPage: Math.ceil(result[1] / limit),
+              totalData: result[1],
+              currPage: +req.query.page || 1,
+              total: result[1],
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+//   find(req) {
+//     const limit = +(req.query.size || config.pageLimit);
+//     const offset = +(limit * ((req.query.page || 1) - 1));
+//     const _q = methods.scopeSearch(req, limit, offset);
+//     return new Promise(async (resolve, reject) => {
+//       try {
+//         Promise.all([
+//           db.findAll({ ..._q.query, limit: limit, offset: offset }),
+//           db.count(_q.query),
+//         ])
+//           .then(async (result) => {
+//             let rows = result[0],
+//               count = rows.length;
+
+//             if (!req.query.includeAll) {
+//               if (!req.query.noEventLatest) {
+//                 rows = await Promise.all(
+//                   rows.map(async (data) => {
+//                     let projectArray = [];
+//                     data.Projects.forEach((element) => {
+//                       projectArray.push(element.ProjectName);
+//                     });
+
+//                     if (data.GiveBirthSelfID != null) {
+//                       data.GiveBirthSelf = GiveBirth.findByPk(
+//                         data.GiveBirthSelfID
+//                       );
+//                     }
+
+//                     // รหัสใบหู, ชื่อ
+
+//                     let res = {
+//                       ...data.toJSON(),
+//                       Projects: projectArray,
+//                       ProjectID: data.toJSON().ProjectID,
+//                       // EventLatest: data.EventLatest(),
+//                     };
+
+//                     if (req.query.includeEventLatest) {
+//                       if (req.query.includeEventLatest == "false") {
+//                       } else {
+//                         res.EventLatest = await data.EventLatest();
+//                       }
+//                     } else {
+//                       res.EventLatest = await data.EventLatest();
+//                     }
+
+//                     return res;
+//                   })
+//                 );
+//               }
+//             }
+
+//             resolve({
+//               total: count,
+//               lastPage: Math.ceil(result[1] / limit),
+//               rows: rows,
+//               totalPage: Math.ceil(result[1] / limit),
+//               totalData: result[1],
+//               currPage: +req.query.page || 1,
+//               total: result[1],
+//             });
+//           })
+//           .catch((error) => {
+//             reject(error);
+//           });
+//       } catch (error) {
+//         reject(error);
+//       }
+//     });
+//   },
   //
   scopeSearchIDAndName(req, limit, offset) {
     // Where
@@ -4509,7 +4641,7 @@ const methods = {
                 }
 
                 // if (rows[i].AnimalID == 14624) {
-                console.log(rows[i].AnimalID);
+                // console.log(rows[i].AnimalID);
                 await db.update(
                   {
                     AnimalStatusID: status,

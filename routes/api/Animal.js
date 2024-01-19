@@ -40,6 +40,9 @@ const upload = multer({
   limits: { fieldSize: 10 * 1024 * 1024 }, //10MB
 });
 
+
+router.get("/all-not-event", controllers.onGetAllNotEvent);
+
 router.get("/", controllers.onGetAll);
 
 router.get("/id-and-name", controllers.onGetAllIDandName);
