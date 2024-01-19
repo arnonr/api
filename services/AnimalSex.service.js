@@ -134,10 +134,44 @@ const methods = {
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0,updatedAt: fn('GETDATE') },
+          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { AnimalSexID: id } }
         );
         resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  async selection(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query, limit: limit, offset: offset })])
+          .then(async (result) => {
+            let rows = result[0];
+
+            rows = rows.map((data) => {
+              let d = {
+                AnimalSexID: data.AnimalSexID,
+                AnimalSexCode: data.AnimalSexCode,
+                AnimalSexName: data.AnimalSexName,
+              };
+
+              return d;
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
       } catch (error) {
         reject(error);
       }

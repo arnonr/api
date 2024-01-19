@@ -2,6 +2,14 @@ const Service = require("../services/AnimalSex.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+    async onGetSelection(req, res) {
+      try {
+        let result = await Service.selection(req);
+        res.success(result);
+      } catch (error) {
+        res.error(error);
+      }
+    },
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
