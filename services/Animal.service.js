@@ -2019,7 +2019,7 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-        //   db.count(_q.query),
+          //   db.count(_q.query),
         ])
           .then(async (result) => {
             let rows = result[0],
@@ -2147,77 +2147,77 @@ const methods = {
     });
   },
 
-//   find(req) {
-//     const limit = +(req.query.size || config.pageLimit);
-//     const offset = +(limit * ((req.query.page || 1) - 1));
-//     const _q = methods.scopeSearch(req, limit, offset);
-//     return new Promise(async (resolve, reject) => {
-//       try {
-//         Promise.all([
-//           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-//           db.count(_q.query),
-//         ])
-//           .then(async (result) => {
-//             let rows = result[0],
-//               count = rows.length;
+  //   find(req) {
+  //     const limit = +(req.query.size || config.pageLimit);
+  //     const offset = +(limit * ((req.query.page || 1) - 1));
+  //     const _q = methods.scopeSearch(req, limit, offset);
+  //     return new Promise(async (resolve, reject) => {
+  //       try {
+  //         Promise.all([
+  //           db.findAll({ ..._q.query, limit: limit, offset: offset }),
+  //           db.count(_q.query),
+  //         ])
+  //           .then(async (result) => {
+  //             let rows = result[0],
+  //               count = rows.length;
 
-//             if (!req.query.includeAll) {
-//               if (!req.query.noEventLatest) {
-//                 rows = await Promise.all(
-//                   rows.map(async (data) => {
-//                     let projectArray = [];
-//                     data.Projects.forEach((element) => {
-//                       projectArray.push(element.ProjectName);
-//                     });
+  //             if (!req.query.includeAll) {
+  //               if (!req.query.noEventLatest) {
+  //                 rows = await Promise.all(
+  //                   rows.map(async (data) => {
+  //                     let projectArray = [];
+  //                     data.Projects.forEach((element) => {
+  //                       projectArray.push(element.ProjectName);
+  //                     });
 
-//                     if (data.GiveBirthSelfID != null) {
-//                       data.GiveBirthSelf = GiveBirth.findByPk(
-//                         data.GiveBirthSelfID
-//                       );
-//                     }
+  //                     if (data.GiveBirthSelfID != null) {
+  //                       data.GiveBirthSelf = GiveBirth.findByPk(
+  //                         data.GiveBirthSelfID
+  //                       );
+  //                     }
 
-//                     // รหัสใบหู, ชื่อ
+  //                     // รหัสใบหู, ชื่อ
 
-//                     let res = {
-//                       ...data.toJSON(),
-//                       Projects: projectArray,
-//                       ProjectID: data.toJSON().ProjectID,
-//                       // EventLatest: data.EventLatest(),
-//                     };
+  //                     let res = {
+  //                       ...data.toJSON(),
+  //                       Projects: projectArray,
+  //                       ProjectID: data.toJSON().ProjectID,
+  //                       // EventLatest: data.EventLatest(),
+  //                     };
 
-//                     if (req.query.includeEventLatest) {
-//                       if (req.query.includeEventLatest == "false") {
-//                       } else {
-//                         res.EventLatest = await data.EventLatest();
-//                       }
-//                     } else {
-//                       res.EventLatest = await data.EventLatest();
-//                     }
+  //                     if (req.query.includeEventLatest) {
+  //                       if (req.query.includeEventLatest == "false") {
+  //                       } else {
+  //                         res.EventLatest = await data.EventLatest();
+  //                       }
+  //                     } else {
+  //                       res.EventLatest = await data.EventLatest();
+  //                     }
 
-//                     return res;
-//                   })
-//                 );
-//               }
-//             }
+  //                     return res;
+  //                   })
+  //                 );
+  //               }
+  //             }
 
-//             resolve({
-//               total: count,
-//               lastPage: Math.ceil(result[1] / limit),
-//               rows: rows,
-//               totalPage: Math.ceil(result[1] / limit),
-//               totalData: result[1],
-//               currPage: +req.query.page || 1,
-//               total: result[1],
-//             });
-//           })
-//           .catch((error) => {
-//             reject(error);
-//           });
-//       } catch (error) {
-//         reject(error);
-//       }
-//     });
-//   },
+  //             resolve({
+  //               total: count,
+  //               lastPage: Math.ceil(result[1] / limit),
+  //               rows: rows,
+  //               totalPage: Math.ceil(result[1] / limit),
+  //               totalData: result[1],
+  //               currPage: +req.query.page || 1,
+  //               total: result[1],
+  //             });
+  //           })
+  //           .catch((error) => {
+  //             reject(error);
+  //           });
+  //       } catch (error) {
+  //         reject(error);
+  //       }
+  //     });
+  //   },
   //
   scopeSearchIDAndName(req, limit, offset) {
     // Where
@@ -2492,34 +2492,18 @@ const methods = {
             let rows = result[0],
               count = result[1];
 
-            // rows = await Promise.all(
-            //   rows.map(async (data) => {
-            //     let projectArray = [];
-            //     data.Projects.forEach((element) => {
-            //       projectArray.push(element.ProjectName);
-            //     });
-
-            //     if (data.GiveBirthSelfID != null) {
-            //       data.GiveBirthSelf = GiveBirth.findByPk(data.GiveBirthSelfID);
-            //     }
-
-            //     // รหัสใบหู, ชื่อ
-
-            //     data = {
-            //       ...data.toJSON(),
-            //       Projects: projectArray,
-            //       ProjectID: JSON.parse(data.toJSON().ProjectID),
-            //       EventLatest: await data.EventLatest(),
-
-            //       // EventLatest: data.EventLatest(),
-            //     };
-
-            //     return data;
-            //   })
-            // );
+            rows = await Promise.all(
+              rows.map(async (item) => {
+                return {
+                  AnimalID: item.AnimalID,
+                  AnimalEarIDAndName: item.AnimalEarID + ", " + item.AnimalName,
+                  AnimalSexID: item.AnimalSexID,
+                };
+              })
+            );
 
             resolve({
-              total: count,
+              //   total: count,
               lastPage: Math.ceil(count / limit),
               currPage: +req.query.page || 1,
               rows: rows,
@@ -3280,7 +3264,7 @@ const methods = {
     // FarmAIZoneID
     $where["isActive"] = 1;
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
-    
+
     if (req.query.CreatedUserID)
       $where["CreatedUserID"] = req.query.CreatedUserID;
     if (req.query.UpdatedUserID)
