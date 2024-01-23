@@ -322,19 +322,19 @@ const methods = {
           .then(async (result) => {
             let rows = result[0];
 
-            rows = rows.map((data) => {
-              let d = {
-                "ProjectID": data.ProjectID,
-                "ProjectCode": data.ProjectCode,
-                "ProjectName": data.ProjectName,
-                "StartDate": data.StartDate,
-                "EndDate": data.EndDate,
-                "OrganizationID": data.OrganizationID,
-                "AnimalTypeID": data.AnimalTypeID,
-                "ProjectLevel": data.ProjectLevel,
-              };
-              return d;
-            });
+            // let rows = result[0].map((data) => {
+            //   let d = {
+            //     "ProjectID": data.ProjectID,
+            //     "ProjectCode": data.ProjectCode,
+            //     "ProjectName": data.ProjectName,
+            //     // "StartDate": data.StartDate,
+            //     // "EndDate": data.EndDate,
+            //     // "OrganizationID": data.OrganizationID,
+            //     "AnimalTypeID": data.AnimalTypeID,
+            //     // "ProjectLevel": data.ProjectLevel,
+            //   };
+            //   return d;
+            // });
 
             resolve({
               rows: rows,

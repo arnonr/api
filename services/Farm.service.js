@@ -710,6 +710,9 @@ const methods = {
                   ")" +
                   " | เจ้าของฟาร์ม " +
                   name,
+                  OrganizationID: data.OrganizationID,
+                  AIZoneID: data.AIZoneID,
+                  OrganizationZoneID: data.OrganizationZoneID,
               };
               return d;
             });
