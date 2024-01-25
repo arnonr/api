@@ -84,7 +84,7 @@ const methods = {
 
     if (req.query.OrganizationZoneID)
       $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-    if (req.query.AIZoneID) $where["AIZoneID"] = req.query.AIZoneID;
+    if (req.query.AIZoneID) $where["AiZoneID"] = req.query.AIZoneID;
     if (req.query.FarmStatusID) $where["FarmStatusID"] = req.query.FarmStatusID;
 
     if (req.query.FarmRegisterStartDate) {
@@ -474,7 +474,7 @@ const methods = {
           //   reject(ErrorNotFound("Organization ID: not found"));
           // } else {
           let tumbol = await Tumbol.findByPk(req.query.TumbolID);
-
+          console.log(tumbol);
           FarmNumberGenerate = parseInt(
             tumbol.TumbolCode.substring(0, 6) + "0001"
             // req.query.TumbolID + "0001"
@@ -669,11 +669,11 @@ const methods = {
         as: "Farmer",
         where: WhereFullName,
       },
-    //   {
-    //     model: Province,
-    //     as: "Farmer",
-    //     where: WhereFullName,
-    //   },
+      //   {
+      //     model: Province,
+      //     as: "Farmer",
+      //     where: WhereFullName,
+      //   },
     ];
 
     query["include"] = include;
@@ -710,9 +710,9 @@ const methods = {
                   ")" +
                   " | เจ้าของฟาร์ม " +
                   name,
-                  OrganizationID: data.OrganizationID,
-                  AIZoneID: data.AIZoneID,
-                  OrganizationZoneID: data.OrganizationZoneID,
+                OrganizationID: data.OrganizationID,
+                AIZoneID: data.AIZoneID,
+                OrganizationZoneID: data.OrganizationZoneID,
               };
               return d;
             });

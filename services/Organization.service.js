@@ -273,7 +273,7 @@ const methods = {
                 OrganizationName: data.OrganizationName,
                 OrganizationTypeID: data.OrganizationTypeID,
                 OrganizationZoneID: data.OrganizationZoneID,
-                OrganizationProvinceID: data.rganizationProvinceID,
+                OrganizationProvinceID: data.OrganizationProvinceID,
                 OrganizationAmphurID: data.OrganizationAmphurID,
                 OrganizationTumbolID: data.OrganizationTumbolID,
                 OrganizationAiZoneID: data.OrganizationAiZoneID,
