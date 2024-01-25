@@ -48,11 +48,20 @@ router.get(
 );
 
 router.get(
+    "/export-excel",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetExportExcel
+  );
+
+router.get(
   "/",
   // auth.required,
   // checkPermission(resource, "read"),
   controllers.onGetAll
 );
+
+
 
 router.get(
   "/selection",

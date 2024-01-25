@@ -2,6 +2,18 @@ const Service = require("../services/Farm.service"),
   jwt = require("jsonwebtoken");
 
 const methods = {
+  async onGetExportExcel(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UserID = decoded.id;
+
+      let result = await Service.exportExcel(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetSelection(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);

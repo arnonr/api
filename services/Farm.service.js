@@ -12,6 +12,12 @@ const Farmer = require("../models/Farmer");
 const Tumbol = require("../models/Tumbol");
 const User = require("../models/User");
 const Staff = require("../models/Staff");
+
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+
+dayjs.extend(buddhistEra);
 // const { findOne, findByPk } = require("../models/Project");
 
 const nodemailer = require("nodemailer");
@@ -734,6 +740,43 @@ const methods = {
             //     return data;
             //   })
             // );
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  async exportExcel(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query })])
+          .then(async (result) => {
+            let rows = result[0].map((e) => {
+              return {
+                หมายเลขฟาร์ม: e.FarmIdentificationNumber,
+                ชื่อฟาร์ม: e.FarmName,
+                ชื่อนามสกุลเกษตรกร: e.Farmer ? e.Farmer.FullName : "-",
+                จังหวัด: e.Province.ProvinceName,
+                อำเภอ: e.Amphur.AmphurName,
+                ตำบล: e.Tumbol.TumbolName,
+                หน่วยงาน: e.Organization ? e.Organization.OrganizationName : "-",
+                วันที่ขึ้นทะเบียน: e.FarmRegisterDate
+                  ? dayjs(e.FarmRegisterDate).locale(locale).format("DD/MM/YYYY")
+                  : "",
+              };
+            });
 
             resolve({
               rows: rows,
