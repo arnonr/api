@@ -41,6 +41,13 @@ const upload = multer({
 });
 
 
+router.get(
+    "/export-excel",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetExportExcel
+  );
+
 router.get("/all-not-event", controllers.onGetAllNotEvent);
 
 router.get("/", controllers.onGetAll);
