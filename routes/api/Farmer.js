@@ -5,6 +5,7 @@ const { checkPermission } = require("../accessControl");
 
 let resource = "user";
 
+router.get("/fetch-before-add-farm", controllers.onGetBeforeAddFarm);
 
 router.get(
   "/",
@@ -20,7 +21,6 @@ router.get(
   controllers.onfetchAPIFarmer
 );
 
-
 router.get(
   "/:id",
   // auth.required,
@@ -32,7 +32,7 @@ router.post(
   "/",
   // auth.required,
   // checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(

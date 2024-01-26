@@ -399,6 +399,134 @@ const methods = {
       }
     });
   },
+
+  fetchAPIFarmer1(farmerPID) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let token = await this.getToken();
+        let tokenAccess = token.data.access_token;
+
+        let data1 = await axios.post(
+          "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+          {
+            farmerPID: farmerPID,
+          },
+          {
+            headers: { Authorization: `Bearer ${tokenAccess}` },
+          }
+        );
+
+        if (data1.data.code == "200") {
+          if (data1.data.result.length != 0) {
+            let dataFarmer = data1.data.result[data1.data.result.length - 1];
+
+            let province = Province.findOne({
+              where: { ProvinceCode: dataFarmer.farmerProvinceId.toString() },
+            });
+            let amphur = Amphur.findOne({
+              where: { AmphurCode: dataFarmer.farmerAmphurId.toString() },
+            });
+            let tumbol = Tumbol.findOne({
+              where: { TumbolCode: dataFarmer.farmerTambolId.toString() },
+            });
+
+            let data = {
+              FarmerNumber: dataFarmer.farmerId,
+              IdentificationNumber: dataFarmer.pid,
+              GivenName: dataFarmer.firstName,
+              Surname: dataFarmer.lastName,
+              FarmerTypeID:
+                dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
+                  ? 1
+                  : dataFarmer.farmerTypeName == "นิติบุคคล"
+                  ? 2
+                  : dataFarmer.farmerTypeName == "หน่วยงาน"
+                  ? 3
+                  : null,
+              HouseBuildingNumber: dataFarmer.farmerHomeNo,
+              HouseProvinceID: province ? province.ProvinceID : null,
+              HouseAmphurID: amphur ? amphur.AmphurID : null,
+              HouseTumbolID: tumbol ? tumbol.TumbolID : null,
+              HouseZipCode: tumbol ? tumbol.Zipcode : null,
+              HouseVillageName: dataFarmer.farmerVillageName,
+              CreatedUserID: 1,
+              FarmerRegisterStatus: 2,
+            };
+
+            data.createdAt = fn("GETDATE");
+
+            const obj = new db(data);
+            const inserted = await obj.save();
+            let res = methods.findById(inserted.FarmerID);
+            resolve({ res: res, dataFromAPI: data1, status: "have" });
+          } else {
+            resolve({
+              text: "IdentificationNumber Not Found",
+              status: "not_found",
+            });
+            // reject(ErrorNotFound("IdentificationNumber Not Found"));
+          }
+        } else {
+          resolve({
+            text: "API Error",
+            status: "api_error",
+          });
+          //   reject(ErrorNotFound("API Error"));
+        }
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  findBeforeAddFarm(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearch(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll(_q.query)])
+          .then(async (result) => {
+            let rows = result[0];
+
+            if (req.query.IdentificationNumber) {
+              let farmerPID = req.query.IdentificationNumber;
+
+              if (rows.length == 0) {
+                let fetchAPIFarmer = await this.fetchAPIFarmer(farmerPID);
+
+                if (fetchAPIFarmer) {
+                  rows = fetchAPIFarmer;
+                  count = 1;
+                } else {
+                  reject(ErrorNotFound("IdentificationNumber Not Found"));
+                }
+              } else {
+                if (rows[0].FarmerRegisterStatus == 0) {
+                  let checkAPI = await this.fetchAPIFarmer1(
+                    req.query.IdentificationNumber
+                  );
+                  if (checkAPI.status == "have") {
+                    rows[0].FarmerRegisterStatus = 2;
+                  }
+                }
+              }
+            }
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

@@ -73,7 +73,7 @@ const methods = {
     if (req.query.OrganizationAiZoneID) {
       let province1 = await Province.findAll({
         where: {
-          AIZoneID: req.query.OrganizationAiZoneID,
+          AiZoneID: req.query.OrganizationAiZoneID,
         },
       });
 
