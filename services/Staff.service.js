@@ -334,10 +334,7 @@ const methods = {
     const _q = await methods.scopeSearch(req, limit, offset);
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([
-          db.findAll(_q.query),
-          db.count({ ..._q.query }),
-        ])
+        Promise.all([db.findAll(_q.query), db.count({ ..._q.query })])
           .then((result) => {
             let rows = result[0];
             let count = result[1];
@@ -613,6 +610,186 @@ const methods = {
   },
 
   findByStaffNumber(StaffNumber) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let obj = await db.findOne({
+          where: {
+            StaffNumber: StaffNumber.toString(),
+            isRemove: 0,
+          },
+          include: [
+            { all: true, required: false },
+            {
+              model: CardRequestLog,
+              as: "CardRequestLog",
+              limit: 1,
+              order: [
+                ["RequestDate", "DESC"],
+                ["CardRequestID", "DESC"],
+              ],
+            },
+          ],
+        });
+
+        if (!obj) {
+          await axios
+            .get(
+              //   "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
+              "http://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                StaffNumber.toString() +
+                "&limit=1&page=1"
+            )
+            .then(async (response) => {
+              let { items } = response.data;
+
+              if (items.length > 0) {
+                let staffNew = new Staff();
+
+                staffNew.StaffNumber = items[0].staffId;
+                staffNew.StaffIdentificationNumber = items[0].staffIdCard;
+
+                let dep = await Organization.findOne({
+                  where: { OrganizationCode: items[0].staffOrgId },
+                });
+                if (dep) {
+                  staffNew.StaffOrganizationID = dep.OrganizationID;
+                }
+
+                staffNew.StaffTitleID =
+                  items[0].TitleName == "นางสาว"
+                    ? 4
+                    : items[0].TitleName == "นาย"
+                    ? 3
+                    : 5;
+                staffNew.StaffGivenName = items[0].staffFName;
+                staffNew.StaffSurname = items[0].staffLName;
+                staffNew.StaffGenderID = items[0].staffSex;
+                staffNew.StaffBirthdate = items[0].staffBirthdate;
+                staffNew.StaffStatus = items[0].staff_status_name;
+                staffNew.StaffAddress = items[0].staffAddress;
+                staffNew.StaffMoo = items[0].staffMoo;
+                staffNew.StaffVillageName = items[0].staffVillageName;
+                staffNew.StaffFloor = items[0].staffFloor;
+                staffNew.StaffStreet = items[0].staffStreet;
+                staffNew.StaffSubLane = items[0].staffSubLane;
+                staffNew.StaffLane = items[0].staffLane;
+                staffNew.StaffTumbolID = items[0].staffTumbolCode;
+                staffNew.StaffAmphurID = items[0].staffAmphurCode;
+                staffNew.StaffProvinceID = items[0].staffProvinceCode;
+                staffNew.StaffZipCode = items[0].staffZipCode;
+                staffNew.StaffEmail = items[0].staffEmailAddress;
+                staffNew.StaffTelephone = items[0].staffTelNo;
+                staffNew.StaffMobilePhone = items[0].staffMobileNo;
+                staffNew.StaffEducationID = items[0].staffEducation;
+                staffNew.StaffGraduateYear = items[0].staffGraduateYear;
+                staffNew.StaffPositionTypeID = items[0].staffPositionLevel;
+                staffNew.StaffMarriedStatusID = 6;
+
+                let position = null;
+
+                if (
+                  items[0].emStaffPosition != "" &&
+                  items[0].emStaffPosition != " " &&
+                  items[0].emStaffPosition != null
+                ) {
+                  position = await Position.findOne({
+                    where: { PositionCode: items[0].emStaffPosition },
+                  });
+                }
+
+                if (position != null) {
+                  staffNew.StaffPositionID = position.PositionID;
+                } else {
+                  staffNew.StaffPositionID = 5;
+                }
+                staffNew.CreatedUserID = 1;
+                staffNew.createdAt = Date.now();
+                await staffNew.save();
+
+                let res = await this.findById(staffNew.StaffID);
+
+                resolve(res);
+              } else {
+                resolve(false);
+              }
+            })
+            .catch((err) => {
+              resolve(false);
+              console.log(err);
+            });
+        } else {
+          let res = { ...obj.toJSON() };
+          if (obj.StaffPositionID == null) {
+            await axios
+              .get(
+                "http://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                  StaffNumber.toString() +
+                  "&limit=1&page=1"
+              )
+              .then(async (response) => {
+                let { items } = response.data;
+
+                if (items.length > 0) {
+                  let staffEdit = await db.findByPk(obj.StaffID);
+
+                  //   let position = await Position.findOne({
+                  //     where: { PositionCode: items[0].emStaffPosition },
+                  //   });
+
+                  //   if (Position) {
+                  //     staffEdit.StaffPositionID = position.PositionID;
+                  //   }
+                  let position = null;
+                  if (
+                    items[0].emStaffPosition != "" &&
+                    items[0].emStaffPosition != " " &&
+                    items[0].emStaffPosition != null
+                  ) {
+                    position = await Position.findOne({
+                      where: { PositionCode: items[0].emStaffPosition },
+                    });
+                  }
+
+                  if (position != null) {
+                    staffEdit.StaffPositionID = position.PositionID;
+                  } else {
+                    staffEdit.StaffPositionID = 5;
+                  }
+
+                  let dep = await Organization.findOne({
+                    where: { OrganizationCode: items[0].staffOrgId },
+                  });
+                  if (dep) {
+                    staffEdit.StaffOrganizationID = dep.OrganizationID;
+                  }
+
+                  await staffEdit.save();
+
+                  let res1 = await this.findById(staffNew.StaffID);
+                  res = { ...res1.toJSON() };
+                } else {
+                  resolve(false);
+                }
+              })
+              .catch((err) => {
+                resolve(false);
+                console.log(err);
+              });
+          }
+
+          if (res.CardRequestLog.length != 0) {
+            res.CardRequestLog = { ...res.CardRequestLog[0].toJSON() };
+          }
+
+          resolve(res);
+        }
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+
+  findByStaffNumber2(StaffNumber) {
     return new Promise(async (resolve, reject) => {
       try {
         let obj = await db.findOne({

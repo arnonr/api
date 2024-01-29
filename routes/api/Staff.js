@@ -96,6 +96,7 @@ router.post(
 );
 
 router.get("/staff-by-number/:id", controllers.onGetByStaffNumber);
+router.get("/staff-by-number2/:id", controllers.onGetByStaffNumber2);
 
 router.put("/:id/mobile-phone", controllers.onUpdateMobilePhone);
 
