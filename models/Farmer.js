@@ -377,6 +377,11 @@ Farmer.init(
         return fullname.trim();
       },
     },
+    FarmerPIDType: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        comment: "เลขไอดีอ้างอิงประเทบัตร 1= เลขบัตรประชาชน, 2= เลขหนังสือเดินทาง,3 = เลขประจำตัวคนต่างด้าว",
+    }
   },
   {
     sequelize,
