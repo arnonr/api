@@ -6,6 +6,7 @@ const Sequelize = require("sequelize");
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
+const FarmStatus = require("../models/FarmStatus");
 const Organization = require("../models/Organization");
 const Farm = require("../models/Farm");
 const Farmer = require("../models/Farmer");
@@ -175,6 +176,10 @@ const methods = {
       }
     } else {
       include.unshift({ all: true, required: false });
+    }
+
+    if (req.query.includeFarmStatus) {
+      include.unshift({ model: FarmStatus, as: "FarmStatus" });
     }
 
     query["include"] = include;
@@ -719,6 +724,7 @@ const methods = {
                 OrganizationID: data.OrganizationID,
                 AIZoneID: data.AIZoneID,
                 OrganizationZoneID: data.OrganizationZoneID,
+                FarmStatusName: data.FarmStatus.FarmStatusName,
               };
               return d;
             });
@@ -771,9 +777,13 @@ const methods = {
                 จังหวัด: e.Province.ProvinceName,
                 อำเภอ: e.Amphur.AmphurName,
                 ตำบล: e.Tumbol.TumbolName,
-                หน่วยงาน: e.Organization ? e.Organization.OrganizationName : "-",
+                หน่วยงาน: e.Organization
+                  ? e.Organization.OrganizationName
+                  : "-",
                 วันที่ขึ้นทะเบียน: e.FarmRegisterDate
-                  ? dayjs(e.FarmRegisterDate).locale(locale).format("DD/MM/YYYY")
+                  ? dayjs(e.FarmRegisterDate)
+                      .locale(locale)
+                      .format("DD/MM/YYYY")
                   : "",
               };
             });
