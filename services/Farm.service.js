@@ -724,7 +724,7 @@ const methods = {
                 OrganizationID: data.OrganizationID,
                 AIZoneID: data.AIZoneID,
                 OrganizationZoneID: data.OrganizationZoneID,
-                FarmStatusName: data.FarmStatus.FarmStatusName,
+                FarmStatusName: data.FarmStatus?.FarmStatusName,
               };
               return d;
             });
