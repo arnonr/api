@@ -228,7 +228,14 @@ const methods = {
 
         data.updatedAt = fn("GETDATE");
 
-        await db.update(data, { where: { DistributionID: id } });
+        let datasort = {
+          ...data,
+          createdAt: undefined,
+        //   DistributionDate
+
+        };
+
+        await db.update(datasort, { where: { DistributionID: id } });
 
         let res = methods.findById(data.DistributionID);
 

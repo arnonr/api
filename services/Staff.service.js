@@ -1011,6 +1011,12 @@ const methods = {
                 StaffNumber: data.StaffNumber,
                 StaffGivenName: data.StaffGivenName,
                 StaffSurname: data.StaffSurname,
+                StaffFullName:
+                  data.StaffNumber +
+                  ", " +
+                  data.StaffGivenName +
+                  " " +
+                  data.StaffSurname,
               };
             });
             resolve({
