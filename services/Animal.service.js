@@ -5106,7 +5106,7 @@ const methods = {
                 หมายเลขใบหู: "'" + x.AnimalEarID,
                 ชื่อสัตว์: x.AnimalName,
                 อายุ: "'" + x.AnimalAge,
-                สถานะ: x.AnimalStatus.AnimalStatusName,
+                สถานะ: x.AnimalStatus ? x.AnimalStatus.AnimalStatusName : "-",
                 สายพันธุ์: x.AnimalBreedAll,
                 วันเกิด: x.ThaiAnimalBirthDate,
                 เพศ: x.AnimalSex.AnimalSexName,
