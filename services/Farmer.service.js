@@ -296,8 +296,10 @@ const methods = {
 
             const obj = new db(data);
             const inserted = await obj.save();
-            let res = methods.findById(inserted.FarmerID);
-            resolve({ res: res, dataFromAPI: data1 });
+            let res = await methods.findById(inserted.FarmerID);
+            // 
+            console.log(data1.data)
+            resolve({ res: res, dataFromAPI: data1.data.result });
           } else {
             reject(ErrorNotFound("IdentificationNumber Not Found"));
           }
@@ -405,6 +407,7 @@ const methods = {
       try {
         let token = await this.getToken();
         let tokenAccess = token.data.access_token;
+
         let data1 = await axios.post(
           "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
           {
@@ -414,6 +417,7 @@ const methods = {
             headers: { Authorization: `Bearer ${tokenAccess}` },
           }
         );
+
 
         if (data1.data.code == "200") {
           if (data1.data.result.length != 0) {
@@ -466,7 +470,6 @@ const methods = {
                   where: { FarmerID: farmer.FarmerID },
                 }
               );
-              console.log(res);
             } else {
               let obj = new db(data);
               const inserted = await obj.save();
@@ -518,11 +521,9 @@ const methods = {
                 }
               } else {
                 if (rows[0].FarmerRegisterStatus == 0) {
-                  console.log("TEST70");
                   let checkAPI = await this.fetchAPIFarmer1(
                     req.query.IdentificationNumber
                   );
-                  console.log("TEST80");
                   if (checkAPI.status == "have") {
                     rows[0].FarmerRegisterStatus = 2;
                   }
