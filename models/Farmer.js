@@ -99,8 +99,10 @@ Farmer.init(
             where: { IdentificationNumber: value, isRemove: 0 },
           })
             .then(function (data) {
+                // console.log(self);
+                // console.log( data.FarmerID);
               if (data && self.FarmerID !== data.FarmerID) {
-                throw new Error("IdentificationNumber Code already in use!");
+                throw new Error("IdentificationNumber already in use!");
               }
               return next();
             })

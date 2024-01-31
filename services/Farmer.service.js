@@ -405,7 +405,6 @@ const methods = {
       try {
         let token = await this.getToken();
         let tokenAccess = token.data.access_token;
-
         let data1 = await axios.post(
           "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
           {
@@ -455,9 +454,25 @@ const methods = {
 
             data.createdAt = fn("GETDATE");
 
-            const obj = new db(data);
-            const inserted = await obj.save();
-            let res = methods.findById(inserted.FarmerID);
+            const farmer = await Farmer.findOne({
+              where: { IdentificationNumber: data.IdentificationNumber },
+            });
+
+            let res = {};
+            if (farmer) {
+              res = await Farmer.update(
+                { ...data, IdentificationNumber: undefined },
+                {
+                  where: { FarmerID: farmer.FarmerID },
+                }
+              );
+              console.log(res);
+            } else {
+              let obj = new db(data);
+              const inserted = await obj.save();
+              res = methods.findById(inserted.FarmerID);
+            }
+
             resolve({ res: res, dataFromAPI: data1, status: "have" });
           } else {
             resolve({
@@ -493,10 +508,8 @@ const methods = {
 
             if (req.query.IdentificationNumber) {
               let farmerPID = req.query.IdentificationNumber;
-
               if (rows.length == 0) {
                 let fetchAPIFarmer = await this.fetchAPIFarmer(farmerPID);
-
                 if (fetchAPIFarmer) {
                   rows = fetchAPIFarmer;
                   count = 1;
@@ -505,9 +518,11 @@ const methods = {
                 }
               } else {
                 if (rows[0].FarmerRegisterStatus == 0) {
+                  console.log("TEST70");
                   let checkAPI = await this.fetchAPIFarmer1(
                     req.query.IdentificationNumber
                   );
+                  console.log("TEST80");
                   if (checkAPI.status == "have") {
                     rows[0].FarmerRegisterStatus = 2;
                   }
