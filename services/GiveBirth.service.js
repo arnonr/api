@@ -269,15 +269,15 @@ const methods = {
 
         let animalStatusID = "";
         let animal = await Animal.findByPk(inserted.AnimalID);
-        if (animal.AnimalTypeID == 1) {
+        if (animal.AnimalTypeID == 1 || animal.AnimalTypeID == 41 || animal.AnimalTypeID == 42) {
           animalStatusID = 5;
         }
 
-        if (animal.AnimalTypeID == 3 || animal.AnimalTypeID == 42) {
+        if (animal.AnimalTypeID == 3 || animal.AnimalTypeID == 44 || animal.AnimalTypeID == 43) {
           animalStatusID = 10;
         }
 
-        if (animal.AnimalTypeID == 17) {
+        if (animal.AnimalTypeID == 17 || animal.AnimalTypeID == 45 || animal.AnimalTypeID == 46) {
           animalStatusID = 15;
         }
 
