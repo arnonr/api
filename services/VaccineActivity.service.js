@@ -185,8 +185,26 @@ const methods = {
           return;
         }
         data.AnimalID = JSON.stringify(data.AnimalID);
+        // data.AnimalID = "[1]";
 
         data.createdAt = fn("GETDATE");
+
+        // let data1 = {
+        //   VaccineActivityDate: data.VaccineActivityDate,
+        //   FarmID: data.FarmID,
+        //   FarmIdentificationNumber: data.FarmIdentificationNumber,
+        //   Lot: data.Lot,
+        //   OrganizationID: data.OrganizationID,
+        //   ResponsibilityStaffID: data.ResponsibilityStaffID,
+        //   VaccineActivityDate: data.VaccineActivityDate,
+        //   VaccineID: data.VaccineID,
+        //   VaccineNextDate: data.VaccineNextDate,
+        //   VaccineNextMonth: data.VaccineNextMonth,
+        //   VaccineObjectiveID: data.VaccineObjectiveID,
+        //   AnimalID: JSON.stringify(data.AnimalID),
+        //   Remark: data.Remark,
+        //   createdAt: fn("GETDATE")
+        // };
 
         const obj = new db(data);
         const inserted = await obj.save();
@@ -218,9 +236,24 @@ const methods = {
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
 
-        data.updatedAt = fn("GETDATE");
+        let data1 = {
+          VaccineActivityDate: data.VaccineActivityDate,
+          FarmID: data.FarmID,
+          FarmIdentificationNumber: data.FarmIdentificationNumber,
+          Lot: data.Lot,
+          OrganizationID: data.OrganizationID,
+          ResponsibilityStaffID: data.ResponsibilityStaffID,
+          VaccineActivityDate: data.VaccineActivityDate,
+          VaccineID: data.VaccineID,
+          VaccineNextDate: data.VaccineNextDate,
+          VaccineNextMonth: data.VaccineNextMonth,
+          VaccineObjectiveID: data.VaccineObjectiveID,
+          AnimalID: data.AnimalID,
+          Remark: data.Remark,
+          updatedAt: fn("GETDATE"),
+        };
 
-        await db.update(data, { where: { VaccineActivityID: id } });
+        await db.update(data1, { where: { VaccineActivityID: id } });
 
         let res = methods.findById(data.VaccineActivityID);
 

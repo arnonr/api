@@ -61,7 +61,7 @@ VaccineActivity.init(
     },
 
     AnimalID: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT('long'),
       allowNull: true,
       comment: "รหัสสัตว์",
     },
