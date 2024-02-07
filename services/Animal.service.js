@@ -1710,7 +1710,7 @@ const methods = {
     //   $where["AnimalEarID"] = req.query.AnimalEarID;
     // }
     if (req.query.AnimalEarID) {
-      $where["AnimalEarID"] = "%" + req.query.AnimalEarID + "%";
+      $where["AnimalEarID"] = { [Op.like]: "%" + req.query.AnimalEarID + "%" };
     }
 
     if (req.query.AnimalMicrochip)
