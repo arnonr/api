@@ -82,6 +82,15 @@ const methods = {
     }
   },
 
+  async onDeleteWithCheck(req, res) {
+    try {
+      await Service.deleteWithCheck(req.params.id);
+      res.success("success", 204);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGenerateNumber(req, res) {
     try {
       let result = await Service.GenerateNumber(

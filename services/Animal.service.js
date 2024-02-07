@@ -1706,8 +1706,11 @@ const methods = {
         [Op.like]: "%" + req.query.AnimalNationalID + "%",
       };
 
+    // if (req.query.AnimalEarID) {
+    //   $where["AnimalEarID"] = req.query.AnimalEarID;
+    // }
     if (req.query.AnimalEarID) {
-      $where["AnimalEarID"] = req.query.AnimalEarID;
+      $where["AnimalEarID"] = "%" + req.query.AnimalEarID + "%";
     }
 
     if (req.query.AnimalMicrochip)
@@ -2791,6 +2794,37 @@ const methods = {
         });
 
         resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  deleteWithCheck(id) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const obj = await db.findByPk(id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        const ai = await AI.findOne({ where: { AnimalID: obj.AnimalID } });
+        console.log(ai);
+
+        if (ai) {
+          reject(ErrorNotFound("This animal have AI, not allow to delete"));
+        } else {
+          await db.update(
+            { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
+            { where: { AnimalID: id } }
+          );
+
+          // delete ProjectToAnimalType
+          const obj1 = AnimalToProject.destroy({
+            where: { AnimalID: id },
+            // // truncate: true,
+          });
+
+          resolve();
+        }
       } catch (error) {
         reject(error);
       }
