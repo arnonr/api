@@ -2034,7 +2034,7 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          //   db.count(_q.query),
+          db.count(_q.query),
         ])
           .then(async (result) => {
             let rows = result[0],
