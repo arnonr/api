@@ -484,6 +484,8 @@ const methods = {
         data.StaffID = parseInt(id);
 
         data.updatedAt = fn("GETDATE");
+        // data.UpdatedUserID = req.user.id;
+        
         // StaffStatus
         // if (data.StaffStatus == "ลาออก") {
         //   data.CardStatus = 0;

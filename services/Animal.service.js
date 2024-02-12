@@ -1924,11 +1924,23 @@ const methods = {
 
     if (req.query.ProjectID) {
       if (req.query.ProjectID != "[]") {
-        WhereProject = {
-          ProjectID: {
-            [Op.in]: JSON.parse(req.query.ProjectID),
-          },
-        };
+        if (req.query.CountProjectType) {
+          if (req.query.CountProjectType == 2) {
+            $where["ProjectID"] = null;
+          } else {
+            WhereProject = {
+              ProjectID: {
+                [Op.in]: JSON.parse(req.query.ProjectID),
+              },
+            };
+          }
+        } else {
+          WhereProject = {
+            ProjectID: {
+              [Op.in]: JSON.parse(req.query.ProjectID),
+            },
+          };
+        }
       }
     }
 
