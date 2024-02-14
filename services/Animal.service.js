@@ -1926,6 +1926,15 @@ const methods = {
       if (req.query.ProjectID != "[]") {
         if (req.query.CountProjectType) {
           if (req.query.CountProjectType == 2) {
+            $where["ProjectID"] = {
+              [Op.ne]: null,
+            };
+            WhereProject = {
+              ProjectID: {
+                [Op.notIn]: JSON.parse(req.query.ProjectID),
+              },
+            };
+          } else if (req.query.CountProjectType == 3) {
             $where["ProjectID"] = null;
           } else {
             WhereProject = {
