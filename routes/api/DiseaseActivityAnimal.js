@@ -39,4 +39,12 @@ router.delete(
   controllers.onDelete
 );
 
+router.delete(
+  "/delete-with-disease-activity/:id",
+  // auth.required,
+  // checkPermission(resource, "delete"),
+  controllers.onDeleteWithDiseaseActivity
+);
+
+
 module.exports = router;

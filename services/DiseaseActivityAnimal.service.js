@@ -281,6 +281,24 @@ const methods = {
       }
     });
   },
+
+  deleteWithDiseaseActivity(DiseaseActivityID) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // const obj = await db.findByPk(id);
+        // if (!obj) reject(ErrorNotFound("id: not found"));
+
+        await db.destroy({
+          where: { DiseaseActivityID: DiseaseActivityID },
+          truncate: true,
+        });
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

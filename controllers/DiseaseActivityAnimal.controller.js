@@ -51,6 +51,17 @@ const methods = {
       res.error(error);
     }
   },
+
+  async onDeleteWithDiseaseActivity(req, res) {
+    try {
+      await Service.deleteWithDiseaseActivity(req.params.id);
+      res.success("success", 204);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  
 };
 
 module.exports = { ...methods };
