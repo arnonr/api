@@ -2827,11 +2827,27 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        const ai = await AI.findOne({ where: { AnimalID: obj.AnimalID } });
-        console.log(ai);
+        const ai = await AI.findAll({ where: { AnimalID: obj.AnimalID } });
 
-        if (ai) {
-          reject(ErrorNotFound("This animal have AI, not allow to delete"));
+        if (ai && ai.length > 0) {
+          ai.forEach((x) => {
+            if (x.isRemove == 0) {
+              reject(ErrorNotFound("This animal have AI, not allow to delete"));
+            }
+          });
+          
+          await db.update(
+            { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
+            { where: { AnimalID: id } }
+          );
+
+          // delete ProjectToAnimalType
+          const obj1 = AnimalToProject.destroy({
+            where: { AnimalID: id },
+            // // truncate: true,
+          });
+
+          resolve();
         } else {
           await db.update(
             { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
