@@ -1696,6 +1696,9 @@ const methods = {
     if (req.query.AnimalStatusID)
       $where["AnimalStatusID"] = req.query.AnimalStatusID;
 
+    if (req.query.AnimalAlive)
+      $where["AnimalAlive"] = Number(req.query.AnimalAlive);
+
     if (req.query.AnimalIdentificationID)
       $where["AnimalIdentificationID"] = {
         [Op.like]: "%" + req.query.AnimalIdentificationID + "%",
@@ -2835,7 +2838,7 @@ const methods = {
               reject(ErrorNotFound("This animal have AI, not allow to delete"));
             }
           });
-          
+
           await db.update(
             { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
             { where: { AnimalID: id } }
