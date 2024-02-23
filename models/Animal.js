@@ -427,7 +427,7 @@ class Animal extends Model {
     let animalJson = this.toJSON();
     let age = animalJson.AnimalAge;
 
-    console.log(animalJson.AnimalBreedAll + "FREDOM20");
+    // console.log(animalJson.AnimalBreedAll + "FREEDOM20");
 
     let statusText = this.AnimalStatus
       ? this.AnimalStatus.AnimalStatusName

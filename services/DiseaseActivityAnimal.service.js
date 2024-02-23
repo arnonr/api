@@ -228,13 +228,20 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         data.createdAt = fn("GETDATE");
+        // console.log(data)
+        // console.log("FREEDOM")
 
         const obj = new db(data);
+
+        console.log(obj)
+
         const inserted = await obj.save();
 
         let res = methods.findById(inserted.DiseaseActivityAnimalID);
+        // console.log(res)
 
         resolve(res);
+        // resolve({})
       } catch (error) {
         reject(ErrorBadRequest(error));
       }

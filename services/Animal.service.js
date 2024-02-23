@@ -2249,6 +2249,7 @@ const methods = {
   scopeSearchIDAndName(req, limit, offset) {
     // Where
     let $where = {};
+    $where["isRemove"] = 0;
 
     if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 

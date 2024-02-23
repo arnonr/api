@@ -12,11 +12,6 @@ class DewormActivity extends Model {
       foreignKey: "FarmID",
     });
 
-    
-    this.belongsTo(models.Animal, {
-      foreignKey: "AnimalID",
-    });
-
     this.belongsTo(models.DewormMedicine, {
       foreignKey: "DewormMedicineID",
     });
@@ -57,7 +52,6 @@ DewormActivity.init(
       allowNull: false,
       comment: "วันที่ถ่ายพยาธิ",
     },
-
     AnimalID: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -68,19 +62,16 @@ DewormActivity.init(
       allowNull: true,
       comment: "รหัสฟาร์ม",
     },
-
     DewormMedicineID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสอ้างอิงยาถ่ายพยาธิ",
     },
-
     DewormNextDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
       comment: "วันที่ถ่ายพยาธิครั้งถัดไป",
     },
-
     OrganizationID: {
       type: DataTypes.INTEGER(11),
       allowNull: true,

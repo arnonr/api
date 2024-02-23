@@ -44,22 +44,82 @@ const methods = {
 
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
-    whereFarmID = {};
+
+    let whereAnimal = {};
     if (req.query.FarmID) {
-      whereFarmID = { FarmID: req.query.FarmID };
-      // $whereFarmID = req.query.FarmID;
-      // $where["$Animal.FarmID$"] = JSON.parse(req.query.FarmID);
+      whereAnimal["FarmID"] = req.query.FarmID;
+    }
+
+    if (req.query.AnimalTypeID) {
+      let animaltype = JSON.parse(req.query.AnimalTypeID);
+
+      let test1 = animaltype.find((x) => {
+        return x == 1 || x == 2;
+      });
+      if (test1) {
+        animaltype.push(41);
+        animaltype.push(42);
+      }
+
+      let test2 = animaltype.find((x) => {
+        return x == 3 || x == 4;
+      });
+
+      if (test2) {
+        animaltype.push(43);
+        animaltype.push(44);
+      }
+
+      let test3 = animaltype.find((x) => {
+        return x == 5 || x == 6;
+      });
+
+      if (test3) {
+        animaltype.push(45);
+        animaltype.push(46);
+      }
+
+      whereAnimal["AnimalTypeID"] = {
+        [Op.in]: animaltype,
+      };
+    }
+
+    let whereFarms = {};
+
+    if (req.query.OrganizationZoneID) {
+      whereFarms["OrganizationZoneID"] = req.query.OrganizationZoneID;
+    }
+
+    if (req.query.AIZoneID) {
+      whereFarms["AIZoneID"] = req.query.AIZoneID;
+    }
+
+    if (req.query.OrganizationID) {
+      whereFarms["OrganizationID"] = req.query.OrganizationID;
+    }
+
+    if (req.query.ProvinceID) {
+      whereFarms["ProvinceID"] = req.query.ProvinceID;
+    }
+
+    if (req.query.AmphurID) {
+      whereFarms["AmphurID"] = req.query.AmphurID;
+    }
+
+    if (req.query.TumbolID) {
+      whereFarms["TumbolID"] = req.query.TumbolID;
     }
 
     // Order
-    $order = [["CureActivityID", "ASC"]];
-    if (req.query.orderByField && req.query.orderBy)
+    let $order = [["CureActivityID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy) {
       $order = [
         [
           req.query.orderByField,
           req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
         ],
       ];
+    }
     query["order"] = $order;
 
     if (!isNaN(limit)) query["limit"] = limit;
@@ -73,11 +133,17 @@ const methods = {
         as: "Vaccines",
         through: { attributes: ["Amount"] },
       },
-      {
-        model: Animal,
-        as: "Animal",
-        where: whereFarmID,
-      },
+      //   {
+      //     model: Animal,
+      //     as: "Animal",
+      //     where: whereAnimal,
+      //     // include: [
+      //     //   {
+      //     //     association: "AnimalFarm",
+      //     //     where: whereFarms,
+      //     //   },
+      //     // ],
+      //   },
     ];
 
     return { query: query };
@@ -118,6 +184,8 @@ const methods = {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch(req, limit, offset);
+
+    console.log("TEST1");
     return new Promise(async (resolve, reject) => {
       try {
         Promise.all([db.findAll(_q.query), db.count(_q.query)])

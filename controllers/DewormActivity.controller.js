@@ -23,7 +23,8 @@ const methods = {
   async onInsert(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.CreatedUserID = decoded.id;
+    //   req.body.CreatedUserID = decoded.id;
+    req.body.CreatedUserID = 1;
       let result = await Service.insert(req.body);
       res.success(result, 201);
     } catch (error) {

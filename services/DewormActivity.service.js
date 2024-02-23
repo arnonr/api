@@ -66,13 +66,7 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
-    query["include"] = [
-      { all: true, required: false },
-      //   {
-      //     model: Staff,
-      //     attributes: ['StaffGivenName', 'StaffSurname']
-      //   },
-    ];
+    query["include"] = [{ all: true, required: false }];
 
     return { query: query };
   },
@@ -83,6 +77,8 @@ const methods = {
     let animal = await Animal.findAll({
       where: { AnimalID: dataJson.AnimalID },
     });
+
+    data = {};
     dataJson.Animal = animal;
 
     data = {
@@ -186,6 +182,38 @@ const methods = {
     });
   },
 
+  update1(id, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+        data.DewormActivityID = parseInt(id);
+
+        if (data.AnimalID) {
+          if (!Array.isArray(data.AnimalID)) {
+            reject(ErrorBadRequest("Animal ID ต้องอยู่ในรูปแบบ Array"));
+            return;
+          }
+          data.AnimalID = JSON.stringify(data.AnimalID);
+        }
+
+        // Conversion failed when converting date and/or time from character string
+        data.updatedAt = fn("GETDATE");
+
+        await db.update(data, { where: { DewormActivityID: id } });
+
+        let res = methods.findById(data.DewormActivityID);
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
+
   update(id, data) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -204,9 +232,21 @@ const methods = {
           data.AnimalID = JSON.stringify(data.AnimalID);
         }
 
-        data.updatedAt = fn("GETDATE");
+        let data1 = {
+          DewormActivityDate: data.DewormActivityDate,
+          FarmID: data.FarmID,
+          FarmIdentificationNumber: data.FarmIdentificationNumber,
+          OrganizationID: data.OrganizationID,
+          ResponsibilityStaffID: data.ResponsibilityStaffID,
+          DewormActivityDate: data.DewormActivityDate,
+          DewormMedicineID: data.DewormMedicineID,
+          DewormNextDate: data.DewormNextDate,
+          AnimalID: data.AnimalID,
+          Remark: data.Remark,
+          updatedAt: fn("GETDATE"),
+        };
 
-        await db.update(data, { where: { DewormActivityID: id } });
+        await db.update(data1, { where: { DewormActivityID: id } });
 
         let res = methods.findById(data.DewormActivityID);
 

@@ -24,6 +24,7 @@ const methods = {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.body.CreatedUserID = decoded.id;
+
       let result = await Service.insert(req.body);
       res.success(result, 201);
     } catch (error) {
