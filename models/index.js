@@ -169,6 +169,7 @@ const Thaiblack = require("./Thaiblack");
 const ProductionStatus = require("./ProductionStatus");
 
 const CAToVC = require("./CAToVC");
+const CAToCB = require("./CAToCB");
 const CureActivity = require("./CureActivity");
 const CureMethod = require("./CureMethod");
 const CMToAT = require("./CMToAT");
@@ -599,6 +600,8 @@ CureAntibiotic.associate({
   AnimalType,
   RpToCureAntibiotic,
   Reproduce,
+  CAToCB,
+  CureActivity
 });
 
 CureHormone.associate({
@@ -695,7 +698,9 @@ RedGoat.associate({
 
 CureActivity.associate({
   CAToVC,
+  CAToCB,
   Vaccine,
+  CureAntibiotic,
   Animal,
   Disease,
   CureMethod,

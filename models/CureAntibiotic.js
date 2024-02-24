@@ -12,6 +12,11 @@ class CureAntibiotic extends Model {
       through: models.RpToCureAntibiotic,
       foreignKey: "CureAntibioticID",
     });
+
+    this.belongsToMany(models.CureActivity, {
+      through: "CAToCB",
+      // foreignKey: "VaccineID",
+    });
   }
 
   // Custom JSON Response

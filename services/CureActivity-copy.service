@@ -5,7 +5,6 @@ const config = require("../configs/app"),
 const CAToVC = require("../models/CAToVC");
 const CureActivity = require("../models/CureActivity");
 const Vaccine = require("../models/Vaccine");
-const CureAntibiotic = require("../models/CureAntibiotic");
 const Animal = require("../models/Animal");
 const AnimalStatus = require("../models/AnimalStatus");
 const AnimalSex = require("../models/AnimalSex");
@@ -138,12 +137,12 @@ const methods = {
       //     model: Animal,
       //     as: "Animal",
       //     where: whereAnimal,
-      //     include: [
-      //       {
-      //         association: "AnimalFarm",
-      //         where: whereFarms,
-      //       },
-      //     ],
+      //     // include: [
+      //     //   {
+      //     //     association: "AnimalFarm",
+      //     //     where: whereFarms,
+      //     //   },
+      //     // ],
       //   },
     ];
 
@@ -244,34 +243,30 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        let CureAntibioticIDList = [];
-        if (data.CureAntibioticID) {
-          if (!Array.isArray(data.CureAntibioticID)) {
-            reject(ErrorBadRequest("CureAntibiotic ID ต้องอยู่ในรูปแบบ Array"));
+        let VaccineIDList = [];
+        if (data.VaccineID) {
+          if (!Array.isArray(data.VaccineID)) {
+            reject(ErrorBadRequest("Vaccine ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
 
-          CureAntibioticIDList = [...data.CureAntibioticID];
-          data.CureAntibioticID = JSON.stringify(data.CureAntibioticID);
+          VaccineIDList = [...data.VaccineID];
+          data.VaccineID = JSON.stringify(data.VaccineID);
         }
 
         data.createdAt = fn("GETDATE");
-        console.log(data);
 
         const obj = new db(data);
         // console.log(obj.CureNextDate);
-        // obj.CureActivityDate = dayjs(obj.CureActivityDate).format("YYYY-MM-DD")
         // obj.CureNextDate = dayjs(obj.CureNextDate).format("YYYY-MM-DD")
         const inserted = await obj.save();
 
         const res = await db.findByPk(inserted.CureActivityID);
 
-        for (let index = 0; index < CureAntibioticIDList.length; index++) {
-          let cb = await CureAntibiotic.findByPk(
-            CureAntibioticIDList[index][0]
-          );
-          await res.addCureAntibiotic(cb, {
-            through: { Amount: CureAntibioticIDList[index][1] },
+        for (let index = 0; index < VaccineIDList.length; index++) {
+          let vc = await Vaccine.findByPk(VaccineIDList[index][0]);
+          await res.addVaccine(vc, {
+            through: { Amount: VaccineIDList[index][1] },
           });
         }
 
@@ -282,56 +277,6 @@ const methods = {
     });
   },
 
-  //   update(id, data) {
-  //     return new Promise(async (resolve, reject) => {
-  //       try {
-  //         // Check ID
-  //         const obj = await db.findByPk(id);
-  //         if (!obj) reject(ErrorNotFound("id: not found"));
-
-  //         let VaccineIDList = [];
-  //         if (data.VaccineID) {
-  //           if (!Array.isArray(data.VaccineID)) {
-  //             reject(ErrorBadRequest("Vaccine ID ต้องอยู่ในรูปแบบ Array"));
-  //             return;
-  //           }
-  //           VaccineIDList = [...data.VaccineID];
-  //           data.VaccineID = JSON.stringify(data.VaccineID);
-  //         }
-
-  //         // Update
-  //         data.CureActivityID = parseInt(id);
-
-  //         data.updatedAt = fn("GETDATE");
-
-  //         await db.update(data, { where: { CureActivityID: id } });
-
-  //         const res = await db.findByPk(id);
-
-  //         if (data.VaccineID === null) {
-  //           let vc = await Vaccine.findAll();
-  //           await res.removeVaccine(vc);
-  //         }
-  //         if (data.VaccineID) {
-  //           let vc = await Vaccine.findAll();
-
-  //           await res.removeVaccine(vc);
-
-  //           for (let index = 0; index < VaccineIDList.length; index++) {
-  //             let vc = await Vaccine.findByPk(VaccineIDList[index][0]);
-  //             await res.addVaccine(vc, {
-  //               through: { Amount: VaccineIDList[index][1] },
-  //             });
-  //           }
-  //         }
-
-  //         resolve(res);
-  //       } catch (error) {
-  //         reject(ErrorBadRequest(error.message));
-  //       }
-  //     });
-  //   },
-
   update(id, data) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -339,46 +284,45 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        //check เงื่อนไขตรงนี้ได้
-        let CureAntibioticIDList = [];
-        if (data.CureAntibioticID) {
-          if (!Array.isArray(data.CureAntibioticID)) {
-            reject(ErrorBadRequest("CureAntibiotic ID ต้องอยู่ในรูปแบบ Array"));
+        let VaccineIDList = [];
+        if (data.VaccineID) {
+          if (!Array.isArray(data.VaccineID)) {
+            reject(ErrorBadRequest("Vaccine ID ต้องอยู่ในรูปแบบ Array"));
             return;
           }
-
-          CureAntibioticIDList = [...data.CureAntibioticID];
-          data.CureAntibioticID = JSON.stringify(data.CureAntibioticID);
+          VaccineIDList = [...data.VaccineID];
+          data.VaccineID = JSON.stringify(data.VaccineID);
         }
 
+        // Update
         data.CureActivityID = parseInt(id);
+
         data.updatedAt = fn("GETDATE");
+
         await db.update(data, { where: { CureActivityID: id } });
 
         const res = await db.findByPk(id);
 
-        if (data.CureAntibioticID === null) {
-          let cb = await CureAntibiotic.findAll();
-          await res.removeCureAntibiotic(cb);
+        if (data.VaccineID === null) {
+          let vc = await Vaccine.findAll();
+          await res.removeVaccine(vc);
         }
-        
-        if (data.CureAntibioticID) {
-          let cb = await CureAntibiotic.findAll();
-          await res.removeCureAntibiotic(cb);
+        if (data.VaccineID) {
+          let vc = await Vaccine.findAll();
 
-          for (let index = 0; index < CureAntibioticIDList.length; index++) {
-            let cb = await CureAntibiotic.findByPk(
-              CureAntibioticIDList[index][0]
-            );
-            await res.addCureAntibiotic(cb, {
-              through: { Amount: CureAntibioticIDList[index][1] },
+          await res.removeVaccine(vc);
+
+          for (let index = 0; index < VaccineIDList.length; index++) {
+            let vc = await Vaccine.findByPk(VaccineIDList[index][0]);
+            await res.addVaccine(vc, {
+              through: { Amount: VaccineIDList[index][1] },
             });
           }
         }
 
         resolve(res);
       } catch (error) {
-        reject(ErrorBadRequest(error));
+        reject(ErrorBadRequest(error.message));
       }
     });
   },

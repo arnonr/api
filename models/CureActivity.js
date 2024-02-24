@@ -11,7 +11,7 @@ class CureActivity extends Model {
   static associate(models) {
     this.belongsTo(models.Animal, {
       foreignKey: "AnimalID",
-      as: "Animal"
+      as: "Animal",
     });
     this.belongsTo(models.Disease, {
       foreignKey: "DiseaseID",
@@ -23,6 +23,11 @@ class CureActivity extends Model {
 
     this.belongsToMany(models.Vaccine, {
       through: models.CAToVC,
+      // foreignKey: "CureActivityID",
+    });
+
+    this.belongsToMany(models.CureAntibiotic, {
+      through: models.CAToCB,
       // foreignKey: "CureActivityID",
     });
 
@@ -92,6 +97,11 @@ CureActivity.init(
     },
     VaccineID: {
       type: DataTypes.STRING(500),
+      allowNull: true,
+      comment: "รหัสอ้างอิงวัคซีน/ยารักษาโรค ARRAY",
+    },
+    CureAntibioticID: {
+      type: DataTypes.STRING(1000),
       allowNull: true,
       comment: "รหัสอ้างอิงวัคซีน/ยารักษาโรค ARRAY",
     },
