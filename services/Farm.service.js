@@ -443,14 +443,19 @@ const methods = {
     });
   },
 
-  delete(id) {
+  delete(id, UpdatedUserID) {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0 },
+          {
+            isRemove: 1,
+            isActive: 0,
+            updatedAt: fn("GETDATE"),
+            UpdatedUserID: Number(UpdatedUserID),
+          },
           { where: { FarmID: id } }
         );
 

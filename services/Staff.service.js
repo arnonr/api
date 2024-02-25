@@ -485,7 +485,7 @@ const methods = {
 
         data.updatedAt = fn("GETDATE");
         // data.UpdatedUserID = req.user.id;
-        
+
         // StaffStatus
         // if (data.StaffStatus == "ลาออก") {
         //   data.CardStatus = 0;
@@ -573,14 +573,19 @@ const methods = {
     });
   },
 
-  delete(id) {
+  delete(id, UpdatedUserID) {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
+          {
+            isRemove: 1,
+            isActive: 0,
+            updatedAt: fn("GETDATE"),
+            UpdatedUserID: Number(UpdatedUserID),
+          },
           { where: { StaffID: id } }
         );
         resolve();

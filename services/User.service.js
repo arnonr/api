@@ -173,8 +173,7 @@ const methods = {
         req.query.OrganizationTumbolID;
 
     if (req.query.OrganizationID)
-      $WhereOrganization["OrganizationID"] =
-        req.query.OrganizationID;
+      $WhereOrganization["OrganizationID"] = req.query.OrganizationID;
 
     query["include"] = [
       { all: true, required: false },
@@ -368,6 +367,7 @@ const methods = {
         }
         // data.ResetPasswordToken = null;
         data.updatedAt = fn("GETDATE");
+        // data.UpdatedUserID =  data.UpdatedUserID;
 
         await db.update(data, { where: { UserID: id } });
 
@@ -466,14 +466,19 @@ const methods = {
     });
   },
 
-  delete(id) {
+  delete(id, UpdatedUserID) {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
         await db.update(
-          { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
+          {
+            isRemove: 1,
+            isActive: 0,
+            updatedAt: fn("GETDATE"),
+            UpdatedUserID: Number(UpdatedUserID),
+          },
           { where: { UserID: id } }
         );
 
