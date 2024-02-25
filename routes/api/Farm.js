@@ -48,11 +48,18 @@ router.get(
 );
 
 router.get(
-    "/export-excel",
-    // auth.required,
-    // checkPermission(resource, "read"),
-    controllers.onGetExportExcel
-  );
+  "/export-excel",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetExportExcel
+);
+
+router.get(
+  "/export-excel-with-farmer",
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetExportExcelWithFarmer
+);
 
 router.get(
   "/",
@@ -60,8 +67,6 @@ router.get(
   // checkPermission(resource, "read"),
   controllers.onGetAll
 );
-
-
 
 router.get(
   "/selection",

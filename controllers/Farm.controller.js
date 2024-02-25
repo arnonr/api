@@ -14,6 +14,18 @@ const methods = {
     }
   },
 
+  async onGetExportExcelWithFarmer(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UserID = decoded.id;
+
+      let result = await Service.exportExcelWithFarmer(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetSelection(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);

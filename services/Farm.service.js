@@ -116,20 +116,36 @@ const methods = {
       }
     }
 
-    let WhereFullName = null;
+    let WhereFarmer = [];
 
     if (req.query.FullName) {
-      WhereFullName = Sequelize.where(
-        Sequelize.fn(
-          "concat",
-          Sequelize.col("GivenName"),
-          " ",
-          Sequelize.col("Surname")
-        ),
-        {
-          [Op.like]: "%" + req.query.FullName.trim() + "%",
-        }
+      WhereFarmer.push(
+        Sequelize.where(
+          Sequelize.fn(
+            "concat",
+            Sequelize.col("GivenName"),
+            " ",
+            Sequelize.col("Surname")
+          ),
+          {
+            [Op.like]: "%" + req.query.FullName.trim() + "%",
+          }
+        )
       );
+    }
+
+    if (req.query.FarmerRegisterStatus != null) {
+      WhereFarmer.push({
+        FarmerRegisterStatus: Number(req.query.FarmerRegisterStatus),
+      });
+    }
+
+    if (req.query.FarmerIdentificationNumber != null) {
+      WhereFarmer.push({
+        IdentificationNumber: {
+          [Op.like]: "%" + req.query.FarmerIdentificationNumber.trim() + "%",
+        },
+      });
     }
 
     if (req.query.isActive) $where["isActive"] = req.query.isActive;
@@ -165,7 +181,9 @@ const methods = {
       {
         model: Farmer,
         as: "Farmer",
-        where: WhereFullName,
+        where: {
+          [Op.and]: WhereFarmer,
+        },
       },
     ];
 
@@ -643,20 +661,36 @@ const methods = {
       }
     }
 
-    let WhereFullName = null;
+    let WhereFarmer = [];
 
     if (req.query.FullName) {
-      WhereFullName = Sequelize.where(
-        Sequelize.fn(
-          "concat",
-          Sequelize.col("GivenName"),
-          " ",
-          Sequelize.col("Surname")
-        ),
-        {
-          [Op.like]: "%" + req.query.FullName.trim() + "%",
-        }
+      WhereFarmer.push(
+        Sequelize.where(
+          Sequelize.fn(
+            "concat",
+            Sequelize.col("GivenName"),
+            " ",
+            Sequelize.col("Surname")
+          ),
+          {
+            [Op.like]: "%" + req.query.FullName.trim() + "%",
+          }
+        )
       );
+    }
+
+    if (req.query.FarmerRegisterStatus != null) {
+      WhereFarmer.push({
+        FarmerRegisterStatus: Number(req.query.FarmerRegisterStatus),
+      });
+    }
+
+    if (req.query.FarmerIdentificationNumber != null) {
+      WhereFarmer.push({
+        IdentificationNumber: {
+          [Op.like]: "%" + req.query.FarmerIdentificationNumber.trim() + "%",
+        },
+      });
     }
 
     $where["isRemove"] = 0;
@@ -678,7 +712,9 @@ const methods = {
       {
         model: Farmer,
         as: "Farmer",
-        where: WhereFullName,
+        where: {
+          [Op.and]: WhereFarmer,
+        },
       },
       //   {
       //     model: Province,
@@ -785,6 +821,61 @@ const methods = {
                       .locale(locale)
                       .format("DD/MM/YYYY")
                   : "",
+              };
+            });
+
+            resolve({
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  async exportExcelWithFarmer(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = await methods.scopeSearch(req, limit, offset);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([db.findAll({ ..._q.query })])
+          .then(async (result) => {
+            let rows = result[0].map((e) => {
+              return {
+                ทะเบียนเกษตรกร: e.Farmer ? e.Farmer.FarmerNumber : "-",
+                หมายเลขบัตรประชาชน: e.Farmer
+                  ? e.Farmer.IdentificationNumber != null
+                    ? "'" + e.Farmer.IdentificationNumber
+                    : "-"
+                  : "-",
+                ชื่อนามสกุลเกษตรกร: e.Farmer ? e.Farmer.FullName : "-",
+                ทะเบียนฟาร์ม: e.FarmIdentificationNumber,
+                ชื่อฟาร์ม: e.FarmName,
+                จังหวัด: e.Province.ProvinceName,
+                อำเภอ: e.Amphur.AmphurName,
+                ตำบล: e.Tumbol.TumbolName,
+                หน่วยงาน: e.Organization
+                  ? e.Organization.OrganizationName
+                  : "-",
+                วันที่ขึ้นทะเบียน: e.Farmer
+                  ? e.Farmer.FarmerRegisterDate
+                    ? dayjs(e.Farmer.FarmerRegisterDate)
+                        .locale(locale)
+                        .format("DD/MM/YYYY")
+                    : ""
+                  : "-",
+                เบอร์โทรศัพท์: e.Farmer ? e.Farmer.MobilePhoneNumber : "-",
+                สถานะ: e.Farmer
+                  ? e.Farmer.FarmerRegisterStatus == 2
+                    ? "ขึ้นทะเบียนแล้ว"
+                    : "ยังไม่ขึ้นทะเบียน"
+                  : "-",
               };
             });
 
