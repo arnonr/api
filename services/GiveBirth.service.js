@@ -131,6 +131,7 @@ const methods = {
       data = {
         GiveBirthID: dataJson.GiveBirthID,
         AnimalID: dataJson.AnimalID,
+        BabyStatus: dataJson.BabyStatus,
         AIID: dataJson.AI.AIID,
         PAR: dataJson.AI.PAR,
         TimeNo: dataJson.AI.TimeNo,
@@ -153,6 +154,7 @@ const methods = {
       data = {
         GiveBirthID: dataJson.GiveBirthID,
         AnimalID: dataJson.AnimalID,
+        BabyStatus: dataJson.BabyStatus,
         TransferEmbryoID: dataJson.TransferEmbryo.TransferEmbryoID,
         PAR: dataJson.TransferEmbryo.PAR,
         TimeNo: dataJson.TransferEmbryo.TimeNo,
@@ -174,6 +176,7 @@ const methods = {
       data = {
         GiveBirthID: dataJson.GiveBirthID,
         AnimalID: dataJson.AnimalID,
+        BabyStatus: dataJson.BabyStatus,
         AIID: null,
         // PAR: dataJson.PAR,
         Type: "NI",
@@ -269,15 +272,27 @@ const methods = {
 
         let animalStatusID = "";
         let animal = await Animal.findByPk(inserted.AnimalID);
-        if (animal.AnimalTypeID == 1 || animal.AnimalTypeID == 41 || animal.AnimalTypeID == 42) {
+        if (
+          animal.AnimalTypeID == 1 ||
+          animal.AnimalTypeID == 41 ||
+          animal.AnimalTypeID == 42
+        ) {
           animalStatusID = 5;
         }
 
-        if (animal.AnimalTypeID == 3 || animal.AnimalTypeID == 44 || animal.AnimalTypeID == 43) {
+        if (
+          animal.AnimalTypeID == 3 ||
+          animal.AnimalTypeID == 44 ||
+          animal.AnimalTypeID == 43
+        ) {
           animalStatusID = 10;
         }
 
-        if (animal.AnimalTypeID == 17 || animal.AnimalTypeID == 45 || animal.AnimalTypeID == 46) {
+        if (
+          animal.AnimalTypeID == 17 ||
+          animal.AnimalTypeID == 45 ||
+          animal.AnimalTypeID == 46
+        ) {
           animalStatusID = 15;
         }
 
@@ -379,6 +394,32 @@ const methods = {
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  babySellAndDeath(data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(data.id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+
+        let data1 = {};
+        data1.GiveBirthID = parseInt(data.id);
+        data1.updatedAt = fn("GETDATE");
+        data1.BabyStatus = Number(data.BabyStatus);
+        data1.BabyWeight = Number(data.BabyWeight);
+
+        await db.update(data1, { where: { GiveBirthID: data.id } });
+
+        let res = methods.findById(data1.GiveBirthID);
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },

@@ -5,6 +5,13 @@ const { checkPermission } = require("../accessControl");
 
 let resource = "user";
 
+router.post(
+  "/baby-sell-and-death",
+  // auth.required,
+  // checkPermission(resource, "update"),
+  controllers.onBabySellAndDeath
+);
+
 router.get(
   "/",
   // auth.required,
@@ -22,7 +29,7 @@ router.post(
   "/",
   // auth.required,
   // checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(

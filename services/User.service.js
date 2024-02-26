@@ -453,7 +453,9 @@ const methods = {
             from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
             to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
             subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
-            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/'>http://biotech-cbg.dld.go.th/</a>", // html body
+            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/'>http://biotech-cbg.dld.go.th/</a><br> กรณีลืมรหัสผ่านท่านสามารถรีเซ็ตรหัสผ่านได้ที่ URL :  <a href='http://biotech-cbg.dld.go.th/reset-password'>http://biotech-cbg.dld.go.th/reset-password</a>", // html body
+
+            // http://biotech-cbg.dld.go.th/reset-password
           });
         }
 

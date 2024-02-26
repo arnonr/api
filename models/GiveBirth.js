@@ -18,6 +18,7 @@ class GiveBirth extends Model {
     this.belongsTo(models.AI, {
       foreignKey: "AIID",
     });
+
     this.belongsTo(models.TransferEmbryo, {
       foreignKey: "TransferEmbryoID",
     });
@@ -54,6 +55,16 @@ GiveBirth.init(
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "รหัสสัตว์",
+    },
+    BabyStatus: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "1 = เกิด, 2 = ขาย,3 = ตาย",
+    },
+    BabyWeight: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "น้ำหนัก",
     },
     AIID: {
       type: DataTypes.INTEGER(11),
