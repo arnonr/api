@@ -442,8 +442,8 @@ const methods = {
             secure: false,
             auth: {
               // ข้อมูลการเข้าสู่ระบบ
-              user: "cwie@kmutnb.ac.th", // email user ของเรา
-              pass: "xhqqcypawtnyfnhl", // email password
+              user: "cwie@technopark.kmutnb.ac.th", // email user ของเรา
+              pass: "2023@CWIE", // email password
               //user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
               //pass: "zsetdnqrizeqtvwu", // email password
             },
