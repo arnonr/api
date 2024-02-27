@@ -74,7 +74,7 @@ router.get(
 router.get("/:id", controllers.onGetById);
 
 router.get(
-  "/:id/export-registered-animal",
+  "/export-registered-animal/:id",
   controllers.onExportRegisteredAnimal
 );
 

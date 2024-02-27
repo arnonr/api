@@ -3823,8 +3823,6 @@ const methods = {
           })
         );
 
-        //
-
         let diseaseActivityAnimal = await DiseaseActivityAnimal.findAll({
           where: { AnimalID: req.params.id, isRemove: 0 },
           include: [
@@ -4013,8 +4011,8 @@ const methods = {
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
           FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
-          Father: animal.AnimalFather.toJSON(),
-          // AI
+        //   Father: animal.AnimalFather?.toJSON(),
+        //   // AI
           AI: [...aiRes],
           Disease: disease,
           Vaccine: vaccine,
