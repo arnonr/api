@@ -33,8 +33,21 @@ const methods = {
 
   async onUpdate(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UpdatedUserID = decoded.id;
+      if (req.headers.authorization) {
+        const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+
+        if (decoded) {
+          if (decoded.id) {
+            req.body.UpdatedUserID = decoded.id;
+          } else {
+            req.body.UpdatedUserID = 1;
+          }
+        } else {
+          req.body.UpdatedUserID = 1;
+        }
+      } else {
+        req.body.UpdatedUserID = 1;
+      }
 
       const result = await Service.update(req.params.id, req.body);
       res.success(result);
@@ -45,7 +58,10 @@ const methods = {
 
   async onDelete(req, res) {
     try {
-      await Service.delete(req.params.id);
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      UpdatedUserID = decoded.id;
+
+      await Service.delete(req.params.id, UpdatedUserID);
       res.success("success", 204);
     } catch (error) {
       res.error(error);
