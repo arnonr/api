@@ -270,7 +270,8 @@ const methods = {
             });
 
             let data = {
-              FarmerNumber: dataFarmer.farmerId,
+            //   FarmerNumber: dataFarmer.farmerId, 
+              FarmerNumber: dataFarmer.farmCode,
               IdentificationNumber: dataFarmer.pid,
               GivenName: dataFarmer.firstName,
               Surname: dataFarmer.lastName,
@@ -352,7 +353,8 @@ const methods = {
               });
 
               let data = {
-                FarmerNumber: dataFarmer.farmerId,
+                // FarmerNumber: dataFarmer.farmerId,
+                FarmerNumber: dataFarmer.farmCode,
                 IdentificationNumber: dataFarmer.pid,
                 GivenName: dataFarmer.firstName,
                 Surname: dataFarmer.lastName,

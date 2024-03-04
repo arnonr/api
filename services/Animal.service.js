@@ -2853,6 +2853,21 @@ const methods = {
 
           resolve();
         } else {
+          let checkParent = null;
+          if (obj.AnimalSexID == 1) {
+            checkParent = await Animal.findAll({
+              where: { AnimalFatherID: obj.AnimalID },
+            });
+          } else {
+            checkParent = await Animal.findAll({
+              where: { AnimalMotherID: obj.AnimalID },
+            });
+          }
+
+          if (checkParent && checkParent.length > 0) {
+            reject(ErrorNotFound("This animal is Parent, not allow to delete"));
+          }
+
           await db.update(
             { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
             { where: { AnimalID: id } }
@@ -4011,8 +4026,8 @@ const methods = {
           FarmName: animal.AnimalFarm.FarmName,
           FarmIdentificationNumber: animal.AnimalFarm.FarmIdentificationNumber,
           FarmAddress: `${animal.AnimalFarm.FarmAddress}`,
-        //   Father: animal.AnimalFather?.toJSON(),
-        //   // AI
+          //   Father: animal.AnimalFather?.toJSON(),
+          //   // AI
           AI: [...aiRes],
           Disease: disease,
           Vaccine: vaccine,
