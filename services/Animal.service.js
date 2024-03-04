@@ -2836,7 +2836,7 @@ const methods = {
         if (ai && ai.length > 0) {
           ai.forEach((x) => {
             if (x.isRemove == 0) {
-              reject(ErrorNotFound("This animal have AI, not allow to delete"));
+              reject(ErrorNotFound("ไม่สามารถลบได้ เนื่องจากมีกิจกรรมผสมเทียม"));
             }
           });
 
@@ -2865,7 +2865,7 @@ const methods = {
           }
 
           if (checkParent && checkParent.length > 0) {
-            reject(ErrorNotFound("This animal is Parent, not allow to delete"));
+            reject(ErrorNotFound("ไม่สามารถลบได้ เนื่องจากเป็นพ่อแม่"));
           }
 
           await db.update(
