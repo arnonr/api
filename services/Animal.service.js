@@ -5188,7 +5188,7 @@ const methods = {
 
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll({ ..._q.query })])
+        Promise.all([db.findAll({ ..._q.query,limit:undefined,offset:undefined })])
           .then(async (result) => {
             let rows = result[0].map((x) => {
               return {
