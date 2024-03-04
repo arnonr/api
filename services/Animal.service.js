@@ -2046,7 +2046,7 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          db.count(_q.query),
+          db.findAll({ ..._q.query, limit: undefined, offset: undefined }),
         ])
           .then(async (result) => {
             let rows = result[0],
@@ -2093,13 +2093,12 @@ const methods = {
             }
 
             resolve({
-              total: count,
-              lastPage: Math.ceil(result[1] / limit),
+              lastPage: Math.ceil(result[1].length / limit),
               rows: rows,
-              totalPage: Math.ceil(result[1] / limit),
-              totalData: result[1],
+              totalPage: Math.ceil(result[1].length / limit),
+              totalData: result[1].length,
               currPage: +req.query.page || 1,
-              total: result[1],
+              total: result[1].length,
             });
           })
           .catch((error) => {
@@ -2836,7 +2835,9 @@ const methods = {
         if (ai && ai.length > 0) {
           ai.forEach((x) => {
             if (x.isRemove == 0) {
-              reject(ErrorNotFound("ไม่สามารถลบได้ เนื่องจากมีกิจกรรมผสมเทียม"));
+              reject(
+                ErrorNotFound("ไม่สามารถลบได้ เนื่องจากมีกิจกรรมผสมเทียม")
+              );
             }
           });
 
