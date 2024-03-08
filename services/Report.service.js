@@ -5529,7 +5529,7 @@ const methods = {
         ai.forEach((x) => {
           if (x.Animal.AnimalBreedID1 != null) {
             let checkBreed = breed.find((b) => {
-              return x.Animal.AnimalBreedID1 == b.AnimalBreedID;
+              return x.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
 
             if (checkBreed) {
