@@ -5576,7 +5576,8 @@ const methods = {
               }
 
               breed.push({
-                AnimalBreedID: x.Animal.AnimalBreedID1,
+                // AnimalBreedID: x.Animal.AnimalBreedID1,
+                AnimalBreedID: x.Semen.AnimalBreedID1,
                 AnimalID: [
                   {
                     AnimalID: x.Animal.AnimalID,
@@ -5620,6 +5621,7 @@ const methods = {
         breed = breed.map((x) => {
           let AnimalBreed = breedAll.find((ba) => {
             return x.AnimalBreedID == ba.AnimalBreedID;
+            // 
           });
 
           x.AnimalRealCount = x.AnimalID.length;
