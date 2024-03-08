@@ -450,7 +450,7 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let animal = await Animal.findAll({ where: { FarmID: obj.FarmID } });
+        let animal = await Animal.findAll({ where: { FarmID: obj.FarmID,isRemove: 0 } });
 
         if (animal.length > 0) {
           // resolve({type: "error", message: "ม่สามารถลบได้ เน่ืองจากมีสัตว์อยู่ในฟาร์ม"});
