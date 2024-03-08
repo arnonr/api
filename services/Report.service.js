@@ -5412,6 +5412,8 @@ const methods = {
           };
         }
 
+        $where["isRemove"] = 0;
+
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         const queryFarm =
@@ -5429,6 +5431,7 @@ const methods = {
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
+                isRemove: 0,
               },
               include: [
                 {
@@ -5456,11 +5459,53 @@ const methods = {
                   //   ...queryFarm,
                 },
                 { model: AnimalStatus, as: "AnimalStatus" },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
               ],
             },
             {
               model: Semen,
               as: "Semen",
+              include: [
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed1",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed2",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed3",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed4",
+                },
+                {
+                  model: AnimalBreed,
+                  as: "AnimalBreed5",
+                },
+              ],
             },
             {
               model: Staff,
@@ -5499,10 +5544,12 @@ const methods = {
                 FarmIdentificationNumber:
                   x.Animal.AnimalFarm.FarmIdentificationNumber,
                 FarmName: x.Animal.AnimalFarm.FarmName,
-                AnimalEarID: x.Animal.AnimalEarID,
+                AnimalEarID:  x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
+                AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                 SemenNumber: x.Semen.SemenNumber,
+                SemenBreedAll: x.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR > 0 ? x.PAR : 0,
                 AIDate: x.AIDate
                   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -5538,9 +5585,10 @@ const methods = {
                     FarmName: x.Animal.AnimalFarm.FarmName,
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
+                    AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
                     AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-
                     SemenNumber: x.Semen.SemenNumber,
+                    SemenBreedAll: x.Semen.AnimalBreedAll,
                     AnimalPar: x.PAR > 0 ? x.PAR : 0,
                     AIDate: x.AIDate
                       ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
