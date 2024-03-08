@@ -9,6 +9,7 @@ const Project = require("../models/Project");
 const FarmStatus = require("../models/FarmStatus");
 const Organization = require("../models/Organization");
 const Farm = require("../models/Farm");
+const Animal = require("../models/Animal");
 const Farmer = require("../models/Farmer");
 const Tumbol = require("../models/Tumbol");
 const User = require("../models/User");
@@ -449,22 +450,29 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        await db.update(
-          {
-            isRemove: 1,
-            isActive: 0,
-            updatedAt: fn("GETDATE"),
-            UpdatedUserID: Number(UpdatedUserID),
-          },
-          { where: { FarmID: id } }
-        );
+        let animal = await Animal.findAll({ where: { FarmID: obj.FarmID } });
 
-        const obj1 = FarmToProject.destroy({
-          where: { FarmID: id },
-          // truncate: true,
-        });
+        if (animal.length > 0) {
+          // resolve({type: "error", message: "ม่สามารถลบได้ เน่ืองจากมีสัตว์อยู่ในฟาร์ม"});
+          reject(ErrorNotFound("ไม่สามารถลบได้ เนื่องจากมีสัตว์อยู่ในฟาร์ม"));
+        } else {
+          await db.update(
+            {
+              isRemove: 1,
+              isActive: 0,
+              updatedAt: fn("GETDATE"),
+              UpdatedUserID: Number(UpdatedUserID),
+            },
+            { where: { FarmID: id } }
+          );
 
-        resolve();
+          const obj1 = FarmToProject.destroy({
+            where: { FarmID: id },
+            // truncate: true,
+          });
+
+          resolve();
+        }
       } catch (error) {
         reject(error);
       }
