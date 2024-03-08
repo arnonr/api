@@ -5544,7 +5544,7 @@ const methods = {
                 FarmIdentificationNumber:
                   x.Animal.AnimalFarm.FarmIdentificationNumber,
                 FarmName: x.Animal.AnimalFarm.FarmName,
-                AnimalEarID:  x.Animal.AnimalEarID,
+                AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
                 AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
@@ -5621,7 +5621,7 @@ const methods = {
         breed = breed.map((x) => {
           let AnimalBreed = breedAll.find((ba) => {
             return x.AnimalBreedID == ba.AnimalBreedID;
-            // 
+            //
           });
 
           x.AnimalRealCount = x.AnimalID.length;
@@ -5663,6 +5663,18 @@ const methods = {
           });
 
           return x;
+        });
+
+        breed.sort((a, b) => {
+          if (a.AnimalRealCount > b.AnimalRealCount) {
+            return -1;
+          }
+          if (a.AnimalRealCount < b.AnimalRealCount) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
         });
 
         resolve({
