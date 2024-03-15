@@ -472,7 +472,7 @@ const methods = {
     });
   },
 
-  report3(req) {
+  report3old(req) {
     return new Promise(async (resolve, reject) => {
       try {
         let $where = {};
@@ -671,6 +671,261 @@ const methods = {
         // let animal = await Animal.findOne({
         //   ...query,
         // });
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
+  report3(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let staff = [];
+
+        if (req.query.StaffID) {
+          staff = await Staff.findAll({
+            where: { StaffID: Number(req.query.StaffID), isRemove: 0 },
+          });
+        } else {
+          let organizationIDArr = [];
+          let organization = [];
+          let $where = {};
+
+          if (req.query.OrganizationID) {
+            $where = {
+              OrganizationID: Number(req.query.OrganizationID),
+              isRemove: 0,
+            };
+          } else if (req.query.ProvinceID) {
+            $where = {
+              OrganizationProvinceID: Number(req.query.ProvinceID),
+              isRemove: 0,
+            };
+
+            console.log($where);
+          } else if (req.query.AmphurID) {
+            $where = {
+              OrganizationAmphurID: Number(req.query.AmphurID),
+              isRemove: 0,
+            };
+          } else if (req.query.TumbolID) {
+            $where = {
+              OrganizationTumbolID: Number(req.query.TumbolID),
+              isRemove: 0,
+            };
+          } else {
+            let provinceIDArr = [];
+            let $whereProvice = {};
+
+            if (req.query.AIZoneID) {
+              $whereProvice = { AIZoneID: req.query.AIZoneID };
+            } else {
+              $whereProvice = {
+                OrganizationZoneID: req.query.OrganizationZoneID,
+              };
+            }
+
+            const province = await Province.findAll({
+              where: $whereProvice,
+            });
+
+            province.forEach((p) => {
+              provinceIDArr.push(p.ProvinceID);
+            });
+
+            $where = { OrganizationProvinceID: { [Op.in]: provinceIDArr } };
+          }
+
+          organization = await Organization.findAll({
+            where: $where,
+          });
+
+          organization.forEach((o) => {
+            organizationIDArr.push(o.OrganizationID);
+          });
+          staff = await Staff.findAll({
+            where: {
+              StaffOrganizationID: { [Op.in]: organizationIDArr },
+              isRemove: 0,
+            },
+          });
+        }
+
+        let res = [];
+
+        // Date
+        let AIDate = {
+          [Op.ne]: null,
+        };
+
+        let AnimalCreatedDatetime = {
+          [Op.ne]: null,
+        };
+
+        let CheckupDate = {
+          [Op.ne]: null,
+        };
+
+        let GiveBirthDate = {
+          [Op.ne]: null,
+        };
+
+        if (req.query.StartDate) {
+          AIDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          AnimalCreatedDatetime = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          CheckupDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+
+          GiveBirthDate = {
+            [Op.between]: [
+              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+            ],
+          };
+        }
+
+        let staffIDArr = [];
+
+        for (let s of staff) {
+          staffIDArr.push(s.StaffID);
+        }
+
+        const ai = await AI.findAll({
+          where: {
+            ResponsibilityStaffID: { [Op.in]: staffIDArr },
+            AIDate: AIDate,
+            isRemove: 0,
+          },
+        });
+
+        const animal = await Animal.findAll({
+          where: {
+            CreatedUserID: { [Op.in]: staffIDArr },
+            CreatedDatetime: AnimalCreatedDatetime,
+            isRemove: 0,
+          },
+        });
+
+        const pregnancyCheckup = await PregnancyCheckup.findAll({
+          where: {
+            ResponsibilityStaffID: { [Op.in]: staffIDArr },
+            CheckupDate: CheckupDate,
+            isRemove: 0,
+          },
+        });
+
+        let giveBirth = await GiveBirth.findAll({
+          where: {
+            ResponsibilityStaffID: { [Op.in]: staffIDArr },
+            GiveBirthDate: GiveBirthDate,
+            isRemove: 0,
+          },
+        });
+
+        for (let s of staff) {
+          let s_animal = [];
+          let s_ai = [];
+          let s_pregnancyCheckup = [];
+          let pregnancyStatus1 = [];
+          let uniqueAIs = [];
+          let percent = null;
+          let s_giveBirth = [];
+
+          s_animal = animal.filter((el) => {
+            return el.CreatedUserID == s.StaffID;
+          });
+
+          s_ai = ai.filter((el) => {
+            return el.ResponsibilityStaffID == s.StaffID;
+          });
+
+          s_pregnancyCheckup = pregnancyCheckup.filter((el) => {
+            return el.ResponsibilityStaffID == s.StaffID;
+          });
+
+          pregnancyStatus1 = s_pregnancyCheckup.filter((el, idx) => {
+            return el.PregnancyCheckStatusID == 1;
+          });
+
+          const seen = new Set();
+          uniqueAIs = s_ai.filter((el, index) => {
+            const duplicate = seen.has(el.AnimalID);
+            seen.add(el.AnimalID);
+            return !duplicate;
+          });
+
+          percent = parseFloat(
+            (
+              (pregnancyStatus1.length * 100) /
+              s_pregnancyCheckup.length
+            ).toFixed(2)
+          );
+
+          if (s_pregnancyCheckup.length == 0) {
+            percent = "-";
+          } else {
+            if (pregnancyStatus1.length == 0) {
+              percent = 0 + "%";
+            } else {
+              percent = percent + "%";
+            }
+          }
+
+          let childM = 0;
+          let childF = 0;
+
+          s_giveBirth = giveBirth.filter((el) => {
+            return el.ResponsibilityStaffID == s.StaffID;
+          });
+
+          if (giveBirth) {
+            s_giveBirth.forEach((el, index) => {
+              // ChildGender
+              if (el.ChildGender != null) {
+                let ChildGender = el.ChildGender.split(",");
+                for (let cg of ChildGender) {
+                  if (cg == "M") {
+                    childM = childM + 1;
+                  } else if (cg == "F") {
+                    childF = childF + 1;
+                  } else {
+                  }
+                }
+              }
+            });
+          }
+
+          res.push({
+            StaffNumber: s.StaffNumber,
+            StaffFullName: `${s.StaffGivenName} ${s.StaffSurname}`,
+            r1: uniqueAIs.length,
+            r2: s_ai.length,
+            r3: s_animal.length,
+            r4: s_pregnancyCheckup.length,
+            r5: pregnancyStatus1.length,
+            percent: percent,
+            childM: childM,
+            childF: childF,
+            childT: childM + childF,
+          });
+        }
 
         resolve(res);
       } catch (error) {
@@ -4282,8 +4537,11 @@ const methods = {
           $where["ResponsibilityStaffID"] = req.query.StaffID;
         }
 
+        $where["isActive"] = 1;
+        $where["isRemove"] = 0;
+
         if (req.query.StartDate) {
-          $where["CheckupDate"] = {
+          $where["GiveBirthDate"] = {
             [Op.between]: [
               dayjs(req.query.StartDate).format("YYYY-MM-DD"),
               dayjs(req.query.EndDate).format("YYYY-MM-DD"),
@@ -4306,6 +4564,7 @@ const methods = {
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
+                isRemove: 0,
               },
               include: [
                 {
@@ -4323,13 +4582,36 @@ const methods = {
                 { model: AnimalStatus, as: "AnimalStatus" },
               ],
             },
-            {
+            {   
               model: AI,
               as: "AI",
+              where: { isActive: 1, isRemove: 0 },
               include: [
                 {
                   model: Semen,
                   as: "Semen",
+                  include: [
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed1",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed2",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed3",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed4",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed5",
+                    },
+                  ],
                 },
               ],
             },
@@ -4339,16 +4621,20 @@ const methods = {
           ],
         });
 
-        let animal = preg.map((x) => {
-          return x;
-        });
+        let animal = preg
+          .filter((x) => {
+            return x.AI != null;
+          })
+          .map((x) => {
+            return x;
+          });
 
         let breed = [];
 
         animal.forEach((x) => {
           if (x.Animal.AnimalBreedID1 != null) {
             let checkBreed = breed.find((b) => {
-              return x.Animal.AnimalBreedID1 == b.AnimalBreedID;
+              return x.AI.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
 
             if (checkBreed) {
@@ -4361,6 +4647,7 @@ const methods = {
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                 SemenNumber: x.AI?.Semen.SemenNumber,
+                SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR,
                 AIDate: x.AI?.AIDate
                   ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
@@ -4382,7 +4669,9 @@ const methods = {
               checkBreed.FarmID.push(x.Animal.FarmID);
             } else {
               breed.push({
-                AnimalBreedID: x.Animal.AnimalBreedID1,
+                // AnimalBreedID: x.Animal.AnimalBreedID1,
+
+                AnimalBreedID: x.AI?.Semen.AnimalBreedID1,
                 AnimalID: [
                   {
                     AnimalID: x.Animal.AnimalID,
@@ -4392,8 +4681,8 @@ const methods = {
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
                     AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-
                     SemenNumber: x.AI?.Semen.SemenNumber,
+                    SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                     AnimalPar: x.PAR,
                     AIDate: x.AI?.AIDate
                       ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
@@ -4439,7 +4728,7 @@ const methods = {
             return true;
           });
 
-          x.AnimalCount = i.length;
+          x.AnimalCount = x.AnimalRealCount; //i.length;
 
           let uniqFarm = [...new Set(x.FarmID)];
           x.FarmID = uniqFarm;
@@ -4454,7 +4743,31 @@ const methods = {
               ")";
           }
 
+          x.AnimalID.sort((a, b) => {
+            if (a.AIDateReal < b.AIDateReal) {
+              return -1;
+            }
+            if (a.AIDateReal > b.AIDateReal) {
+              return 1;
+            }
+
+            // names must be equal
+            return 0;
+          });
+
           return x;
+        });
+
+        breed.sort((a, b) => {
+          if (a.AnimalRealCount > b.AnimalRealCount) {
+            return -1;
+          }
+          if (a.AnimalRealCount < b.AnimalRealCount) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
         });
 
         resolve({
