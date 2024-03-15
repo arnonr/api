@@ -3970,7 +3970,7 @@ const methods = {
         }
 
         $whereAnimal["AnimalTypeID"] = {
-          [Op.in]: [1, 2, 41, 42],
+          [Op.in]: req.query.AnimalTypeID,
         };
 
         let WhereProject = null;
@@ -4030,6 +4030,9 @@ const methods = {
           $where["ResponsibilityStaffID"] = req.query.StaffID;
         }
 
+        $where["isActive"] = 1;
+        $where["isRemove"] = 0;
+
         if (req.query.StartDate_Created) {
           //   $where["CheckupDate"] = {
           //     [Op.between]: [
@@ -4087,6 +4090,7 @@ const methods = {
                 AnimalTypeID: {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
+                isRemove: 0,
               },
               include: [
                 {
@@ -4107,10 +4111,33 @@ const methods = {
             {
               model: AI,
               as: "AI",
+              where: { isActive: 1, isRemove: 0, },
               include: [
                 {
                   model: Semen,
                   as: "Semen",
+                  include: [
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed1",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed2",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed3",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed4",
+                    },
+                    {
+                      model: AnimalBreed,
+                      as: "AnimalBreed5",
+                    },
+                  ],
                 },
               ],
             },
@@ -4123,16 +4150,25 @@ const methods = {
           ],
         });
 
-        let animal = preg.map((x) => {
+        // let animal = preg.map((x) => {
+        //   return x.Animal != null && x.AI != null;
+        // });
+
+        let animal = preg
+        .filter((x) => {
+          return x.AI != null && x.Animal != null;
+        })
+        .map((x) => {
           return x;
         });
 
         let breed = [];
 
         animal.forEach((x) => {
+            console.log(x)
           if (x.Animal.AnimalBreedID1 != null) {
             let checkBreed = breed.find((b) => {
-              return x.Animal.AnimalBreedID1 == b.AnimalBreedID;
+              return x.AI.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
 
             if (checkBreed) {
@@ -4145,6 +4181,7 @@ const methods = {
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                 SemenNumber: x.AI?.Semen?.SemenNumber,
+                SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                 AnimalPar: x.AI?.PAR,
                 AIDate: dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB"),
                 CheckupDate: x.CheckupDate
@@ -4162,7 +4199,7 @@ const methods = {
               checkBreed.FarmID.push(x.Animal.FarmID);
             } else {
               breed.push({
-                AnimalBreedID: x.Animal.AnimalBreedID1,
+                AnimalBreedID: x.AI.Semen.AnimalBreedID1,
                 AnimalID: [
                   {
                     AnimalID: x.Animal.AnimalID,
@@ -4173,6 +4210,7 @@ const methods = {
                     AnimalName: x.Animal.AnimalName,
                     AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                     SemenNumber: x.AI?.Semen?.SemenNumber,
+                    SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                     AnimalPar: x.AI?.PAR,
                     AIDate: dayjs(x.AI?.AIDate)
                       .locale("th")
@@ -4217,7 +4255,8 @@ const methods = {
             return true;
           });
 
-          x.AnimalCount = i.length;
+        //   x.AnimalCount = i.length;
+          x.AnimalCount = x.AnimalRealCount; //i.length;
 
           let uniqFarm = [...new Set(x.FarmID)];
           x.FarmID = uniqFarm;
@@ -4232,8 +4271,32 @@ const methods = {
               ")";
           }
 
+          x.AnimalID.sort((a, b) => {
+            if (a.AIDateReal < b.AIDateReal) {
+              return -1;
+            }
+            if (a.AIDateReal > b.AIDateReal) {
+              return 1;
+            }
+
+            // names must be equal
+            return 0;
+          });
+
           return x;
         });
+
+        breed.sort((a, b) => {
+            if (a.AnimalRealCount > b.AnimalRealCount) {
+              return -1;
+            }
+            if (a.AnimalRealCount < b.AnimalRealCount) {
+              return 1;
+            }
+  
+            // names must be equal
+            return 0;
+          });
 
         resolve({
           data: breed,
@@ -4477,7 +4540,7 @@ const methods = {
         }
 
         $whereAnimal["AnimalTypeID"] = {
-          [Op.in]: [1, 2, 41, 42],
+          [Op.in]: req.query.AnimalTypeID,
         };
 
         let WhereProject = null;
@@ -4582,7 +4645,7 @@ const methods = {
                 { model: AnimalStatus, as: "AnimalStatus" },
               ],
             },
-            {   
+            {
               model: AI,
               as: "AI",
               where: { isActive: 1, isRemove: 0 },
@@ -4645,7 +4708,7 @@ const methods = {
                 FarmName: x.Animal.AnimalFarm.FarmName,
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
-                AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+                AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                 SemenNumber: x.AI?.Semen.SemenNumber,
                 SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR,
@@ -5195,7 +5258,7 @@ const methods = {
                     FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
-                    AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+                    AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                     AnimalPar: x.PAR,
                     SemenNumber: x.Semen.SemenNumber,
                     TimeNo: x.TimeNo,
@@ -5860,7 +5923,7 @@ const methods = {
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
                 AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
-                AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+                AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                 SemenNumber: x.Semen.SemenNumber,
                 SemenBreedAll: x.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR > 0 ? x.PAR : 0,
@@ -5900,7 +5963,7 @@ const methods = {
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
                     AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
-                    AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+                    AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                     SemenNumber: x.Semen.SemenNumber,
                     SemenBreedAll: x.Semen.AnimalBreedAll,
                     AnimalPar: x.PAR > 0 ? x.PAR : 0,
