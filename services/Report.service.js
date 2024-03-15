@@ -4111,7 +4111,7 @@ const methods = {
             {
               model: AI,
               as: "AI",
-              where: { isActive: 1, isRemove: 0, },
+              where: { isActive: 1, isRemove: 0 },
               include: [
                 {
                   model: Semen,
@@ -4155,17 +4155,17 @@ const methods = {
         // });
 
         let animal = preg
-        .filter((x) => {
-          return x.AI != null && x.Animal != null;
-        })
-        .map((x) => {
-          return x;
-        });
+          .filter((x) => {
+            return x.AI != null && x.Animal != null;
+          })
+          .map((x) => {
+            return x;
+          });
 
         let breed = [];
 
         animal.forEach((x) => {
-            console.log(x)
+          console.log(x);
           if (x.Animal.AnimalBreedID1 != null) {
             let checkBreed = breed.find((b) => {
               return x.AI.Semen.AnimalBreedID1 == b.AnimalBreedID;
@@ -4184,6 +4184,7 @@ const methods = {
                 SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                 AnimalPar: x.AI?.PAR,
                 AIDate: dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB"),
+                CheckupDateReal: x.CheckupDate,
                 CheckupDate: x.CheckupDate
                   ? dayjs(x.CheckupDate).locale("th").format("DD MMM BB")
                   : null,
@@ -4216,6 +4217,7 @@ const methods = {
                       .locale("th")
                       .format("DD MMM BB"),
                     Semen: x.AI?.SemenNumber,
+                    CheckupDateReal: x.CheckupDate,
                     CheckupDate: x.CheckupDate
                       ? dayjs(x.CheckupDate).locale("th").format("DD MMM BB")
                       : null,
@@ -4255,7 +4257,7 @@ const methods = {
             return true;
           });
 
-        //   x.AnimalCount = i.length;
+          //   x.AnimalCount = i.length;
           x.AnimalCount = x.AnimalRealCount; //i.length;
 
           let uniqFarm = [...new Set(x.FarmID)];
@@ -4272,10 +4274,10 @@ const methods = {
           }
 
           x.AnimalID.sort((a, b) => {
-            if (a.AIDateReal < b.AIDateReal) {
+            if (a.CheckupDateReal < b.CheckupDateReal) {
               return -1;
             }
-            if (a.AIDateReal > b.AIDateReal) {
+            if (a.CheckupDateReal > b.CheckupDateReal) {
               return 1;
             }
 
@@ -4287,16 +4289,16 @@ const methods = {
         });
 
         breed.sort((a, b) => {
-            if (a.AnimalRealCount > b.AnimalRealCount) {
-              return -1;
-            }
-            if (a.AnimalRealCount < b.AnimalRealCount) {
-              return 1;
-            }
-  
-            // names must be equal
-            return 0;
-          });
+          if (a.AnimalRealCount > b.AnimalRealCount) {
+            return -1;
+          }
+          if (a.AnimalRealCount < b.AnimalRealCount) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        });
 
         resolve({
           data: breed,
@@ -4715,6 +4717,7 @@ const methods = {
                 AIDate: x.AI?.AIDate
                   ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
                   : "",
+                GiveBirthDateReal: x.GiveBirthDate,
                 GiveBirthDate: dayjs(x.GiveBirthDate)
                   .locale("th")
                   .format("DD MMM BB"),
@@ -4750,6 +4753,7 @@ const methods = {
                     AIDate: x.AI?.AIDate
                       ? dayjs(x.AI?.AIDate).locale("th").format("DD MMM BB")
                       : "",
+                    GiveBirthDateReal: x.GiveBirthDate,
                     GiveBirthDate: dayjs(x.GiveBirthDate)
                       .locale("th")
                       .format("DD MMM BB"),
@@ -4807,10 +4811,10 @@ const methods = {
           }
 
           x.AnimalID.sort((a, b) => {
-            if (a.AIDateReal < b.AIDateReal) {
+            if (a.GiveBirthDateReal < b.GiveBirthDateReal) {
               return -1;
             }
-            if (a.AIDateReal > b.AIDateReal) {
+            if (a.GiveBirthDateReal > b.GiveBirthDateReal) {
               return 1;
             }
 
