@@ -686,6 +686,11 @@ const methods = {
         if (req.query.StaffID) {
           staff = await Staff.findAll({
             where: { StaffID: Number(req.query.StaffID), isRemove: 0 },
+            include: {
+              model: Organization,
+              as: "Organization",
+              required: true,
+            },
           });
         } else {
           let organizationIDArr = [];
@@ -748,6 +753,11 @@ const methods = {
             where: {
               StaffOrganizationID: { [Op.in]: organizationIDArr },
               isRemove: 0,
+            },
+            include: {
+              model: Organization,
+              as: "Organization",
+              required: true,
             },
           });
         }
@@ -915,6 +925,7 @@ const methods = {
           res.push({
             StaffNumber: s.StaffNumber,
             StaffFullName: `${s.StaffGivenName} ${s.StaffSurname}`,
+            StaffOrganization: s.Organization.OrganizationName,
             r1: uniqueAIs.length,
             r2: s_ai.length,
             r3: s_animal.length,
@@ -4274,10 +4285,10 @@ const methods = {
           }
 
           x.AnimalID.sort((a, b) => {
-            if (a.CheckupDateReal < b.CheckupDateReal) {
+            if (a.CheckupDateReal > b.CheckupDateReal) {
               return -1;
             }
-            if (a.CheckupDateReal > b.CheckupDateReal) {
+            if (a.CheckupDateReal < b.CheckupDateReal) {
               return 1;
             }
 
@@ -4811,10 +4822,10 @@ const methods = {
           }
 
           x.AnimalID.sort((a, b) => {
-            if (a.GiveBirthDateReal < b.GiveBirthDateReal) {
+            if (a.GiveBirthDateReal > b.GiveBirthDateReal) {
               return -1;
             }
-            if (a.GiveBirthDateReal > b.GiveBirthDateReal) {
+            if (a.GiveBirthDateReal < b.GiveBirthDateReal) {
               return 1;
             }
 
