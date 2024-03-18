@@ -6569,18 +6569,42 @@ const methods = {
         });
 
         let preg_arr = [];
+        let animal_id_arr = [];
+        for (let i = 0; i < preg.length; i++) {
+          if (preg[i].AnimalID != null) {
+            animal_id_arr.push(preg[i].AnimalID);
+          }
+        }
+
+        let gb_all = await GiveBirth.findAll({
+          where: {
+            AnimalID: {
+              [Op.in]: animal_id_arr,
+            },
+            // AnimalID: preg[i].AnimalID,
+            // AIID: {
+            //   [Op.ne]: preg[i].AIID,
+            // },
+          },
+          order: [["GiveBirthID", "DESC"]],
+          raw: true,
+        });
 
         for (let i = 0; i < preg.length; i++) {
-          preg[i].GiveBirth = null;
-          let gb = await GiveBirth.findOne({
-            where: {
-              AnimalID: preg[i].AnimalID,
-              AIID: {
-                [Op.ne]: preg[i].AIID,
-              },
-            },
-            order: [["GiveBirthID", "DESC"]],
-            raw: true,
+          //   preg[i].GiveBirth = null;
+          //   let gb = await GiveBirth.findOne({
+          //     where: {
+          //       AnimalID: preg[i].AnimalID,
+          //       AIID: {
+          //         [Op.ne]: preg[i].AIID,
+          //       },
+          //     },
+          //     order: [["GiveBirthID", "DESC"]],
+          //     raw: true,
+          //   });
+
+          let gb = gb_all.find((j) => {
+            return j.AnimalID == preg[i].AnimalID && j.AIID != preg[i].AIID;
           });
 
           if (preg[i].AnimalID != null) {
@@ -6734,6 +6758,7 @@ const methods = {
             },
           ],
         });
+        // resolve({ res: tru   e });
       } catch (error) {
         reject(ErrorNotFound(error));
       }
@@ -6815,8 +6840,6 @@ const methods = {
         if (req.query.StartDate_Created) {
         }
 
-        
-
         // if (req.query.StartDate) {
         //   $where["CheckupDate"] = {
         //     [Op.between]: [
@@ -6893,18 +6916,38 @@ const methods = {
         });
 
         let ai_arr = [];
+        let animal_id_arr = [];
+        for (let i = 0; i < ai.length; i++) {
+          if (ai[i].AnimalID != null) {
+            animal_id_arr.push(ai[i].AnimalID);
+          }
+        }
+
+        let gb_all = await GiveBirth.findAll({
+          where: {
+            AnimalID: {
+              [Op.in]: animal_id_arr,
+            },
+          },
+          order: [["GiveBirthID", "DESC"]],
+          raw: true,
+        });
 
         for (let i = 0; i < ai.length; i++) {
           ai[i].GiveBirth = null;
-          let gb = await GiveBirth.findOne({
-            where: {
-              AnimalID: ai[i].AnimalID,
-              AIID: {
-                [Op.ne]: ai[i].AIID,
-              },
-            },
-            order: [["GiveBirthID", "DESC"]],
-            raw: true,
+          //   let gb = await GiveBirth.findOne({
+          //     where: {
+          //       AnimalID: ai[i].AnimalID,
+          //       AIID: {
+          //         [Op.ne]: ai[i].AIID,
+          //       },
+          //     },
+          //     order: [["GiveBirthID", "DESC"]],
+          //     raw: true,
+          //   });
+
+          let gb = gb_all.find((j) => {
+            return j.AnimalID == ai[i].AnimalID && j.AIID != ai[i].AIID;
           });
 
           if (gb) {
@@ -6994,8 +7037,6 @@ const methods = {
         });
 
         animal_all = animal_more.length + animal_less_more.length;
-
-        
 
         // console.log(filter_ai);
         // console.log(sum_result_day1);
