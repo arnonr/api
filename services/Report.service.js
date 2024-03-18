@@ -6815,14 +6815,16 @@ const methods = {
         if (req.query.StartDate_Created) {
         }
 
-        if (req.query.StartDate) {
-          $where["CheckupDate"] = {
-            [Op.between]: [
-              dayjs(req.query.StartDate).format("YYYY-MM-DD"),
-              dayjs(req.query.EndDate).format("YYYY-MM-DD"),
-            ],
-          };
-        }
+        
+
+        // if (req.query.StartDate) {
+        //   $where["CheckupDate"] = {
+        //     [Op.between]: [
+        //       dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+        //       dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+        //     ],
+        //   };
+        // }
 
         $where["TimeNo"] = 1;
 
@@ -6992,6 +6994,8 @@ const methods = {
         });
 
         animal_all = animal_more.length + animal_less_more.length;
+
+        
 
         // console.log(filter_ai);
         // console.log(sum_result_day1);
