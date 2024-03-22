@@ -7581,6 +7581,52 @@ const methods = {
       }
     });
   },
+
+  report101(req) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Get All animal
+        let animal = await Animal.findAll({
+          where: {
+            isRemove: 0,
+            AnimalTypeID: {
+              [Op.in]: [17, 18, 45, 46],
+            },
+          },
+        });
+
+        // Distict Farm ซ้ำ
+        let farmArr = [];
+        animal.forEach((x) => {
+          if (farmArr.includes(x.FarmID) == false) {
+            farmArr.push(x.FarmID);
+          }
+        });
+
+        console.log(farmArr);
+
+        for (let index = 0; index < farmArr.length; index++) {
+          let farm = await Farm.findOne({
+            where: { FarmID: farmArr[index] },
+          });
+
+          if (farm.FarmAnimalType == null || farm.FarmAnimalType.includes("3") == false) {
+            let farmAnimalType = [3];
+            if (farm.farmAnimalType != null) {
+              farmAnimalType = JSON.parse(farm.FarmAnimalType);
+              farmAnimalType.push(3);
+            }
+            farm.FarmAnimalType = JSON.stringify(farmAnimalType);
+            await farm.save();
+          }
+        }
+
+        resolve({ farmAll: farmArr });
+      } catch (error) {
+        reject(ErrorNotFound(error));
+      }
+    });
+  },
 };
 
 // repot99(req){
