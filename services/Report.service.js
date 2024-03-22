@@ -324,7 +324,7 @@ const methods = {
             AnimalHeight: el.dataValues.Height ? el.dataValues.Height : "-",
             AnimalFather: el.AnimalFather ? el.AnimalFather.AnimalEarID : "-",
             AnimalMother: el.AnimalMother ? el.AnimalMother.AnimalEarID : "-",
-            AnimalStatusName: el.AnimalStatus.AnimalStatusName,
+            AnimalStatusName: el.AnimalStatus?.AnimalStatusName,
             AnimalSource:
               el.AnimalSource == "BORN"
                 ? "เกิดในฟาร์ม"
@@ -420,7 +420,7 @@ const methods = {
             TimeNo: dataJson.TimeNo,
             ThaiAIDate: dataJson.ThaiAIDate,
             SemenNumber:
-              dataJson.Semen != null ? dataJson.Semen.SemenNumber : null,
+              dataJson.Semen != null ? dataJson.Semen?.SemenNumber : null,
             Dose: dataJson.Dose,
             AIStatusName: dataJson.AIStatusName,
             PregnancyCheckup: dataJson.PregnancyCheckups
@@ -448,7 +448,7 @@ const methods = {
           AnimalMicrochip: animal.AnimalMicrochip,
           AnimalName: animal.AnimalName,
           ThaiAnimalBirthDate: animal.ThaiAnimalBirthDate,
-          AnimalStatus: animal.AnimalStatus.AnimalStatusName,
+          AnimalStatus: animal.AnimalStatus?.AnimalStatusName,
           ProductionStatus: animal.ProductionStatus
             ? animal.ProductionStatus.ProductionStatusName
             : "-",
@@ -1241,7 +1241,7 @@ const methods = {
             AnimalHeight: el.dataValues.Height ? el.dataValues.Height : "-",
             AnimalFather: el.AnimalFather ? el.AnimalFather.AnimalEarID : "-",
             AnimalMother: el.AnimalMother ? el.AnimalMother.AnimalEarID : "-",
-            AnimalStatusName: el.AnimalStatus.AnimalStatusName,
+            AnimalStatusName: el.AnimalStatus?.AnimalStatusName,
             AnimalSource:
               el.AnimalSource == "BORN"
                 ? "เกิดในฟาร์ม"
@@ -1405,14 +1405,14 @@ const methods = {
         ai.forEach((el) => {
           res.push({
             AnimalID: el.AnimalID,
-            SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
             AnimalEarID: el.Animal ? el.Animal.AnimalEarID : "-",
             AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
             ThaiAnimalBirthDate: el.Animal
               ? el.Animal.ThaiAnimalBirthDate
               : "-",
             AnimalStatusName: el.Animal
-              ? el.Animal.AnimalStatus.AnimalStatusName
+              ? el.Animal.AnimalStatus?.AnimalStatusName
               : "-",
             AnimalFather: !el.Animal
               ? "-"
@@ -1670,7 +1670,7 @@ const methods = {
               ? el.Animal.ThaiAnimalBirthDate
               : "-",
             AnimalStatusName: el.Animal
-              ? el.Animal.AnimalStatus.AnimalStatusName
+              ? el.Animal.AnimalStatus?.AnimalStatusName
               : "-",
             AnimalFather: !el.Animal
               ? "-"
@@ -1805,7 +1805,7 @@ const methods = {
             AnimalAge: el.Animal ? el.Animal.AnimalAge : "-",
             AnimalBreedAll: el.Animal ? el.Animal.AnimalBreedAll : "-",
             AnimalStatusName: el.Animal
-              ? el.Animal.AnimalStatus.AnimalStatusName
+              ? el.Animal.AnimalStatus?.AnimalStatusName
               : "-",
             FarmName: el.Animal.AnimalFarm.FarmName,
             ThaiCheckupDate: el.ThaiCheckupDate,
@@ -1948,7 +1948,7 @@ const methods = {
               Par: el.PAR,
               TimeNo: el.TimeNo,
               ThaiAIDate: el.ThaiAIDate,
-              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
               ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
               ThaiGiveBirthDate: el.GiveBirth
                 ? el.GiveBirth.ThaiGiveBirthDate
@@ -2011,7 +2011,7 @@ const methods = {
               Par: el.PAR,
               TimeNo: el.TimeNo,
               ThaiAIDate: el.ThaiAIDate,
-              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
               ThaiEstimateBirthDate: el.ThaiEstimateBirthDate,
               ThaiGiveBirthDate: el.GiveBirth
                 ? el.GiveBirth.ThaiGiveBirthDate
@@ -2214,7 +2214,7 @@ const methods = {
               AnimalName: el.Animal ? el.Animal.AnimalName : "-",
               Par: el.PAR,
               TimeNo: el.TimeNo,
-              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
               ThaiAIDate: el.ThaiAIDate,
               Day: day,
               ProjectName: el.Project ? el.Project.ProjectName : "-",
@@ -2527,7 +2527,7 @@ const methods = {
             FarmTumbol: x.AnimalFarm?.Tumbol?.TumbolName,
             AnimalEarID: x.AnimalEarID,
             AnimalName: x.AnimalName,
-            AnimalStatusName: x.AnimalStatus.AnimalStatusName,
+            AnimalStatusName: x.AnimalStatus?.AnimalStatusName,
             AnimalAge: x.AnimalAge,
             AnimalFatherEarID: x.AnimalFather?.AnimalEarID,
             AnimalMotherEarID: x.AnimalMother?.AnimalEarID,
@@ -3113,7 +3113,7 @@ const methods = {
             AnimalName: el.Animal ? el.Animal.AnimalName : "-",
             Par: el.PAR,
             TimeNo: el.TimeNo,
-            SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+            SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
             ThaiAIDate: el.ThaiAIDate,
             ResponsibilityStaffName: el.Staff ? el.Staff.StaffFullName : "-",
             ProjectName: el.Project ? el.Project.ProjectName : "-",
@@ -3447,7 +3447,7 @@ const methods = {
                     AnimalName: x.Animal.AnimalName,
                     AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                     AnimalPar: x.PAR,
-                    SemenNumber: x.Semen.SemenNumber,
+                    SemenNumber: x.Semen?.SemenNumber,
                     TimeNo: x.TimeNo,
                     AIDate: x.AIDate
                       ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -3480,7 +3480,7 @@ const methods = {
                   AnimalName: x.Animal.AnimalName,
                   AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                   AnimalPar: x.PAR,
-                  SemenNumber: x.Semen.SemenNumber,
+                  SemenNumber: x.Semen?.SemenNumber,
                   TimeNo: x.TimeNo,
                   AIDate: x.AIDate
                     ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -4176,8 +4176,7 @@ const methods = {
         let breed = [];
 
         animal.forEach((x) => {
-          console.log(x);
-          if (x.Animal.AnimalBreedID1 != null) {
+          if (x.Animal.AnimalBreedID1 != null && x.AI.SemenID != null) {
             let checkBreed = breed.find((b) => {
               return x.AI.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
@@ -4482,7 +4481,7 @@ const methods = {
               AnimalName: el.Animal ? el.Animal.AnimalName : "-",
               Par: el.PAR,
               TimeNo: el.TimeNo,
-              SemenNumber: el.Semen ? el.Semen.SemenNumber : "-",
+              SemenNumber: el.Semen ? el.Semen?.SemenNumber : "-",
               ThaiAIDate: el.ThaiAIDate,
               Day: day,
               ProjectName: el.Project ? el.Project.ProjectName : "-",
@@ -4722,7 +4721,7 @@ const methods = {
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
                 AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
-                SemenNumber: x.AI?.Semen.SemenNumber,
+                SemenNumber: x.AI?.Semen?.SemenNumber,
                 SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR,
                 AIDate: x.AI?.AIDate
@@ -4757,8 +4756,8 @@ const methods = {
                     FarmName: x.Animal.AnimalFarm.FarmName,
                     AnimalEarID: x.Animal.AnimalEarID,
                     AnimalName: x.Animal.AnimalName,
-                    AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
-                    SemenNumber: x.AI?.Semen.SemenNumber,
+                    AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
+                    SemenNumber: x.AI?.Semen?.SemenNumber,
                     SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
                     AnimalPar: x.PAR,
                     AIDate: x.AI?.AIDate
@@ -5275,7 +5274,7 @@ const methods = {
                     AnimalName: x.Animal.AnimalName,
                     AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                     AnimalPar: x.PAR,
-                    SemenNumber: x.Semen.SemenNumber,
+                    SemenNumber: x.Semen?.SemenNumber,
                     TimeNo: x.TimeNo,
                     AIDate: x.AIDate
                       ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -5314,7 +5313,7 @@ const methods = {
                   AnimalName: x.Animal.AnimalName,
                   AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
                   AnimalPar: x.PAR,
-                  SemenNumber: x.Semen.SemenNumber,
+                  SemenNumber: x.Semen?.SemenNumber,
                   TimeNo: x.TimeNo,
                   AIDate: x.AIDate
                     ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -5540,9 +5539,9 @@ const methods = {
               FarmTumbol: ai_all[x].Animal.AnimalFarm?.Tumbol?.TumbolName,
               AnimalEarID: ai_all[x].Animal.AnimalEarID,
               AnimalName: ai_all[x].Animal.AnimalName,
-              AnimalStatusName: ai_all[x].Animal.AnimalStatus.AnimalStatusName,
+              AnimalStatusName: ai_all[x].Animal.AnimalStatus?.AnimalStatusName,
               AnimalPar: ai_all[x].PAR,
-              SemenNumber: ai_all[x].Semen.SemenNumber,
+              SemenNumber: ai_all[x].Semen?.SemenNumber,
               TimeNo: ai_all[x].TimeNo,
               AIDate: ai_all[x].AIDate
                 ? dayjs(ai_all[x].AIDate).locale("th").format("DD MMM BB")
@@ -5918,7 +5917,11 @@ const methods = {
         let breed = [];
 
         ai.forEach((x) => {
-          if (x.Animal.AnimalBreedID1 != null) {
+          if (x.Animal.AnimalBreedID1 != null && x.SemenID != null) {
+            console.log(x.AIID)
+            console.log(x.SemenID)
+            console.log(x.Animal.AnimalID)
+            console.log(x.Semen)
             let checkBreed = breed.find((b) => {
               return x.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
@@ -5939,7 +5942,7 @@ const methods = {
                 AnimalName: x.Animal.AnimalName,
                 AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
                 AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
-                SemenNumber: x.Semen.SemenNumber,
+                SemenNumber: x.Semen?.SemenNumber,
                 SemenBreedAll: x.Semen.AnimalBreedAll,
                 AnimalPar: x.PAR > 0 ? x.PAR : 0,
                 AIDate: x.AIDate
@@ -5979,7 +5982,7 @@ const methods = {
                     AnimalName: x.Animal.AnimalName,
                     AnimalBreedAll: x.Animal.toJSON().AnimalBreedAll,
                     AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
-                    SemenNumber: x.Semen.SemenNumber,
+                    SemenNumber: x.Semen?.SemenNumber,
                     SemenBreedAll: x.Semen.AnimalBreedAll,
                     AnimalPar: x.PAR > 0 ? x.PAR : 0,
                     AIDate: x.AIDate
@@ -6280,9 +6283,9 @@ const methods = {
                 FarmTumbol: x.Animal.AnimalFarm?.Tumbol?.TumbolName,
                 AnimalEarID: x.Animal.AnimalEarID,
                 AnimalName: x.Animal.AnimalName,
-                AnimalStatusName: x.Animal.AnimalStatus.AnimalStatusName,
+                AnimalStatusName: x.Animal.AnimalStatus?.AnimalStatusName,
                 AnimalPar: x.PAR,
-                SemenNumber: x.Semen.SemenNumber,
+                SemenNumber: x.Semen?.SemenNumber,
                 TimeNo: x.TimeNo,
                 AIDate: x.AIDate
                   ? dayjs(x.AIDate).locale("th").format("DD MMM BB")
@@ -6630,9 +6633,9 @@ const methods = {
                   AnimalEarID: preg[i].Animal.AnimalEarID,
                   AnimalName: preg[i].Animal.AnimalName,
                   AnimalStatusName:
-                    preg[i].Animal.AnimalStatus.AnimalStatusName,
+                    preg[i].Animal.AnimalStatus?.AnimalStatusName,
                   AnimalPar: preg[i].AI.AinalPar,
-                  SemenNumber: preg[i].AI.Semen.SemenNumber,
+                  SemenNumber: preg[i].AI.Semen?.SemenNumber,
                   TimeNo: preg[i].AI.TimeNo,
                   ThaiAIDate: preg[i].AI.AIDate
                     ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
@@ -6665,9 +6668,9 @@ const methods = {
                   AnimalEarID: preg[i].Animal.AnimalEarID,
                   AnimalName: preg[i].Animal.AnimalName,
                   AnimalStatusName:
-                    preg[i].Animal.AnimalStatus.AnimalStatusName,
+                    preg[i].Animal.AnimalStatus?.AnimalStatusName,
                   AnimalPar: preg[i].AI.AinalPar,
-                  SemenNumber: preg[i].AI.Semen.SemenNumber,
+                  SemenNumber: preg[i].AI.Semen?.SemenNumber,
                   TimeNo: preg[i].AI.TimeNo,
                   ThaiAIDate: preg[i].AI.AIDate
                     ? dayjs(preg[i].AI.AIDate).locale("th").format("DD MMM BB")
@@ -6969,9 +6972,9 @@ const methods = {
                 FarmTumbol: ai[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
                 AnimalEarID: ai[i].Animal.AnimalEarID,
                 AnimalName: ai[i].Animal.AnimalName,
-                AnimalStatusName: ai[i].Animal.AnimalStatus.AnimalStatusName,
+                AnimalStatusName: ai[i].Animal.AnimalStatus?.AnimalStatusName,
                 AnimalPar: ai[i].PAR,
-                SemenNumber: ai[i].Semen.SemenNumber,
+                SemenNumber: ai[i].Semen?.SemenNumber,
                 TimeNo: ai[i].TimeNo,
                 ThaiAIDate: ai[i].AIDate
                   ? dayjs(ai[i].AIDate).locale("th").format("DD MMM BB")
@@ -7244,7 +7247,7 @@ const methods = {
                 FarmTumbol: gbm[i].Animal.AnimalFarm?.Tumbol?.TumbolName,
                 AnimalEarID: gbm[i].Animal.AnimalEarID,
                 AnimalName: gbm[i].Animal.AnimalName,
-                AnimalStatusName: gbm[i].Animal.AnimalStatus.AnimalStatusName,
+                AnimalStatusName: gbm[i].Animal.AnimalStatus?.AnimalStatusName,
                 AnimalPar: gbm[i].PAR,
                 SemenNumber: "",
                 TimeNo: gbm[i].TimeNo,
