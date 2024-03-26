@@ -5839,12 +5839,12 @@ const methods = {
         }
 
         $where["isRemove"] = 0;
-        $where["isActive"] = 1;
+        // $where["isActive"] = 1;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         $whereFarm["isRemove"] = 0;
-        $whereFarm["isActive"] = 1;
+        // $whereFarm["isActive"] = 1;
 
         const queryFarm =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
@@ -5862,7 +5862,7 @@ const methods = {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
                 isRemove: 0,
-                isActive: 1,
+                // isActive: 1,
               },
               include: [
                 {
@@ -5959,10 +5959,10 @@ const methods = {
 
         ai.forEach((x) => {
           if (x.Animal.AnimalBreedID1 != null && x.SemenID != null) {
-            console.log(x.AIID);
-            console.log(x.SemenID);
-            console.log(x.Animal.AnimalID);
-            console.log(x.Semen);
+            // console.log(x.AIID);
+            // console.log(x.SemenID);
+            // console.log(x.Animal.AnimalID);
+            // console.log(x.Semen);
             let checkBreed = breed.find((b) => {
               return x.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
@@ -5970,6 +5970,8 @@ const methods = {
             if (checkBreed) {
               let pregName = "";
               if (x.PregnancyCheckups.length != 0) {
+                console.log("FREEDOM");
+                console.log(x.PregnancyCheckups.length);
                 let pc = x.PregnancyCheckups[x.PregnancyCheckups.length - 1];
                 pregName = pc.PregnancyCheckStatus.PregnancyCheckStatusName;
               }

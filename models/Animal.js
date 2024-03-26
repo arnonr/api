@@ -1151,9 +1151,9 @@ Animal.init(
             this.AnimalBreedPercent1 +
             "%";
 
-          console.log(this.AnimalName);
-          console.log(this.AnimalBreedID1);
-          console.log(animalBreed + "FREEDOM5");
+        //   console.log(this.AnimalName);
+        //   console.log(this.AnimalBreedID1);
+        //   console.log(animalBreed + "FREEDOM5");
         }
 
         if (this.AnimalBreedID2 != null && this.AnimalBreed2 != undefined) {
