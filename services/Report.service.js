@@ -823,6 +823,17 @@ const methods = {
             AIDate: AIDate,
             isRemove: 0,
           },
+          include: {
+            model: Animal,
+            as: "Animal",
+            required: true,
+            where: {
+              isActive: 1,
+              AnimalTypeID: {
+                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+              },
+            },
+          },
         });
 
         const animal = await Animal.findAll({
@@ -830,6 +841,9 @@ const methods = {
             CreatedUserID: { [Op.in]: staffIDArr },
             CreatedDatetime: AnimalCreatedDatetime,
             isRemove: 0,
+            AnimalTypeID: {
+              [Op.in]: JSON.parse(req.query.AnimalTypeID),
+            },
           },
         });
 
@@ -839,6 +853,17 @@ const methods = {
             CheckupDate: CheckupDate,
             isRemove: 0,
           },
+          include: {
+            model: Animal,
+            as: "Animal",
+            required: true,
+            where: {
+              isActive: 1,
+              AnimalTypeID: {
+                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+              },
+            },
+          },
         });
 
         let giveBirth = await GiveBirth.findAll({
@@ -846,6 +871,17 @@ const methods = {
             ResponsibilityStaffID: { [Op.in]: staffIDArr },
             GiveBirthDate: GiveBirthDate,
             isRemove: 0,
+          },
+          include: {
+            model: Animal,
+            as: "Animal",
+            required: true,
+            where: {
+              isActive: 1,
+              AnimalTypeID: {
+                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+              },
+            },
           },
         });
 
@@ -5803,8 +5839,12 @@ const methods = {
         }
 
         $where["isRemove"] = 0;
+        $where["isActive"] = 1;
 
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        $whereFarm["isRemove"] = 0;
+        $whereFarm["isActive"] = 1;
 
         const queryFarm =
           Object.keys($whereFarm).length > 0 ? { where: $whereFarm } : {};
@@ -5822,6 +5862,7 @@ const methods = {
                   [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 },
                 isRemove: 0,
+                isActive: 1,
               },
               include: [
                 {
@@ -5918,10 +5959,10 @@ const methods = {
 
         ai.forEach((x) => {
           if (x.Animal.AnimalBreedID1 != null && x.SemenID != null) {
-            console.log(x.AIID)
-            console.log(x.SemenID)
-            console.log(x.Animal.AnimalID)
-            console.log(x.Semen)
+            console.log(x.AIID);
+            console.log(x.SemenID);
+            console.log(x.Animal.AnimalID);
+            console.log(x.Semen);
             let checkBreed = breed.find((b) => {
               return x.Semen.AnimalBreedID1 == b.AnimalBreedID;
             });
@@ -7613,7 +7654,10 @@ const methods = {
             where: { FarmID: farmArr[index] },
           });
 
-          if (farm.FarmAnimalType == null || farm.FarmAnimalType.includes("3") == false) {
+          if (
+            farm.FarmAnimalType == null ||
+            farm.FarmAnimalType.includes("3") == false
+          ) {
             let farmAnimalType = [3];
             if (farm.farmAnimalType != null) {
               farmAnimalType = JSON.parse(farm.FarmAnimalType);
