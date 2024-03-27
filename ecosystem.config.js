@@ -13,6 +13,7 @@ module.exports = {
         enabled: true,
         strategy: "round-robin",
         sticky: true,
+        relax_check: false,
       },
     },
   ],
