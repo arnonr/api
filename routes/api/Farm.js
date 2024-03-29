@@ -3,8 +3,28 @@ const controllers = require("../../controllers/Farm.controller");
 const auth = require("../auth");
 const { checkPermission } = require("../accessControl");
 const { ErrorBadRequest } = require("../../configs/errorMethods");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600 }); // cache 1 ชั่วโมง
 
 let resource = "user";
+
+function cacheMiddleware(req, res, next) {
+  const key = req.originalUrl || req.url;
+  const cachedResponse = cache.get(key);
+
+  if (cachedResponse) {
+    console.log(`Cache hit for ${key}`);
+    res.send(cachedResponse);
+  } else {
+    console.log(`Cache miss for ${key}`);
+    res.originalSend = res.send;
+    res.send = (body) => {
+      res.originalSend(body);
+      cache.set(key, body);
+    };
+    next();
+  }
+}
 
 // Image
 const multer = require("multer");
@@ -70,6 +90,7 @@ router.get(
 
 router.get(
   "/selection",
+  //   cacheMiddleware,
   // auth.required,
   // checkPermission(resource, "read"),
   controllers.onGetSelection

@@ -215,11 +215,11 @@ const methods = {
       try {
         Promise.all([
           db.findAll({ ..._q.query, limit: limit, offset: offset }),
-          db.findAll({ ..._q.query }),
+          db.count({ ..._q.query }),
         ])
           .then(async (result) => {
             let rows = result[0],
-              count = result[1].length;
+              count = result[2]//result[1].length;
 
             rows = await Promise.all(
               rows.map(async (data) => {

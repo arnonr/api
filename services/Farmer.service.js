@@ -315,7 +315,7 @@ const methods = {
     });
   },
 
-  fetchAPIFarmerUpdate() {
+  fetchAPIFarmerUpdate() {  
     return new Promise(async (resolve, reject) => {
       try {
         let token = await this.getToken();

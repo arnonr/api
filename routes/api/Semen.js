@@ -2,17 +2,37 @@ const router = require("express").Router();
 const controllers = require("../../controllers/Semen.controller");
 const auth = require("../auth");
 const { checkPermission } = require("../accessControl");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600 }); // cache 1 ชั่วโมง
 
 let resource = "user";
 
-router.get(
-    "/selection",
-    // auth.required,
-    // checkPermission(resource, "read"),
-    controllers.onGetSelection
-  );
+function cacheMiddleware(req, res, next) {
+  const key = req.originalUrl || req.url;
+  const cachedResponse = cache.get(key);
 
-  
+  if (cachedResponse) {
+    console.log(`Cache hit for ${key}`);
+    res.send(cachedResponse);
+  } else {
+    console.log(`Cache miss for ${key}`);
+    res.originalSend = res.send;
+    res.send = (body) => {
+      res.originalSend(body);
+      cache.set(key, body);
+    };
+    next();
+  }
+}
+
+router.get(
+  "/selection",
+  cacheMiddleware,
+  // auth.required,
+  // checkPermission(resource, "read"),
+  controllers.onGetSelection
+);
+
 router.get(
   "/",
   // auth.required,
@@ -30,7 +50,7 @@ router.post(
   "/",
   // auth.required,
   // checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
 );
 
 router.put(
