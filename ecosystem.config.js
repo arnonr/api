@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "app",
       script: "index.js",
-      instances: "8",
+      instances: "max",
       exec_mode: "cluster",
       autorestart: true,
       watch: false,
