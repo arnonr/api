@@ -2299,6 +2299,21 @@ const methods = {
       };
     }
 
+    $where[Op.and] = [];
+    if (req.query.Fullname) {
+      // req.query.Fullname
+      $where[Op.and].push({
+        [Op.or]: {
+          AnimalName: {
+            [Op.like]: "%" + req.query.Fullname + "%",
+          },
+          AnimalEarID: {
+            [Op.like]: "%" + req.query.Fullname + "%",
+          },
+        },
+      });
+    }
+
     if (req.query.AnimalName)
       $where["AnimalName"] = {
         [Op.like]: "%" + req.query.AnimalName + "%",
@@ -5180,7 +5195,7 @@ const methods = {
     });
   },
 
-  // 
+  //
   async exportExcel(req) {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
@@ -5188,7 +5203,9 @@ const methods = {
 
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll({ ..._q.query,limit:undefined,offset:undefined })])
+        Promise.all([
+          db.findAll({ ..._q.query, limit: undefined, offset: undefined }),
+        ])
           .then(async (result) => {
             let rows = result[0].map((x) => {
               return {

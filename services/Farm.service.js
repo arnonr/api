@@ -55,6 +55,20 @@ const methods = {
         };
       }
     }
+    $where[Op.and] = [];
+    if (req.query.Fullname) {
+      // req.query.Fullname
+      $where[Op.and].push({
+        [Op.or]: {
+          FarmName: {
+            [Op.like]: "%" + req.query.Fullname + "%",
+          },
+          FarmIdentificationNumber: {
+            [Op.like]: "%" + req.query.Fullname + "%",
+          },
+        },
+      });
+    }
 
     if (req.query.FarmName)
       $where["FarmName"] = {
@@ -219,7 +233,7 @@ const methods = {
         ])
           .then(async (result) => {
             let rows = result[0],
-              count = result[2]//result[1].length;
+              count = result[2]; //result[1].length;
 
             rows = await Promise.all(
               rows.map(async (data) => {
