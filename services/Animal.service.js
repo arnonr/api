@@ -5209,7 +5209,7 @@ const methods = {
           .then(async (result) => {
             let rows = result[0].map((x) => {
               return {
-                หมายเลขใบหู: "'" + x.AnimalEarID,
+                หมายเลขใบหู: x.AnimalEarID,
                 ชื่อสัตว์: x.AnimalName,
                 อายุ: "'" + x.AnimalAge,
                 สถานะ: x.AnimalStatus ? x.AnimalStatus.AnimalStatusName : "-",
