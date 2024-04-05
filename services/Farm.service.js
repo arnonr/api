@@ -233,7 +233,7 @@ const methods = {
         ])
           .then(async (result) => {
             let rows = result[0],
-              count = result[2]; //result[1].length;
+              count = result[1]; //result[1].length;
 
             rows = await Promise.all(
               rows.map(async (data) => {
