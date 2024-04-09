@@ -882,7 +882,7 @@ const methods = {
                 ทะเบียนเกษตรกร: e.Farmer ? e.Farmer.FarmerNumber : "-",
                 หมายเลขบัตรประชาชน: e.Farmer
                   ? e.Farmer.IdentificationNumber != null
-                    ? "'" + e.Farmer.IdentificationNumber
+                    ? e.Farmer.IdentificationNumber
                     : "-"
                   : "-",
                 ชื่อนามสกุลเกษตรกร: e.Farmer ? e.Farmer.FullName : "-",
