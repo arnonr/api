@@ -4,7 +4,9 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
   "AIDM_Final",
   "cbg_aidm_db",
-  "Yjjbkiti1w0QAlYVWgPqruZdZ2jDSL",
+  process.env.DB_PASSWORD,
+  
+//   "Yjjbkiti1w0QAlYVWgPqruZdZ2jDSL",
   //   config.DbDatabase ? config.DbDatabase : "aidm",
   //   config.DbUsername ? config.DbUsername : "aidm",
   //   config.DbPassword ? config.DbPassword : "2022@aidm",
