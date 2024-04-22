@@ -423,6 +423,31 @@ const methods = {
       }
     });
   },
+  deleteBabySellAndDeath(data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        const obj = await db.findByPk(data.id);
+        if (!obj) reject(ErrorNotFound("id: not found"));
+
+        // Update
+
+        let data1 = {};
+        data1.GiveBirthID = parseInt(data.id);
+        data1.updatedAt = fn("GETDATE");
+        data1.BabyStatus = null;
+        data1.BabyWeight = null;
+
+        await db.update(data1, { where: { GiveBirthID: data.id } });
+
+        let res = methods.findById(data1.GiveBirthID);
+
+        resolve(res);
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

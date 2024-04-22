@@ -55,6 +55,18 @@ const methods = {
     }
   },
 
+  async onDeleteBabySellAndDeath(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.UpdatedUserID = decoded.id;
+
+      const result = await Service.deleteBabySellAndDeath(req.body);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onDelete(req, res) {
     try {
       await Service.delete(req.params.id);

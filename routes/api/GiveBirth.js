@@ -12,6 +12,13 @@ router.post(
   controllers.onBabySellAndDeath
 );
 
+router.post(
+  "/delete-baby-sell-and-death",
+  // auth.required,
+  // checkPermission(resource, "update"),
+  controllers.onDeleteBabySellAndDeath
+);
+
 router.get(
   "/",
   // auth.required,
