@@ -22,7 +22,14 @@ router.post(
   "/",
   // auth.required,
   // checkPermission(resource, "create"),
-  controllers.onInsert,
+  controllers.onInsert
+);
+
+router.post(
+  "/post-all",
+  // auth.required,
+  // checkPermission(resource, "create"),
+  controllers.onInsertAll
 );
 
 router.put(

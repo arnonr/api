@@ -190,7 +190,7 @@ const methods = {
         ) {
           let animal = await Animal.findByPk(inserted.AnimalID);
           animal.isActive = 0;
-          animal.AnimalAlive = 0;   
+          animal.AnimalAlive = 0;
           animal.save();
         } else if (
           inserted.DistributionType == "SALE" ||
@@ -232,8 +232,7 @@ const methods = {
         let datasort = {
           ...data,
           createdAt: undefined,
-        //   DistributionDate
-
+          //   DistributionDate
         };
 
         await db.update(datasort, { where: { DistributionID: id } });
@@ -260,6 +259,55 @@ const methods = {
         resolve();
       } catch (error) {
         reject(error);
+      }
+    });
+  },
+
+  insertAll(data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        //check เงื่อนไขตรงนี้ได้
+        data.createdAt = fn("GETDATE");
+        console.log(data.AnimalID);
+
+        for (let i = 0; i < data.AnimalID.length; i++) {
+          const new_data = { ...data };
+          new_data.AnimalID = data.AnimalID[i];
+
+          const obj = new db(new_data);
+
+          const inserted = await obj.save();
+
+          if (
+            inserted.DistributionType == "DROP" ||
+            inserted.DistributionType == "DEATH"
+          ) {
+            let animal = await Animal.findByPk(inserted.AnimalID);
+            animal.isActive = 0;
+            animal.AnimalAlive = 0;
+            animal.save();
+          } else if (
+            inserted.DistributionType == "SALE" ||
+            inserted.DistributionType == "TRANSFER"
+          ) {
+            let farm = await Farm.findByPk(inserted.DestinationFarmID);
+
+            let animal = await Animal.findByPk(inserted.AnimalID);
+            animal.FarmID = inserted.DestinationFarmID;
+
+            animal.OrganizationID = farm.OrganizationID;
+            animal.OrganizationZoneID = farm.OrganizationZoneID;
+            animal.isActive = 1;
+            animal.save();
+          } else {
+          }
+        }
+
+        // let res = methods.findById(inserted.DistributionID);
+
+        resolve({});
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
       }
     });
   },

@@ -5,7 +5,7 @@ const methods = {
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
-      
+
       res.success(result);
     } catch (error) {
       res.error(error);
@@ -26,6 +26,17 @@ const methods = {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       req.body.CreatedUserID = decoded.id;
       let result = await Service.insert(req.body);
+      res.success(result, 201);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+  async onInsertAll(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.CreatedUserID = decoded.id;
+      let result = await Service.insertAll(req.body);
       res.success(result, 201);
     } catch (error) {
       res.error(error);
