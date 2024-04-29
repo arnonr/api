@@ -256,6 +256,12 @@ const methods = {
           { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
           { where: { DistributionID: id } }
         );
+
+
+        let animal = await Animal.findByPk(obj.AnimalID);
+        animal.FarmID = obj.FarmID;
+        animal.save();
+
         resolve();
       } catch (error) {
         reject(error);
