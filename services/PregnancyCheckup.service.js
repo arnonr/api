@@ -4,6 +4,8 @@ const config = require("../configs/app"),
   { Op, fn } = require("sequelize");
 
 const Staff = require("../models/Staff");
+const AbortCheckup = require("../models/AbortCheckup");
+const GiveBirth = require("../models/GiveBirth");
 const Animal = require("../models/Animal");
 const TransferEmbryo = require("../models/TransferEmbryo");
 const axios = require("axios");
@@ -298,6 +300,25 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
+        if (obj) {
+          const gb = await GiveBirth.findOne({
+            where: { AIID: obj.AIID, isRemove: 0 },
+          });
+
+          const abort = await AbortCheckup.findOne({
+            where: { AIID: obj.AIID, isRemove: 0 },
+          });
+
+          if (gb || abort) {
+            reject(
+              ErrorNotFound(
+                "ไม่สามารถลบการตรวจท้องได้ เนื่องจากมีกิจกรรมภายใต้การตรวจท้อง"
+              )
+            );
+            return;
+          }
+        }
+
         await db.update(
           {
             isRemove: 1,
@@ -305,7 +326,14 @@ const methods = {
             updatedAt: fn("GETDATE"),
             UpdatedUserID: Number(UpdatedUserID),
           },
-          { where: { PregnancyCheckupID: id } }
+          {
+            where: {
+              AIID: obj.AIID,
+              AnimalID: obj.AnimalID,
+              TimeNo: obj.TimeNo,
+            },
+          }
+          //   { where: { PregnancyCheckupID: id } }
         );
         resolve();
       } catch (error) {
