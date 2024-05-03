@@ -45,7 +45,12 @@ const methods = {
 
   async onDelete(req, res) {
     try {
-      await Service.delete(req.params.id);
+
+        
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      const UpdatedUserID = decoded.id;
+
+      await Service.delete(req.params.id, UpdatedUserID);
       res.success("success", 204);
     } catch (error) {
       res.error(error);

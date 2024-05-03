@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
   { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
   db = require("../models/AI"),
-  { Op,fn } = require("sequelize");
+  { Op, fn } = require("sequelize");
 const AI = require("../models/AI");
 
 const Animal = require("../models/Animal");
@@ -184,13 +184,13 @@ const methods = {
     return new Promise(async (resolve, reject) => {
       try {
         //check เงื่อนไขตรงนี้ได้
-        data.createdAt = fn('GETDATE');
+        data.createdAt = fn("GETDATE");
 
         const obj = new db(data);
         const inserted = await obj.save();
 
         await Animal.update(
-          { ProductionStatusID: 4,updatedAt: fn('GETDATE') },
+          { ProductionStatusID: 4, updatedAt: fn("GETDATE") },
           { where: { AnimalID: inserted.AnimalID } }
         );
 
@@ -213,7 +213,7 @@ const methods = {
         // Update
         data.AIID = parseInt(id);
 
-        data.updatedAt = fn('GETDATE');
+        data.updatedAt = fn("GETDATE");
 
         await db.update(data, { where: { AIID: id } });
 
@@ -226,19 +226,59 @@ const methods = {
     });
   },
 
-  delete(id) {
+  delete(id, UpdatedUserID) {
     return new Promise(async (resolve, reject) => {
       try {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        await db.update({ isRemove: 1, isActive: 0,updatedAt: fn('GETDATE') }, { where: { AIID: id } });
+        if (obj) {
+          const preg = await PregnancyCheckup.findOne({
+            where: { AIID: obj.AIID, isRemove: 0 },
+          });
+          if (preg) {
+            console.log(preg);
+            reject(
+              ErrorNotFound(
+                "ไม่สามารถลบการผสมเทียมได้ เนื่องจากมีกิจกรรมภายใต้การผสมเทียม"
+              )
+            );
+            return;
+          }
+        }
+        console.log("FREEDOM");
 
+        // await db.update(
+        //   {
+        //     isRemove: 1,
+        //     isActive: 0,
+        //     updatedAt: fn("GETDATE"),
+        //     UpdatedUserID: UpdatedUserID,
+        //   },
+        //   { where: { AIID: id } }
+        // );
+
+        await db.update(
+          {
+            isRemove: 1,
+            isActive: 0,
+            updatedAt: fn("GETDATE"),
+            UpdatedUserID: UpdatedUserID,
+          },
+          {
+            where: {
+              AnimalID: obj.AnimalID,
+              PAR: obj.PAR,
+              TimeNo: obj.TimeNo,
+            },
+          }
+        );
 
         // Set AnimalPar และสถานะสัตว์
 
         resolve();
       } catch (error) {
+        console.log("FREEDOM1");
         reject(error);
       }
     });
