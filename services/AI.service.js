@@ -5,6 +5,7 @@ const config = require("../configs/app"),
 const AI = require("../models/AI");
 
 const Animal = require("../models/Animal");
+const Farm = require("../models/Farm");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 
@@ -291,7 +292,14 @@ const methods = {
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
 
-    if (req.query.ProjectID) $where["ProjectID"] = req.query.ProjectID;
+    // if (req.query.ProjectID) $where["ProjectID"] = req.query.ProjectID;
+
+    if (req.query.ProjectID)
+      $where["ProjectID"] = {
+        [Op.in]: JSON.parse(req.query.ProjectID),
+      };
+    //
+
     if (req.query.SemenID) $where["SemenID"] = req.query.SemenID;
     if (req.query.AIStatus) $where["AIStatus"] = req.query.AIStatus;
 
@@ -314,6 +322,69 @@ const methods = {
       $where["CreatedUserID"] = req.query.CreatedUserID;
     if (req.query.UpdatedUserID)
       $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+    // AnimalTypeID
+    let $whereAnimal = {};
+    if (req.query.AnimalTypeID) {
+      let animaltype = JSON.parse(req.query.AnimalTypeID);
+
+      let test = animaltype.find((x) => {
+        return x == 3 || x == 4;
+      });
+
+      if (test) {
+        animaltype.push(42);
+      }
+
+      $whereAnimal["AnimalTypeID"] = {
+        [Op.in]: animaltype,
+      };
+    }
+
+    let $whereFarm = {};
+    if (req.query.AIZoneID) {
+      $whereFarm["AIZoneID"] = req.query.AIZoneID;
+    }
+
+    if (req.query.OrganizationZoneID) {
+      $whereFarm["OrganizationZoneID"] = req.query.OrganizationZoneID;
+    }
+
+    if (req.query.AIZoneID) {
+      $whereFarm["AIZoneID"] = req.query.AIZoneID;
+    }
+
+    if (req.query.FarmAnimalType) {
+      if (req.query.FarmAnimalType == 98) {
+        $whereFarm["FarmAnimalType"] = {
+          [Op.is]: null,
+        };
+      } else if (req.query.FarmAnimalType == 99) {
+        $whereFarm["FarmAnimalType"] = {
+          [Op.not]: null,
+        };
+      } else {
+        $whereFarm["FarmAnimalType"] = {
+          [Op.like]: "%" + req.query.FarmAnimalType + "%",
+        };
+      }
+    }
+
+    if (req.query.FarmProvinceID) {
+      $whereFarm["FarmProvinceID"] = req.query.FarmProvinceID;
+    }
+
+    if (req.query.FarmAmphurID) {
+      $whereFarm["FarmAmphurID"] = req.query.FarmAmphurID;
+    }
+
+    if (req.query.FarmTumbolID) {
+      $whereFarm["FarmTumbolID"] = req.query.FarmTumbolID;
+    }
+
+    if (req.query.FarmID) {
+      $whereFarm["FarmID"] = req.query.FarmID;
+    }
 
     $where["isRemove"] = 0;
     const query = Object.keys($where).length > 0 ? { where: $where } : {};
@@ -344,6 +415,17 @@ const methods = {
           ["PregnancyCheckupID", "DESC"],
         ],
       },
+      {
+        model: Animal,
+        where: $whereAnimal,
+        include: {
+          model: Farm,
+          where: $whereFarm,
+          as: "AnimalFarm",
+          required: true,
+        },
+        required: true,
+      },
     ];
 
     return { query: query, required: false };
@@ -357,12 +439,14 @@ const methods = {
       try {
         Promise.all([
           db.findAll(_q.query),
-          delete _q.query.include,
+          delete _q.query.limit,
+          //   db.findAll({ ..._q.query, limit: undefined }),
           db.count(_q.query),
         ])
           .then((result) => {
             let rows = result[0],
               count = result[2];
+            console.log(count);
 
             rows = rows.map((data) => {
               data = this.getData(data);
