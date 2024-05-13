@@ -6,6 +6,13 @@ const { checkPermission } = require("../accessControl");
 let resource = "user";
 
 router.get(
+    "/with-animal",
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetWithAnimal
+  );
+
+router.get(
   "/",
   // auth.required,
   // checkPermission(resource, "read"),

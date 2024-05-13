@@ -2,6 +2,15 @@ const Service = require("../services/AI.service"),
   jwt = require("jsonwebtoken");
 // TEST
 const methods = {
+  async onGetWithAnimal(req, res) {
+    try {
+      let result = await Service.findWithAnimal(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
@@ -45,8 +54,6 @@ const methods = {
 
   async onDelete(req, res) {
     try {
-
-        
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
       const UpdatedUserID = decoded.id;
 

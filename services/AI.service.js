@@ -246,17 +246,6 @@ const methods = {
             return;
           }
         }
-        console.log("FREEDOM");
-
-        // await db.update(
-        //   {
-        //     isRemove: 1,
-        //     isActive: 0,
-        //     updatedAt: fn("GETDATE"),
-        //     UpdatedUserID: UpdatedUserID,
-        //   },
-        //   { where: { AIID: id } }
-        // );
 
         await db.update(
           {
@@ -279,6 +268,118 @@ const methods = {
         resolve();
       } catch (error) {
         console.log("FREEDOM1");
+        reject(error);
+      }
+    });
+  },
+
+  scopeSearchWithAnimal(req, limit, offset) {
+    // Where
+    $where = {};
+
+    if (req.query.AIID) $where["AIID"] = req.query.AIID;
+
+    if (req.query.AnimalID)
+      $where["AnimalID"] = {
+        [Op.like]: "%" + req.query.AnimalID + "%",
+      };
+
+    if (req.query.TimeNo) $where["TimeNo"] = req.query.TimeNo;
+
+    if (req.query.AIDate) $where["AIDate"] = req.query.AIDate;
+
+    if (req.query.ResponsibilityStaffID)
+      $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+
+    if (req.query.ProjectID) $where["ProjectID"] = req.query.ProjectID;
+    if (req.query.SemenID) $where["SemenID"] = req.query.SemenID;
+    if (req.query.AIStatus) $where["AIStatus"] = req.query.AIStatus;
+
+    if (req.query.BirthDate) $where["BirthDate"] = req.query.BirthDate;
+
+    if (req.query.GoatAIMethodID)
+      $where["GoatAIMethodID"] = req.query.GoatAIMethodID;
+    if (req.query.GoatEstralActivityID)
+      $where["GoatEstralActivityID"] = req.query.GoatEstralActivityID;
+
+    if (req.query.BreederAnimalID)
+      $where["BreederAnimalID"] = req.query.BreederAnimalID;
+
+    if (req.query.PAR) $where["PAR"] = req.query.PAR;
+
+    // BirthDate
+
+    if (req.query.isActive) $where["isActive"] = req.query.isActive;
+    if (req.query.CreatedUserID)
+      $where["CreatedUserID"] = req.query.CreatedUserID;
+    if (req.query.UpdatedUserID)
+      $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+    $where["isRemove"] = 0;
+    const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+    // Order
+    $order = [["AIID", "ASC"]];
+    if (req.query.orderByField && req.query.orderBy)
+      $order = [
+        [
+          req.query.orderByField,
+          req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+        ],
+      ];
+    query["order"] = $order;
+
+    if (!isNaN(limit)) query["limit"] = limit;
+
+    if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [
+      { all: true, required: false },
+      {
+        model: PregnancyCheckup,
+        limit: 1,
+        include: { model: PregnancyCheckStatus },
+        order: [
+          ["CheckupDate", "DESC"],
+          ["PregnancyCheckupID", "DESC"],
+        ],
+      },
+    ];
+
+    return { query: query, required: false };
+  },
+
+  findWithAnimal(req) {
+    const limit = +(req.query.size || config.pageLimit);
+    const offset = +(limit * ((req.query.page || 1) - 1));
+    const _q = methods.scopeSearchWithAnimal(req, limit, offset);
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          db.findAll(_q.query),
+          delete _q.query.include,
+          db.count(_q.query),
+        ])
+          .then((result) => {
+            let rows = result[0],
+              count = result[2];
+
+            rows = rows.map((data) => {
+              data = this.getData(data);
+              return data;
+            });
+
+            resolve({
+              total: count,
+              lastPage: Math.ceil(count / limit),
+              currPage: +req.query.page || 1,
+              rows: rows,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
         reject(error);
       }
     });

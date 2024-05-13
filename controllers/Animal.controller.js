@@ -23,6 +23,15 @@ const methods = {
     }
   },
 
+  async onGetAllWithAI(req, res) {
+    try {
+      let result = await Service.findWithAI(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAllNotEvent(req, res) {
     try {
       let result = await Service.findNotEvent(req);

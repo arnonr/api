@@ -47,6 +47,7 @@ router.use("/animal-group-type", require("./AnimalGroupType"));
 router.use("/animal-type", require("./AnimalType"));
 router.use("/animal-breed", require("./AnimalBreed"));
 router.use("/animal-status", require("./AnimalStatus"));
+
 router.use("/animal", require("./Animal"));
 
 //
@@ -65,6 +66,7 @@ router.use("/transfer-method", require("./TransferMethod"));
 
 //
 router.use("/ai", require("./AI"));
+
 router.use(
   "/goat-estral-activity-detail",
   require("./GoatEstralActivityDetail")

@@ -50,6 +50,9 @@ router.get(
 
 router.get("/all-not-event", controllers.onGetAllNotEvent);
 
+
+router.get("/animal-with-ai", controllers.onGetAllWithAI);
+
 router.get("/", controllers.onGetAll);
 
 router.get("/id-and-name", controllers.onGetAllIDandName);
