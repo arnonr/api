@@ -685,7 +685,20 @@ const methods = {
 
         if (req.query.StaffID) {
           staff = await Staff.findAll({
-            where: { StaffID: Number(req.query.StaffID), isRemove: 0 },
+            where: {
+              StaffID: Number(req.query.StaffID),
+              isRemove: 0,
+              StaffStatus: {
+                [Op.and]: [
+                  {
+                    [Op.not]: "ลาออก",
+                  },
+                  {
+                    [Op.not]: "ตาย",
+                  },
+                ],
+              },
+            },
             include: {
               model: Organization,
               as: "Organization",
