@@ -3174,7 +3174,12 @@ const methods = {
           return b;
         });
 
-        resolve(Breed2);
+        let d1 = Breed2.sort(
+          (a, b) =>
+            parseFloat(b.AnimalBreedPercent) - parseFloat(a.AnimalBreedPercent)
+        );
+
+        resolve(d1);
       } catch (error) {
         reject(ErrorNotFound(error));
         // reject(ErrorNotFound("id: not found"));
