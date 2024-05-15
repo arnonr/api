@@ -376,6 +376,12 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
+        let old_organization_id = obj.organization_id;
+        let not_same = true;
+        if (old_organization_id != data.organization_id) {
+          not_same = false;
+        }
+
         // Update
         data.FarmID = parseInt(id);
 
@@ -448,6 +454,19 @@ const methods = {
               });
             }
           });
+        }
+
+        if (not_same == false) {
+          await Animal.update(
+            {
+              organization_id: data.organization_id,
+            },
+            {
+              where: {
+                FarmID: data.FarmID,
+              },
+            }
+          );
         }
 
         let res = methods.findById(data.FarmID);

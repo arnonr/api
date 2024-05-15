@@ -117,10 +117,24 @@ const methods = {
 
     if (!isNaN(offset)) query["offset"] = offset;
 
+    let $whereAnimal = {};
+    if (req.query.AnimalName) {
+      $whereAnimal["AnimalName"] = {
+        [Op.like]: "%" + req.query.AnimalName + "%",
+      };
+    }
+
+    if (req.query.AnimalEarID) {
+      $whereAnimal["AnimalEarID"] = {
+        [Op.like]: "%" + req.query.AnimalEarID + "%",
+      };
+    }
+
     let include = [
       {
         association: "Animal",
-        required: false,
+        required: req.query.AnimalName || req.query.AnimalEarID ? true : false,
+        where: $whereAnimal,
       },
       {
         association: "AnimalType",
