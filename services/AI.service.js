@@ -195,6 +195,19 @@ const methods = {
                 //check เงื่อนไขตรงนี้ได้
                 data.createdAt = fn("GETDATE");
 
+                const checkDuplicate = await db.findOne({
+                    where: {
+                        AnimalID: data.AnimalID,
+                        isRemove: 1,
+                        PAR: data.PAR,
+                        TimeNo: data.TimeNo,
+                    },
+                });
+
+                if (checkDuplicate) {
+                    throw new Error("Duplicate!");
+                }
+
                 const obj = new db(data);
                 const inserted = await obj.save();
 
@@ -413,6 +426,7 @@ const methods = {
         }
 
         $where["isRemove"] = 0;
+
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
         // Order
