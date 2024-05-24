@@ -5321,6 +5321,26 @@ const methods = {
       }
     });
   },
+
+  updateStatus() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check ID
+        // const obj = await db.findByPk(id);
+        // if (!obj) reject(ErrorNotFound("id: not found"));
+
+        const obj = await db.findAll({
+          ..._q.query,
+          limit: limit,
+          offset: offset,
+        });
+
+        resolve();
+      } catch (error) {
+        reject(ErrorBadRequest(error.message));
+      }
+    });
+  },
 };
 
 module.exports = { ...methods };

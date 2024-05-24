@@ -140,12 +140,19 @@ const methods = {
 
     if (req.query.includeAll) {
       if (req.query.includeAll == "false") {
+        if (req.query.includeProvince == "true") {
+          include.push({
+            association: "Province",
+            required: false,
+          });
+        }
       } else {
         include.unshift({ all: true, required: false });
       }
     } else {
       include.unshift({ all: true, required: false });
     }
+
     query["include"] = include;
 
     return { query: query };
@@ -271,6 +278,7 @@ const methods = {
                 ParentOrganizationID: data.ParentOrganizationID,
                 OrganizationCode: data.OrganizationCode,
                 OrganizationName: data.OrganizationName,
+                ProvinceName: data.Province?.ProvinceName,
                 OrganizationTypeID: data.OrganizationTypeID,
                 OrganizationZoneID: data.OrganizationZoneID,
                 OrganizationProvinceID: data.OrganizationProvinceID,

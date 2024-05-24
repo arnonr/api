@@ -9,6 +9,14 @@ const Farm = require("../models/Farm");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 
+
+const dayjs = require("dayjs");
+const locale = require("dayjs/locale/th");
+const buddhistEra = require("dayjs/plugin/buddhistEra");
+// var isBefore = require('dayjs/plugin/isBefore')
+// dayjs.extend(isBefore)
+dayjs.extend(buddhistEra);
+
 const methods = {
   scopeSearch(req, limit, offset) {
     // Where
@@ -288,6 +296,15 @@ const methods = {
     if (req.query.TimeNo) $where["TimeNo"] = req.query.TimeNo;
 
     if (req.query.AIDate) $where["AIDate"] = req.query.AIDate;
+
+    if (req.query.AIStartDate) {
+      $where["AIDate"] = {
+        [Op.between]: [
+          dayjs(req.query.AIStartDate).format("YYYY-MM-DD"),
+          dayjs(req.query.AIEndDate).format("YYYY-MM-DD"),
+        ],
+      };
+    }
 
     if (req.query.ResponsibilityStaffID)
       $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;

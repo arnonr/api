@@ -127,6 +127,18 @@ const methods = {
       );
     }
 
+    if (req.query.OrganizationAiZoneID) {
+      $whereOrganization["OrganizationAiZoneID"] = Number(
+        req.query.OrganizationAiZoneID
+      );
+    }
+
+    if (req.query.OrganizationZoneID) {
+      $whereOrganization["OrganizationZoneID"] = Number(
+        req.query.OrganizationZoneID
+      );
+    }
+
     if (req.query.StaffAmphurID) {
       $whereOrganization["OrganizationAmphurID"] = Number(
         req.query.StaffAmphurID
