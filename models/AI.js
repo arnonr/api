@@ -136,7 +136,7 @@ AI.init(
       type: DataTypes.TINYINT(1),
       allowNull: false,
       defaultValue: 0,
-      comment: "สถานะของการผสมเทียม,0 = รอผล,1 = สำเร็จ,2 = ไม่สำเร็จ",
+      comment: "สถานะของการผสมเทียม,0 = รอผล, 1 = สำเร็จ, 2 = ไม่สำเร็จ",
     },
     Dose: {
       type: DataTypes.INTEGER(11),

@@ -280,6 +280,8 @@ const methods = {
 
                 data.updatedAt = fn("GETDATE");
 
+
+                data.createdAt = undefined;
                 await db.update(data, { where: { PregnancyCheckupID: id } });
 
                 let productionStatusID = null;
