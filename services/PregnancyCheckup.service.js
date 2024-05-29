@@ -356,6 +356,22 @@ const methods = {
                     }
                     //   { where: { PregnancyCheckupID: id } }
                 );
+
+                if (obj.TimeNo == 1) {
+                    await Animal.update(
+                        {
+                            ProductionStatusID: 4,
+                            updatedAt: fn("GETDATE"),
+                            UpdatedUserID: Number(UpdatedUserID),
+                        },
+                        {
+                            where: {
+                                AnimalID: obj.AnimalID,
+                            },
+                        }
+                    );
+                }
+
                 resolve();
             } catch (error) {
                 reject(error);

@@ -384,11 +384,15 @@ const methods = {
                 );
 
                 //
-                let animal = await Animal.findByPk(obj.AnimalID);
+                // if(){
+                    let animal = await Animal.findByPk(obj.AnimalID);
 
-                animal.ProductionStatusID = 6;
-                animal.AnimalPar = animal.AnimalPar - 1;
-                animal.save();
+
+                    animal.ProductionStatusID = 6;
+                    animal.AnimalPar = animal.AnimalPar - 1;
+                    animal.save();
+                // }
+              
 
                 // await Animal.update(
                 //   {
