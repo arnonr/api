@@ -269,7 +269,7 @@ const methods = {
                 const checkDuplicate = await db.findOne({
                     where: {
                         AnimalID: data.AnimalID,
-                        isRemove: 1,
+                        isRemove: 0,
                         AIID: data.AIID,
                         PAR: data.PAR,
                     },
