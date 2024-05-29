@@ -797,6 +797,12 @@ const methods = {
                         };
                     }
 
+                    if (req.query.OrganizationTypeID) {
+                        $where["OrganizationTypeID"] = Number(
+                            req.query.OrganizationTypeID
+                        );
+                    }
+
                     organization = await Organization.findAll({
                         where: $where,
                     });
