@@ -376,9 +376,9 @@ const methods = {
         const obj = await db.findByPk(id);
         if (!obj) reject(ErrorNotFound("id: not found"));
 
-        let old_organization_id = obj.organization_id;
+        let oldOrganizationID = obj.OrganizationID;
         let not_same = true;
-        if (old_organization_id != data.organization_id) {
+        if (oldOrganizationID != data.OrganizationID) {
           not_same = false;
         }
 
@@ -459,7 +459,7 @@ const methods = {
         if (not_same == false) {
           await Animal.update(
             {
-              organization_id: data.organization_id,
+              OrganizationID: data.OrganizationID,
             },
             {
               where: {
