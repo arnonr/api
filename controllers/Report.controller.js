@@ -235,6 +235,17 @@ const methods = {
     }
   },
 
+
+  async onGetReport26(req, res) {
+    try {
+      let result = await Service.report26(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+
   async onGetReport99(req, res) {
     try {
       let result = await Service.report99(req);
