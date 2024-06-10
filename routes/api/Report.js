@@ -236,6 +236,13 @@ router.get(
     controllers.onGetReport26
 );
 
+router.get(
+    "/report27",
+    cacheMiddleware,
+    controllers.onGetReport27
+);
+
+
 // generate FarmAnimalType
 router.get("/report101", cacheMiddleware, controllers.onGetReport101);
 
