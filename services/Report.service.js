@@ -8830,7 +8830,7 @@ const methods = {
                     ],
                 };
                 $where["isRemove"] = 0;
-                $where["PAR"] = 0;
+                $where["PAR"] = 1;
 
                 const query =
                     Object.keys($where).length > 0 ? { where: $where } : {};
@@ -8907,8 +8907,8 @@ const methods = {
                     );
 
                     gbm_arr[i] = {
-                        day: gbm[i].month,
-                        result_day1: gbm[i].month,
+                        day: month,
+                        result_day1: month,
                         AIID: gbm[i].AI?.AIID,
                         AnimalID: gbm[i].AnimalID,
                         AnimalSecretStatus: gbm[i].Animal.AnimalSecretStatus,
@@ -8978,7 +8978,7 @@ const methods = {
                             title: "อายุเมื่อคลอดลูกตัวแรก (เดือน)",
                             AnimalID: filter_gbm,
                             all: animal_all,
-                            median: "365-385", //animal_median,
+                            median: "24-36 เดือน", //animal_median,
                             avg: parseFloat(sum_result_day1).toFixed(2),
                             animal_more: animal_more,
                             animal_less_more: animal_less_more,
