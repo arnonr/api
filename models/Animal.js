@@ -902,7 +902,19 @@ Animal.init(
             type: DataTypes.STRING(500),
             allowNull: true,
             comment: "url ภาพประจำตัวสัตว์",
-           
+        },
+        AnimalImagePath1: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                let image = null;
+                if (this.AnimalImagePath != null) {
+                    image = this.AnimalImagePath.replace(
+                        "/api/static/",
+                        "/api/v1/static/"
+                    );
+                }
+                return image;
+            },
         },
         AnimalBornWeight: {
             type: DataTypes.DECIMAL(10, 3),

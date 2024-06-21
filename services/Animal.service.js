@@ -2617,8 +2617,17 @@ const methods = {
                     );
                 }
 
+                let image = null;
+                if (obj.AnimalImagePath != null) {
+                    image = obj.AnimalImagePath.replace(
+                        "/api/static/",
+                        "/api/v1/static/"
+                    );
+                }
+
                 obj = {
                     ...obj.toJSON(),
+                    AnimalImagePath: image,
                     Projects: projectArray,
                     ProjectID: JSON.parse(obj.toJSON().ProjectID),
                     GiveBirthSelf: GiveBirthSelf,
@@ -4203,12 +4212,21 @@ const methods = {
                 }
 
                 //
+
+                let image = null;
+                if (animal.AnimalImagePath != null) {
+                    image = animal.AnimalImagePath.replace(
+                        "/api/static/",
+                        "/api/v1/static/"
+                    );
+                }
+
                 let data = {
                     AnimalName: animal.AnimalName,
                     AnimalEarID: animal.AnimalEarID,
                     AnimalBirthDate: animal.ThaiAnimalBirthDate,
                     AnimalBreedAll: animal.AnimalBreedAll,
-                    AnimalImagePath: animal.AnimalImagePath,
+                    AnimalImagePath: image,
                     AnimalDadBreed:
                         animal.AnimalFather?.toJSON().AnimalBreedAll,
                     AnimalDadName: animal.AnimalFather?.toJSON().Fullname,
