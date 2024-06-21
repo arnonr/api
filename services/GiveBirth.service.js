@@ -270,7 +270,7 @@ const methods = {
                     where: {
                         AnimalID: data.AnimalID,
                         isRemove: 0,
-                        AIID: data.AIID,
+                        AIID: data.AIID != undefined ? data.AIID : null,
                         PAR: data.PAR,
                     },
                 });
