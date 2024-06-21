@@ -92,7 +92,7 @@ module.exports = async (app) => {
   console.log(path.join(__dirname, "../public"));
 
   // Static file
-  app.use("/static", express.static(path.join(__dirname, "../public")));
+  app.use("/api/v1/static", express.static(path.join(__dirname, "../public")));
   // app.use(process.env.URL_STATIC, express.static(__dirname + "/public"));
 
   //   app.use("*/static", express.static(__dirname + '/public'));
