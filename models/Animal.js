@@ -902,6 +902,7 @@ Animal.init(
             type: DataTypes.STRING(500),
             allowNull: true,
             comment: "url ภาพประจำตัวสัตว์",
+           
         },
         AnimalBornWeight: {
             type: DataTypes.DECIMAL(10, 3),
