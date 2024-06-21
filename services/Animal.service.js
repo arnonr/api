@@ -2891,29 +2891,39 @@ const methods = {
                     where: { AnimalID: obj.AnimalID },
                 });
 
+                let check = 1;
+
                 if (ai && ai.length > 0) {
                     ai.forEach((x) => {
                         if (x.isRemove == 0) {
-                            reject(
-                                ErrorNotFound(
-                                    "ไม่สามารถลบได้ เนื่องจากมีกิจกรรมผสมเทียม"
-                                )
-                            );
+                            check = 0;
                         }
                     });
 
-                    await db.update(
-                        { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
-                        { where: { AnimalID: id } }
-                    );
+                    if (check == 0) {
+                        reject(
+                            ErrorNotFound(
+                                "ไม่สามารถลบได้ เนื่องจากมีกิจกรรมผสมเทียม"
+                            )
+                        );
+                    } else {
+                        await db.update(
+                            {
+                                isRemove: 1,
+                                isActive: 0,
+                                updatedAt: fn("GETDATE"),
+                            },
+                            { where: { AnimalID: id } }
+                        );
 
-                    // delete ProjectToAnimalType
-                    const obj1 = AnimalToProject.destroy({
-                        where: { AnimalID: id },
-                        // // truncate: true,
-                    });
+                        // delete ProjectToAnimalType
+                        const obj1 = AnimalToProject.destroy({
+                            where: { AnimalID: id },
+                            // // truncate: true,
+                        });
 
-                    resolve();
+                        resolve();
+                    }
                 } else {
                     let checkParent = null;
                     if (obj.AnimalSexID == 1) {
