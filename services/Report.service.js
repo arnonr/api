@@ -6181,6 +6181,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                let $whereStaff = {};
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -6250,8 +6251,17 @@ const methods = {
                     $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
                 }
 
+                // if (req.query.StaffID) {
+                //     $where["ResponsibilityStaffID"] = req.query.StaffID;
+                // }
+
                 if (req.query.StaffID) {
-                    $where["ResponsibilityStaffID"] = req.query.StaffID;
+                    let staff = await Staff.findOne({
+                        where: {
+                            StaffID: req.query.StaffID,
+                        },
+                    });
+                    $whereStaff["StaffNumber"] = staff.StaffNumber;
                 }
 
                 if (req.query.StartDate) {
@@ -6264,21 +6274,27 @@ const methods = {
                 }
 
                 $where["isRemove"] = 0;
-                // $where["isActive"] = 1;
 
                 const query =
                     Object.keys($where).length > 0 ? { where: $where } : {};
 
                 $whereFarm["isRemove"] = 0;
-                // $whereFarm["isActive"] = 1;
 
                 const queryFarm =
                     Object.keys($whereFarm).length > 0
                         ? { where: $whereFarm }
                         : {};
 
+                const queryStaff =
+                    Object.keys($whereStaff).length > 0
+                        ? { where: $whereStaff }
+                        : {};
+
                 let animal = [];
                 let ai = null;
+
+                console.log(query)
+
                 ai = await AI.findAll({
                     ...query,
                     include: [
@@ -6290,7 +6306,7 @@ const methods = {
                                     [Op.in]: JSON.parse(req.query.AnimalTypeID),
                                 },
                                 isRemove: 0,
-                                // isActive: 1,
+                                isActive: 1,
                             },
                             include: [
                                 {
@@ -6368,6 +6384,7 @@ const methods = {
                         },
                         {
                             model: Staff,
+                            ...queryStaff,
                         },
                         {
                             model: PregnancyCheckup,
@@ -6386,6 +6403,8 @@ const methods = {
                     ],
                 });
 
+                console.log(ai.length)
+
                 let breed = [];
 
                 ai.forEach((x) => {
@@ -6401,8 +6420,6 @@ const methods = {
                         if (checkBreed) {
                             let pregName = "";
                             if (x.PregnancyCheckups.length != 0) {
-                                console.log("FREEDOM");
-                                console.log(x.PregnancyCheckups.length);
                                 let pc =
                                     x.PregnancyCheckups[
                                         x.PregnancyCheckups.length - 1
@@ -6512,6 +6529,9 @@ const methods = {
                         }
                     }
                 });
+                console.log(ai.length)
+
+
 
                 let breedAll = await AnimalBreed.findAll({
                     raw: true,
