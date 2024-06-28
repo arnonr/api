@@ -195,6 +195,7 @@ const methods = {
             try {
                 // let $where = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -1048,6 +1049,8 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
 
+                $whereFarm["isRemove"] = 0;
+
                 // เราจะค้นหาฟาร์ม จาก
                 if (req.query.FarmID) {
                     $whereFarm["FarmID"] = req.query.FarmID;
@@ -1376,6 +1379,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAI = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -1572,6 +1576,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereTransferEmbryo = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -1831,6 +1836,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAnimal = {};
+                $whereFarm["isRemove"] = 0;
 
                 let provinceIDArr = [];
 
@@ -1966,6 +1972,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAI = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -2238,6 +2245,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAI = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -2554,6 +2562,7 @@ const methods = {
             try {
                 let $where = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -2834,6 +2843,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereGiveBirth = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -3011,6 +3021,7 @@ const methods = {
                 let $whereFarm = {};
                 let $whereAnimal = {};
                 let $whereReproduce = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.AnimalID) {
                     $whereAnimal["AnimalID"] = req.query.AnimalID;
@@ -3158,6 +3169,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAI = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -3392,6 +3404,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -4266,6 +4279,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -4668,6 +4682,7 @@ const methods = {
                 // let $where = {};
                 let $whereFarm = {};
                 let $whereAI = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -4890,6 +4905,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -5233,6 +5249,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -5393,6 +5410,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -5816,6 +5834,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -6182,6 +6201,7 @@ const methods = {
                 let $whereAnimal = {};
                 let $whereFarm = {};
                 let $whereStaff = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -6293,7 +6313,7 @@ const methods = {
                 let animal = [];
                 let ai = null;
 
-                console.log(query)
+                console.log(query);
 
                 ai = await AI.findAll({
                     ...query,
@@ -6403,7 +6423,7 @@ const methods = {
                     ],
                 });
 
-                console.log(ai.length)
+                console.log(ai.length);
 
                 let breed = [];
 
@@ -6529,9 +6549,7 @@ const methods = {
                         }
                     }
                 });
-                console.log(ai.length)
-
-
+                console.log(ai.length);
 
                 let breedAll = await AnimalBreed.findAll({
                     raw: true,
@@ -6612,6 +6630,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -6950,6 +6969,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -7328,6 +7348,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -7652,6 +7673,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -7949,6 +7971,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -8204,6 +8227,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -8478,6 +8502,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -8762,6 +8787,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -9019,6 +9045,7 @@ const methods = {
                 let $where = {};
                 let $whereAnimal = {};
                 let $whereFarm = {};
+                $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
