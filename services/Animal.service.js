@@ -2142,45 +2142,17 @@ const methods = {
             try {
                 Promise.all([
                     db.findAll({ ..._q.query, limit: limit, offset: offset }),
-                    db.findAll({ ..._q.query,limit: undefined, offset: undefined }),
-                    // db.count({ ..._q.query,limit: undefined, offset: undefined }),
+                    db.findAll({
+                        ..._q.query,
+                        limit: undefined,
+                        offset: undefined,
+                    }),
                 ])
                     .then(async (result) => {
                         let rows = result[0];
-                        // let count = rows.length;
-
-                        // if (!req.query.includeAll) {
-                        //   if (!req.query.noEventLatest) {
-                        //     // rows = await Promise.all(
-                        //     //   rows.map(async (data) => {
-                        //     //     let projectArray = [];
-                        //     //     // data.Projects.forEach((element) => {
-                        //     //     //   projectArray.push(element.ProjectName);
-                        //     //     // });
-
-                        //     //     // if (data.GiveBirthSelfID != null) {
-                        //     //     //   data.GiveBirthSelf = GiveBirth.findByPk(
-                        //     //     //     data.GiveBirthSelfID
-                        //     //     //   );
-                        //     //     // }
-
-                        //     //     // // รหัสใบหู, ชื่อ
-
-                        //     //     // let res = {
-                        //     //     //   ...data.toJSON(),
-                        //     //     //   Projects: projectArray,
-                        //     //     //   ProjectID: data.toJSON().ProjectID,
-                        //     //     //   // EventLatest: data.EventLatest(),
-                        //     //     // };
-
-                        //     //     return data;
-                        //     //   })
-                        //     // );
-                        //   }
-                        // }
 
                         resolve({
-                            lastPage: Math.ceil(result[1].length/ limit),
+                            lastPage: Math.ceil(result[1].length / limit),
                             rows: rows,
                             totalPage: Math.ceil(result[1].length / limit),
                             totalData: result[1].length,
@@ -5520,7 +5492,7 @@ const methods = {
     async exportExcel(req) {
         const limit = +(req.query.size || config.pageLimit);
         const offset = +(limit * ((req.query.page || 1) - 1));
-        const _q = await methods.scopeSearch(req, limit, offset);
+        const _q = methods.scopeSearch(req, limit, offset);
 
         return new Promise(async (resolve, reject) => {
             try {
