@@ -4507,7 +4507,7 @@ const methods = {
                                 AnimalStatusName:
                                     x.Animal.AnimalStatus?.AnimalStatusName,
                                 SemenNumber: x.AI?.Semen?.SemenNumber,
-                                SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
+                                SemenBreedAll: x.AI?.Semen?.AnimalBreedAll,
                                 AnimalPar: x.AI?.PAR,
                                 AIDate: dayjs(x.AI?.AIDate)
                                     .locale("th")
@@ -4551,7 +4551,7 @@ const methods = {
                                                 ?.AnimalStatusName,
                                         SemenNumber: x.AI?.Semen?.SemenNumber,
                                         SemenBreedAll:
-                                            x.AI?.Semen.AnimalBreedAll,
+                                            x.AI?.Semen?.AnimalBreedAll,
                                         AnimalPar: x.AI?.PAR,
                                         AIDate: dayjs(x.AI?.AIDate)
                                             .locale("th")
@@ -5073,9 +5073,11 @@ const methods = {
                 let breed = [];
 
                 animal.forEach((x) => {
-                    if (x.Animal.AnimalBreedID1 != null) {
+                    if (x.Animal?.AnimalBreedID1 != null) {
                         let checkBreed = breed.find((b) => {
-                            return x.AI.Semen.AnimalBreedID1 == b.AnimalBreedID;
+                            return (
+                                x.AI.Semen?.AnimalBreedID1 == b.AnimalBreedID
+                            );
                         });
 
                         if (checkBreed) {
@@ -5090,7 +5092,7 @@ const methods = {
                                 AnimalStatusName:
                                     x.Animal.AnimalStatus?.AnimalStatusName,
                                 SemenNumber: x.AI?.Semen?.SemenNumber,
-                                SemenBreedAll: x.AI?.Semen.AnimalBreedAll,
+                                SemenBreedAll: x.AI?.Semen?.AnimalBreedAll,
                                 AnimalPar: x.PAR,
                                 AIDate: x.AI?.AIDate
                                     ? dayjs(x.AI?.AIDate)
@@ -5122,7 +5124,7 @@ const methods = {
                             breed.push({
                                 // AnimalBreedID: x.Animal.AnimalBreedID1,
 
-                                AnimalBreedID: x.AI?.Semen.AnimalBreedID1,
+                                AnimalBreedID: x.AI?.Semen?.AnimalBreedID1,
                                 AnimalID: [
                                     {
                                         AnimalID: x.Animal.AnimalID,
@@ -5137,7 +5139,7 @@ const methods = {
                                                 ?.AnimalStatusName,
                                         SemenNumber: x.AI?.Semen?.SemenNumber,
                                         SemenBreedAll:
-                                            x.AI?.Semen.AnimalBreedAll,
+                                            x.AI?.Semen?.AnimalBreedAll,
                                         AnimalPar: x.PAR,
                                         AIDate: x.AI?.AIDate
                                             ? dayjs(x.AI?.AIDate)
@@ -5231,6 +5233,13 @@ const methods = {
 
                     // names must be equal
                     return 0;
+                });
+                console.log(breed)
+                breed = breed.map((x) => {
+                    if (x.AnimalBreedName == null) {
+                        x.AnimalBreedName = "ไม่ระบุ";
+                    }
+                    return x;
                 });
 
                 resolve({
