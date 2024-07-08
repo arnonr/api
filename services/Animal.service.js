@@ -1692,6 +1692,18 @@ const methods = {
         // Where
         let $where = {};
 
+        if (req.query.AnimalBreedType == 2) {
+            $where["AnimalBreedID1"] = {
+                [Op.is]: null,
+            };
+        }
+
+        if (req.query.AnimalBreedType == 3) {
+            $where["AnimalBreedID1"] = {
+                [Op.not]: null,
+            };
+        }
+
         if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
         if (req.query.ProductionStatusID)
