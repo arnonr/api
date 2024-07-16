@@ -3485,6 +3485,8 @@ const methods = {
                     ],
                 };
 
+                $where["isRemove"] = 0;
+
                 const query =
                     Object.keys($where).length > 0 ? { where: $where } : {};
 
@@ -3648,6 +3650,19 @@ const methods = {
                         });
 
                         if (check1) {
+                            // console.log(x);
+                            if (x.Animal.AnimalName == "บานชื่น") {
+                                console.log(x.AIID);
+                                console.log("<br>");
+                                console.log(x.TimeNo);
+                                console.log("<br>");
+                                console.log(x.PAR);
+                                console.log("<br>");
+                                console.log(x.Animal.AnimalName);
+                                console.log("<br>");
+                                console.log(x.PregnancyCheckups.length);
+                            }
+
                             if (x.PregnancyCheckups.length != 0) {
                                 let preg = {};
                                 let checkBirth = 0;
@@ -5234,7 +5249,7 @@ const methods = {
                     // names must be equal
                     return 0;
                 });
-                console.log(breed)
+                console.log(breed);
                 breed = breed.map((x) => {
                     if (x.AnimalBreedName == null) {
                         x.AnimalBreedName = "ไม่ระบุ";
