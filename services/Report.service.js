@@ -6339,10 +6339,6 @@ const methods = {
                 let animal = [];
                 let ai = null;
 
-                console.log(query);
-
-                // resolve({});
-
                 ai = await AI.findAll({
                     ...query,
                     include: [
@@ -6450,10 +6446,6 @@ const methods = {
                         },
                     ],
                 });
-
-                console.log(ai);
-
-                resolve({ ai: ai });
 
                 let breed = [];
 
