@@ -6721,9 +6721,6 @@ const methods = {
                                 FarmID: [ai[i].Animal.FarmID],
                             });
                         }
-
-                        console.log(checkBreed);
-                        console.log(breed);
                     }
                 }
 
