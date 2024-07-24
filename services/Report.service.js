@@ -6225,7 +6225,7 @@ const methods = {
                 let $whereAnimal = {};
                 let $whereFarm = {};
                 let $whereStaff = {};
-                $whereFarm["isRemove"] = 0;
+                // $whereFarm["isRemove"] = 0;
 
                 if (req.query.OrganizationID) {
                     $whereFarm["OrganizationID"] = req.query.OrganizationID;
@@ -6249,50 +6249,8 @@ const methods = {
 
                 let provinceIDArr = [];
 
-                if (!req.query.ProvinceID) {
-                    if (req.query.OrganizationZoneID) {
-                        const province = await Province.findAll({
-                            where: {
-                                OrganizationZoneID:
-                                    req.query.OrganizationZoneID,
-                            },
-                        });
-
-                        province.forEach((p) => {
-                            provinceIDArr.push(p.ProvinceID);
-                        });
-                    }
-
-                    if (req.query.AIZoneID) {
-                        provinceIDArr = [];
-                        const province = await Province.findAll({
-                            where: { AIZoneID: req.query.AIZoneID },
-                        });
-
-                        province.forEach((p) => {
-                            provinceIDArr.push(p.ProvinceID);
-                        });
-                    }
-                }
-
-                if (req.query.TumbolID) {
-                    $whereFarm["FarmTumbolID"] = req.query.TumbolID;
-                }
-
-                if (req.query.AmphurID) {
-                    $whereFarm["FarmAmphurID"] = req.query.AmphurID;
-                }
-
-                if (req.query.ProvinceID) {
-                    provinceIDArr = [req.query.ProvinceID];
-                }
-
                 if (req.query.FarmID) {
                     $whereFarm["FarmID"] = req.query.FarmID;
-                }
-
-                if (provinceIDArr.length != 0) {
-                    $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
                 }
 
                 // if (req.query.StaffID) {
@@ -6306,6 +6264,50 @@ const methods = {
                         },
                     });
                     $whereStaff["StaffNumber"] = staff.StaffNumber;
+                } else {
+                    if (!req.query.ProvinceID) {
+                        if (req.query.OrganizationZoneID) {
+                            const province = await Province.findAll({
+                                where: {
+                                    OrganizationZoneID:
+                                        req.query.OrganizationZoneID,
+                                },
+                            });
+
+                            province.forEach((p) => {
+                                provinceIDArr.push(p.ProvinceID);
+                            });
+                        }
+
+                        if (req.query.AIZoneID) {
+                            provinceIDArr = [];
+                            const province = await Province.findAll({
+                                where: { AIZoneID: req.query.AIZoneID },
+                            });
+
+                            province.forEach((p) => {
+                                provinceIDArr.push(p.ProvinceID);
+                            });
+                        }
+                    }
+
+                    if (req.query.TumbolID) {
+                        $whereFarm["FarmTumbolID"] = req.query.TumbolID;
+                    }
+
+                    if (req.query.AmphurID) {
+                        $whereFarm["FarmAmphurID"] = req.query.AmphurID;
+                    }
+
+                    if (req.query.ProvinceID) {
+                        provinceIDArr = [req.query.ProvinceID];
+                    }
+
+                    if (provinceIDArr.length != 0) {
+                        $whereFarm["FarmProvinceID"] = {
+                            [Op.in]: provinceIDArr,
+                        };
+                    }
                 }
 
                 if (req.query.StartDate) {
@@ -6322,7 +6324,7 @@ const methods = {
                 const query =
                     Object.keys($where).length > 0 ? { where: $where } : {};
 
-                $whereFarm["isRemove"] = 0;
+                // $whereFarm["isRemove"] = 0;
 
                 const queryFarm =
                     Object.keys($whereFarm).length > 0
@@ -6338,6 +6340,8 @@ const methods = {
                 let ai = null;
 
                 console.log(query);
+
+                // resolve({});
 
                 ai = await AI.findAll({
                     ...query,
@@ -6447,7 +6451,9 @@ const methods = {
                     ],
                 });
 
-                console.log(ai.length);
+                console.log(ai);
+
+                resolve({ ai: ai });
 
                 let breed = [];
 
