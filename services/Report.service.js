@@ -6449,22 +6449,170 @@ const methods = {
 
                 let breed = [];
 
-                ai.forEach((x) => {
-                    if (x.Animal.AnimalBreedID1 != null && x.SemenID != null) {
-                        // console.log(x.AIID);
-                        // console.log(x.SemenID);
-                        // console.log(x.Animal.AnimalID);
-                        // console.log(x.Semen);
+                // ai.forEach(async (x) => {
+                //     let b1 = {};
+                //     if (x.SemenID != null) {
+                //         b1 = x.Semen;
+                //     } else if (x.BreederAnimalID != null) {
+                //         let father = await Animal.findOne({
+                //             where: { AnimalID: x.BreederAnimalID },
+                //         });
+                //         b1["SemenBreedAll"] = father.AnimalBreedAll;
+                //         b1["AnimalBreedID1"] = father.AnimalBreedID1;
+                //         b1["SemenNumber"] = father.AnimalEarID;
+                //     } else {
+                //         b1 = null;
+                //     }
+
+                //     if (x.Animal.AnimalBreedID1 != null && b1 != null) {
+                //         let checkBreed = breed.find((b) => {
+                //             return b1.AnimalBreedID1 == b.AnimalBreedID;
+                //         });
+
+                //         if (checkBreed) {
+                //             let pregName = "";
+                //             if (x.PregnancyCheckups.length != 0) {
+                //                 let pc =
+                //                     x.PregnancyCheckups[
+                //                         x.PregnancyCheckups.length - 1
+                //                     ];
+                //                 pregName =
+                //                     pc.PregnancyCheckStatus
+                //                         .PregnancyCheckStatusName;
+                //             }
+
+                //             checkBreed.AnimalID.push({
+                //                 AnimalID: x.Animal.AnimalID,
+                //                 FarmIdentificationNumber:
+                //                     x.Animal.AnimalFarm
+                //                         .FarmIdentificationNumber,
+                //                 FarmName: x.Animal.AnimalFarm.FarmName,
+                //                 AnimalEarID: x.Animal.AnimalEarID,
+                //                 AnimalName: x.Animal.AnimalName,
+                //                 AnimalBreedAll:
+                //                     x.Animal.toJSON().AnimalBreedAll,
+                //                 AnimalStatusName:
+                //                     x.Animal.AnimalStatus?.AnimalStatusName,
+                //                 SemenNumber: b1.SemenNumber,
+                //                 SemenBreedAll: b1.AnimalBreedAll,
+                //                 AnimalPar: x.PAR > 0 ? x.PAR : 0,
+                //                 AIDate: x.AIDate
+                //                     ? dayjs(x.AIDate)
+                //                           .locale("th")
+                //                           .format("DD MMM BB")
+                //                     : "",
+                //                 AIDateReal: x.AIDate,
+                //                 ResponsibilityStaffName:
+                //                     x.Staff?.StaffGivenName +
+                //                     " " +
+                //                     x.Staff?.StaffSurname,
+                //                 PregnancyCheckStatusName: pregName,
+                //                 GiveBirthDate:
+                //                     x.GiveBirth != null
+                //                         ? dayjs(x.GiveBirth.GiveBirthDate)
+                //                               .locale("th")
+                //                               .format("DD MMM BB")
+                //                         : "-",
+                //                 ChildGender:
+                //                     x.GiveBirth != null
+                //                         ? x.GiveBirth.ChildGender
+                //                         : "-",
+                //             });
+                //             checkBreed.FarmID.push(x.Animal.FarmID);
+                //         } else {
+                //             let pregName = "";
+                //             if (x.PregnancyCheckups.length != 0) {
+                //                 let pc =
+                //                     x.PregnancyCheckups[
+                //                         x.PregnancyCheckups.length - 1
+                //                     ];
+                //                 pregName =
+                //                     pc.PregnancyCheckStatus
+                //                         .PregnancyCheckStatusName;
+                //             }
+
+                //             breed.push({
+                //                 // AnimalBreedID: x.Animal.AnimalBreedID1,
+                //                 AnimalBreedID: b1.AnimalBreedID1,
+                //                 AnimalID: [
+                //                     {
+                //                         AnimalID: x.Animal.AnimalID,
+                //                         FarmIdentificationNumber:
+                //                             x.Animal.AnimalFarm
+                //                                 .FarmIdentificationNumber,
+                //                         FarmName: x.Animal.AnimalFarm.FarmName,
+                //                         AnimalEarID: x.Animal.AnimalEarID,
+                //                         AnimalName: x.Animal.AnimalName,
+                //                         AnimalBreedAll:
+                //                             x.Animal.toJSON().AnimalBreedAll,
+                //                         AnimalStatusName:
+                //                             x.Animal.AnimalStatus
+                //                                 ?.AnimalStatusName,
+                //                         SemenNumber: b1?.SemenNumber,
+                //                         SemenBreedAll: b1?.AnimalBreedAll,
+                //                         AnimalPar: x.PAR > 0 ? x.PAR : 0,
+                //                         AIDate: x.AIDate
+                //                             ? dayjs(x.AIDate)
+                //                                   .locale("th")
+                //                                   .format("DD MMM BB")
+                //                             : "",
+                //                         AIDateReal: x.AIDate,
+                //                         ResponsibilityStaffName:
+                //                             x.Staff?.StaffGivenName +
+                //                             " " +
+                //                             x.Staff?.StaffSurname,
+                //                         PregnancyCheckStatusName: pregName,
+                //                         GiveBirthDate:
+                //                             x.GiveBirth != null
+                //                                 ? dayjs(
+                //                                       x.GiveBirth.GiveBirthDate
+                //                                   )
+                //                                       .locale("th")
+                //                                       .format("DD MMM BB")
+                //                                 : "-",
+                //                         ChildGender:
+                //                             x.GiveBirth != null
+                //                                 ? x.GiveBirth.ChildGender
+                //                                 : "-",
+                //                     },
+                //                 ],
+                //                 FarmID: [x.Animal.FarmID],
+                //             });
+                //         }
+
+                //         console.log(checkBreed);
+                //         console.log(breed);
+                //     }
+                //     // console.log(b1);
+                //     // console.log("FREEDOM");
+                // });
+
+                for (let i = 0; i < ai.length; i++) {
+                    let b1 = {};
+                    if (ai[i].SemenID != null) {
+                        b1 = ai[i].Semen;
+                    } else if (ai[i].BreederAnimalID != null) {
+                        let father = await Animal.findOne({
+                            where: { AnimalID: ai[i].BreederAnimalID },
+                        });
+                        b1["SemenBreedAll"] = father.AnimalBreedAll;
+                        b1["AnimalBreedID1"] = father.AnimalBreedID1;
+                        b1["SemenNumber"] = father.AnimalEarID;
+                    } else {
+                        b1 = null;
+                    }
+
+                    if (ai[i].Animal.AnimalBreedID1 != null && b1 != null) {
                         let checkBreed = breed.find((b) => {
-                            return x.Semen.AnimalBreedID1 == b.AnimalBreedID;
+                            return b1.AnimalBreedID1 == b.AnimalBreedID;
                         });
 
                         if (checkBreed) {
                             let pregName = "";
-                            if (x.PregnancyCheckups.length != 0) {
+                            if (ai[i].PregnancyCheckups.length != 0) {
                                 let pc =
-                                    x.PregnancyCheckups[
-                                        x.PregnancyCheckups.length - 1
+                                    ai[i].PregnancyCheckups[
+                                        ai[i].PregnancyCheckups.length - 1
                                     ];
                                 pregName =
                                     pc.PregnancyCheckStatus
@@ -6472,49 +6620,49 @@ const methods = {
                             }
 
                             checkBreed.AnimalID.push({
-                                AnimalID: x.Animal.AnimalID,
+                                AnimalID: ai[i].Animal.AnimalID,
                                 FarmIdentificationNumber:
-                                    x.Animal.AnimalFarm
+                                    ai[i].Animal.AnimalFarm
                                         .FarmIdentificationNumber,
-                                FarmName: x.Animal.AnimalFarm.FarmName,
-                                AnimalEarID: x.Animal.AnimalEarID,
-                                AnimalName: x.Animal.AnimalName,
+                                FarmName: ai[i].Animal.AnimalFarm.FarmName,
+                                AnimalEarID: ai[i].Animal.AnimalEarID,
+                                AnimalName: ai[i].Animal.AnimalName,
                                 AnimalBreedAll:
-                                    x.Animal.toJSON().AnimalBreedAll,
+                                    ai[i].Animal.toJSON().AnimalBreedAll,
                                 AnimalStatusName:
-                                    x.Animal.AnimalStatus?.AnimalStatusName,
-                                SemenNumber: x.Semen?.SemenNumber,
-                                SemenBreedAll: x.Semen.AnimalBreedAll,
-                                AnimalPar: x.PAR > 0 ? x.PAR : 0,
-                                AIDate: x.AIDate
-                                    ? dayjs(x.AIDate)
+                                    ai[i].Animal.AnimalStatus?.AnimalStatusName,
+                                SemenNumber: b1.SemenNumber,
+                                SemenBreedAll: b1.AnimalBreedAll,
+                                AnimalPar: ai[i].PAR > 0 ? ai[i].PAR : 0,
+                                AIDate: ai[i].AIDate
+                                    ? dayjs(ai[i].AIDate)
                                           .locale("th")
                                           .format("DD MMM BB")
                                     : "",
-                                AIDateReal: x.AIDate,
+                                AIDateReal: ai[i].AIDate,
                                 ResponsibilityStaffName:
-                                    x.Staff?.StaffGivenName +
+                                    ai[i].Staff?.StaffGivenName +
                                     " " +
-                                    x.Staff?.StaffSurname,
+                                    ai[i].Staff?.StaffSurname,
                                 PregnancyCheckStatusName: pregName,
                                 GiveBirthDate:
-                                    x.GiveBirth != null
+                                    ai[i].GiveBirth != null
                                         ? dayjs(x.GiveBirth.GiveBirthDate)
                                               .locale("th")
                                               .format("DD MMM BB")
                                         : "-",
                                 ChildGender:
-                                    x.GiveBirth != null
-                                        ? x.GiveBirth.ChildGender
+                                    ai[i].GiveBirth != null
+                                        ? ai[i].GiveBirth.ChildGender
                                         : "-",
                             });
-                            checkBreed.FarmID.push(x.Animal.FarmID);
+                            checkBreed.FarmID.push(ai[i].Animal.FarmID);
                         } else {
                             let pregName = "";
-                            if (x.PregnancyCheckups.length != 0) {
+                            if (ai[i].PregnancyCheckups.length != 0) {
                                 let pc =
-                                    x.PregnancyCheckups[
-                                        x.PregnancyCheckups.length - 1
+                                    ai[i].PregnancyCheckups[
+                                        ai[i].PregnancyCheckups.length - 1
                                     ];
                                 pregName =
                                     pc.PregnancyCheckStatus
@@ -6523,55 +6671,63 @@ const methods = {
 
                             breed.push({
                                 // AnimalBreedID: x.Animal.AnimalBreedID1,
-                                AnimalBreedID: x.Semen.AnimalBreedID1,
+                                AnimalBreedID: b1.AnimalBreedID1,
                                 AnimalID: [
                                     {
-                                        AnimalID: x.Animal.AnimalID,
+                                        AnimalID: ai[i].Animal.AnimalID,
                                         FarmIdentificationNumber:
-                                            x.Animal.AnimalFarm
+                                            ai[i].Animal.AnimalFarm
                                                 .FarmIdentificationNumber,
-                                        FarmName: x.Animal.AnimalFarm.FarmName,
-                                        AnimalEarID: x.Animal.AnimalEarID,
-                                        AnimalName: x.Animal.AnimalName,
+                                        FarmName:
+                                            ai[i].Animal.AnimalFarm.FarmName,
+                                        AnimalEarID: ai[i].Animal.AnimalEarID,
+                                        AnimalName: ai[i].Animal.AnimalName,
                                         AnimalBreedAll:
-                                            x.Animal.toJSON().AnimalBreedAll,
+                                            ai[i].Animal.toJSON()
+                                                .AnimalBreedAll,
                                         AnimalStatusName:
-                                            x.Animal.AnimalStatus
+                                            ai[i].Animal.AnimalStatus
                                                 ?.AnimalStatusName,
-                                        SemenNumber: x.Semen?.SemenNumber,
-                                        SemenBreedAll: x.Semen.AnimalBreedAll,
-                                        AnimalPar: x.PAR > 0 ? x.PAR : 0,
-                                        AIDate: x.AIDate
-                                            ? dayjs(x.AIDate)
+                                        SemenNumber: b1?.SemenNumber,
+                                        SemenBreedAll: b1?.AnimalBreedAll,
+                                        AnimalPar:
+                                            ai[i].PAR > 0 ? ai[i].PAR : 0,
+                                        AIDate: ai[i].AIDate
+                                            ? dayjs(ai[i].AIDate)
                                                   .locale("th")
                                                   .format("DD MMM BB")
                                             : "",
-                                        AIDateReal: x.AIDate,
+                                        AIDateReal: ai[i].AIDate,
                                         ResponsibilityStaffName:
-                                            x.Staff?.StaffGivenName +
+                                            ai[i].Staff?.StaffGivenName +
                                             " " +
-                                            x.Staff?.StaffSurname,
+                                            ai[i].Staff?.StaffSurname,
                                         PregnancyCheckStatusName: pregName,
                                         GiveBirthDate:
-                                            x.GiveBirth != null
+                                            ai[i].GiveBirth != null
                                                 ? dayjs(
-                                                      x.GiveBirth.GiveBirthDate
+                                                      ai[i].GiveBirth
+                                                          .GiveBirthDate
                                                   )
                                                       .locale("th")
                                                       .format("DD MMM BB")
                                                 : "-",
                                         ChildGender:
-                                            x.GiveBirth != null
-                                                ? x.GiveBirth.ChildGender
+                                            ai[i].GiveBirth != null
+                                                ? ai[i].GiveBirth.ChildGender
                                                 : "-",
                                     },
                                 ],
-                                FarmID: [x.Animal.FarmID],
+                                FarmID: [ai[i].Animal.FarmID],
                             });
                         }
+
+                        console.log(checkBreed);
+                        console.log(breed);
                     }
-                });
-                console.log(ai.length);
+                }
+
+                //
 
                 let breedAll = await AnimalBreed.findAll({
                     raw: true,
