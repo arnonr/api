@@ -6647,7 +6647,7 @@ const methods = {
                                 PregnancyCheckStatusName: pregName,
                                 GiveBirthDate:
                                     ai[i].GiveBirth != null
-                                        ? dayjs(x.GiveBirth.GiveBirthDate)
+                                        ? dayjs(ai[i].GiveBirth.GiveBirthDate)
                                               .locale("th")
                                               .format("DD MMM BB")
                                         : "-",
