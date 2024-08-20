@@ -1104,9 +1104,9 @@ const methods = {
                 $whereStaff["StaffNumber"] = {
                     [Op.not]: null,
                 };
-                $whereStaff["StaffStatus"] = {
-                    [Op.notIn]: ["ลาออก", "ตาย"],
-                };
+                // $whereStaff["StaffStatus"] = {
+                //     [Op.notIn]: ["ลาออก", "ตาย"],
+                // };
 
                 const queryStaff =
                     Object.keys($whereStaff).length > 0
@@ -7350,7 +7350,7 @@ const methods = {
 
                 // Org
                 if (req.query.StaffID) {
-                    $whereStaff["StaffID"] = req.query.StaffID;
+                    $whereStaff["StaffID"] = Number(req.query.StaffID);
                 } else if (req.query.OrganizationID) {
                     $whereOrganization["OrganizationID"] =
                         req.query.OrganizationID;
@@ -7402,13 +7402,15 @@ const methods = {
                 $whereStaff["StaffNumber"] = {
                     [Op.not]: null,
                 };
-                $whereStaff["StaffStatus"] = {
-                    [Op.notIn]: ["ลาออก", "ตาย"],
-                };
+                // $whereStaff["StaffStatus"] = {
+                //     [Op.notIn]: ["ลาออก", "ตาย"],
+                // };
                 const queryStaff =
                     Object.keys($whereStaff).length > 0
                         ? { where: $whereStaff }
                         : {};
+
+                console.log(queryStaff);
 
                 let staff = await Staff.findAll({
                     attributes: [
@@ -7421,6 +7423,7 @@ const methods = {
                 });
 
                 let staffIds = staff.map((s) => s.StaffID);
+
                 $where["ResponsibilityStaffID"] = {
                     [Op.in]: staffIds,
                 };
