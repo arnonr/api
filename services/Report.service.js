@@ -15,6 +15,7 @@ const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
 const AnimalStatus = require("../models/AnimalStatus");
 const AnimalSex = require("../models/AnimalSex");
+const User = require("../models/User");
 const AnimalType = require("../models/AnimalType");
 const ProductionStatus = require("../models/ProductionStatus");
 const AI = require("../models/AI");
@@ -1220,10 +1221,24 @@ const methods = {
                     },
                 });
 
-                const animal = await Animal.findAll({
+                // staffIds
+                const users = await User.findAll({
+                    where: {
+                        StaffID: {
+                            [Op.in]: staffIds,
+                        },
+                    },
+                });
+                let userIds = users.map((s) => s.UserID);
+
+                const userStaffIds = users.map((s) => {
+                    return { userID: s.UserID, StaffID: s.StaffID };
+                });
+
+                const animal1 = await Animal.findAll({
                     attributes: ["AnimalID", "CreatedUserID"],
                     where: {
-                        CreatedUserID: { [Op.in]: staffIds },
+                        CreatedUserID: { [Op.in]: userIds },
                         CreatedDatetime: AnimalCreatedDatetime,
                         isRemove: 0,
                         isActive: 1,
@@ -1232,6 +1247,18 @@ const methods = {
                         },
                     },
                 });
+
+                console.log(userStaffIds);
+
+                const animal = animal1.map((a) => {
+                    let staff = userStaffIds.find((s) => {
+                        return s.userID == a.CreatedUserID;
+                    });
+                    a.StaffID = staff.StaffID;
+                    return a;
+                });
+
+                // console.log(animal)
 
                 const pregnancyCheckup = await PregnancyCheckup.findAll({
                     attributes: [
@@ -1327,7 +1354,7 @@ const methods = {
                     let s_animal = animalMap.get(s.StaffID) || [];
 
                     s_animal = animal.filter((el) => {
-                        return el.CreatedUserID == s.StaffID;
+                        return el.StaffID == s.StaffID;
                     });
 
                     s_ai = ai.filter((el) => {
