@@ -716,7 +716,7 @@ const methods = {
             }
         });
     },
-    report3(req) {
+    report3old2(req) {
         return new Promise(async (resolve, reject) => {
             try {
                 let staff = [];
@@ -771,7 +771,7 @@ const methods = {
                             isRemove: 0,
                         };
 
-                        console.log($where);
+                        // console.log($where);
                     } else {
                         let provinceIDArr = [];
                         let $whereProvice = {};
@@ -1035,6 +1035,463 @@ const methods = {
                         childT: childM + childF,
                     });
                 }
+
+                resolve(res);
+            } catch (error) {
+                reject(ErrorNotFound(error));
+            }
+        });
+    },
+    report3(req) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let $whereOrganization = {};
+                let $where = {};
+                let $whereStaff = {};
+                let $whereAnimal = {};
+
+                // Org
+                if (req.query.StaffID) {
+                    $whereStaff["StaffID"] = req.query.StaffID;
+                } else if (req.query.OrganizationID) {
+                    $whereOrganization["OrganizationID"] =
+                        req.query.OrganizationID;
+                } else if (req.query.TumbolID) {
+                    $whereOrganization["OrganizationTumbolID"] =
+                        req.query.TumbolID;
+                } else if (req.query.AmphurID) {
+                    $whereOrganization["StaffAmphurID"] = req.query.AmphurID;
+                } else if (req.query.ProvinceID) {
+                    $whereOrganization["OrganizationProvinceID"] = Number(
+                        req.query.ProvinceID
+                    );
+                } else {
+                    if (req.query.OrganizationAiZoneID) {
+                        $whereOrganization["OrganizationAiZoneID"] =
+                            req.query.OrganizationAiZoneID;
+                    } else {
+                        $whereOrganization["OrganizationZoneID"] =
+                            req.query.OrganizationZoneID;
+                    }
+                }
+
+                if (!req.query.StaffID) {
+                    $whereOrganization["isActive"] = 1;
+                    $whereOrganization["isRemove"] = 0;
+
+                    const queryOrganization =
+                        Object.keys($whereOrganization).length > 0
+                            ? { where: $whereOrganization }
+                            : {};
+
+                    let organization = await Organization.findAll({
+                        ...queryOrganization,
+                    });
+
+                    let organizationIds = organization.map(
+                        (org) => org.OrganizationID
+                    );
+
+                    $whereStaff["StaffOrganizationID"] = {
+                        [Op.in]: organizationIds,
+                    };
+                }
+
+                // Query Staff
+                $whereStaff["isRemove"] = 0;
+                $whereStaff["isActive"] = 1;
+                $whereStaff["StaffNumber"] = {
+                    [Op.not]: null,
+                };
+                $whereStaff["StaffStatus"] = {
+                    [Op.notIn]: ["ลาออก", "ตาย"],
+                };
+
+                const queryStaff =
+                    Object.keys($whereStaff).length > 0
+                        ? { where: $whereStaff }
+                        : {};
+
+                let staff = await Staff.findAll({
+                    attributes: [
+                        "StaffID",
+                        "StaffNumber",
+                        "StaffGivenName",
+                        "StaffSurname",
+                    ],
+                    ...queryStaff,
+                    include: {
+                        attributes: ["OrganizationName"],
+                        model: Organization,
+                        as: "Organization",
+                        required: true,
+                    },
+                });
+
+                let staffIds = staff.map((s) => s.StaffID);
+
+                $where["ResponsibilityStaffID"] = {
+                    [Op.in]: staffIds,
+                };
+
+                let res = [];
+
+                // Date
+                let AIDate = {
+                    [Op.ne]: null,
+                };
+
+                let AnimalCreatedDatetime = {
+                    [Op.ne]: null,
+                };
+
+                let CheckupDate = {
+                    [Op.ne]: null,
+                };
+
+                let GiveBirthDate = {
+                    [Op.ne]: null,
+                };
+
+                // Date
+                if (req.query.StartDate) {
+                    AIDate = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+
+                    AnimalCreatedDatetime = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+
+                    CheckupDate = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+
+                    GiveBirthDate = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+                }
+
+                // Animal Type
+                $whereAnimal["AnimalTypeID"] = {
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                };
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["isActive"] = 1;
+
+                $where["AIDate"] = AIDate != null ? AIDate : undefined;
+                $where["isRemove"] = 0;
+
+                const query =
+                    Object.keys($where).length > 0 ? { where: $where } : {};
+
+                const queryAnimal =
+                    Object.keys($whereAnimal).length > 0
+                        ? { where: $whereAnimal }
+                        : {};
+
+                const ai = await AI.findAll({
+                    attributes: [
+                        "ResponsibilityStaffID",
+                        "AIID",
+                        "AnimalID",
+                        "AIDate",
+                    ],
+                    ...query,
+
+                    include: {
+                        // attributes: ["AnimalID"],
+                        model: Animal,
+                        as: "Animal",
+                        required: true,
+                        ...queryAnimal,
+                    },
+                });
+
+                const animal = await Animal.findAll({
+                    attributes: ["AnimalID", "CreatedUserID"],
+                    where: {
+                        CreatedUserID: { [Op.in]: staffIds },
+                        CreatedDatetime: AnimalCreatedDatetime,
+                        isRemove: 0,
+                        isActive: 1,
+                        AnimalTypeID: {
+                            [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                        },
+                    },
+                });
+
+                const pregnancyCheckup = await PregnancyCheckup.findAll({
+                    attributes: [
+                        "AnimalID",
+                        "ResponsibilityStaffID",
+                        "PregnancyCheckStatusID",
+                    ],
+                    where: {
+                        ResponsibilityStaffID: { [Op.in]: staffIds },
+                        CheckupDate: CheckupDate,
+                        isRemove: 0,
+                    },
+                    include: {
+                        attributes: ["AnimalID"],
+                        model: Animal,
+                        as: "Animal",
+                        required: true,
+                        where: {
+                            isActive: 1,
+                            AnimalTypeID: {
+                                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                            },
+                        },
+                    },
+                });
+
+                let giveBirth = await GiveBirth.findAll({
+                    attributes: [
+                        "AnimalID",
+                        "ResponsibilityStaffID",
+                        "ChildGender",
+                    ],
+                    where: {
+                        ResponsibilityStaffID: { [Op.in]: staffIds },
+                        GiveBirthDate: GiveBirthDate,
+                        isRemove: 0,
+                    },
+                    include: {
+                        attributes: ["AnimalID"],
+                        model: Animal,
+                        as: "Animal",
+                        required: true,
+                        where: {
+                            isActive: 1,
+                            AnimalTypeID: {
+                                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                            },
+                        },
+                    },
+                });
+
+                const animalMap = new Map();
+                animal.forEach((el) => {
+                    if (!animalMap.has(el.CreatedUserID)) {
+                        animalMap.set(el.CreatedUserID, []);
+                    }
+                    animalMap.get(el.CreatedUserID).push(el);
+                });
+
+                const aiMap = new Map();
+                ai.forEach((el) => {
+                    if (!aiMap.has(el.ResponsibilityStaffID)) {
+                        aiMap.set(el.ResponsibilityStaffID, []);
+                    }
+                    aiMap.get(el.ResponsibilityStaffID).push(el);
+                });
+
+                const pregnancyCheckupMap = new Map();
+                pregnancyCheckup.forEach((el) => {
+                    if (!pregnancyCheckupMap.has(el.ResponsibilityStaffID)) {
+                        pregnancyCheckupMap.set(el.ResponsibilityStaffID, []);
+                    }
+                    pregnancyCheckupMap.get(el.ResponsibilityStaffID).push(el);
+                });
+
+                const giveBirthMap = new Map();
+                giveBirth.forEach((el) => {
+                    if (!giveBirthMap.has(el.ResponsibilityStaffID)) {
+                        giveBirthMap.set(el.ResponsibilityStaffID, []);
+                    }
+                    giveBirthMap.get(el.ResponsibilityStaffID).push(el);
+                });
+
+                for (let s of staff) {
+                    let s_ai = aiMap.get(s.StaffID) || [];
+                    let s_pregnancyCheckup = [];
+                    let pregnancyStatus1 = [];
+                    let percent = null;
+                    let s_giveBirth = [];
+
+                    let uniqueAIs = [...new Set(s_ai.map((el) => el.AnimalID))];
+
+                    let s_animal = animalMap.get(s.StaffID) || [];
+
+                    s_animal = animal.filter((el) => {
+                        return el.CreatedUserID == s.StaffID;
+                    });
+
+                    s_ai = ai.filter((el) => {
+                        return el.ResponsibilityStaffID == s.StaffID;
+                    });
+
+                    s_pregnancyCheckup = pregnancyCheckup.filter((el) => {
+                        return el.ResponsibilityStaffID == s.StaffID;
+                    });
+
+                    pregnancyStatus1 = s_pregnancyCheckup.filter((el, idx) => {
+                        return el.PregnancyCheckStatusID == 1;
+                    });
+
+                    const seen = new Set();
+                    uniqueAIs = s_ai.filter((el, index) => {
+                        const duplicate = seen.has(el.AnimalID);
+                        seen.add(el.AnimalID);
+                        return !duplicate;
+                    });
+
+                    percent = parseFloat(
+                        (
+                            (pregnancyStatus1.length * 100) /
+                            s_pregnancyCheckup.length
+                        ).toFixed(2)
+                    );
+
+                    if (s_pregnancyCheckup.length == 0) {
+                        percent = "-";
+                    } else {
+                        if (pregnancyStatus1.length == 0) {
+                            percent = 0 + "%";
+                        } else {
+                            percent = percent + "%";
+                        }
+                    }
+
+                    let childM = 0;
+                    let childF = 0;
+
+                    s_giveBirth = giveBirth.filter((el) => {
+                        return el.ResponsibilityStaffID == s.StaffID;
+                    });
+
+                    if (giveBirth) {
+                        s_giveBirth.forEach((el, index) => {
+                            // ChildGender
+                            if (el.ChildGender != null) {
+                                let ChildGender = el.ChildGender.split(",");
+                                for (let cg of ChildGender) {
+                                    if (cg == "M") {
+                                        childM = childM + 1;
+                                    } else if (cg == "F") {
+                                        childF = childF + 1;
+                                    } else {
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    res.push({
+                        StaffNumber: s.StaffNumber,
+                        StaffFullName: `${s.StaffGivenName} ${s.StaffSurname}`,
+                        StaffOrganization: s.Organization.OrganizationName,
+                        r1: uniqueAIs.length,
+                        r2: s_ai.length,
+                        r3: s_animal.length,
+                        r4: s_pregnancyCheckup.length,
+                        r5: pregnancyStatus1.length,
+                        percent: percent,
+                        childM: childM,
+                        childF: childF,
+                        childT: childM + childF,
+                    });
+                }
+
+                // const animalMap = new Map();
+                // animal.forEach((el) => {
+                //     if (!animalMap.has(el.CreatedUserID)) {
+                //         animalMap.set(el.CreatedUserID, []);
+                //     }
+                //     animalMap.get(el.CreatedUserID).push(el);
+                // });
+
+                // const aiMap = new Map();
+                // ai.forEach((el) => {
+                //     if (!aiMap.has(el.ResponsibilityStaffID)) {
+                //         aiMap.set(el.ResponsibilityStaffID, []);
+                //     }
+                //     aiMap.get(el.ResponsibilityStaffID).push(el);
+                // });
+
+                // const pregnancyCheckupMap = new Map();
+                // pregnancyCheckup.forEach((el) => {
+                //     if (!pregnancyCheckupMap.has(el.ResponsibilityStaffID)) {
+                //         pregnancyCheckupMap.set(el.ResponsibilityStaffID, []);
+                //     }
+                //     pregnancyCheckupMap.get(el.ResponsibilityStaffID).push(el);
+                // });
+
+                // const giveBirthMap = new Map();
+                // giveBirth.forEach((el) => {
+                //     if (!giveBirthMap.has(el.ResponsibilityStaffID)) {
+                //         giveBirthMap.set(el.ResponsibilityStaffID, []);
+                //     }
+                //     giveBirthMap.get(el.ResponsibilityStaffID).push(el);
+                // });
+
+                // for (let s of staff1) {
+                //     const s_animal = animalMap.get(s.StaffID) || [];
+                //     const s_ai = aiMap.get(s.StaffID) || [];
+                //     const s_pregnancyCheckup =
+                //         pregnancyCheckupMap.get(s.StaffID) || [];
+                //     const pregnancyStatus1 = s_pregnancyCheckup.filter(
+                //         (el) => el.PregnancyCheckStatusID == 1
+                //     );
+
+                //     const uniqueAIs = [
+                //         ...new Set(s_ai.map((el) => el.AnimalID)),
+                //     ];
+
+                //     let percent = "-";
+                //     if (s_pregnancyCheckup.length > 0) {
+                //         percent =
+                //             pregnancyStatus1.length > 0
+                //                 ? `${(
+                //                       (pregnancyStatus1.length * 100) /
+                //                       s_pregnancyCheckup.length
+                //                   ).toFixed(2)}%`
+                //                 : "0%";
+                //     }
+
+                //     let childM = 0;
+                //     let childF = 0;
+
+                //     const s_giveBirth = giveBirthMap.get(s.StaffID) || [];
+                //     s_giveBirth.forEach((el) => {
+                //         if (el.ChildGender != null) {
+                //             const ChildGender = el.ChildGender.split(",");
+                //             ChildGender.forEach((cg) => {
+                //                 if (cg == "M") childM++;
+                //                 else if (cg == "F") childF++;
+                //             });
+                //         }
+                //     });
+
+                //     res.push({
+                //         StaffNumber: s.StaffNumber,
+                //         StaffFullName: `${s.StaffGivenName} ${s.StaffSurname}`,
+                //         StaffOrganization: s.Organization.OrganizationName,
+                //         r1: uniqueAIs.length,
+                //         r2: s_ai.length,
+                //         r3: s_animal.length,
+                //         r4: s_pregnancyCheckup.length,
+                //         r5: pregnancyStatus1.length,
+                //         percent: percent,
+                //         childM: childM,
+                //         childF: childF,
+                //         childT: childM + childF,
+                //     });
+                // }
+                // console.log("FREEDOM60");
 
                 resolve(res);
             } catch (error) {
@@ -4291,108 +4748,13 @@ const methods = {
         // report รายงาน สรุปตรวจท้อง
         return new Promise(async (resolve, reject) => {
             try {
+                let $whereOrganization = {};
                 let $where = {};
                 let $whereAnimal = {};
+                let $whereStaff = {};
                 let $whereFarm = {};
+
                 $whereFarm["isRemove"] = 0;
-
-                if (req.query.OrganizationID) {
-                    $whereFarm["OrganizationID"] = req.query.OrganizationID;
-                }
-
-                $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: req.query.AnimalTypeID,
-                };
-
-                let WhereProject = null;
-
-                if (req.query.Projects) {
-                    if (req.query.Projects != "[]") {
-                        WhereProject = {
-                            ProjectID: {
-                                [Op.in]: JSON.parse(req.query.Projects),
-                            },
-                        };
-                    }
-                }
-
-                let provinceIDArr = [];
-
-                if (!req.query.ProvinceID) {
-                    if (req.query.OrganizationZoneID) {
-                        const province = await Province.findAll({
-                            where: {
-                                OrganizationZoneID:
-                                    req.query.OrganizationZoneID,
-                            },
-                        });
-
-                        province.forEach((p) => {
-                            provinceIDArr.push(p.ProvinceID);
-                        });
-                    }
-
-                    if (req.query.AIZoneID) {
-                        provinceIDArr = [];
-                        const province = await Province.findAll({
-                            where: { AIZoneID: req.query.AIZoneID },
-                        });
-
-                        province.forEach((p) => {
-                            provinceIDArr.push(p.ProvinceID);
-                        });
-                    }
-                }
-
-                if (req.query.TumbolID) {
-                    $whereFarm["FarmTumbolID"] = req.query.TumbolID;
-                }
-
-                if (req.query.AmphurID) {
-                    $whereFarm["FarmAmphurID"] = req.query.AmphurID;
-                }
-
-                if (req.query.ProvinceID) {
-                    provinceIDArr = [req.query.ProvinceID];
-                }
-
-                if (provinceIDArr.length != 0) {
-                    $whereFarm["FarmProvinceID"] = { [Op.in]: provinceIDArr };
-                }
-
-                if (req.query.StaffID) {
-                    $where["ResponsibilityStaffID"] = req.query.StaffID;
-                }
-
-                $where["isActive"] = 1;
-                $where["isRemove"] = 0;
-
-                if (req.query.StartDate_Created) {
-                    //   $where["CheckupDate"] = {
-                    //     [Op.between]: [
-                    //       dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
-                    //       dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
-                    //     ],
-                    //   };
-                    // CONVERT(DATETIME,'2023-10-01')
-                    //   $where["CreatedDatetime"] = {
-                    //     fn('CONVERT',fn.col('checkin_datetime'), 'date')
-                    //   }
-                    // const parseDate = parseISO(req.query.EndDate_Created);
-                    //   $where["CreatedDatetime"] = {
-                    //     // [Op.gt]: fn("GETDATE"),
-                    //     // [Op.gt]: '2023-01-05',
-                    //     [Op.gt]: fn('date','2023-01-05'),
-                    // //   where: sequelize.where(sequelize.col('PregnancyCheckStatus.CreatedDatetime'),'>', sequelize.fn('year', '2016')),
-                    //     // [PregnancyCheckup].[CreatedDatetime] > N'2023-01-01 00:00:00.000 +07:00';"
-                    //     //   fn("GETDATE"),
-                    //     // dayjs(req.query.EndDate_Created).toISOString(),
-                    //     // fn("GETDATE")
-                    //     //   parseISO(req.query.StartDate_Created),
-                    //     //   parseISO(req.query.EndDate_Created)
-                    //     // dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
-                    //   };
-                }
 
                 if (req.query.StartDate) {
                     $where["CheckupDate"] = {
@@ -4403,32 +4765,127 @@ const methods = {
                     };
                 }
 
+                if (req.query.StartDate_Created) {
+                    $where["createdAt"] = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
+                            dayjs(req.query.EndDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
+                        ],
+                    };
+                }
+
+                // Org
+                if (req.query.StaffID) {
+                    $whereStaff["StaffID"] = req.query.StaffID;
+                } else if (req.query.OrganizationID) {
+                    $whereOrganization["OrganizationID"] =
+                        req.query.OrganizationID;
+                } else if (req.query.TumbolID) {
+                    $whereOrganization["OrganizationTumbolID"] =
+                        req.query.TumbolID;
+                } else if (req.query.AmphurID) {
+                    $whereOrganization["StaffAmphurID"] = req.query.AmphurID;
+                } else if (req.query.ProvinceID) {
+                    $whereOrganization["OrganizationProvinceID"] =
+                        req.query.ProvinceID;
+                } else {
+                    if (req.query.OrganizationAiZoneID) {
+                        $whereOrganization["OrganizationAiZoneID"] =
+                            req.query.OrganizationAiZoneID;
+                    } else {
+                        $whereOrganization["OrganizationZoneID"] =
+                            req.query.OrganizationZoneID;
+                    }
+                }
+
+                if (!req.query.StaffID) {
+                    $whereOrganization["isActive"] = 1;
+                    $whereOrganization["isRemove"] = 0;
+
+                    const queryOrganization =
+                        Object.keys($whereOrganization).length > 0
+                            ? { where: $whereOrganization }
+                            : {};
+
+                    let organization = await Organization.findAll({
+                        ...queryOrganization,
+                    });
+
+                    let organizationIds = organization.map(
+                        (org) => org.OrganizationID
+                    );
+
+                    $whereStaff["StaffOrganizationID"] = {
+                        [Op.in]: organizationIds,
+                    };
+                }
+
+                // Query Staff
+                $whereStaff["isRemove"] = 0;
+                $whereStaff["StaffStatus"] = {
+                    [Op.notIn]: ["ลาออก", "ตาย"],
+                };
+                const queryStaff =
+                    Object.keys($whereStaff).length > 0
+                        ? { where: $whereStaff }
+                        : {};
+
+                let staff = await Staff.findAll({
+                    ...queryStaff,
+                });
+
+                let staffIds = staff.map((s) => s.StaffID);
+                $where["ResponsibilityStaffID"] = {
+                    [Op.in]: staffIds,
+                };
+
+                // Animal Type
+                $whereAnimal["AnimalTypeID"] = {
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                };
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["isActive"] = 1;
+
+                $where["isActive"] = 1;
+                $where["isRemove"] = 0;
+
+                // Project
+                let WhereProject = null;
+                if (req.query.Projects) {
+                    if (req.query.Projects != "[]") {
+                        WhereProject = {
+                            ProjectID: {
+                                [Op.in]: JSON.parse(req.query.Projects),
+                            },
+                        };
+                    }
+                }
+
+                // Query
+                $whereFarm["isRemove"] = 0;
+
                 const query =
                     Object.keys($where).length > 0 ? { where: $where } : {};
-
                 const queryFarm =
                     Object.keys($whereFarm).length > 0
                         ? { where: $whereFarm }
                         : {};
+                const queryAnimal =
+                    Object.keys($whereAnimal).length > 0
+                        ? { where: $whereAnimal }
+                        : {};
 
                 const preg = await PregnancyCheckup.findAll({
                     ...query,
-                    //   where:where(fn('date', col('CreatedDatetime')), '<=', '2016-10-10'),
-                    //   where: where(
-                    //     col("CreatedDatetime"),
-                    //     '>',
-                    //     "2016-10-10"
-                    //   ),
                     include: [
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                                isRemove: 0,
-                            },
+                            ...queryAnimal,
                             include: [
                                 {
                                     model: Farm,
@@ -4486,10 +4943,6 @@ const methods = {
                         },
                     ],
                 });
-
-                // let animal = preg.map((x) => {
-                //   return x.Animal != null && x.AI != null;
-                // });
 
                 let animal = preg
                     .filter((x) => {
@@ -6217,7 +6670,7 @@ const methods = {
         });
     },
 
-    report21(req) {
+    report21Old(req) {
         // report รายงานการผสมเทียม ผท6
         return new Promise(async (resolve, reject) => {
             try {
@@ -6257,10 +6710,37 @@ const methods = {
                 //     $where["ResponsibilityStaffID"] = req.query.StaffID;
                 // }
 
+                $whereStaff["isRemove"] = 0;
+                $whereStaff["StaffStatus"] = {
+                    [Op.and]: [
+                        {
+                            [Op.not]: "ลาออก",
+                        },
+                        {
+                            [Op.not]: "ตาย",
+                        },
+                    ],
+                };
+
+                $whereStaff["OrganizationProvinceID"] = Number(
+                    req.query.ProvinceID
+                );
+
                 if (req.query.StaffID) {
                     let staff = await Staff.findOne({
                         where: {
                             StaffID: req.query.StaffID,
+                            isRemove: 0,
+                            StaffStatus: {
+                                [Op.and]: [
+                                    {
+                                        [Op.not]: "ลาออก",
+                                    },
+                                    {
+                                        [Op.not]: "ตาย",
+                                    },
+                                ],
+                            },
                         },
                     });
                     $whereStaff["StaffNumber"] = staff.StaffNumber;
@@ -6354,9 +6834,13 @@ const methods = {
                             },
                             include: [
                                 {
+                                    require: true,
                                     model: Farm,
                                     as: "AnimalFarm",
-                                    ...queryFarm,
+                                    // ...queryFarm,
+                                    where: {
+                                        FarmProvinceID: 63,
+                                    },
                                     include: [
                                         {
                                             model: Project,
@@ -6429,6 +6913,7 @@ const methods = {
                         {
                             model: Staff,
                             ...queryStaff,
+                            require: true,
                         },
                         {
                             model: PregnancyCheckup,
@@ -6446,6 +6931,10 @@ const methods = {
                         },
                     ],
                 });
+
+                console.log(queryFarm);
+                console.log(ai.length);
+                console.log("FREEDOM");
 
                 let breed = [];
 
@@ -6787,6 +7276,417 @@ const methods = {
 
                     // names must be equal
                     return 0;
+                });
+
+                resolve({
+                    data: breed,
+                });
+            } catch (error) {
+                reject(ErrorNotFound(error));
+            }
+        });
+    },
+
+    report21(req) {
+        // report รายงานการผสมเทียม ผท6
+        return new Promise(async (resolve, reject) => {
+            try {
+                let $whereOrganization = {};
+                let $where = {};
+                let $whereAnimal = {};
+                let $whereStaff = {};
+                let $whereFarm = {};
+                //
+                $where["isRemove"] = 0;
+
+                if (req.query.StartDate) {
+                    $where["AIDate"] = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+                }
+
+                if (req.query.StartDate_Created) {
+                    $where["createdAt"] = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
+                            dayjs(req.query.EndDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
+                        ],
+                    };
+                }
+
+                // Org
+                if (req.query.StaffID) {
+                    $whereStaff["StaffID"] = req.query.StaffID;
+                } else if (req.query.OrganizationID) {
+                    $whereOrganization["OrganizationID"] =
+                        req.query.OrganizationID;
+                } else if (req.query.TumbolID) {
+                    $whereOrganization["OrganizationTumbolID"] =
+                        req.query.TumbolID;
+                } else if (req.query.AmphurID) {
+                    $whereOrganization["OrganizationAmphurID"] =
+                        req.query.AmphurID;
+                } else if (req.query.ProvinceID) {
+                    $whereOrganization["OrganizationProvinceID"] = Number(
+                        req.query.ProvinceID
+                    );
+                } else {
+                    if (req.query.OrganizationAiZoneID) {
+                        $whereOrganization["OrganizationAiZoneID"] =
+                            req.query.OrganizationAiZoneID;
+                    } else {
+                        $whereOrganization["OrganizationZoneID"] =
+                            req.query.OrganizationZoneID;
+                    }
+                }
+
+                if (!req.query.StaffID) {
+                    $whereOrganization["isActive"] = 1;
+                    $whereOrganization["isRemove"] = 0;
+
+                    const queryOrganization =
+                        Object.keys($whereOrganization).length > 0
+                            ? { where: $whereOrganization }
+                            : {};
+
+                    let organization = await Organization.findAll({
+                        ...queryOrganization,
+                    });
+
+                    let organizationIds = organization.map(
+                        (org) => org.OrganizationID
+                    );
+
+                    $whereStaff["StaffOrganizationID"] = {
+                        [Op.in]: organizationIds,
+                    };
+                }
+
+                // Query Staff
+                $whereStaff["isRemove"] = 0;
+                $whereStaff["isActive"] = 1;
+                $whereStaff["StaffNumber"] = {
+                    [Op.not]: null,
+                };
+                $whereStaff["StaffStatus"] = {
+                    [Op.notIn]: ["ลาออก", "ตาย"],
+                };
+                const queryStaff =
+                    Object.keys($whereStaff).length > 0
+                        ? { where: $whereStaff }
+                        : {};
+
+                let staff = await Staff.findAll({
+                    attributes: [
+                        "StaffID",
+                        "StaffNumber",
+                        "StaffGivenName",
+                        "StaffSurname",
+                    ],
+                    ...queryStaff,
+                });
+
+                let staffIds = staff.map((s) => s.StaffID);
+                $where["ResponsibilityStaffID"] = {
+                    [Op.in]: staffIds,
+                };
+
+                // Animal Type
+                $whereAnimal["AnimalTypeID"] = {
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                };
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["isActive"] = 1;
+
+                // Project
+                let WhereProject = null;
+                if (req.query.Projects) {
+                    if (req.query.Projects != "[]") {
+                        WhereProject = {
+                            ProjectID: {
+                                [Op.in]: JSON.parse(req.query.Projects),
+                            },
+                        };
+                    }
+                }
+
+                // Query
+                $whereFarm["isRemove"] = 0;
+
+                const query =
+                    Object.keys($where).length > 0 ? { where: $where } : {};
+                const queryFarm =
+                    Object.keys($whereFarm).length > 0
+                        ? { where: $whereFarm }
+                        : {};
+                const queryAnimal =
+                    Object.keys($whereAnimal).length > 0
+                        ? { where: $whereAnimal }
+                        : {};
+
+                let ai = await AI.findAll({
+                    // attributes: [
+                    //     "ResponsibilityStaffID",
+                    //     "AIID",
+                    //     "AnimalID",
+                    //     "AIDate",
+                    // ],
+                    ...query,
+                    include: [
+                        {
+                            model: Animal,
+                            as: "Animal",
+                            ...queryAnimal,
+                            include: [
+                                {
+                                    require: true,
+                                    model: Farm,
+                                    as: "AnimalFarm",
+                                    ...queryFarm,
+                                    include: [
+                                        { model: Project, where: WhereProject },
+                                        { model: Province, as: "Province" },
+                                        { model: Amphur, as: "Amphur" },
+                                        { model: Tumbol, as: "Tumbol" },
+                                    ],
+                                },
+                                { model: AnimalStatus, as: "AnimalStatus" },
+                                { model: AnimalBreed, as: "AnimalBreed1" },
+                                { model: AnimalBreed, as: "AnimalBreed2" },
+                            ],
+                        },
+                        {
+                            model: Semen,
+                            as: "Semen",
+                            include: [
+                                { model: AnimalBreed, as: "AnimalBreed1" },
+                                { model: AnimalBreed, as: "AnimalBreed2" },
+                            ],
+                        },
+                        {
+                            model: PregnancyCheckup,
+                            required: false,
+                            include: [
+                                {
+                                    model: PregnancyCheckStatus,
+                                    as: "PregnancyCheckStatus",
+                                },
+                            ],
+                        },
+                        {
+                            model: GiveBirth,
+                            required: false,
+                        },
+                        {
+                            model: Staff,
+                            require: true,
+                        },
+                    ],
+                });
+
+                let breed = [];
+
+                for (let i = 0; i < ai.length; i++) {
+                    let b1 = {};
+                    if (ai[i].SemenID != null) {
+                        b1 = ai[i].Semen;
+                    } else if (ai[i].BreederAnimalID != null) {
+                        let father = await Animal.findOne({
+                            where: { AnimalID: ai[i].BreederAnimalID },
+                        });
+                        b1["SemenBreedAll"] = father.AnimalBreedAll;
+                        b1["AnimalBreedID1"] = father.AnimalBreedID1;
+                        b1["SemenNumber"] = father.AnimalEarID;
+                    } else {
+                        b1 = null;
+                    }
+
+                    if (ai[i].Animal.AnimalBreedID1 != null && b1 != null) {
+                        let checkBreed = breed.find(
+                            (b) => b1.AnimalBreedID1 == b.AnimalBreedID
+                        );
+
+                        let pregName = "";
+                        if (ai[i].PregnancyCheckups.length != 0) {
+                            let pc =
+                                ai[i].PregnancyCheckups[
+                                    ai[i].PregnancyCheckups.length - 1
+                                ];
+                            pregName =
+                                pc.PregnancyCheckStatus
+                                    .PregnancyCheckStatusName;
+                        }
+
+                        if (checkBreed) {
+                            checkBreed.AnimalID.push({
+                                AnimalID: ai[i].Animal.AnimalID,
+                                FarmIdentificationNumber:
+                                    ai[i].Animal.AnimalFarm
+                                        .FarmIdentificationNumber,
+                                FarmName: ai[i].Animal.AnimalFarm.FarmName,
+                                AnimalEarID: ai[i].Animal.AnimalEarID,
+                                AnimalName: ai[i].Animal.AnimalName,
+                                AnimalBreedAll:
+                                    ai[i].Animal.toJSON().AnimalBreedAll,
+                                AnimalStatusName:
+                                    ai[i].Animal.AnimalStatus?.AnimalStatusName,
+                                SemenNumber: b1.SemenNumber,
+                                SemenBreedAll: b1.AnimalBreedAll,
+                                AnimalPar: ai[i].PAR > 0 ? ai[i].PAR : 0,
+                                AIDate: ai[i].AIDate
+                                    ? dayjs(ai[i].AIDate)
+                                          .locale("th")
+                                          .format("DD MMM BB")
+                                    : "",
+                                AIDateReal: ai[i].AIDate,
+                                ResponsibilityStaffName:
+                                    ai[i].Staff?.StaffGivenName +
+                                    " " +
+                                    ai[i].Staff?.StaffSurname,
+                                PregnancyCheckStatusName: pregName,
+                                GiveBirthDate: ai[i].GiveBirth
+                                    ? dayjs(ai[i].GiveBirth.GiveBirthDate)
+                                          .locale("th")
+                                          .format("DD MMM BB")
+                                    : "-",
+                                ChildGender: ai[i].GiveBirth
+                                    ? ai[i].GiveBirth.ChildGender
+                                    : "-",
+                            });
+                            checkBreed.FarmID.push(ai[i].Animal.FarmID);
+                        } else {
+                            breed.push({
+                                AnimalBreedID: b1.AnimalBreedID1,
+                                AnimalID: [
+                                    {
+                                        AnimalID: ai[i].Animal.AnimalID,
+                                        FarmIdentificationNumber:
+                                            ai[i].Animal.AnimalFarm
+                                                .FarmIdentificationNumber,
+                                        FarmName:
+                                            ai[i].Animal.AnimalFarm.FarmName,
+                                        AnimalEarID: ai[i].Animal.AnimalEarID,
+                                        AnimalName: ai[i].Animal.AnimalName,
+                                        AnimalBreedAll:
+                                            ai[i].Animal.toJSON()
+                                                .AnimalBreedAll,
+                                        AnimalStatusName:
+                                            ai[i].Animal.AnimalStatus
+                                                ?.AnimalStatusName,
+                                        SemenNumber: b1?.SemenNumber,
+                                        SemenBreedAll: b1?.AnimalBreedAll,
+                                        AnimalPar:
+                                            ai[i].PAR > 0 ? ai[i].PAR : 0,
+                                        AIDate: ai[i].AIDate
+                                            ? dayjs(ai[i].AIDate)
+                                                  .locale("th")
+                                                  .format("DD MMM BB")
+                                            : "",
+                                        AIDateReal: ai[i].AIDate,
+                                        ResponsibilityStaffName:
+                                            ai[i].Staff?.StaffGivenName +
+                                            " " +
+                                            ai[i].Staff?.StaffSurname,
+                                        PregnancyCheckStatusName: pregName,
+                                        GiveBirthDate: ai[i].GiveBirth
+                                            ? dayjs(
+                                                  ai[i].GiveBirth.GiveBirthDate
+                                              )
+                                                  .locale("th")
+                                                  .format("DD MMM BB")
+                                            : "-",
+                                        ChildGender: ai[i].GiveBirth
+                                            ? ai[i].GiveBirth.ChildGender
+                                            : "-",
+                                    },
+                                ],
+                                FarmID: [ai[i].Animal.FarmID],
+                            });
+                        }
+                    }
+                }
+
+                let breedAll = await AnimalBreed.findAll({
+                    raw: true,
+                });
+
+                breed = breed.map((x) => {
+                    let AnimalBreed = breedAll.find(
+                        (ba) => x.AnimalBreedID == ba.AnimalBreedID
+                    );
+
+                    x.AnimalRealCount = x.AnimalID.length;
+
+                    let i = [];
+                    x.AnimalID = x.AnimalID.filter((v) => {
+                        if (i.includes(v.AnimalID)) {
+                            return false;
+                        }
+                        i.push(v.AnimalID);
+                        return true;
+                    });
+
+                    x.AnimalCount = i.length;
+
+                    let uniqFarm = [...new Set(x.FarmID)];
+                    x.FarmID = uniqFarm;
+                    x.FarmCount = x.FarmID.length;
+                    x.FarmID = undefined;
+
+                    if (AnimalBreed) {
+                        x.AnimalBreedName =
+                            AnimalBreed.AnimalBreedName +
+                            " (" +
+                            AnimalBreed.AnimalBreedShortName +
+                            ")";
+                    }
+
+                    x.AnimalID.sort((a, b) => {
+                        if (a.AIDateReal < b.AIDateReal) {
+                            return -1;
+                        }
+                        if (a.AIDateReal > b.AIDateReal) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+
+                    return x;
+                });
+
+                breed.sort((a, b) => {
+                    if (a.AnimalRealCount > b.AnimalRealCount) {
+                        return -1;
+                    }
+                    if (a.AnimalRealCount < b.AnimalRealCount) {
+                        return 1;
+                    }
+
+                    return 0;
+                });
+
+                // นับจำนวนการตรวจสถานะการตั้งท้อง
+                breed.forEach((b) => {
+                    b.PregnantCount = b.AnimalID.filter(
+                        (a) => a.PregnancyCheckStatusName === "ท้อง"
+                    ).length;
+                    b.NotPregnantCount = b.AnimalID.filter(
+                        (a) => a.PregnancyCheckStatusName === "ไม่ท้อง"
+                    ).length;
+                    b.WaitingForRetestCount = b.AnimalID.filter(
+                        (a) => a.PregnancyCheckStatusName === "รอตรวจซ้ำ"
+                    ).length;
+                    b.NotCheckedCount = b.AnimalID.filter(
+                        (a) => a.PregnancyCheckStatusName === ""
+                    ).length;
                 });
 
                 resolve({
