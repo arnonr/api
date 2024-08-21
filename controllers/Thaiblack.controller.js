@@ -20,6 +20,18 @@ const methods = {
     }
   },
 
+  async onInsertMulti(req, res) {
+    try {
+      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+      req.body.CreatedUserID = decoded.id;
+      let result = await Service.insertMulti(req.body);
+      res.success(result, 201);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+
   async onInsert(req, res) {
     try {
       const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
