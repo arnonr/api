@@ -1,7 +1,7 @@
 const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models"),
-    { Op, literal, fn, DataTypes } = require("sequelize"),
+    { Op, literal, fn, DataTypes, col } = require("sequelize"),
     sequelize = require("sequelize");
 
 const dayjs = require("dayjs");
@@ -1265,24 +1265,43 @@ const methods = {
                         "AnimalID",
                         "ResponsibilityStaffID",
                         "PregnancyCheckStatusID",
+                        "TimeNo",
+                        [col("AI.PAR"), "PAR"],
                     ],
                     where: {
                         ResponsibilityStaffID: { [Op.in]: staffIds },
                         CheckupDate: CheckupDate,
                         isRemove: 0,
-                    },
-                    include: {
-                        attributes: ["AnimalID"],
-                        model: Animal,
-                        as: "Animal",
-                        required: true,
-                        where: {
-                            isActive: 1,
-                            AnimalTypeID: {
-                                [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                            },
+                        TimeNo: {
+                            [Op.in]: literal(`(
+                                SELECT MAX(pc.TimeNo) 
+                                FROM PregnancyCheckup AS pc 
+                                INNER JOIN AI AS ai ON pc.AnimalID = ai.AnimalID 
+                                WHERE pc.AnimalID = PregnancyCheckup.AnimalID 
+                                AND ai.Par = AI.Par
+                            )`),
                         },
                     },
+                    include: [
+                        {
+                            attributes: ["AnimalID"],
+                            model: Animal,
+                            as: "Animal",
+                            required: true,
+                            where: {
+                                isActive: 1,
+                                AnimalTypeID: {
+                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
+                                },
+                            },
+                        },
+                        {
+                            attributes: [],
+                            model: AI,
+                            as: "AI",
+                            required: true,
+                        },
+                    ], 
                 });
 
                 let giveBirth = await GiveBirth.findAll({
