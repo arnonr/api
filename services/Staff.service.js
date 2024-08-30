@@ -185,6 +185,7 @@ const methods = {
         }
 
         if (req.query.isActive) $where["isActive"] = req.query.isActive;
+        $where["isActive"] = 1;
         if (req.query.CreatedUserID)
             $where["CreatedUserID"] = req.query.CreatedUserID;
         if (req.query.UpdatedUserID)
@@ -1153,9 +1154,7 @@ const methods = {
         const _q = await methods.scopeSearch(req, limit, offset);
         return new Promise(async (resolve, reject) => {
             try {
-                Promise.all([
-                    db.findAll({ ..._q.query }),
-                ])
+                Promise.all([db.findAll({ ..._q.query })])
                     .then((result) => {
                         let rows = result[0].map((x) => {
                             return {
