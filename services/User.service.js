@@ -517,7 +517,7 @@ const methods = {
                     where: {
                         Username: data.Username,
                         isRemove: 0,
-                        isActive: 1,
+                        // isActive: 1,
                     },
                     include: [
                         { all: true },
@@ -540,7 +540,7 @@ const methods = {
                         where: {
                             StaffMobilePhone: data.Username,
                             isRemove: 0,
-                            isActive: 1,
+                            // isActive: 1,
                         },
                     });
 
