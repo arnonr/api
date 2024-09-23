@@ -1190,7 +1190,7 @@ const methods = {
                     [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
                 $whereAnimal["isRemove"] = 0;
-                $whereAnimal["isActive"] = 1;
+                // $whereAnimal["isActive"] = 1;
 
                 $where["AIDate"] = AIDate != null ? AIDate : undefined;
                 $where["isRemove"] = 0;
@@ -1219,7 +1219,13 @@ const methods = {
                         required: true,
                         ...queryAnimal,
                     },
-                });
+                }); 
+
+
+                console.log(query)
+                // console.log(ai)
+                console.log(ai.length)
+
 
                 // staffIds
                 const users = await User.findAll({
@@ -1239,16 +1245,15 @@ const methods = {
                     attributes: ["AnimalID", "CreatedUserID"],
                     where: {
                         CreatedUserID: { [Op.in]: userIds },
+                        // userIds
                         CreatedDatetime: AnimalCreatedDatetime,
                         isRemove: 0,
-                        isActive: 1,
+                        // isActive: 1,
                         AnimalTypeID: {
                             [Op.in]: JSON.parse(req.query.AnimalTypeID),
                         },
                     },
                 });
-
-                console.log(userStaffIds);
 
                 const animal = animal1.map((a) => {
                     let staff = userStaffIds.find((s) => {
@@ -1257,8 +1262,6 @@ const methods = {
                     a.StaffID = staff.StaffID;
                     return a;
                 });
-
-                // console.log(animal)
 
                 const pregnancyCheckup = await PregnancyCheckup.findAll({
                     attributes: [
@@ -1301,7 +1304,7 @@ const methods = {
                             as: "AI",
                             required: true,
                         },
-                    ], 
+                    ],
                 });
 
                 let giveBirth = await GiveBirth.findAll({
@@ -1376,6 +1379,21 @@ const methods = {
                         return el.StaffID == s.StaffID;
                     });
 
+                    let s_animal_1 = s_animal.map((el) => {
+                        return el.AnimalID;
+                    });
+
+                    // const seenAnimalIDs = new Set();
+
+                    // s_animal = s_animal.filter((el) => {
+                    //     if (seenAnimalIDs.has(el.AnimalID)) {
+                    //         return false;
+                    //     } else {
+                    //         seenAnimalIDs.add(el.AnimalID);
+                    //         return true;
+                    //     }
+                    // });
+
                     s_ai = ai.filter((el) => {
                         return el.ResponsibilityStaffID == s.StaffID;
                     });
@@ -1442,6 +1460,7 @@ const methods = {
                         StaffOrganization: s.Organization.OrganizationName,
                         r1: uniqueAIs.length,
                         r2: s_ai.length,
+                        r3_animal: s_animal_1,
                         r3: s_animal.length,
                         r4: s_pregnancyCheckup.length,
                         r5: pregnancyStatus1.length,
