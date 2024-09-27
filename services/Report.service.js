@@ -1219,13 +1219,9 @@ const methods = {
                         required: true,
                         ...queryAnimal,
                     },
-                }); 
+                });
 
-
-                console.log(query)
                 // console.log(ai)
-                console.log(ai.length)
-
 
                 // staffIds
                 const users = await User.findAll({
@@ -1263,7 +1259,10 @@ const methods = {
                     return a;
                 });
 
-                const pregnancyCheckup = await PregnancyCheckup.findAll({
+                //                 PregnancyCheckup.ResponsibilityStaffID,
+                //   COUNT ( DISTINCT PregnancyCheckup.AnimalID ) CountPregnancyCheckupAnimal
+
+                let pregnancyCheckup = await PregnancyCheckup.findAll({
                     attributes: [
                         "AnimalID",
                         "ResponsibilityStaffID",
@@ -1281,7 +1280,7 @@ const methods = {
                                 FROM PregnancyCheckup AS pc 
                                 INNER JOIN AI AS ai ON pc.AnimalID = ai.AnimalID 
                                 WHERE pc.AnimalID = PregnancyCheckup.AnimalID 
-                                AND ai.Par = AI.Par
+                                AND ai.Par = AI.Par  AND pc.ResponsibilityStaffID  IN (${staffIds})
                             )`),
                         },
                     },
@@ -1292,7 +1291,8 @@ const methods = {
                             as: "Animal",
                             required: true,
                             where: {
-                                isActive: 1,
+                                // isActive: 1,
+                                isRemove: 0,
                                 AnimalTypeID: {
                                     [Op.in]: JSON.parse(req.query.AnimalTypeID),
                                 },
@@ -1305,7 +1305,23 @@ const methods = {
                             required: true,
                         },
                     ],
+                    // group: ['PregnancyCheckup.AnimalID'], // Add this line to group by AnimalID
                 });
+
+                //    pregnancyCheckup
+                // Remove duplicates based on AnimalID
+                const uniquePregnancyCheckup = [];
+                const seenAnimalIDs = new Set();
+
+                pregnancyCheckup.forEach((item) => {
+                    if (!seenAnimalIDs.has(item.AnimalID)) {
+                        seenAnimalIDs.add(item.AnimalID);
+                        uniquePregnancyCheckup.push(item);
+                    }
+                });
+
+                pregnancyCheckup = uniquePregnancyCheckup;
+
 
                 let giveBirth = await GiveBirth.findAll({
                     attributes: [
