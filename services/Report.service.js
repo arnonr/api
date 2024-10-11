@@ -1322,7 +1322,6 @@ const methods = {
 
                 pregnancyCheckup = uniquePregnancyCheckup;
 
-
                 let giveBirth = await GiveBirth.findAll({
                     attributes: [
                         "AnimalID",
@@ -5025,10 +5024,7 @@ const methods = {
                     ],
                 });
 
-
-                console.log(preg.length)
-
-            
+                console.log(preg.length);
 
                 let animal = preg
                     .filter((x) => {
@@ -5189,7 +5185,6 @@ const methods = {
 
                     return x;
                 });
-
 
                 breed.sort((a, b) => {
                     if (a.AnimalRealCount > b.AnimalRealCount) {
@@ -5412,11 +5407,10 @@ const methods = {
                     ],
                 });
 
-
-                console.log(preg.length)
+                console.log(preg.length);
 
                 resolve({
-                    data:preg,
+                    data: preg,
                 });
 
                 let animal = preg
@@ -5578,7 +5572,6 @@ const methods = {
 
                     return x;
                 });
-
 
                 breed.sort((a, b) => {
                     if (a.AnimalRealCount > b.AnimalRealCount) {
@@ -7979,8 +7972,34 @@ const methods = {
                     } else if (ai[i].BreederAnimalID != null) {
                         let father = await Animal.findOne({
                             where: { AnimalID: ai[i].BreederAnimalID },
+                            include: [
+                                {
+                                    model: AnimalBreed,
+                                    as: "AnimalBreed1",
+                                },
+                                {
+                                    model: AnimalBreed,
+                                    as: "AnimalBreed2",
+                                },
+                                {
+                                    model: AnimalBreed,
+                                    as: "AnimalBreed3",
+                                },
+                                {
+                                    model: AnimalBreed,
+                                    as: "AnimalBreed4",
+                                },
+                                {
+                                    model: AnimalBreed,
+                                    as: "AnimalBreed5",
+                                },
+                            ],
                         });
-                        b1["SemenBreedAll"] = father.AnimalBreedAll;
+                        //
+                        console.log(father.toJSON().AnimalBreedAll);
+                        console.log(father.AnimalBreedID1);
+                        //
+                        b1["AnimalBreedAll"] = father.toJSON().AnimalBreedAll;
                         b1["AnimalBreedID1"] = father.AnimalBreedID1;
                         b1["SemenNumber"] = father.AnimalEarID;
                     } else {
@@ -8017,7 +8036,7 @@ const methods = {
                                 AnimalStatusName:
                                     ai[i].Animal.AnimalStatus?.AnimalStatusName,
                                 SemenNumber: b1.SemenNumber,
-                                SemenBreedAll: b1.AnimalBreedAll,
+                                SemenBreedAll: b1?.AnimalBreedAll,
                                 AnimalPar: ai[i].PAR > 0 ? ai[i].PAR : 0,
                                 AIDate: ai[i].AIDate
                                     ? dayjs(ai[i].AIDate)
@@ -8041,6 +8060,7 @@ const methods = {
                             });
                             checkBreed.FarmID.push(ai[i].Animal.FarmID);
                         } else {
+                            console.log(b1)
                             breed.push({
                                 AnimalBreedID: b1.AnimalBreedID1,
                                 AnimalID: [
