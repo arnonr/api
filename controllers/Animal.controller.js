@@ -213,6 +213,25 @@ const methods = {
       res.error(error);
     }
   },
+
+
+  async onGetByFarmCode(req, res) {
+    try {
+      req.body.GetUserID = 1;
+      if(req.query.FarmCode == null){
+        throw new Error("FarmCode is required");
+      }
+
+
+
+      let result = await Service.findByFarmCode(req);
+      res.success(result);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+
 };
 
 module.exports = { ...methods };

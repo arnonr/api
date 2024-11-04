@@ -3530,6 +3530,219 @@ const methods = {
         return { query: query };
     },
 
+    scopeSearch2(req, limit, offset) {
+        // Where
+        let $where = {};
+
+
+
+
+        if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
+
+        if (req.query.AnimalIdentificationID)
+            $where["AnimalIdentificationID"] = {
+                [Op.like]: req.query.AnimalIdentificationID,
+            };
+
+        if (req.query.AnimalIDArray) {
+            $where["AnimalID"] = {
+                [Op.in]: JSON.parse(req.query.AnimalIDArray),
+            };
+        }
+
+        // if (req.query.GetUserID)
+        // $where["AnimalMotherID"] = req.query.GetUserID;
+
+        if (req.query.ProductionStatusID)
+            $where["ProductionStatusID"] = req.query.ProductionStatusID;
+
+        if (req.query.AnimalStatusID)
+            $where["AnimalStatusID"] = req.query.AnimalStatusID;
+
+        if (req.query.AnimalNationalID)
+            $where["AnimalNationalID"] = {
+                [Op.like]: "%" + req.query.AnimalNationalID + "%",
+            };
+
+        if (req.query.AnimalEarID)
+            $where["AnimalEarID"] = {
+                [Op.like]: "%" + req.query.AnimalEarID + "%",
+            };
+
+        if (req.query.AnimalMicrochip)
+            $where["AnimalMicrochip"] = {
+                [Op.like]: "%" + req.query.AnimalMicrochip + "%",
+            };
+
+        if (req.query.AnimalSexID)
+            $where["AnimalSexID"] = req.query.AnimalSexID;
+
+        if (req.query.AnimalTypeID)
+            $where["AnimalTypeID"] = {
+                [Op.in]: JSON.parse(req.query.AnimalTypeID),
+            };
+
+        if (req.query.AnimalName)
+            $where["AnimalName"] = {
+                [Op.like]: "%" + req.query.AnimalName + "%",
+            };
+
+        if (req.query.AnimalFirstBreed)
+            $where["AnimalFirstBreed"] = req.query.AnimalFirstBreed;
+        if (req.query.AnimalFatherID)
+            $where["AnimalFatherID"] = req.query.AnimalFatherID;
+        if (req.query.AnimalMotherID)
+            $where["AnimalMotherID"] = req.query.AnimalMotherID;
+
+        if (req.query.AnimalBornType)
+            $where["AnimalBornType"] = req.query.AnimalBornType;
+        if (req.query.AnimalBornTypeID)
+            $where["AnimalBornTypeID"] = req.query.AnimalBornTypeID;
+        if (req.query.AnimalSource)
+            $where["AnimalBornTypeID"] = req.query.AnimalSource;
+        if (req.query.SourceFarmID)
+            $where["SourceFarmID"] = req.query.SourceFarmID;
+        if (req.query.OrganizationID)
+            $where["OrganizationID"] = req.query.OrganizationID;
+        if (req.query.OrganizationZoneID)
+            $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
+
+        // Breed
+
+        // ช่วงวันเกิด
+        if (req.query.AnimalBirthDateStart) {
+            $where["AnimalBirthDate"] = {
+                [Op.between]: [
+                    req.query.AnimalBirthDateStart,
+                    req.query.AnimalBirthDateEnd,
+                ],
+            };
+        }
+
+        // ProjectID
+        let WhereProject = null;
+        if (req.query.ProjectID) {
+            if (req.query.ProjectID != "[]") {
+                WhereProject = {
+                    ProjectID: {
+                        [Op.in]: JSON.parse(req.query.ProjectID),
+                    },
+                };
+            }
+        }
+
+        let WhereFarm = {};
+        
+        WhereFarm["FarmIdentificationNumber"] = req.query.FarmCode;
+
+        if (req.query.FarmProvinceID) {
+            WhereFarm["FarmProvinceID"] = req.query.FarmProvinceID;
+        }
+
+        if (req.query.FarmAmphurID) {
+            WhereFarm["FarmAmphurID"] = req.query.FarmAmphurID;
+        }
+
+        if (req.query.FarmTumbolID) {
+            WhereFarm["FarmTumbolID"] = req.query.FarmTumbolID;
+        }
+
+        if (req.query.FarmOrganizationID) {
+            WhereFarm["OrganizationID"] = req.query.FarmOrganizationID;
+        }
+
+        if (req.query.FarmAIZoneID) {
+            WhereFarm["AIZoneID"] = req.query.FarmAIZoneID;
+        }
+
+        if (req.query.FarmOrganizationZoneID) {
+            WhereFarm["OrganizationZoneID"] = req.query.FarmOrganizationZoneID;
+        }
+
+        // FarmAIZoneID
+        $where["isActive"] = 1;
+        if (req.query.isActive) $where["isActive"] = req.query.isActive;
+
+        if (req.query.CreatedUserID)
+            $where["CreatedUserID"] = req.query.CreatedUserID;
+        if (req.query.UpdatedUserID)
+            $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+        $where["isRemove"] = 0;
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        // Order
+        $order = [["AnimalID", "ASC"]];
+        if (req.query.orderByField && req.query.orderBy)
+            $order = [
+                [
+                    req.query.orderByField,
+                    req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+                ],
+            ];
+        query["order"] = $order;
+
+        if (!isNaN(limit)) query["limit"] = limit;
+
+        if (!isNaN(offset)) query["offset"] = offset;
+
+        query["include"] = [
+            // { all: true, required: false },
+            {
+                model: Project,
+                where: WhereProject,
+            },
+            {
+                model: Farm,
+                where: WhereFarm,
+                as: "AnimalFarm",
+            },
+        ];
+
+        if (req.query.includeAnimalBreed) {
+            query["include"].push(
+                {
+                    model: AnimalBreed,
+                    as: "AnimalBreed1",
+                },
+                {
+                    model: AnimalBreed,
+                    as: "AnimalBreed2",
+                },
+                {
+                    model: AnimalBreed,
+                    as: "AnimalBreed3",
+                },
+                {
+                    model: AnimalBreed,
+                    as: "AnimalBreed4",
+                },
+                {
+                    model: AnimalBreed,
+                    as: "AnimalBreed5",
+                },
+                {
+                    model: AnimalStatus,
+                    as: "AnimalStatus",
+                }
+            );
+        }
+
+        // query["include"] = [
+        //   {
+        //     model: Project,
+        //     where: WhereProject,
+        //   },
+        //   {
+        //     model: Farm,
+        //     where: WhereFarm,
+        //     as: "AnimalFarm",
+        //   },
+        // ];
+
+        return { query: query };
+    },
+
     // insertChild(data) {
     //   return new Promise(async (resolve, reject) => {
     //     try {
@@ -3838,6 +4051,124 @@ const methods = {
                     })
                     .catch((error) => {
                         reject(error);
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    findByFarmCode(req) {
+        const limit = +(req.query.size || config.pageLimit);
+        const offset = +(limit * ((req.query.page || 1) - 1));
+        const _q = methods.scopeSearch2(req, limit, offset);
+        return new Promise(async (resolve, reject) => {
+            try {
+
+
+
+                let farm = await Farm.findOne({
+                    where: {
+                        FarmIdentificationNumber: req.query.FarmCode,
+                    },
+                    include: [
+                        {
+                            model: Province,
+                            as: "Province",
+                        },
+                        {
+                            model: Amphur,
+                            as: "Amphur",
+                        },
+                        {
+                            model: Tumbol,
+                            as: "Tumbol",
+                        },
+                    ],
+                });
+
+                if(!farm){
+                    throw new Error("ไม่พบฟาร์ม");
+                }
+
+
+                Promise.all([await db.findAll(_q.query), db.count(_q.query)])
+                    .then(async (result) => {
+                        let rows = result[0],
+                            count = rows.length;
+
+                        
+                        let countAnimal = {
+                            all: 0,
+                            child: 0,
+                            young: 0,
+                            girl: 0,
+                            father: 0,
+                            mother: 0,
+                        };
+
+                        const getWithPromiseAll = async () => {
+                            let data = await Promise.all(
+                                rows.map(async (data) => {
+                                    let projectArray = [];
+                                    data.Projects.forEach((element) => {
+                                        projectArray.push(element.ProjectName);
+                                    });
+
+                                    countAnimal.all = countAnimal.all + 1;
+                                    countAnimal.child = [1, 6, 11].includes(
+                                        data.AnimalStatusID
+                                    )
+                                        ? countAnimal.child + 1
+                                        : countAnimal.child;
+
+                                    countAnimal.young = [2, 7, 12].includes(
+                                        data.AnimalStatusID
+                                    )
+                                        ? countAnimal.young + 1
+                                        : countAnimal.young;
+
+                                    countAnimal.girl = [3, 8, 13].includes(
+                                        data.AnimalStatusID
+                                    )
+                                        ? countAnimal.girl + 1
+                                        : countAnimal.girl;
+
+                                    countAnimal.father = [4, 9, 14].includes(
+                                        data.AnimalStatusID
+                                    )
+                                        ? countAnimal.father + 1
+                                        : countAnimal.father;
+
+                                    countAnimal.mother = [5, 10, 15].includes(
+                                        data.AnimalStatusID
+                                    )
+                                        ? countAnimal.mother + 1
+                                        : countAnimal.mother;
+
+                                    return data;
+                                })
+                            );
+
+                            return data;
+                        };
+
+                        let animal = await getWithPromiseAll();
+
+
+
+                        resolve({
+                            farm: farm,
+                            total: count,
+                            lastPage: Math.ceil(count / limit),
+                            currPage: +req.query.page || 1,
+                            animal: animal,
+                            // noti,
+                            countAnimal,
+                        });
+                    })
+                    .catch((error) => {
+                        reject(error);   
                     });
             } catch (error) {
                 reject(error);

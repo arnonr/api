@@ -89,6 +89,15 @@ router.get(
 );
 
 router.get(
+    "/get-by-farmer",
+    //   cacheMiddleware,
+    // auth.required,
+    // checkPermission(resource, "read"),
+    controllers.onGetByFarmer
+  );
+  
+
+router.get(
   "/selection",
   //   cacheMiddleware,
   // auth.required,
