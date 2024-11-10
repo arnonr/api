@@ -16,6 +16,7 @@ app.use(require("./routes"));
 require("./configs/errorHandler")(config.isProduction, app);
 
 const options = {
+    cert: fs.readFileSync('/cert/star_dld_go_th.crt'), // ใส่เส้นทางไปยังไฟล์ Certificate
     key: fs.readFileSync('/cert/privkey.pem'), // ใส่เส้นทางไปยังไฟล์ Private Key
     cert: fs.readFileSync('/cert/DigiCertCA.crt'), // ใส่เส้นทางไปยังไฟล์ Certificate
   };
