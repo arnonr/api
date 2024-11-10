@@ -1,4 +1,5 @@
 const express = require("express");
+const https = require('https');
 const config =  require("./configs/app");
 const app = express();
 
@@ -13,6 +14,11 @@ app.use(require("./routes"));
 
 // Error handler
 require("./configs/errorHandler")(config.isProduction, app);
+
+const options = {
+    key: fs.readFileSync('/cert/privkey.pem'), // ใส่เส้นทางไปยังไฟล์ Private Key
+    cert: fs.readFileSync('/cert/DigiCertCA.crt'), // ใส่เส้นทางไปยังไฟล์ Certificate
+  };
 
 // Start Server
 const server = app.listen(config.port, () => {
