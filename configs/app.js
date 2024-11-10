@@ -1,7 +1,7 @@
 require('dotenv').config()
 // ดึงตัวแปรมาจาก .env
 module.exports = {
-  port: process.env.PORT || 443,
+  port: process.env.PORT || 8081,
   isProduction: process.env.NODE_ENV === 'production',
   apiVersion: process.env.API_VERSION || 1,
   token_exp_days: process.env.TOKEN_EXP_DAYS || 1,
