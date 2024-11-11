@@ -16,7 +16,7 @@ const starCert = fs.readFileSync("cert/star_dld_go_th.crt");
 const caCert = fs.readFileSync("cert/DigiCertCA.crt");
 const agent = new https.Agent({
     ca: [starCert, caCert], // ใช้ CA หลายไฟล์
-    rejectUnauthorized: true, // เปิดการตรวจสอบ SSL Certificate
+    rejectUnauthorized: false, // เปิดการตรวจสอบ SSL Certificate
 });
 
 const methods = {
