@@ -457,7 +457,7 @@ const methods = {
                         auth: {
                             // ข้อมูลการเข้าสู่ระบบ
                             user: "cwie@technopark.kmutnb.ac.th", // email user ของเรา
-                            pass: "2023@CWIE", // email password
+                            pass: "iegm uznn agqa exzd",
                             //user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
                             //pass: "zsetdnqrizeqtvwu", // email password
                         },
@@ -583,8 +583,6 @@ const methods = {
                 if (obj.IsApprove === 2) {
                     reject(ErrorUnauthorized("ไม่อนุมัติ"));
                 }
-
-                // ip ::ffff:
 
                 let loginLog = new LoginLog({
                     UserID: obj.UserID,
@@ -859,6 +857,65 @@ const methods = {
                 obj.ResetPasswordToken = password;
 
                 await obj.save();
+                // Send mail
+                let transporter = nodemailer.createTransport({
+                    host: "smtp.gmail.com",
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: "cwie@technopark.kmutnb.ac.th",
+                        pass: "iegm uznn agqa exzd",
+                    },
+                });
+
+                const info = await transporter.sendMail({
+                    from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+                    to: data.email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+                    subject: "Password Reset", // หัวข้ออีเมล
+                    html:
+                        "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" +
+                        obj.ResetPasswordToken +
+                        "'>http://biotech-cbg.dld.go.th/new-password?token=" +
+                        obj.ResetPasswordToken +
+                        "</a>", // html body
+                });
+
+                console.log("Email sent Successfully" + info.response);
+
+                let res = { data: obj };
+
+                resolve(res);
+            } catch (error) {
+                reject(ErrorBadRequest(error.message));
+            }
+        });
+    },
+
+    forgotPasswordold(data) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const obj = await db.findOne({
+                    where: {
+                        Username: data.email,
+                    },
+                });
+
+                if (!obj) reject(ErrorNotFound("email: not found"));
+
+                let chars =
+                    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                let passwordLength = 12;
+                let password = "";
+
+                for (let i = 0; i <= passwordLength; i++) {
+                    var randomNumber = Math.floor(Math.random() * chars.length);
+                    password += chars.substring(randomNumber, randomNumber + 1);
+                }
+
+                // obj.Password = obj.passwordHash(password);
+                obj.ResetPasswordToken = password;
+
+                await obj.save();
 
                 // Send mail
                 // let transporter = nodemailer.createTransport({
@@ -890,8 +947,8 @@ const methods = {
                         //user: "tongfreedom@gmail.com", // email user ของเรา
                         //pass: "gqmubppxipviaxzm",
 
-                        user: "cwie@kmutnb.ac.th", // email user ของเรา
-                        pass: "xhqqcypawtnyfnhl", // email password
+                        user: "cwie@technopark.kmutnb.ac.th",
+                        pass: "iegm uznn agqa exzd",
                     },
                 });
 
