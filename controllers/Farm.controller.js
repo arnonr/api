@@ -4,8 +4,8 @@ const Service = require("../services/Farm.service"),
 const methods = {
   async onGetExportExcel(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UserID = decoded.id;
+    //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+    //   req.body.UserID = decoded.id;
 
       let result = await Service.exportExcel(req);
       res.success(result);
@@ -16,8 +16,8 @@ const methods = {
 
   async onGetExportExcelWithFarmer(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UserID = decoded.id;
+    //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+    //   req.body.UserID = decoded.id;
 
       let result = await Service.exportExcelWithFarmer(req);
       res.success(result);
@@ -28,8 +28,8 @@ const methods = {
 
   async onGetSelection(req, res) {
     try {
-      const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-      req.body.UserID = decoded.id;
+    //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
+    //   req.body.UserID = decoded.id;
 
       let result = await Service.selection(req);
       res.success(result);
