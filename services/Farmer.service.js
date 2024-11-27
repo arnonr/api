@@ -296,6 +296,7 @@ const methods = {
                             },
                         });
 
+                        console.log(dataFarmer);
                         let data = {
                             //   FarmerNumber: dataFarmer.farmerId,
                             FarmerNumber: dataFarmer.farmCode,
@@ -329,7 +330,11 @@ const methods = {
                         let res = await methods.findById(inserted.FarmerID);
                         //
                         console.log(data1.data);
-                        resolve({ res: res, dataFromAPI: data1.data.result });
+                        resolve({
+                            res: res,
+                            dataFromAPI: data1.data.result,
+                            farmer: dataFarmer,
+                        });
                     } else {
                         reject(ErrorNotFound("IdentificationNumber Not Found"));
                     }
