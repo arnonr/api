@@ -679,8 +679,8 @@ const methods = {
                 if (!obj) {
                     await axios
                         .get(
-                            //   "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
-                            "https://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                            //   "hhttps://bblp-dairy.dld.go.th/api2/staff/listAllStaff?text_search=" +
+                            "https://bblp-dairy.dld.go.th/api2/staff/listAllStaff?text_search=" +
                                 StaffNumber.toString() +
                                 "&limit=1&page=1"
                         )
@@ -786,7 +786,7 @@ const methods = {
                     if (obj.StaffPositionID == null) {
                         await axios
                             .get(
-                                "https://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                                "https://bblp-dairy.dld.go.th/api2/staff/listAllStaff?text_search=" +
                                     StaffNumber.toString() +
                                     "&limit=1&page=1"
                             )
@@ -893,7 +893,7 @@ const methods = {
                     await axios
                         .get(
                             //   "http://164.115.24.111/api2/staff/listAllStaff?text_search=" +
-                            "https://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                            "https://bblp-dairy.dld.go.th/api2/staff/listAllStaff?text_search=" +
                                 StaffNumber.toString() +
                                 "&limit=1&page=1"
                         )
@@ -999,7 +999,7 @@ const methods = {
                     if (obj.StaffPositionID == null) {
                         await axios
                             .get(
-                                "https://164.115.25.101/api2/staff/listAllStaff?text_search=" +
+                                "https://bblp-dairy.dld.go.th/api2/staff/listAllStaff?text_search=" +
                                     StaffNumber.toString() +
                                     "&limit=1&page=1"
                             )
