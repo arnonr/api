@@ -42,7 +42,6 @@ const methods = {
     try {
     //   const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
     //   req.body.UserID = decoded.id;
-
       let result = await Service.find(req);
       res.success(result);
     } catch (error) {
