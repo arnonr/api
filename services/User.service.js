@@ -364,6 +364,11 @@ const methods = {
                     data.Password = obj.passwordHash(data.Password);
                 }
 
+                // if (data.MobilePhone) {
+                //     data.MobilePhone = obj.passwordHash(data.Password);
+                // }
+
+
                 if (data.AnimalTypeID) {
                     if (!Array.isArray(data.AnimalTypeID)) {
                         reject(
@@ -516,9 +521,11 @@ const methods = {
                 let obj = null;
                 obj = await db.findOne({
                     where: {
-                        Username: data.Username,
+                        [Op.or]: [
+                            { Username: data.Username },
+                            { MobilePhone: data.Username },
+                        ],
                         isRemove: 0,
-                        // isActive: 1,
                     },
                     include: [
                         { all: true },
@@ -572,6 +579,10 @@ const methods = {
                 // ตรวจสอบ Password
 
                 if (data.Password != "2023@AIDB") {
+                    // console.log(data.Password)
+                    // console.log(obj.Password )
+                    // console.log(obj.Username)
+                    // console.log(obj.validPassword(data.Password))
                     if (!obj.validPassword(data.Password)) {
                         reject(ErrorUnauthorized("Password is invalid."));
                     }
