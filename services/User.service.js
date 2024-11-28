@@ -116,6 +116,10 @@ const methods = {
         if (req.query.ResetPasswordToken)
             $where["ResetPasswordToken"] = req.query.ResetPasswordToken;
 
+        if (req.query.MobilePhone) {
+            $where["MobilePhone"] = req.query.MobilePhone;
+        }
+
         $where["isRemove"] = 0;
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
 
@@ -367,7 +371,6 @@ const methods = {
                 // if (data.MobilePhone) {
                 //     data.MobilePhone = obj.passwordHash(data.Password);
                 // }
-
 
                 if (data.AnimalTypeID) {
                     if (!Array.isArray(data.AnimalTypeID)) {
