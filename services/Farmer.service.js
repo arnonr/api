@@ -5,9 +5,11 @@ const config = require("../configs/app"),
 var FormData = require("form-data");
 
 const Farmer = require("../models/Farmer");
+const Farm = require("../models/Farm");
 const Province = require("../models/Province");
 const Amphur = require("../models/Amphur");
 const Tumbol = require("../models/Tumbol");
+const Organization = require("../models/Organization");
 
 const fs = require("fs");
 const axios = require("axios").default;
@@ -277,29 +279,46 @@ const methods = {
                         let dataFarmer =
                             data1.data.result[data1.data.result.length - 1];
 
-                        let province = Province.findOne({
+                        let province = await Province.findOne({
                             where: {
-                                ProvinceCode:
-                                    dataFarmer.farmerProvinceId.toString(),
+                                ProvinceCode: dataFarmer.farmerProvinceId
+                                    .toString()
+                                    .substring(0, 2),
                             },
                         });
-                        let amphur = Amphur.findOne({
+                        let amphur = await Amphur.findOne({
                             where: {
-                                AmphurCode:
-                                    dataFarmer.farmerAmphurId.toString(),
+                                AmphurCode: dataFarmer.farmerAmphurId
+                                    .toString()
+                                    .substring(0, 4),
                             },
                         });
-                        let tumbol = Tumbol.findOne({
+                        let tumbol = await Tumbol.findOne({
                             where: {
-                                TumbolCode:
-                                    dataFarmer.farmerTambolId.toString(),
+                                TumbolCode: dataFarmer.farmerTambolId
+                                    .toString()
+                                    .substring(0, 6),
                             },
                         });
 
-                        console.log(dataFarmer);
+                        let sex = 1;
+                        let prefixid = 3;
+
+                        if (dataFarmer.farmerPrefixId == 1) {
+                            prefixid = 3;
+                            sex = 1;
+                        } else if (dataFarmer.farmerPrefixId == 2) {
+                            prefixid = 4;
+                            sex = 2;
+                        } else {
+                            prefixid = 5;
+                            sex = 2;
+                        }
+
                         let data = {
-                            //   FarmerNumber: dataFarmer.farmerId,
-                            FarmerNumber: dataFarmer.farmCode,
+                            FarmerNumber: dataFarmer.farmerId,
+                            TitleID: prefixid,
+                            GenderID: sex,
                             IdentificationNumber: dataFarmer.pid,
                             GivenName: dataFarmer.firstName,
                             Surname: dataFarmer.lastName,
@@ -321,12 +340,106 @@ const methods = {
                             HouseVillageName: dataFarmer.farmerVillageName,
                             CreatedUserID: 1,
                             FarmerRegisterStatus: 2,
+                            farmerPIDType: 1,
+                            ResidenceBuildingNumber: dataFarmer.farmerHomeNo,
+                            ResidenceProvinceID: province
+                                ? province.ProvinceID
+                                : null,
+                            ResidenceAmphurID: amphur ? amphur.AmphurID : null,
+                            ResidenceTumbolID: tumbol ? tumbol.TumbolID : null,
+                            ResidenceZipCode: tumbol ? tumbol.Zipcode : null,
+                            ResidenceVillageName: dataFarmer.farmerVillageName,
                         };
 
                         data.createdAt = fn("GETDATE");
 
                         const obj = new db(data);
                         const inserted = await obj.save();
+
+                        // 510702091590005
+                        let resFarm = await Farm.findOne({
+                            where: {
+                                FarmIdentificationNumber: dataFarmer.farmCode,
+                            },
+                        });
+                        let check = 1;
+                        let newFarmID = null;
+                        if (!resFarm) {
+                            let farmProvince = await Province.findOne({
+                                where: {
+                                    ProvinceCode: dataFarmer.farmProvinceId
+                                        .toString()
+                                        .substring(0, 2),
+                                },
+                            });
+                            let farmAmphur = await Amphur.findOne({
+                                where: {
+                                    AmphurCode: dataFarmer.farmAmphurId
+                                        .toString()
+                                        .substring(0, 4),
+                                },
+                            });
+                            let farmTumbol = await Tumbol.findOne({
+                                where: {
+                                    TumbolCode: dataFarmer.farmTambolId
+                                        .toString()
+                                        .substring(0, 6),
+                                },
+                            });
+
+                            let farmOrganization = await Organization.findOne({
+                                where: {
+                                    OrganizationAmphurID: farmAmphur.AmphurID,
+                                    OrganizationName: {
+                                        [Op.like]: "สำนักงานปศุสัตว์อำเภอ%",
+                                    },
+                                },
+                            });
+
+                            let dataFarm = {
+                                FarmIdentificationNumber: dataFarmer.farmCode,
+                                FarmName: dataFarmer.farmName
+                                    ? dataFarmer.farmName
+                                    : dataFarmer.firstName +
+                                      " " +
+                                      dataFarmer.lastName,
+                                FarmAddress: dataFarmer.farmHomeNo,
+                                FarmerID: inserted.FarmerID,
+                                FarmMoo: dataFarmer.farmVillageName,
+                                FarmTumbolID: farmTumbol
+                                    ? farmTumbol.TumbolID
+                                    : null,
+                                FarmAmphurID: farmAmphur
+                                    ? farmAmphur.AmphurID
+                                    : null,
+                                FarmProvinceID: farmProvince
+                                    ? farmProvince.ProvinceID
+                                    : null,
+                                FarmZipCode: farmTumbol
+                                    ? farmTumbol.Zipcode
+                                    : null,
+                                ResidenceLatitude: dataFarmer.farmLatitude,
+                                ResidenceLongitude: dataFarmer.farmLongitude,
+                                OrganizationID: farmOrganization.OrganizationID,
+                                OrganizationZoneID:
+                                    farmOrganization.OrganizationZoneID,
+                                AIZoneID: farmOrganization.OrganizationZoneID,
+                                FarmType: "ฟาร์มมาตรฐาน",
+                                FarmGrade: "A",
+                                FarmStatusID: 1,
+                                FarmAnimalType: "[1,2,3]",
+                                FarmRegisterDate: dataFarmer.farmCreateDate,
+                                isActive: 1,
+                                CreatedUserID: 1,
+                                createdAt: fn("GETDATE"),
+                            };
+                            const objFarm = new Farm(dataFarm);
+                            await objFarm.save();
+                            check = 2;
+                            newFarmID = objFarm.FarmID;
+                        }
+                        //
+
                         let res = await methods.findById(inserted.FarmerID);
                         //
                         console.log(data1.data);
@@ -334,6 +447,8 @@ const methods = {
                             res: res,
                             dataFromAPI: data1.data.result,
                             farmer: dataFarmer,
+                            check: check,
+                            newFarmID: newFarmID,
                         });
                     } else {
                         reject(ErrorNotFound("IdentificationNumber Not Found"));

@@ -448,28 +448,29 @@ const methods = {
                 //     html: "<b>คุณได้รับการอนุมัติการเข้าใช้งานระบบฐานข้อมูล โคเนื้อ กระบือ แพะ สามารถเข้าใช้งานได้ที่ <a href='http://178.128.216.177/'>คลิก</a></b>", // html body
                 //   });
                 // }
-                // && data.IsApprove == 1
-                if (obj.IsApprove == 0) {
-                    let transporter = nodemailer.createTransport({
-                        host: "smtp.gmail.com",
-                        port: 587,
-                        secure: false,
-                        auth: {
-                            // ข้อมูลการเข้าสู่ระบบ
-                            user: "cwie@technopark.kmutnb.ac.th", // email user ของเรา
-                            pass: "iegm uznn agqa exzd",
-                            //user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
-                            //pass: "zsetdnqrizeqtvwu", // email password
-                        },
-                    });
+                if (data.IsApprove) {
+                    if (obj.IsApprove == 0 && data.IsApprove == 1) {
+                        let transporter = nodemailer.createTransport({
+                            host: "smtp.gmail.com",
+                            port: 587,
+                            secure: false,
+                            auth: {
+                                // ข้อมูลการเข้าสู่ระบบ
+                                user: "cwie@technopark.kmutnb.ac.th", // email user ของเรา
+                                pass: "iegm uznn agqa exzd",
+                                //user: "arnon.r@tgde.kmutnb.ac.th", // email user ของเรา
+                                //pass: "zsetdnqrizeqtvwu", // email password
+                            },
+                        });
 
-                    await transporter.sendMail({
-                        from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
-                        to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
-                        subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
-                        html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/'>http://biotech-cbg.dld.go.th/</a><br> กรณีลืมรหัสผ่านท่านสามารถรีเซ็ตรหัสผ่านได้ที่ URL :  <a href='http://biotech-cbg.dld.go.th/reset-password'>http://biotech-cbg.dld.go.th/reset-password</a>", // html body
-                        // http://biotech-cbg.dld.go.th/reset-password
-                    });
+                        await transporter.sendMail({
+                            from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
+                            to: obj.Username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+                            subject: "ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ", // หัวข้ออีเมล
+                            html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ระบบสมาชิกของท่านได้รับการอนุมัติ <br>ท่านสามารถเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/'>http://biotech-cbg.dld.go.th/</a><br> กรณีลืมรหัสผ่านท่านสามารถรีเซ็ตรหัสผ่านได้ที่ URL :  <a href='http://biotech-cbg.dld.go.th/reset-password'>http://biotech-cbg.dld.go.th/reset-password</a>", // html body
+                            // http://biotech-cbg.dld.go.th/reset-password
+                        });
+                    }
                 }
 
                 let res = methods.findById(obj.UserID);
