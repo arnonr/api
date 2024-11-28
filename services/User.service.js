@@ -448,8 +448,8 @@ const methods = {
                 //     html: "<b>คุณได้รับการอนุมัติการเข้าใช้งานระบบฐานข้อมูล โคเนื้อ กระบือ แพะ สามารถเข้าใช้งานได้ที่ <a href='http://178.128.216.177/'>คลิก</a></b>", // html body
                 //   });
                 // }
-
-                if (obj.IsApprove == 0 && data.IsApprove == 1) {
+                // && data.IsApprove == 1
+                if (obj.IsApprove == 0) {
                     let transporter = nodemailer.createTransport({
                         host: "smtp.gmail.com",
                         port: 587,
