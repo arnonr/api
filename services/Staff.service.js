@@ -497,6 +497,16 @@ const methods = {
 
                 data.createdAt = fn("GETDATE");
 
+                function cleanMobileNumber(input) {
+                    return input.replace(/[^0-9]/g, "");
+                }
+
+                if (data.StaffMobilePhone != null) {
+                    data.StaffMobilePhone = cleanMobileNumber(
+                        data.StaffMobilePhone
+                    );
+                }
+
                 const obj = new db(data);
 
                 const inserted = await obj.save({ individualHooks: true });
@@ -536,6 +546,16 @@ const methods = {
                 // } else {
                 //   console.log(dayjs(data.CardExpireDate).isBefore(dayjs()));
                 //   data.CardStatus = 1;
+
+                function cleanMobileNumber(input) {
+                    return input.replace(/[^0-9]/g, "");
+                }
+
+                if (data.StaffMobilePhone != null) {
+                    data.StaffMobilePhone = cleanMobileNumber(
+                        data.StaffMobilePhone
+                    );
+                }
                 // }
 
                 await db.update(data, {
@@ -1088,6 +1108,17 @@ const methods = {
                 if (!obj) resolve(false);
 
                 // Update
+
+                function cleanMobileNumber(input) {
+                    return input.replace(/[^0-9]/g, "");
+                }
+
+                if (data.StaffMobilePhone != null) {
+                    data.StaffMobilePhone = cleanMobileNumber(
+                        data.StaffMobilePhone
+                    );
+                }
+
                 await db.update(
                     {
                         StaffMobilePhone: data.StaffMobilePhone,
