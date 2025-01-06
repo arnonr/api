@@ -922,9 +922,9 @@ const methods = {
                             check = 2;
                         }
 
-                        // let res = await methods.findById(inserted.FarmerID);
+                        let res = await methods.findById(inserted.FarmerID);
                         resolve({
-                            // res: res,
+                            res: res,
                             dataFromAPI: data1.data.result,
                             farmer: dataFarmer,
                             check: check,
