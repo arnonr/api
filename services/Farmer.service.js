@@ -732,6 +732,216 @@ const methods = {
             }
         });
     },
+
+    fetchAPIUpdateFarmWithERegis(req) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let token = await this.getToken();
+                let tokenAccess = token.data.access_token;
+                console.log(req.query.FarmIdentificationNumber);
+
+                let data1 = await axios.post(
+                    "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+                    {
+                        farmCode: req.query.FarmIdentificationNumber,
+                        // farmerPID: "1100200629414",
+                    },
+                    {
+                        httpsAgent: agent,
+                        headers: {
+                            Authorization: `Bearer ${tokenAccess}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                console.log(data1.data);
+
+                if (data1.data.code == "200") {
+                    if (data1.data.result.length != 0) {
+                        let dataFarmer =
+                            data1.data.result[data1.data.result.length - 1];
+
+                        let province = await Province.findOne({
+                            where: {
+                                ProvinceCode: dataFarmer.farmerProvinceId
+                                    .toString()
+                                    .substring(0, 2),
+                            },
+                        });
+                        let amphur = await Amphur.findOne({
+                            where: {
+                                AmphurCode: dataFarmer.farmerAmphurId
+                                    .toString()
+                                    .substring(0, 4),
+                            },
+                        });
+                        let tumbol = await Tumbol.findOne({
+                            where: {
+                                TumbolCode: dataFarmer.farmerTambolId
+                                    .toString()
+                                    .substring(0, 6),
+                            },
+                        });
+
+                        let sex = 1;
+                        let prefixid = 3;
+
+                        if (dataFarmer.farmerPrefixId == 1) {
+                            prefixid = 3;
+                            sex = 1;
+                        } else if (dataFarmer.farmerPrefixId == 2) {
+                            prefixid = 4;
+                            sex = 2;
+                        } else {
+                            prefixid = 5;
+                            sex = 2;
+                        }
+
+                        let data = {
+                            FarmerNumber: dataFarmer.farmerId,
+                            TitleID: prefixid,
+                            GenderID: sex,
+                            IdentificationNumber: dataFarmer.pid,
+                            GivenName: dataFarmer.firstName,
+                            Surname: dataFarmer.lastName,
+                            FarmerTypeID:
+                                dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
+                                    ? 1
+                                    : dataFarmer.farmerTypeName == "นิติบุคคล"
+                                    ? 2
+                                    : dataFarmer.farmerTypeName == "หน่วยงาน"
+                                    ? 3
+                                    : null,
+                            HouseBuildingNumber: dataFarmer.farmerHomeNo,
+                            HouseProvinceID: province
+                                ? province.ProvinceID
+                                : null,
+                            HouseAmphurID: amphur ? amphur.AmphurID : null,
+                            HouseTumbolID: tumbol ? tumbol.TumbolID : null,
+                            HouseZipCode: tumbol ? tumbol.Zipcode : null,
+                            HouseVillageName: dataFarmer.farmerVillageName,
+                            CreatedUserID: 1,
+                            FarmerRegisterStatus: 2,
+                            farmerPIDType: 1,
+                            ResidenceBuildingNumber: dataFarmer.farmerHomeNo,
+                            ResidenceProvinceID: province
+                                ? province.ProvinceID
+                                : null,
+                            ResidenceAmphurID: amphur ? amphur.AmphurID : null,
+                            ResidenceTumbolID: tumbol ? tumbol.TumbolID : null,
+                            ResidenceZipCode: tumbol ? tumbol.Zipcode : null,
+                            ResidenceVillageName: dataFarmer.farmerVillageName,
+                        };
+
+                        data.createdAt = fn("GETDATE");
+
+                        // 510702091590005
+                        let resFarm = await Farm.findOne({
+                            where: {
+                                FarmIdentificationNumber: dataFarmer.farmCode,
+                            },
+                        });
+
+                        const obj = db.update(data, {
+                            where: { FarmerID: resFarm.FarmerID },
+                        });
+                        const inserted = await obj.save();
+
+                        let check = 1;
+                        if (!resFarm) {
+                            let farmProvince = await Province.findOne({
+                                where: {
+                                    ProvinceCode: dataFarmer.farmProvinceId
+                                        .toString()
+                                        .substring(0, 2),
+                                },
+                            });
+                            let farmAmphur = await Amphur.findOne({
+                                where: {
+                                    AmphurCode: dataFarmer.farmAmphurId
+                                        .toString()
+                                        .substring(0, 4),
+                                },
+                            });
+                            let farmTumbol = await Tumbol.findOne({
+                                where: {
+                                    TumbolCode: dataFarmer.farmTambolId
+                                        .toString()
+                                        .substring(0, 6),
+                                },
+                            });
+                            let farmOrganization = await Organization.findOne({
+                                where: {
+                                    OrganizationAmphurID: farmAmphur.AmphurID,
+                                    OrganizationName: {
+                                        [Op.like]: "สำนักงานปศุสัตว์อำเภอ%",
+                                    },
+                                },
+                            });
+                            let dataFarm = {
+                                FarmIdentificationNumber: dataFarmer.farmCode,
+                                FarmName: dataFarmer.farmName
+                                    ? dataFarmer.farmName
+                                    : dataFarmer.firstName +
+                                      " " +
+                                      dataFarmer.lastName,
+                                FarmAddress: dataFarmer.farmHomeNo,
+                                FarmerID: inserted.FarmerID,
+                                FarmMoo: dataFarmer.farmVillageName,
+                                FarmTumbolID: farmTumbol
+                                    ? farmTumbol.TumbolID
+                                    : null,
+                                FarmAmphurID: farmAmphur
+                                    ? farmAmphur.AmphurID
+                                    : null,
+                                FarmProvinceID: farmProvince
+                                    ? farmProvince.ProvinceID
+                                    : null,
+                                FarmZipCode: farmTumbol
+                                    ? farmTumbol.Zipcode
+                                    : null,
+                                ResidenceLatitude: dataFarmer.farmLatitude,
+                                ResidenceLongitude: dataFarmer.farmLongitude,
+                                OrganizationID: farmOrganization.OrganizationID,
+                                OrganizationZoneID:
+                                    farmOrganization.OrganizationZoneID,
+                                AIZoneID: farmOrganization.OrganizationZoneID,
+                                FarmType: "ฟาร์มมาตรฐาน",
+                                FarmGrade: "A",
+                                FarmStatusID: 1,
+                                FarmAnimalType: "[1,2,3]",
+                                FarmRegisterDate: dataFarmer.farmCreateDate,
+                                isActive: 1,
+                                CreatedUserID: 1,
+                                createdAt: fn("GETDATE"),
+                            };
+                            await Farm.update(dataFarm, {
+                                where: { FarmID: resFarm.FarmID },
+                            });
+                            check = 2;
+                        }
+
+                        // let res = await methods.findById(inserted.FarmerID);
+                        resolve({
+                            // res: res,
+                            dataFromAPI: data1.data.result,
+                            farmer: dataFarmer,
+                            check: check,
+                        });
+                    } else {
+                        reject(ErrorNotFound("IdentificationNumber Not Found"));
+                    }
+                } else {
+                    reject(ErrorNotFound("API Error"));
+                }
+
+                resolve(res);
+            } catch (error) {
+                reject(ErrorNotFound(error));
+            }
+        });
+    },
 };
 
 module.exports = { ...methods };

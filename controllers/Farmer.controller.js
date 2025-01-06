@@ -20,6 +20,15 @@ const methods = {
     }
   },
 
+  async onfetchAPIUpdateFarmWithERegis(req, res) {
+    try {
+      let result = await Service.fetchAPIUpdateFarmWithERegis(req);
+      res.success(result, 201);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
