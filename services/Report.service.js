@@ -3109,6 +3109,9 @@ const methods = {
                     [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
 
+                $where["isRemove"] = 0;
+                $where["AnimalAlive"] = 1;
+
                 let WhereProject = null;
 
                 if (req.query.Projects) {
@@ -3948,8 +3951,11 @@ const methods = {
                 }
 
                 $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: [1, 2, 41, 42],
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
+
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 let WhereProject = null;
 
@@ -4093,11 +4099,7 @@ const methods = {
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                            },
+                            where: $whereAnimal,
                             include: [
                                 {
                                     model: Farm,
@@ -4929,6 +4931,7 @@ const methods = {
                 };
                 $whereAnimal["isRemove"] = 0;
                 $whereAnimal["isActive"] = 1;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 $where["isActive"] = 1;
                 $where["isRemove"] = 0;
@@ -5849,8 +5852,11 @@ const methods = {
                 }
 
                 $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: req.query.AnimalTypeID,
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
+
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 let WhereProject = null;
 
@@ -5938,12 +5944,7 @@ const methods = {
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                                isRemove: 0,
-                            },
+                            where: $whereAnimal,
                             include: [
                                 {
                                     model: Farm,
@@ -6363,8 +6364,11 @@ const methods = {
                 }
 
                 $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: [1, 2, 41, 42],
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
+
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 let WhereProject = null;
 
@@ -6455,11 +6459,7 @@ const methods = {
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                            },
+                            where: $whereAnimal,
                             include: [
                                 {
                                     model: Farm,
@@ -6787,8 +6787,11 @@ const methods = {
                 }
 
                 $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: [1, 2, 41, 42],
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
+
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 let WhereProject = null;
 
@@ -6877,11 +6880,7 @@ const methods = {
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                            },
+                            where: $whereAnimal,
                             include: [
                                 {
                                     model: Farm,
@@ -7876,6 +7875,7 @@ const methods = {
                 };
                 $whereAnimal["isRemove"] = 0;
                 $whereAnimal["isActive"] = 1;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 // Project
                 let WhereProject = null;
@@ -8060,7 +8060,7 @@ const methods = {
                             });
                             checkBreed.FarmID.push(ai[i].Animal.FarmID);
                         } else {
-                            console.log(b1)
+                            console.log(b1);
                             breed.push({
                                 AnimalBreedID: b1.AnimalBreedID1,
                                 AnimalID: [
@@ -8211,8 +8211,11 @@ const methods = {
                 }
 
                 $whereAnimal["AnimalTypeID"] = {
-                    [Op.in]: [1, 2, 41, 42],
+                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
                 };
+
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["AnimalAlive"] = 1;
 
                 let WhereProject = null;
 
@@ -8294,11 +8297,7 @@ const methods = {
                         {
                             model: Animal,
                             as: "Animal",
-                            where: {
-                                AnimalTypeID: {
-                                    [Op.in]: JSON.parse(req.query.AnimalTypeID),
-                                },
-                            },
+                            where: $whereAnimal,
                             include: [
                                 {
                                     model: Farm,
