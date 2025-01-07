@@ -558,10 +558,37 @@ const methods = {
                 }
                 // }
 
+                if (
+                    data.StaffStatus == "ลาออก" ||
+                    data.StaffStatus == "เกษียณ"
+                ) {
+                    data.isActive = 0;
+                }
+
                 await db.update(data, {
                     where: { StaffID: id },
                     individualHooks: true,
                 });
+
+                if (
+                    data.StaffStatus == "ลาออก" ||
+                    data.StaffStatus == "เกษียณ"
+                ) {
+                    const objUser = await db.findOne({
+                        where: { StaffID: data.StaffID },
+                    });
+
+                    if (objUser) {
+                        await User.update(
+                            {
+                                isActive: 0,
+                            },
+                            {
+                                where: { UserID: objUser.UserID },
+                            }
+                        );
+                    }
+                }
 
                 let res = methods.findById(data.StaffID);
 
