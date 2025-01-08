@@ -264,7 +264,7 @@ const methods = {
                 let tokenAccess = token.data.access_token;
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
                     {
                         farmerPID: farmerPID,
                     },
@@ -471,7 +471,7 @@ const methods = {
                 let tokenAccess = token.data.access_token;
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
                     {
                         farmerTypeId: farmerTypeId,
                     },
@@ -574,7 +574,7 @@ const methods = {
                 let tokenAccess = token.data.access_token;
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
                     {
                         farmerPID: farmerPID,
                     },
@@ -741,7 +741,7 @@ const methods = {
                 console.log(req.query.FarmIdentificationNumber);
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v1/searchFarm/page/0/limit/10/asc/true/sortBy/1",
+                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
                     {
                         farmCode: req.query.FarmIdentificationNumber,
                         // farmerPID: "1100200629414",
