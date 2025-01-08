@@ -254,6 +254,8 @@ const methods = {
                 },
             }
         );
+
+        console.log(data);
         return data;
     },
 
@@ -262,12 +264,11 @@ const methods = {
             try {
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
+                console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
-                    {
-                        farmerPID: farmerPID,
-                    },
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
+                    {},
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -469,12 +470,11 @@ const methods = {
             try {
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
+                console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
-                    {
-                        farmerTypeId: farmerTypeId,
-                    },
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
+                    {},
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -572,12 +572,11 @@ const methods = {
             try {
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
+                console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
-                    {
-                        farmerPID: farmerPID,
-                    },
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
+                    {},
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -738,14 +737,11 @@ const methods = {
             try {
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
-                console.log(req.query.FarmIdentificationNumber);
+                console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    "https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarm/page/0/limit/10/asc/true/sortBy/1",
-                    {
-                        farmCode: req.query.FarmIdentificationNumber,
-                        // farmerPID: "1100200629414",
-                    },
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${req.query.farmerPID}/searchBy/biotech/searchSystem/aidm`,
+                    {},
                     {
                         httpsAgent: agent,
                         headers: {

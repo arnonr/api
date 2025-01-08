@@ -142,7 +142,7 @@ const methods = {
                 UserID = decoded.id;
             }
             req.body.GetUserID = UserID;
-
+            
             let result = await Service.findByFarmID(req);
             res.success(result);
         } catch (error) {
