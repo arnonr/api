@@ -5,6 +5,7 @@ const config = require("../configs/app"),
 const AI = require("../models/AI");
 
 const Animal = require("../models/Animal");
+const Semen = require("../models/Semen");
 const Farm = require("../models/Farm");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
@@ -17,15 +18,21 @@ const buddhistEra = require("dayjs/plugin/buddhistEra");
 dayjs.extend(buddhistEra);
 
 const methods = {
-    scopeSearch(req, limit, offset) {
+    scopeSearch(req, limit, offset, nid = false) {
         // Where
         $where = {};
+        $whereAnimal = {};
 
         if (req.query.AIID) $where["AIID"] = req.query.AIID;
 
         if (req.query.AnimalID)
             $where["AnimalID"] = {
                 [Op.like]: "%" + req.query.AnimalID + "%",
+            };
+
+        if (nid)
+            $whereAnimal["AnimalNationalID"] = {
+                [Op.like]: nid,
             };
 
         if (req.query.TimeNo) $where["TimeNo"] = req.query.TimeNo;
@@ -88,6 +95,100 @@ const methods = {
                     ["PregnancyCheckupID", "DESC"],
                 ],
             },
+            {
+                model: Animal,
+                where: $whereAnimal,
+            },
+        ];
+
+        return { query: query, required: false };
+    },
+    scopeSearch2(req, limit, offset, nid = false) {
+        // Where
+        $where = {};
+        $whereAnimal = {};
+
+        if (req.query.AIID) $where["AIID"] = req.query.AIID;
+
+        if (req.query.AnimalID)
+            $where["AnimalID"] = {
+                [Op.like]: "%" + req.query.AnimalID + "%",
+            };
+
+        if (nid)
+            $whereAnimal["AnimalNationalID"] = {
+                [Op.like]: nid,
+            };
+
+        if (req.query.TimeNo) $where["TimeNo"] = req.query.TimeNo;
+
+        if (req.query.AIDate) $where["AIDate"] = req.query.AIDate;
+
+        if (req.query.ResponsibilityStaffID)
+            $where["ResponsibilityStaffID"] = req.query.ResponsibilityStaffID;
+
+        if (req.query.ProjectID) $where["ProjectID"] = req.query.ProjectID;
+        if (req.query.SemenID) $where["SemenID"] = req.query.SemenID;
+        if (req.query.AIStatus) $where["AIStatus"] = req.query.AIStatus;
+
+        if (req.query.BirthDate) $where["BirthDate"] = req.query.BirthDate;
+
+        if (req.query.GoatAIMethodID)
+            $where["GoatAIMethodID"] = req.query.GoatAIMethodID;
+        if (req.query.GoatEstralActivityID)
+            $where["GoatEstralActivityID"] = req.query.GoatEstralActivityID;
+
+        if (req.query.BreederAnimalID)
+            $where["BreederAnimalID"] = req.query.BreederAnimalID;
+
+        if (req.query.PAR) $where["PAR"] = req.query.PAR;
+
+        // BirthDate
+
+        if (req.query.isActive) $where["isActive"] = req.query.isActive;
+        if (req.query.CreatedUserID)
+            $where["CreatedUserID"] = req.query.CreatedUserID;
+        if (req.query.UpdatedUserID)
+            $where["UpdatedUserID"] = req.query.UpdatedUserID;
+
+        $where["isRemove"] = 0;
+        const query = Object.keys($where).length > 0 ? { where: $where } : {};
+
+        // Order
+        $order = [["AIID", "ASC"]];
+        if (req.query.orderByField && req.query.orderBy)
+            $order = [
+                [
+                    req.query.orderByField,
+                    req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
+                ],
+            ];
+        query["order"] = $order;
+
+        if (!isNaN(limit)) query["limit"] = limit;
+
+        if (!isNaN(offset)) query["offset"] = offset;
+
+        query["include"] = [
+            { all: true, required: false },
+            {
+                model: PregnancyCheckup,
+                limit: 1,
+                include: { model: PregnancyCheckStatus },
+                order: [
+                    ["CheckupDate", "DESC"],
+                    ["PregnancyCheckupID", "DESC"],
+                ],
+            },
+            {
+                model: Animal,
+                where: $whereAnimal,
+            },
+            {
+                model: Semen,
+                as: "Semen",
+                include: { model: Animal, as: "Animal" },
+            },
         ];
 
         return { query: query, required: false };
@@ -121,6 +222,71 @@ const methods = {
 
             ...dataJson,
         };
+        return data;
+    },
+    async getData2(data) {
+        let dataJson = data.toJSON();
+        data = {
+            nid: dataJson.Animal ? dataJson.Animal.AnimalNationalID : null,
+            AnimalPar: dataJson.PAR,
+            TimeNo: dataJson.TimeNo,
+            AIDate: dataJson.AIDate,
+            ThaiAIDate: dataJson.ThaiAIDate,
+            SemenNumber: dataJson.Semen ? dataJson.Semen.SemenNumber : null,
+            FatherName: dataJson.Semen?.Animal
+                ? dataJson.Semen.Animal.AnimalName
+                : null,
+            FatherAnimalEarID: dataJson.Semen?.Animal
+                ? dataJson.Semen.Animal.AnimalEarID
+                : null,
+            calvePar: dataJson.PAR,
+
+            // AIStatusName: dataJson.AIStatusName,
+            // PregnancyCheckup: dataJson.PregnancyCheckups
+            //     ? dataJson.PregnancyCheckups[0]
+            //         ? dataJson.PregnancyCheckups[0].toJSON()
+            //               .PregnancyCheckStatus.PregnancyCheckStatusName
+            //         : null
+            //     : null,
+
+            calveBirthDate: dataJson.GiveBirth
+                ? dataJson.GiveBirth.GiveBirthDate
+                : null,
+            calveThaiBirthDate: dataJson.GiveBirth
+                ? dataJson.GiveBirth.ThaiGiveBirthDate
+                : null,
+            calveName: null,
+            calveNID: null,
+            calveSex: dataJson.GiveBirth
+                ? dataJson.GiveBirth.ChildGender
+                : null,
+            ResponsibilityStaffName: dataJson.Staff
+                ? `${dataJson.Staff.StaffNumber} ${dataJson.Staff.StaffGivenName} ${dataJson.Staff.StaffSurname}`
+                : null,
+
+            // ...dataJson,
+        };
+
+        let ChildAnimal = null;
+        let calveName = "";
+        let calveNID = "";
+        // console.log(dataJson)
+        if (dataJson.GiveBirth) {
+            ChildAnimal = await Animal.findAll({
+                where: {
+                    GiveBirthSelfID: dataJson.GiveBirth.GiveBirthID,
+                },
+            });
+
+            ChildAnimal.forEach((el) => {
+                calveName = calveName + "," + el.AnimalName;
+                calveNID = calveNID + "," + el.AnimalNationalID;
+            });
+
+            data.calveName = calveName;
+            data.calveNID = calveNID;
+        }
+
         return data;
     },
 
@@ -497,6 +663,44 @@ const methods = {
                             total: count,
                             lastPage: Math.ceil(count / limit),
                             currPage: +req.query.page || 1,
+                            rows: rows,
+                        });
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    findByNID(req, nid) {
+        const limit = +(req.query.size || config.pageLimit);
+        const offset = +(limit * ((req.query.page || 1) - 1));
+        const _q = methods.scopeSearch2(req, limit, offset, nid);
+        return new Promise(async (resolve, reject) => {
+            try {
+                Promise.all([
+                    db.findAll(_q.query),
+                    delete _q.query.include,
+                    db.count(_q.query),
+                ])
+                    .then(async (result) => {
+                        let rows = result[0],
+                            count = result[2];
+
+                        rows = await Promise.all(
+                            rows.map(async (data) => {
+                                data = await this.getData2(data);
+                                return data;
+                            })
+                        );
+
+                        resolve({
+                            // total: count,
+                            // lastPage: Math.ceil(count / limit),
+                            // currPage: +req.query.page || 1,
                             rows: rows,
                         });
                     })
