@@ -734,92 +734,107 @@ const methods = {
                         .then(async (response) => {
                             let { items } = response.data;
 
+                            console.log(items);
+
                             if (items.length > 0) {
                                 let staffNew = new Staff();
 
-                                staffNew.StaffNumber = items[0].staffId;
-                                staffNew.StaffIdentificationNumber =
-                                    items[0].staffIdCard;
+                                if (items[0].staffStatus == 2) {
+                                    staffNew.StaffNumber = items[0].staffId;
+                                    staffNew.StaffIdentificationNumber =
+                                        items[0].staffIdCard;
 
-                                let dep = await Organization.findOne({
-                                    where: {
-                                        OrganizationCode: items[0].staffOrgId,
-                                    },
-                                });
-                                if (dep) {
-                                    staffNew.StaffOrganizationID =
-                                        dep.OrganizationID;
-                                }
-
-                                staffNew.StaffTitleID =
-                                    items[0].TitleName == "นางสาว"
-                                        ? 4
-                                        : items[0].TitleName == "นาย"
-                                        ? 3
-                                        : 5;
-                                staffNew.StaffGivenName = items[0].staffFName;
-                                staffNew.StaffSurname = items[0].staffLName;
-                                staffNew.StaffGenderID = items[0].staffSex;
-                                staffNew.StaffBirthdate =
-                                    items[0].staffBirthdate;
-                                staffNew.StaffStatus =
-                                    items[0].staff_status_name;
-                                staffNew.StaffAddress = items[0].staffAddress;
-                                staffNew.StaffMoo = items[0].staffMoo;
-                                staffNew.StaffVillageName =
-                                    items[0].staffVillageName;
-                                staffNew.StaffFloor = items[0].staffFloor;
-                                staffNew.StaffStreet = items[0].staffStreet;
-                                staffNew.StaffSubLane = items[0].staffSubLane;
-                                staffNew.StaffLane = items[0].staffLane;
-                                staffNew.StaffTumbolID =
-                                    items[0].staffTumbolCode;
-                                staffNew.StaffAmphurID =
-                                    items[0].staffAmphurCode;
-                                staffNew.StaffProvinceID =
-                                    items[0].staffProvinceCode;
-                                staffNew.StaffZipCode = items[0].staffZipCode;
-                                staffNew.StaffEmail =
-                                    items[0].staffEmailAddress;
-                                staffNew.StaffTelephone = items[0].staffTelNo;
-                                staffNew.StaffMobilePhone =
-                                    items[0].staffMobileNo;
-                                staffNew.StaffEducationID =
-                                    items[0].staffEducation;
-                                staffNew.StaffGraduateYear =
-                                    items[0].staffGraduateYear;
-                                staffNew.StaffPositionTypeID =
-                                    items[0].staffPositionLevel;
-                                staffNew.StaffMarriedStatusID = 6;
-
-                                let position = null;
-
-                                if (
-                                    items[0].emStaffPosition != "" &&
-                                    items[0].emStaffPosition != " " &&
-                                    items[0].emStaffPosition != null
-                                ) {
-                                    position = await Position.findOne({
+                                    let dep = await Organization.findOne({
                                         where: {
-                                            PositionCode:
-                                                items[0].emStaffPosition,
+                                            OrganizationCode:
+                                                items[0].staffOrgId,
                                         },
                                     });
-                                }
+                                    if (dep) {
+                                        staffNew.StaffOrganizationID =
+                                            dep.OrganizationID;
+                                    }
 
-                                if (position != null) {
-                                    staffNew.StaffPositionID =
-                                        position.PositionID;
+                                    staffNew.StaffTitleID =
+                                        items[0].TitleName == "นางสาว"
+                                            ? 4
+                                            : items[0].TitleName == "นาย"
+                                            ? 3
+                                            : 5;
+                                    staffNew.StaffGivenName =
+                                        items[0].staffFName;
+                                    staffNew.StaffSurname = items[0].staffLName;
+                                    staffNew.StaffGenderID = items[0].staffSex;
+                                    staffNew.StaffBirthdate =
+                                        items[0].staffBirthdate;
+                                    staffNew.StaffStatus =
+                                        items[0].staff_status_name;
+                                    staffNew.StaffAddress =
+                                        items[0].staffAddress;
+                                    staffNew.StaffMoo = items[0].staffMoo;
+                                    staffNew.StaffVillageName =
+                                        items[0].staffVillageName;
+                                    staffNew.StaffFloor = items[0].staffFloor;
+                                    staffNew.StaffStreet = items[0].staffStreet;
+                                    staffNew.StaffSubLane =
+                                        items[0].staffSubLane;
+                                    staffNew.StaffLane = items[0].staffLane;
+                                    staffNew.StaffTumbolID =
+                                        items[0].staffTumbolCode;
+                                    staffNew.StaffAmphurID =
+                                        items[0].staffAmphurCode;
+                                    staffNew.StaffProvinceID =
+                                        items[0].staffProvinceCode;
+                                    staffNew.StaffZipCode =
+                                        items[0].staffZipCode;
+                                    staffNew.StaffEmail =
+                                        items[0].staffEmailAddress;
+                                    staffNew.StaffTelephone =
+                                        items[0].staffTelNo;
+                                    staffNew.StaffMobilePhone =
+                                        items[0].staffMobileNo;
+                                    staffNew.StaffEducationID =
+                                        items[0].staffEducation;
+                                    staffNew.StaffGraduateYear =
+                                        items[0].staffGraduateYear;
+                                    staffNew.StaffPositionTypeID =
+                                        items[0].staffPositionLevel;
+                                    staffNew.StaffMarriedStatusID = 6;
+
+                                    let position = null;
+
+                                    if (
+                                        items[0].emStaffPosition != "" &&
+                                        items[0].emStaffPosition != " " &&
+                                        items[0].emStaffPosition != null
+                                    ) {
+                                        position = await Position.findOne({
+                                            where: {
+                                                PositionCode:
+                                                    items[0].emStaffPosition,
+                                            },
+                                        });
+                                    }
+
+                                    if (position != null) {
+                                        staffNew.StaffPositionID =
+                                            position.PositionID;
+                                    } else {
+                                        staffNew.StaffPositionID = 5;
+                                    }
+                                    staffNew.CreatedUserID = 1;
+                                    staffNew.createdAt = Date.now();
+                                    await staffNew.save();
+
+                                    let res = await this.findById(
+                                        staffNew.StaffID
+                                    );
+
+                                    resolve(res);
                                 } else {
-                                    staffNew.StaffPositionID = 5;
+                                    // items[0].staff_status_name
+                                    resolve({data: null,message: "สถานะเจ้าหน้าที่ ลาออกหรือเกษียณ"});
                                 }
-                                staffNew.CreatedUserID = 1;
-                                staffNew.createdAt = Date.now();
-                                await staffNew.save();
-
-                                let res = await this.findById(staffNew.StaffID);
-
-                                resolve(res);
                             } else {
                                 resolve(false);
                             }
