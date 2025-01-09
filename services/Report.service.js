@@ -1100,7 +1100,13 @@ const methods = {
 
                 // Query Staff
                 $whereStaff["isRemove"] = 0;
-                $whereStaff["isActive"] = 1;
+
+                if (req.query.StaffIsActive) {
+                    $whereStaff["isActive"] = req.query.StaffIsActive;
+                } else {
+                    $whereStaff["isActive"] = 1;
+                }
+
                 $whereStaff["StaffNumber"] = {
                     [Op.not]: null,
                 };
@@ -4908,6 +4914,13 @@ const methods = {
 
                 // Query Staff
                 $whereStaff["isRemove"] = 0;
+
+                if (req.query.StaffIsActive) {
+                    $whereStaff["isActive"] = req.query.StaffIsActive;
+                } else {
+                    $whereStaff["isActive"] = 1;
+                }
+
                 $whereStaff["StaffStatus"] = {
                     [Op.notIn]: ["ลาออก", "ตาย"],
                 };
@@ -5917,6 +5930,12 @@ const methods = {
                 if (req.query.StaffID) {
                     $where["ResponsibilityStaffID"] = req.query.StaffID;
                 }
+                let $whereStaff = {};
+                if (req.query.StaffIsActive) {
+                    $whereStaff["isActive"] = req.query.StaffIsActive;
+                } else {
+                    $whereStaff["isActive"] = 1;
+                }
 
                 $where["isActive"] = 1;
                 $where["isRemove"] = 0;
@@ -5996,6 +6015,7 @@ const methods = {
                         },
                         {
                             model: Staff,
+                            where: $whereStaff,
                         },
                     ],
                 });
