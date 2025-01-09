@@ -456,7 +456,6 @@ const methods = {
 
                         let res = await methods.findById(inserted.FarmerID);
                         //
-                        console.log(data1.data);
                         resolve({
                             res: res,
                             dataFromAPI: data1.data.result,
@@ -601,46 +600,58 @@ const methods = {
                         let dataFarmer =
                             data1.data.result[data1.data.result.length - 1];
 
-                        let province = Province.findOne({
+                        let data_address = JSON.parse(
+                            dataFarmer.farmer_address
+                        );
+
+                        let data_farm_address = JSON.parse(
+                            dataFarmer.farm_address
+                        );
+
+                        let province = await Province.findOne({
                             where: {
-                                ProvinceCode:
-                                    dataFarmer.farmerProvinceId.toString(),
+                                ProvinceCode: data_address.province_id
+                                    .toString()
+                                    .substring(0, 2),
                             },
                         });
-                        let amphur = Amphur.findOne({
+                        let amphur = await Amphur.findOne({
                             where: {
-                                AmphurCode:
-                                    dataFarmer.farmerAmphurId.toString(),
+                                AmphurCode: data_address.amphur_id
+                                    .toString()
+                                    .substring(0, 4),
                             },
                         });
-                        let tumbol = Tumbol.findOne({
+                        let tumbol = await Tumbol.findOne({
                             where: {
-                                TumbolCode:
-                                    dataFarmer.farmerTambolId.toString(),
+                                TumbolCode: data_address.tambol_id
+                                    .toString()
+                                    .substring(0, 6),
                             },
                         });
 
                         let data = {
-                            FarmerNumber: dataFarmer.farmerId,
+                            FarmerNumber: dataFarmer.farm_code,
                             IdentificationNumber: dataFarmer.pid,
-                            GivenName: dataFarmer.firstName,
-                            Surname: dataFarmer.lastName,
-                            FarmerTypeID:
-                                dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
-                                    ? 1
-                                    : dataFarmer.farmerTypeName == "นิติบุคคล"
-                                    ? 2
-                                    : dataFarmer.farmerTypeName == "หน่วยงาน"
-                                    ? 3
-                                    : null,
-                            HouseBuildingNumber: dataFarmer.farmerHomeNo,
+                            GivenName: dataFarmer.farmer_name,
+                            Surname: dataFarmer.farmer_lastname,
+                            FarmerTypeID: 1,
+                            // FarmerTypeID:
+                            //     dataFarmer.farmerTypeName == "เกษตรกรทั่วไป"
+                            //         ? 1
+                            //         : dataFarmer.farmerTypeName == "นิติบุคคล"
+                            //         ? 2
+                            //         : dataFarmer.farmerTypeName == "หน่วยงาน"
+                            //         ? 3
+                            //         : null,
+                            HouseBuildingNumber: data_address.home_no,
                             HouseProvinceID: province
                                 ? province.ProvinceID
                                 : null,
                             HouseAmphurID: amphur ? amphur.AmphurID : null,
                             HouseTumbolID: tumbol ? tumbol.TumbolID : null,
                             HouseZipCode: tumbol ? tumbol.Zipcode : null,
-                            HouseVillageName: dataFarmer.farmerVillageName,
+                            HouseVillageName: data_address.village_name,
                             CreatedUserID: 1,
                             FarmerRegisterStatus: 2,
                         };
