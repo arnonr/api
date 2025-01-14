@@ -365,10 +365,9 @@ const methods = {
                         const obj = new db(data);
                         const inserted = await obj.save();
 
-                        // 510702091590005
                         let resFarm = await Farm.findOne({
                             where: {
-                                FarmIdentificationNumber: dataFarmer.farm_code,
+                                FarmerID: inserted.FarmerID,
                             },
                         });
 
@@ -407,7 +406,7 @@ const methods = {
                             });
 
                             let dataFarm = {
-                                FarmIdentificationNumber: dataFarmer.farm_code,
+                                FarmIdentificationNumber: methods.GenerateFarmNumber(farmTumbol.TumbolID),
                                 FarmName: dataFarmer.farm_name
                                     ? dataFarmer.farm_name
                                     : dataFarmer.farmer_name +
@@ -452,7 +451,6 @@ const methods = {
                             check = 2;
                             newFarmID = objFarm.FarmID;
                         }
-                        //
 
                         let res = await methods.findById(inserted.FarmerID);
                         //
@@ -880,11 +878,15 @@ const methods = {
 
                         let check = 1;
 
-                        let resFarm = await Farm.findOne({
-                            where: {
-                                FarmIdentificationNumber: dataFarmer.farm_code,
-                            },
-                        });
+                        let resFarm = null;
+
+                        if (obj2) {
+                            resFarm = await Farm.findOne({
+                                where: {
+                                    FarmerID: obj2.FarmerID,
+                                },
+                            });
+                        }
 
                         if (resFarm) {
                             let farmProvince = await Province.findOne({
@@ -917,7 +919,6 @@ const methods = {
                                 },
                             });
                             let dataFarm = {
-                                FarmIdentificationNumber: dataFarmer.farm_code,
                                 FarmName: dataFarmer.farm_name
                                     ? dataFarmer.farm_name
                                     : dataFarmer.farmer_name +
@@ -985,6 +986,58 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            }
+        });
+    },
+
+
+    GenerateFarmNumber(tumbolID) {
+        // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
+        return new Promise(async (resolve, reject) => {
+            try {
+                // let farm1 = await db.max("FarmIdentificationNumber", {
+                //   where: { OrganizationID: OrganizationID },
+                // });
+
+                let farm = await db.max("FarmIdentificationNumber", {
+                    //   where: {
+                    //     FarmProvinceID: req.query.ProvinceID,
+                    //     FarmAmphurID: req.query.AmphurID,
+                    //     FarmTumbolID: req.query.TumbolID,
+                    //   },
+                    where: {
+                        FarmIdentificationNumber: {
+                            // LIKE: req.query.ProvinceID+req.query.AmphurID+req.query.TumbolID+'%'
+                            [Op.like]: req.query.TumbolID + "%",
+                        },
+                        // FarmAmphurID: req.query.AmphurID,
+                        // FarmTumbolID: req.query.TumbolID,
+                    },
+                });
+                // console.log(farm)
+
+                // จากจังหวัด อำเภอ ตำบล1
+
+                if (farm) {
+                    var FarmNumberGenerate = parseInt(farm) + 1;
+                    //   tumbol.TumbolCode.substring(0, 6) + "0001"
+                } else {
+                    // let organization = await Organization.findByPk(OrganizationID);
+                    // if (!organization) {
+                    //   reject(ErrorNotFound("Organization ID: not found"));
+                    // } else {
+                    let tumbol = await Tumbol.findByPk(req.query.TumbolID);
+                    console.log(tumbol);
+                    FarmNumberGenerate = parseInt(
+                        tumbol.TumbolCode.substring(0, 6) + "0001"
+                        // req.query.TumbolID + "0001"
+                    );
+                    // }
+                }
+
+                resolve({ FarmNumberGenerate: FarmNumberGenerate });
+            } catch (error) {
+                reject(error);
             }
         });
     },
