@@ -578,13 +578,15 @@ const methods = {
                         where: { StaffID: data.StaffID },
                     });
 
+                    console.log(objUser);
+
                     if (objUser) {
                         await User.update(
                             {
                                 isActive: 0,
                             },
                             {
-                                where: { UserID: objUser.UserID },
+                                where: { StaffID: objUser.StaffID },
                             }
                         );
                     }
@@ -833,7 +835,11 @@ const methods = {
                                     resolve(res);
                                 } else {
                                     // items[0].staff_status_name
-                                    resolve({data: null,message: "สถานะเจ้าหน้าที่ ลาออกหรือเกษียณ"});
+                                    resolve({
+                                        data: null,
+                                        message:
+                                            "สถานะเจ้าหน้าที่ ลาออกหรือเกษียณ",
+                                    });
                                 }
                             } else {
                                 resolve(false);
