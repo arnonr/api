@@ -1227,7 +1227,7 @@ const methods = {
     },
 
 
-    GenerateFarmNumber(tumbolID) {
+    GenerateFarmNumber(TumbolID) {
         // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
         return new Promise(async (resolve, reject) => {
             try {
@@ -1244,7 +1244,7 @@ const methods = {
                     where: {
                         FarmIdentificationNumber: {
                             // LIKE: req.query.ProvinceID+req.query.AmphurID+req.query.TumbolID+'%'
-                            [Op.like]: req.query.TumbolID + "%",
+                            [Op.like]: TumbolID + "%",
                         },
                         // FarmAmphurID: req.query.AmphurID,
                         // FarmTumbolID: req.query.TumbolID,
@@ -1262,7 +1262,7 @@ const methods = {
                     // if (!organization) {
                     //   reject(ErrorNotFound("Organization ID: not found"));
                     // } else {
-                    let tumbol = await Tumbol.findByPk(req.query.TumbolID);
+                    let tumbol = await Tumbol.findByPk(TumbolID);
                     console.log(tumbol);
                     FarmNumberGenerate = parseInt(
                         tumbol.TumbolCode.substring(0, 6) + "0001"

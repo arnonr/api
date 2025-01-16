@@ -589,6 +589,34 @@ const methods = {
         });
     },
 
+    GenerateNumberDraft(req) {
+        return new Promise(async (resolve, reject) => {
+            try {
+
+                let farm = await db.max("FarmIdentificationNumber", {
+                    where: {
+                        FarmIdentificationNumber: {
+                            [Op.like]: req.query.TumbolID + "%",
+                        },
+                    },
+                });
+
+                if (farm) {
+                    var FarmNumberGenerate = parseInt(farm) + 1;
+                } else {
+                    let tumbol = await Tumbol.findByPk(req.query.TumbolID);
+                    FarmNumberGenerate = parseInt(
+                        tumbol.TumbolCode.substring(0, 6) + "0001"
+                    );
+                }
+
+                resolve({ FarmNumberGenerate: FarmNumberGenerate });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
     photo(id, filename) {
         return new Promise(async (resolve, reject) => {
             try {
