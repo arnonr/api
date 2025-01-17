@@ -29,6 +29,11 @@ router.get(
 );
 
 router.get(
+    "/update-all-farmer-farmer-with-eregis",
+    controllers.onUpdateAllFarmerWithERegis
+);
+
+router.get(
     "/:id",
     // auth.required,
     // checkPermission(resource, "read"),

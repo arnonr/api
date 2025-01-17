@@ -29,6 +29,16 @@ const methods = {
     }
   },
 
+  async onUpdateAllFarmerWithERegis(req, res) {
+    try {
+      let result = await Service.updateAllFarmerWithERegis();
+      res.success(result, 201);
+    } catch (error) {
+      res.error(error);
+    }
+  },
+
+
   async onGetAll(req, res) {
     try {
       let result = await Service.find(req);
