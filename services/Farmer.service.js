@@ -1012,7 +1012,7 @@ const methods = {
                     if (data1.data.result.length != 0) {
                         let dataFarmer =
                             data1.data.result[data1.data.result.length - 1];
-                        console.log(dataFarmer);
+                        // console.log(dataFarmer);
 
                         let data_address = JSON.parse(
                             dataFarmer.farmer_address
@@ -1097,7 +1097,7 @@ const methods = {
 
                         data.createdAt = fn("GETDATE");
 
-                        console.log(data);
+                        // console.log(data);
 
                         const obj2 = await db.findOne({
                             where: { IdentificationNumber: dataFarmer.pid },
@@ -1105,7 +1105,7 @@ const methods = {
 
                         if (obj2) {
                             data.FarmerID = obj2.FarmerID;
-                            console.log(data);
+                            // console.log(data);
                             db.update(data, {
                                 where: { IdentificationNumber: dataFarmer.pid },
                             });
