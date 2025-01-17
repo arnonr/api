@@ -20,9 +20,9 @@ const methods = {
     }
   },
 
-  async onfetchAPIUpdateFarmWithERegis(req, res) {
+  async onfetchAPIUpdateFarmerWithERegis(req, res) {
     try {
-      let result = await Service.fetchAPIUpdateFarmWithERegis(req);
+      let result = await Service.fetchAPIUpdateFarmerWithERegis(req);
       res.success(result, 201);
     } catch (error) {
       res.error(error);

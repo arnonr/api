@@ -25,7 +25,7 @@ router.get(
     "/fetch-api-farmer-with-eregis",
     // auth.required,
     // checkPermission(resource, "read"),
-    controllers.onfetchAPIUpdateFarmWithERegis
+    controllers.onfetchAPIUpdateFarmerWithERegis
 );
 
 router.get(

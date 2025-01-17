@@ -889,79 +889,79 @@ const methods = {
                         }
 
                         if (resFarm) {
-                            let farmProvince = await Province.findOne({
-                                where: {
-                                    ProvinceCode: data_farm_address.province_id
-                                        .toString()
-                                        .substring(0, 2),
-                                },
-                            });
-                            let farmAmphur = await Amphur.findOne({
-                                where: {
-                                    AmphurCode: data_farm_address.amphur_id
-                                        .toString()
-                                        .substring(0, 4),
-                                },
-                            });
-                            let farmTumbol = await Tumbol.findOne({
-                                where: {
-                                    TumbolCode: data_farm_address.tambol_id
-                                        .toString()
-                                        .substring(0, 6),
-                                },
-                            });
-                            let farmOrganization = await Organization.findOne({
-                                where: {
-                                    OrganizationAmphurID: farmAmphur.AmphurID,
-                                    OrganizationName: {
-                                        [Op.like]: "สำนักงานปศุสัตว์อำเภอ%",
-                                    },
-                                },
-                            });
-                            let dataFarm = {
-                                FarmName: dataFarmer.farm_name
-                                    ? dataFarmer.farm_name
-                                    : dataFarmer.farmer_name +
-                                      " " +
-                                      dataFarmer.farmer_lastname,
-                                FarmAddress: data_farm_address.home_no,
-                                FarmerID: obj2.FarmerID,
-                                FarmMoo: data_farm_address.village_name,
-                                FarmTumbolID: farmTumbol
-                                    ? farmTumbol.TumbolID
-                                    : null,
-                                FarmAmphurID: farmAmphur
-                                    ? farmAmphur.AmphurID
-                                    : null,
-                                FarmProvinceID: farmProvince
-                                    ? farmProvince.ProvinceID
-                                    : null,
-                                FarmZipCode: farmTumbol
-                                    ? farmTumbol.Zipcode
-                                    : null,
-                                ResidenceLatitude: () => {
-                                    dataFarmer.farm_coordinate.split(" , ")[0];
-                                },
-                                ResidenceLongitude: () => {
-                                    dataFarmer.farm_coordinate.split(" , ")[1];
-                                },
-                                OrganizationID: farmOrganization.OrganizationID,
-                                OrganizationZoneID:
-                                    farmOrganization.OrganizationZoneID,
-                                AIZoneID: farmOrganization.OrganizationZoneID,
-                                FarmType: "ฟาร์มมาตรฐาน",
-                                FarmGrade: "A",
-                                FarmStatusID: 1,
-                                FarmAnimalType: "[1,2,3]",
-                                FarmRegisterDate: dataFarmer.farm_create_date,
-                                isActive: 1,
-                                CreatedUserID: 1,
-                                createdAt: fn("GETDATE"),
-                            };
+                            // let farmProvince = await Province.findOne({
+                            //     where: {
+                            //         ProvinceCode: data_farm_address.province_id
+                            //             .toString()
+                            //             .substring(0, 2),
+                            //     },
+                            // });
+                            // let farmAmphur = await Amphur.findOne({
+                            //     where: {
+                            //         AmphurCode: data_farm_address.amphur_id
+                            //             .toString()
+                            //             .substring(0, 4),
+                            //     },
+                            // });
+                            // let farmTumbol = await Tumbol.findOne({
+                            //     where: {
+                            //         TumbolCode: data_farm_address.tambol_id
+                            //             .toString()
+                            //             .substring(0, 6),
+                            //     },
+                            // });
+                            // let farmOrganization = await Organization.findOne({
+                            //     where: {
+                            //         OrganizationAmphurID: farmAmphur.AmphurID,
+                            //         OrganizationName: {
+                            //             [Op.like]: "สำนักงานปศุสัตว์อำเภอ%",
+                            //         },
+                            //     },
+                            // });
+                            // let dataFarm = {
+                            //     FarmName: dataFarmer.farm_name
+                            //         ? dataFarmer.farm_name
+                            //         : dataFarmer.farmer_name +
+                            //           " " +
+                            //           dataFarmer.farmer_lastname,
+                            //     FarmAddress: data_farm_address.home_no,
+                            //     FarmerID: obj2.FarmerID,
+                            //     FarmMoo: data_farm_address.village_name,
+                            //     FarmTumbolID: farmTumbol
+                            //         ? farmTumbol.TumbolID
+                            //         : null,
+                            //     FarmAmphurID: farmAmphur
+                            //         ? farmAmphur.AmphurID
+                            //         : null,
+                            //     FarmProvinceID: farmProvince
+                            //         ? farmProvince.ProvinceID
+                            //         : null,
+                            //     FarmZipCode: farmTumbol
+                            //         ? farmTumbol.Zipcode
+                            //         : null,
+                            //     ResidenceLatitude: () => {
+                            //         dataFarmer.farm_coordinate.split(" , ")[0];
+                            //     },
+                            //     ResidenceLongitude: () => {
+                            //         dataFarmer.farm_coordinate.split(" , ")[1];
+                            //     },
+                            //     OrganizationID: farmOrganization.OrganizationID,
+                            //     OrganizationZoneID:
+                            //         farmOrganization.OrganizationZoneID,
+                            //     AIZoneID: farmOrganization.OrganizationZoneID,
+                            //     FarmType: "ฟาร์มมาตรฐาน",
+                            //     FarmGrade: "A",
+                            //     FarmStatusID: 1,
+                            //     FarmAnimalType: "[1,2,3]",
+                            //     FarmRegisterDate: dataFarmer.farm_create_date,
+                            //     isActive: 1,
+                            //     CreatedUserID: 1,
+                            //     createdAt: fn("GETDATE"),
+                            // };
 
-                            await Farm.update(dataFarm, {
-                                where: { FarmID: resFarm.FarmID },
-                            });
+                            // await Farm.update(dataFarm, {
+                            //     where: { FarmID: resFarm.FarmID },
+                            // });
 
                             check = 2;
                         } else {
@@ -1225,7 +1225,6 @@ const methods = {
             }
         });
     },
-
 
     GenerateFarmNumber(TumbolID) {
         // รหัสหน่วยงาน + running number 4 หลัก เช่น 1902000001
