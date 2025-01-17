@@ -1206,10 +1206,11 @@ const methods = {
                         let res = await methods.findById(obj2.FarmerID);
 
                         resolve({
-                            res: res,
-                            dataFromAPI: data1.data.result,
-                            farmer: dataFarmer,
-                            check: check,
+                            message: "success",
+                            // res: res,
+                            // dataFromAPI: data1.data.result,
+                            // farmer: dataFarmer,
+                            // check: check,
                         });
                     } else {
                         reject(ErrorNotFound("IdentificationNumber Not Found"));
