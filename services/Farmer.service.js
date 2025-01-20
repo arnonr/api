@@ -1232,9 +1232,15 @@ const methods = {
         console.log(tokenAccess);
 
         // ดึงข้อมูล Farmer ที่มีเลขบัตรประชาชน
+        // const farmer_all = await db.findAll({
+        //     where: { IdentificationNumber: { [Op.not]: null } },
+        // });
+
         const farmer_all = await db.findAll({
-            where: { IdentificationNumber: { [Op.not]: null } },
+            where: fn("LEN", fn.col("FarmerNumber")),
+            [Op.ne]: 15,
         });
+
         //วนรอบข้อมูลที่ได้และ เรียกใช้ api fetchAPIUpdateFarmerWithERegis เพื่ออัพเดท
         for (let i = 0; i < farmer_all.length; i++) {
             let farmer = farmer_all[i];
