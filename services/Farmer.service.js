@@ -3,6 +3,7 @@ const config = require("../configs/app"),
     db = require("../models/Farmer"),
     { Op, fn } = require("sequelize");
 var FormData = require("form-data");
+const Sequelize = require("sequelize");
 
 const Farmer = require("../models/Farmer");
 const Farm = require("../models/Farm");
@@ -1237,8 +1238,12 @@ const methods = {
         // });
 
         const farmer_all = await db.findAll({
-            where: fn("LEN", fn.col("FarmerNumber")),
-            [Op.ne]: 15,
+            where: Sequelize.where(
+                Sequelize.fn("LEN", Sequelize.col("FarmerNumber")),
+                {
+                    [Sequelize.Op.ne]: 15,
+                }
+            ),
         });
 
         //วนรอบข้อมูลที่ได้และ เรียกใช้ api fetchAPIUpdateFarmerWithERegis เพื่ออัพเดท
