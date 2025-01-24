@@ -7,6 +7,7 @@ const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
 const axios = require("axios");
 const TransferEmbryo = require("../models/TransferEmbryo");
+const IBeef_PAR = require("../models/IBeef_PAR");
 
 const methods = {
     scopeSearch(req, limit, offset) {
@@ -214,6 +215,39 @@ const methods = {
                     { ProductionStatusID: 1, updatedAt: fn("GETDATE") },
                     { where: { AnimalID: inserted.AnimalID } }
                 );
+
+                const existingRecord = await IBeef_PAR.findOne({
+                    where: {
+                        PAR: data.PAR,
+                        AnimalID: data.AnimalID,
+                    },
+                });
+
+                if (existingRecord) {
+                    // Update existing record
+                    await IBeef_PAR.update(
+                        {
+                            ProductionStatusID: 1,
+                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            update_by: "SYSTEM",
+                        },
+                        {
+                            where: {
+                                PAR: data.PAR,
+                                AnimalID: data.AnimalID,
+                            },
+                        }
+                    );
+                } else {
+                    // Create new record
+                    await IBeef_PAR.create({
+                        PAR: data.PAR,
+                        ProductionStatusID: 1,
+                        AnimalID: data.AnimalID,
+                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        create_by: "SYSTEM",
+                    });
+                }
 
                 let res = methods.findById(inserted.AbortCheckupID);
 

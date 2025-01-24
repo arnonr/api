@@ -7,6 +7,7 @@ const AI = require("../models/AI");
 const Animal = require("../models/Animal");
 const Semen = require("../models/Semen");
 const Farm = require("../models/Farm");
+const IBeef_PAR = require("../models/IBeef_PAR");
 const PregnancyCheckStatus = require("../models/PregnancyCheckStatus");
 const PregnancyCheckup = require("../models/PregnancyCheckup");
 
@@ -382,6 +383,45 @@ const methods = {
                     { where: { AnimalID: inserted.AnimalID } }
                 );
 
+                // data.PAR
+                // ProductionStatusID: 4
+                // AnimalID:
+                // LastActivifyDate :
+
+                const existingRecord = await IBeef_PAR.findOne({
+                    where: {
+                        PAR: data.PAR,
+                        AnimalID: data.AnimalID,
+                    },
+                });
+
+                if (existingRecord) {
+                    // Update existing record
+                    await IBeef_PAR.update(
+                        {
+                            PAR: data.PAR,
+                            ProductionStatusID: 4,
+                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            update_by: data.CreatedUserID,
+                        },
+                        {
+                            where: {
+                                PAR: data.PAR,
+                                AnimalID: data.AnimalID,
+                            },
+                        }
+                    );
+                } else {
+                    // Create new record
+                    await IBeef_PAR.create({
+                        PAR: data.PAR,
+                        ProductionStatusID: 4,
+                        AnimalID: data.AnimalID,
+                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        create_by: data.CreatedUserID,
+                    });
+                }
+
                 let res = methods.findById(inserted.AIID);
 
                 resolve(res);
@@ -403,7 +443,9 @@ const methods = {
 
                 data.updatedAt = fn("GETDATE");
 
-                await db.update(data, { where: { AIID: id } });
+                const updated_item = await db.update(data, {
+                    where: { AIID: id },
+                });
 
                 let res = methods.findById(data.AIID);
 

@@ -102,7 +102,7 @@ const methods = {
 
     async onGenerateNumber(req, res) {
         try {
-            let result = await Service.GenerateNumber(
+            let result = await Service.GenerateNumber2(
                 req.query.FarmID,
                 req.query.BirthDate,
                 req.query.AnimalTypeID

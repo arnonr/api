@@ -179,6 +179,7 @@ const Cart = require("./Cart");
 const LoginLog = require("./LoginLog");
 
 const News = require("./News");
+const IBeef_PAR = require("./IBeef_PAR");
 const UserFarmer = require("./UserFarmer");
 
 // Associate

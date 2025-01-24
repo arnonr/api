@@ -3091,6 +3091,44 @@ const methods = {
         });
     },
 
+    GenerateNumber2(FarmID, BirthDate, AnimalTypeID) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // req.query.TumbolID
+                let tokenAccess = "";
+
+                const farm = await Farm.findByPk(FarmID, {
+                    include: { all: true, required: false },
+                });
+
+                const animalType = await AnimalType.findByPk(AnimalTypeID);
+
+                console.log(animalType.AnimalTypeCode);
+                console.log(animalType.AnimalSubGroupTypeID);
+                console.log(farm.Amphur.AmphurCode.slice(0, 2));
+                console.log(farm.Amphur.AmphurCode.slice(-2));
+                console.log(BirthDate);
+
+                const url = `https://bblp-ibeef.dld.go.th/api/v1/center/gen_cow_code?animal_type=${animalType.AnimalTypeCode}&animal_sub_type=${animalType.AnimalSubGroupTypeID}&date_joining=${BirthDate}&province_code=${farm.Amphur.AmphurCode.slice(0,2)}&amphur_code=${farm.Amphur.AmphurCode.slice(-2)}`;
+
+                console.log(url);
+
+                let data = await axios.get(url);
+
+                console.log(data.data);
+
+                resolve({
+                    AnimalNumberGenerate: data.data.items.center_code,
+                    AnimalIdentificationID: data.data.items.center_code,
+                    AnimalEarGenerate: data.data.items.center_code,
+                    AnimalNationalID: data.data.items.center_code,
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
     GenerateBreed(AnimalFatherID, AnimalMotherID) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -3534,9 +3572,6 @@ const methods = {
         // Where
         let $where = {};
 
-
-
-
         if (req.query.AnimalID) $where["AnimalID"] = req.query.AnimalID;
 
         if (req.query.AnimalIdentificationID)
@@ -3632,7 +3667,7 @@ const methods = {
         }
 
         let WhereFarm = {};
-        
+
         WhereFarm["FarmIdentificationNumber"] = req.query.FarmCode;
 
         if (req.query.FarmProvinceID) {
@@ -4064,9 +4099,6 @@ const methods = {
         const _q = methods.scopeSearch2(req, limit, offset);
         return new Promise(async (resolve, reject) => {
             try {
-
-
-
                 let farm = await Farm.findOne({
                     where: {
                         FarmIdentificationNumber: req.query.FarmCode,
@@ -4087,17 +4119,15 @@ const methods = {
                     ],
                 });
 
-                if(!farm){
+                if (!farm) {
                     throw new Error("ไม่พบฟาร์ม");
                 }
-
 
                 Promise.all([await db.findAll(_q.query), db.count(_q.query)])
                     .then(async (result) => {
                         let rows = result[0],
                             count = rows.length;
 
-                        
                         let countAnimal = {
                             all: 0,
                             child: 0,
@@ -4155,8 +4185,6 @@ const methods = {
 
                         let animal = await getWithPromiseAll();
 
-
-
                         resolve({
                             farm: farm,
                             total: count,
@@ -4168,7 +4196,7 @@ const methods = {
                         });
                     })
                     .catch((error) => {
-                        reject(error);   
+                        reject(error);
                     });
             } catch (error) {
                 reject(error);

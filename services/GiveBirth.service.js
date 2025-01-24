@@ -2,6 +2,7 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/GiveBirth"),
     { Op, fn } = require("sequelize");
+    const dayjs = require("dayjs");
 
 const Staff = require("../models/Staff");
 const Animal = require("../models/Animal");
@@ -12,6 +13,7 @@ const Semen = require("../models/Semen");
 const TransferEmbryo = require("../models/TransferEmbryo");
 const Embryo = require("../models/Embryo");
 const axios = require("axios");
+const IBeef_PAR = require("../models/IBeef_PAR");
 
 const methods = {
     scopeSearch(req, limit, offset) {
@@ -320,6 +322,39 @@ const methods = {
                     { where: { AnimalID: inserted.AnimalID } }
                 );
 
+                const existingRecord = await IBeef_PAR.findOne({
+                    where: {
+                        PAR: inserted.PAR,
+                        AnimalID: inserted.AnimalID,
+                    },
+                });
+
+                if (existingRecord) {
+                    // Update existing record
+                    await IBeef_PAR.update(
+                        {
+                            ProductionStatusID: 2,
+                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            update_by: "SYSTEM",
+                        },
+                        {
+                            where: {
+                                PAR: inserted.PAR,
+                                AnimalID: inserted.AnimalID,
+                            },
+                        }
+                    );
+                } else {
+                    // Create new record
+                    await IBeef_PAR.create({
+                        PAR: inserted.PAR,
+                        ProductionStatusID: 2,
+                        AnimalID: inserted.AnimalID,
+                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        create_by: "SYSTEM",
+                    });
+                }
+
                 let res = methods.findById(inserted.GiveBirthID);
 
                 if (inserted.TransferEmbryoID != null) {
@@ -385,14 +420,12 @@ const methods = {
 
                 //
                 // if(){
-                    let animal = await Animal.findByPk(obj.AnimalID);
+                let animal = await Animal.findByPk(obj.AnimalID);
 
-
-                    animal.ProductionStatusID = 6;
-                    animal.AnimalPar = animal.AnimalPar - 1;
-                    animal.save();
+                animal.ProductionStatusID = 6;
+                animal.AnimalPar = animal.AnimalPar - 1;
+                animal.save();
                 // }
-              
 
                 // await Animal.update(
                 //   {

@@ -3,6 +3,7 @@ const config = require("../configs/app"),
     db = require("../models/Farm"),
     { Op, col, fn, where } = require("sequelize");
 const Sequelize = require("sequelize");
+const axios = require("axios");
 
 const FarmToProject = require("../models/FarmToProject");
 const Project = require("../models/Project");
@@ -589,10 +590,26 @@ const methods = {
         });
     },
 
+    GenerateNumber2(req) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let tokenAccess = "";
+                let data = await axios.get(
+                    `https://bblp-ibeef.dld.go.th/api/v1/center/generateCode/` +
+                        req.query.TumbolID
+                );
+
+
+                resolve({ FarmNumberGenerate: data.data.items.code });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
     GenerateNumberDraft(req) {
         return new Promise(async (resolve, reject) => {
             try {
-
                 let farm = await db.max("FarmIdentificationNumber", {
                     where: {
                         FarmIdentificationNumber: {
@@ -1229,8 +1246,7 @@ const methods = {
                 if (req.query.FarmerNumber) {
                     farmer = await Farmer.findOne({
                         where: {
-                            FarmerNumber:
-                                req.query.FarmerNumber,
+                            FarmerNumber: req.query.FarmerNumber,
                         },
                     });
                 }
@@ -1246,12 +1262,11 @@ const methods = {
 
                 if (!farmer) {
                     throw new Error("ไม่พบข้อมูลเกษตรกร");
-                }else{
+                } else {
                     req.query.FarmerID = farmer.FarmerID;
                 }
 
-
-        const _q = await methods.scopeSearchFarmer(req, limit, offset);
+                const _q = await methods.scopeSearchFarmer(req, limit, offset);
 
                 Promise.all([
                     db.findAll({ ..._q.query, limit: limit, offset: offset }),

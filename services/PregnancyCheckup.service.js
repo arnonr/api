@@ -2,11 +2,14 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/PregnancyCheckup"),
     { Op, fn } = require("sequelize");
+    const dayjs = require("dayjs");
 
 const Staff = require("../models/Staff");
 const AbortCheckup = require("../models/AbortCheckup");
 const GiveBirth = require("../models/GiveBirth");
 const Animal = require("../models/Animal");
+const AI = require("../models/AI");
+const IBeef_PAR = require("../models/IBeef_PAR");
 const TransferEmbryo = require("../models/TransferEmbryo");
 const axios = require("axios");
 
@@ -239,6 +242,41 @@ const methods = {
                     { where: { AnimalID: obj.AnimalID } }
                 );
 
+                const ai = await AI.findByPk(data.AIID, {});
+
+                const existingRecord = await IBeef_PAR.findOne({
+                    where: {
+                        PAR: ai.PAR,
+                        AnimalID: data.AnimalID,
+                    },
+                });
+
+                if (existingRecord) {
+                    // Update existing record
+                    await IBeef_PAR.update(
+                        {
+                            ProductionStatusID: productionStatusID,
+                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            update_by: "SYSTEM",
+                        },
+                        {
+                            where: {
+                                PAR: ai.PAR,
+                                AnimalID: data.AnimalID,
+                            },
+                        }
+                    );
+                } else {
+                    // Create new record
+                    await IBeef_PAR.create({
+                        PAR: ai.PAR,
+                        ProductionStatusID: productionStatusID,
+                        AnimalID: data.AnimalID,
+                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        create_by: "SYSTEM",
+                    });
+                }
+
                 let res = methods.findById(inserted.PregnancyCheckupID);
 
                 if (inserted.TransferEmbryoID != null) {
@@ -279,7 +317,6 @@ const methods = {
                 data.PregnancyCheckupID = parseInt(id);
 
                 data.updatedAt = fn("GETDATE");
-
 
                 data.createdAt = undefined;
                 await db.update(data, { where: { PregnancyCheckupID: id } });

@@ -105,7 +105,7 @@ const methods = {
 
   async onGenerateNumber(req, res) {
     try {
-      let result = await Service.GenerateNumber(req);
+      let result = await Service.GenerateNumber2(req);
       res.success(result);
     } catch (error) {
       res.error(error);
