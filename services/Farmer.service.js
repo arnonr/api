@@ -240,8 +240,8 @@ const methods = {
 
     async getToken() {
         var bodyFormData = new FormData();
-        bodyFormData.append("username", "biotech");
-        bodyFormData.append("password", "!Q@WeRegist");
+        bodyFormData.append("username", "aidm");
+        bodyFormData.append("password", "@rcqc6pYWQ2$ssAd");
         bodyFormData.append("grant_type", "password");
 
         let data = await axios.post(
