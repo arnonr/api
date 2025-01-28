@@ -595,12 +595,12 @@ const methods = {
             try {
                 let tokenAccess = "";
                 let data = await axios.get(
-                    `https://bblp-ibeef.dld.go.th/api/v1/center/generateCode/` +
+                    `https://bblp-ibeef.dld.go.th/api/v2/center/generateCode/` +
                         req.query.TumbolID
                 );
 
 
-                resolve({ FarmNumberGenerate: data.data.items.code });
+                resolve({ FarmNumberGenerate: data.data.items.code,Farmdd: 'dd' });
             } catch (error) {
                 reject(error);
             }

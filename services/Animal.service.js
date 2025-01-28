@@ -3109,7 +3109,7 @@ const methods = {
                 console.log(farm.Amphur.AmphurCode.slice(-2));
                 console.log(BirthDate);
 
-                const url = `https://bblp-ibeef.dld.go.th/api/v1/center/gen_cow_code?animal_type=${animalType.AnimalTypeCode}&animal_sub_type=${animalType.AnimalSubGroupTypeID}&date_joining=${BirthDate}&province_code=${farm.Amphur.AmphurCode.slice(0,2)}&amphur_code=${farm.Amphur.AmphurCode.slice(-2)}`;
+                const url = `https://bblp-ibeef.dld.go.th/api/v2/center/gen_cow_code?animal_type=${animalType.AnimalTypeCode}&animal_sub_type=${animalType.AnimalSubGroupTypeID}&date_joining=${BirthDate}&province_code=${farm.Amphur.AmphurCode.slice(0,2)}&amphur_code=${farm.Amphur.AmphurCode.slice(-2)}`;
 
                 console.log(url);
 
