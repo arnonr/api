@@ -246,6 +246,7 @@ const methods = {
                         AnimalID: data.AnimalID,
                         LasActivityDate: dayjs().format("YYYY-MM-DD"),
                         create_by: "SYSTEM",
+                        create_date: new Date(),
                     });
                 }
 

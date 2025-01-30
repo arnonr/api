@@ -2,7 +2,7 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/PregnancyCheckup"),
     { Op, fn } = require("sequelize");
-    const dayjs = require("dayjs");
+const dayjs = require("dayjs");
 
 const Staff = require("../models/Staff");
 const AbortCheckup = require("../models/AbortCheckup");
@@ -274,6 +274,7 @@ const methods = {
                         AnimalID: data.AnimalID,
                         LasActivityDate: dayjs().format("YYYY-MM-DD"),
                         create_by: "SYSTEM",
+                        create_date: new Date(),
                     });
                 }
 

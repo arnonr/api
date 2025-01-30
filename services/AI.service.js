@@ -419,6 +419,7 @@ const methods = {
                         AnimalID: data.AnimalID,
                         LasActivityDate: dayjs().format("YYYY-MM-DD"),
                         create_by: data.CreatedUserID,
+                        create_date: new Date(),
                     });
                 }
 
