@@ -408,7 +408,7 @@ const methods = {
 
                             let dataFarm = {
                                 FarmIdentificationNumber:
-                                    methods.GenerateFarmNumber(
+                                    methods.GenerateFarmNumber2(
                                         farmTumbol.TumbolID
                                     ),
                                 FarmName: dataFarmer.farm_name
@@ -1513,7 +1513,7 @@ const methods = {
                 //   where: { OrganizationID: OrganizationID },
                 // });
 
-                let farm = await db.max("FarmIdentificationNumber", {
+                let farm = await Farm.max("FarmIdentificationNumber", {
                     //   where: {
                     //     FarmProvinceID: req.query.ProvinceID,
                     //     FarmAmphurID: req.query.AmphurID,
@@ -1550,6 +1550,22 @@ const methods = {
                 }
 
                 resolve({ FarmNumberGenerate: FarmNumberGenerate });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    GenerateFarmNumber2(TumbolID) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let tokenAccess = "";
+                let data = await axios.get(
+                    `https://bblp-ibeef.dld.go.th/api/v2/center/generateCode/` +
+                        TumbolID
+                );
+
+                resolve({ FarmNumberGenerate: data.data.items.code });
             } catch (error) {
                 reject(error);
             }
