@@ -184,6 +184,10 @@ const methods = {
             {
                 model: Animal,
                 where: $whereAnimal,
+                include: {
+                    model: Farm,
+                    as: "AnimalFarm",
+                },
             },
             {
                 model: Semen,
@@ -241,6 +245,7 @@ const methods = {
                 ? dataJson.Semen.Animal.AnimalEarID
                 : null,
             calvePar: dataJson.PAR,
+            FarmId: dataJson.Animal ? dataJson.Animal.AnimalFarm.FarmIdentificationNumber : null,
 
             // AIStatusName: dataJson.AIStatusName,
             // PregnancyCheckup: dataJson.PregnancyCheckups
