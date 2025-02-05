@@ -245,7 +245,9 @@ const methods = {
                 ? dataJson.Semen.Animal.AnimalEarID
                 : null,
             calvePar: dataJson.PAR,
-            FarmId: dataJson.Animal ? dataJson.Animal.AnimalFarm.FarmIdentificationNumber : null,
+            FarmId: dataJson.Animal
+                ? dataJson.Animal.AnimalFarm.FarmIdentificationNumber
+                : null,
 
             // AIStatusName: dataJson.AIStatusName,
             // PregnancyCheckup: dataJson.PregnancyCheckups
@@ -406,7 +408,7 @@ const methods = {
                         {
                             PAR: data.PAR,
                             ProductionStatusID: 4,
-                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            LasActivityDate: fn("GETDATE"),
                             update_by: data.CreatedUserID,
                         },
                         {
@@ -422,7 +424,7 @@ const methods = {
                         PAR: data.PAR,
                         ProductionStatusID: 4,
                         AnimalID: data.AnimalID,
-                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        LasActivityDate: fn("GETDATE"),
                         create_by: data.CreatedUserID,
                         create_date: new Date(),
                     });

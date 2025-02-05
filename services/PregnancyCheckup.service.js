@@ -256,7 +256,7 @@ const methods = {
                     await IBeef_PAR.update(
                         {
                             ProductionStatusID: productionStatusID,
-                            LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                            LasActivityDate: fn("GETDATE"),
                             update_by: "SYSTEM",
                         },
                         {
@@ -272,7 +272,7 @@ const methods = {
                         PAR: ai.PAR,
                         ProductionStatusID: productionStatusID,
                         AnimalID: data.AnimalID,
-                        LasActivityDate: dayjs().format("YYYY-MM-DD"),
+                        LasActivityDate: fn("GETDATE"),
                         create_by: "SYSTEM",
                         create_date: new Date(),
                     });
