@@ -390,10 +390,6 @@ const methods = {
                     { where: { AnimalID: inserted.AnimalID } }
                 );
 
-                // data.PAR
-                // ProductionStatusID: 4
-                // AnimalID:
-                // LastActivifyDate :
 
                 const existingRecord = await IBeef_PAR.findOne({
                     where: {
@@ -426,7 +422,7 @@ const methods = {
                         AnimalID: data.AnimalID,
                         LasActivityDate: fn("GETDATE"),
                         create_by: data.CreatedUserID,
-                        create_date: new Date(),
+                        create_date: fn("GETDATE"),
                     });
                 }
 
