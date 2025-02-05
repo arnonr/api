@@ -1,21 +1,28 @@
 module.exports = {
-  apps: [
-    {
-      name: "app",
-      script: "index.js",
-      instances: "16",
-      exec_mode: "cluster",
-      autorestart: true,
-      watch: false,
-      max_memory_restart: "2G",
-      node_args: "--optimize_for_size --max-old-space-size=2048",
-      load_balancing: {
-        enabled: true,
-        strategy: "round-robin",
-        stable: true,
-        sticky: true,
-        relax_check: false,
-      },
-    },
-  ],
+    apps: [
+        {
+            name: "app",
+            script: "index.js",
+            instances: "16",
+            exec_mode: "cluster",
+            autorestart: true,
+            restart_delay: 1000,
+            max_restarts: 10,
+            watch: false,
+            wait_ready: true,
+            max_memory_restart: "4G",
+            node_args: "--optimize_for_size --max-old-space-size=6144",
+            load_balancing: {
+                enabled: true,
+                strategy: "least_conn",
+                stable: true,
+                sticky: true,
+                relax_check: false,
+            },
+            log_date_format: "YYYY-MM-DD HH:mm Z",
+            error_file: "./logs/err.log",
+            out_file: "./logs/out.log",
+            merge_logs: true,
+        },
+    ],
 };
