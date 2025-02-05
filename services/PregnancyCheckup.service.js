@@ -274,7 +274,7 @@ const methods = {
                         AnimalID: data.AnimalID,
                         LasActivityDate: fn("GETDATE"),
                         create_by: "SYSTEM",
-                        create_date: new Date(),
+                        create_date: fn("GETDATE"),
                     });
                 }
 
