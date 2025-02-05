@@ -600,7 +600,7 @@ const methods = {
                 );
 
 
-                resolve({ FarmNumberGenerate: data.data.items.code,Farmdd: 'dd' });
+                resolve({ FarmNumberGenerate: data.data.items.code});
             } catch (error) {
                 reject(error);
             }
