@@ -43,7 +43,6 @@ const methods = {
                 [Op.and]: [{ [Op.in]: orgArr }, { [Op.not]: 2 }],
             };
         }
-      
 
         if (req.query.OrganizationCode)
             $where["OrganizationCode"] = {
@@ -70,7 +69,7 @@ const methods = {
 
         // if (req.query.OrganizationZoneID)
         //   $where["OrganizationZoneID"] = req.query.OrganizationZoneID;
-     
+
         if (req.query.OrganizationAiZoneID) {
             let province1 = await Province.findAll({
                 where: {
@@ -144,13 +143,12 @@ const methods = {
         if (req.query.UpdatedUserID)
             $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
-
         if ($where.hasOwnProperty("ProvinceID")) {
             delete $where["ProvinceID"];
         }
+
         $where["isRemove"] = 0;
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
-
 
         // Order
         $order = [["OrganizationID", "ASC"]];

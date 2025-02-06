@@ -20,8 +20,8 @@ const caCert = fs.readFileSync("cert/DigiCertCA.crt");
 const agent = new https.Agent({
     ca: [starCert, caCert], // ใช้ CA หลายไฟล์
     rejectUnauthorized: false, // เปิดการตรวจสอบ SSL Certificate
+    keepAlive: false,
 });
-
 const methods = {
     scopeSearch(req, limit, offset) {
         // Where
@@ -244,20 +244,28 @@ const methods = {
         bodyFormData.append("password", "@rcqc6pYWQ2$ssAd");
         bodyFormData.append("grant_type", "password");
 
-        let data = await axios.post(
-            "https://service-eregist.dld.go.th/regislives_authen/oauth/token",
-            bodyFormData,
-            {
-                httpsAgent: agent,
-                auth: {
-                    username: "zealtech",
-                    password: "zeal1tech",
-                },
-            }
-        );
-
-        console.log(data);
-        return data;
+        let response;
+        try {
+            response = await axios.post(
+                "https://service-eregist.dld.go.th/regislives_authen/oauth/token",
+                bodyFormData,
+                {
+                    httpsAgent: agent,
+                    auth: {
+                        username: "zealtech",
+                        password: "zeal1tech",
+                    },
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error("Error:", error.message);
+            throw error;
+        } finally {
+            // ปิด Connection
+            agent.destroy();
+            console.log("HTTP Connection closed.");
+        }
     },
 
     fetchAPIFarmer(farmerPID) {
@@ -475,6 +483,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
@@ -577,6 +589,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
@@ -703,6 +719,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
@@ -990,6 +1010,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
@@ -1223,6 +1247,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
@@ -1501,6 +1529,10 @@ const methods = {
                 resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
+            } finally {
+                // ปิด Connection
+                agent.destroy();
+                console.log("HTTP Connection closed.");
             }
         });
     },
