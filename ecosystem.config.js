@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "app",
             script: "index.js",
-            instances: "max",
+            instances: 1,
             exec_mode: "fork",
             autorestart: true,
             restart_delay: 1000,
