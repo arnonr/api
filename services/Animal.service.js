@@ -2070,11 +2070,12 @@ const methods = {
             try {
                 Promise.all([
                     db.findAll({ ..._q.query, limit: limit, offset: offset }),
-                    db.findAll({
-                        ..._q.query,
-                        limit: undefined,
-                        offset: undefined,
-                    }),
+                    // db.findAll({
+                    //     ..._q.query,
+                    //     limit: undefined,
+                    //     offset: undefined,
+                    // }),
+                    db.count(_q.query),
                 ])
                     .then(async (result) => {
                         let rows = result[0],
@@ -2129,12 +2130,12 @@ const methods = {
                         }
 
                         resolve({
-                            lastPage: Math.ceil(result[1].length / limit),
+                            lastPage: Math.ceil(result[1] / limit),
                             rows: rows,
-                            totalPage: Math.ceil(result[1].length / limit),
-                            totalData: result[1].length,
+                            totalPage: Math.ceil(result[1]/ limit),
+                            totalData: result[1],
                             currPage: +req.query.page || 1,
-                            total: result[1].length,
+                            total: result[1],
                         });
                     })
                     .catch((error) => {
@@ -2178,12 +2179,12 @@ const methods = {
                         let rows = result[0];
 
                         resolve({
-                            lastPage: Math.ceil(result[1].length / limit),
+                            lastPage: Math.ceil(result[1] / limit),
                             rows: rows,
-                            totalPage: Math.ceil(result[1].length / limit),
-                            totalData: result[1].length,
+                            totalPage: Math.ceil(result[1] / limit),
+                            totalData: result[1],
                             currPage: +req.query.page || 1,
-                            total: result[1].length,
+                            total: result[1],
                         });
                     })
                     .catch((error) => {
