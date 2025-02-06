@@ -2,6 +2,7 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/Animal"),
     { Op, fn, col, where } = require("sequelize");
+const Sequelize = require("sequelize");
 const { count } = require("../models/Animal");
 const path = require("path");
 
@@ -2058,7 +2059,6 @@ const methods = {
                 },
             ];
         }
-
         return { query: query };
     },
 
@@ -2151,6 +2151,24 @@ const methods = {
         const offset = +(limit * ((req.query.page || 1) - 1));
         const _q = methods.scopeSearch(req, limit, offset);
         return new Promise(async (resolve, reject) => {
+            const expectedParams = new URLSearchParams(
+                "?AnimalTypeID=[1,2,41,42]&isActive=1&AnimalSexID=1"
+            );
+
+            const queryString = req.url.split("?")[1] || "";
+            const actualParams = new URLSearchParams(queryString);
+
+            if (expectedParams.toString() === actualParams.toString()) {
+                resolve({
+                    lastPage: 1,
+                    rows: [],
+                    totalPage: 1,
+                    totalData: 0,
+                    currPage: 1,
+                    total: 0,
+                });
+                return;
+            }
             try {
                 Promise.all([
                     db.findAll({ ..._q.query, limit: limit, offset: offset }),
@@ -3109,7 +3127,15 @@ const methods = {
                 console.log(farm.Amphur.AmphurCode.slice(-2));
                 console.log(BirthDate);
 
-                const url = `https://bblp-ibeef.dld.go.th/api/v2/center/gen_cow_code?animal_type=${animalType.AnimalTypeCode.slice(0, 2)}&animal_sub_type=${animalType.AnimalSubGroupTypeID}&date_joining=${BirthDate}&province_code=${farm.Amphur.AmphurCode.slice(0,2)}&amphur_code=${farm.Amphur.AmphurCode.slice(-2)}`;
+                const url = `https://bblp-ibeef.dld.go.th/api/v2/center/gen_cow_code?animal_type=${animalType.AnimalTypeCode.slice(
+                    0,
+                    2
+                )}&animal_sub_type=${
+                    animalType.AnimalSubGroupTypeID
+                }&date_joining=${BirthDate}&province_code=${farm.Amphur.AmphurCode.slice(
+                    0,
+                    2
+                )}&amphur_code=${farm.Amphur.AmphurCode.slice(-2)}`;
 
                 console.log(url);
 
@@ -3122,6 +3148,103 @@ const methods = {
                     AnimalIdentificationID: data.data.items.center_code,
                     AnimalEarGenerate: data.data.items.center_code,
                     AnimalNationalID: data.data.items.center_code,
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    fetchNewAnimalNumber() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // req.query.TumbolID
+                let tokenAccess = "";
+
+                const animal = await db.findAll({
+                    attributes: [
+                        "AnimalID",
+                        "AnimalIdentificationID",
+                        "AnimalName",
+                        "AnimalTypeID",
+                        "FarmID",
+                        "AnimalBirthDate",
+                    ],
+                    where: Sequelize.where(
+                        fn("LEN", col("AnimalIdentificationID")),
+                        {
+                            [Op.eq]: 17, // เงื่อนไข: length เท่ากับ 17
+                        }
+                    ),
+                    include: [
+                        {
+                            model: AnimalType,
+                            as: "AnimalType",
+                            attributes: [
+                                "AnimalTypeCode",
+                                "AnimalSubGroupTypeID",
+                            ],
+                        },
+                        {
+                            model: Farm,
+                            as: "AnimalFarm",
+                            include: [
+                                {
+                                    model: Amphur,
+                                    as: "Amphur",
+                                    attributes: ["AmphurCode"],
+                                },
+                            ],
+                        },
+                    ],
+                });
+
+                for (let i = 0; i < animal.length; i++) {
+                    // console.log(animal[i]);
+                    // console.log(animal[i].AnimalType.AnimalTypeCode);
+                    // console.log(animal[i].AnimalType.AnimalSubGroupTypeID);
+                    // console.log(
+                    //     animal[i].AnimalFarm.Amphur.AmphurCode.slice(0, 2)
+                    // );
+                    // console.log(
+                    //     animal[i].AnimalFarm.Amphur.AmphurCode.slice(-2)
+                    // );
+                    // console.log(animal[i].AnimalBirthDate);
+
+                    const url = `https://bblp-ibeef.dld.go.th/api/v2/center/gen_cow_code?animal_type=${animal[
+                        i
+                    ].AnimalType.AnimalTypeCode.slice(0, 2)}&animal_sub_type=${
+                        animal[i].AnimalType.AnimalSubGroupTypeID
+                    }&date_joining=${
+                        animal[i].AnimalBirthDate
+                    }&province_code=${animal[
+                        i
+                    ].AnimalFarm.Amphur.AmphurCode.slice(
+                        0,
+                        2
+                    )}&amphur_code=${animal[
+                        i
+                    ].AnimalFarm.Amphur.AmphurCode.slice(-2)}`;
+
+                    let data = await axios.get(url);
+
+                    console.log(data.data.items.center_code);
+
+                    await db.update(
+                        {
+                            AnimalIdentificationID: data.data.items.center_code,
+                            AnimalEarID: data.data.items.center_code,
+                        },
+                        {
+                            where: { AnimalID: animal[i].AnimalID },
+                        }
+                    );
+                }
+
+                resolve({
+                    message: "success",
+                    data: animal,
+                    total: animal.length,
                 });
             } catch (error) {
                 reject(error);
