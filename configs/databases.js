@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
     //   config.DbUsername ? config.DbUsername : "aidm",
     //   config.DbPassword ? config.DbPassword : "2022@aidm",
     {
-        logging: console.log,
+        logging: (msg) => msg.includes("Execution time") && console.log(msg),
         host: "122.155.195.17", //config.DbHostname ? config.DbHostname : "host.docker.internal",
         port: "1433",
         dialect: "mssql",
@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
             instanceName: "MSSQLSERVER",
             options: {
                 encrypt: false,
-                requestTimeout: 1000000000,
+                requestTimeout: 120000, // 1นาที
             },
             //   options: { "requestTimeout": 300000 }
             //   requestTimeout: 600000,
@@ -38,9 +38,9 @@ const sequelize = new Sequelize(
         timezone: "+07:00",
         pool: {
             max: 30,
-            min: 0,
-            acquire: 60000,
-            idle: 10000,
+            min: 2,
+            acquire: 30000,
+            idle: 5000, // ปิด connection ที่ไม่ได้ใช้งานเร็วขึ้น
         },
         define: {
             timestamps: false,
