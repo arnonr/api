@@ -2172,11 +2172,7 @@ const methods = {
             try {
                 Promise.all([
                     db.findAll({ ..._q.query, limit: limit, offset: offset }),
-                    db.findAll({
-                        ..._q.query,
-                        limit: undefined,
-                        offset: undefined,
-                    }),
+                    db.count(_q.query),
                 ])
                     .then(async (result) => {
                         let rows = result[0];
