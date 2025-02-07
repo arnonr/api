@@ -56,6 +56,7 @@ const methods = {
                 };
             }
         }
+
         $where[Op.and] = [];
         if (req.query.Fullname) {
             // req.query.Fullname
@@ -75,6 +76,20 @@ const methods = {
             $where["FarmName"] = {
                 [Op.like]: "%" + req.query.FarmName + "%",
             };
+
+        if (req.query.FarmNameOrFarmIdentificationNumber) {
+            //   where farmName or FarmIdentificationNumber
+            $where[Op.and].push({
+                [Op.or]: {
+                    FarmName: {
+                        [Op.like]: "%" + req.query.FarmNameOrFarmIdentificationNumber + "%",
+                    },
+                    FarmIdentificationNumber: {
+                        [Op.like]: "%" + req.query.FarmNameOrFarmIdentificationNumber + "%",
+                    },
+                },
+            });
+        }
 
         if (req.query.FarmTumbolID)
             $where["FarmTumbolID"] = req.query.FarmTumbolID;
@@ -599,8 +614,7 @@ const methods = {
                         req.query.TumbolID
                 );
 
-
-                resolve({ FarmNumberGenerate: data.data.items.code});
+                resolve({ FarmNumberGenerate: data.data.items.code });
             } catch (error) {
                 reject(error);
             }
