@@ -710,6 +710,7 @@ const methods = {
                     where: {
                         StaffNumber: StaffNumber.toString(),
                         isRemove: 0,
+                        isActive: 1,
                     },
                     include: [
                         { all: true, required: false },
@@ -725,6 +726,7 @@ const methods = {
                     ],
                 });
 
+
                 if (!obj) {
                     await axios
                         .get(
@@ -736,12 +738,14 @@ const methods = {
                         .then(async (response) => {
                             let { items } = response.data;
 
+                            console.log(StaffNumber.toString())
+
                             console.log(items);
 
                             if (items.length > 0) {
                                 let staffNew = new Staff();
 
-                                if (items[0].staffStatus == 2) {
+                                if (items[0].staffStatus == 1) {
                                     staffNew.StaffNumber = items[0].staffId;
                                     staffNew.StaffIdentificationNumber =
                                         items[0].staffIdCard;
@@ -912,11 +916,11 @@ const methods = {
                                     );
                                     res = { ...res1.toJSON() };
                                 } else {
-                                    resolve(false);
+                                    resolve(res);
                                 }
                             })
                             .catch((err) => {
-                                resolve(false);
+                                resolve(res);
                                 console.log(err);
                             });
                     }
