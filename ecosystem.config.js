@@ -7,10 +7,10 @@ module.exports = {
             exec_mode: "cluster",
             autorestart: true,
             restart_delay: 1000,
-            max_restarts: 10,
+            max_restarts: 9999,
             watch: false,
             wait_ready: true,
-            max_memory_restart: "300M",
+            max_memory_restart: "2G",
             node_args: "--optimize_for_size --max-old-space-size=20480",
             load_balancing: {
                 enabled: true,
