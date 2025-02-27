@@ -10,7 +10,7 @@ module.exports = {
             max_restarts: 10,
             watch: false,
             wait_ready: true,
-            max_memory_restart: "3G",
+            max_memory_restart: "300M",
             node_args: "--optimize_for_size --max-old-space-size=20480",
             load_balancing: {
                 enabled: true,
