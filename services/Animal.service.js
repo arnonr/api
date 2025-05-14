@@ -2668,7 +2668,7 @@ const methods = {
                             return Math.abs(element - data[b]) < 0.00732421875; // 0.00732421875; // = 0.0048828125
                         });
 
-                        data[b] = found.toFixed(3);
+                        data[b] = found.toFixed(11);
                     }
                 });
 
@@ -2803,7 +2803,7 @@ const methods = {
                             return Math.abs(element - data[b]) < 0.00732421875; // = 0.0048828125
                         });
 
-                        data[b] = found.toFixed(3);
+                        data[b] = found.toFixed(11);
                     }
                 });
 
@@ -3393,7 +3393,7 @@ const methods = {
                         ); // 0.0048828125
                     });
 
-                    b.AnimalBreedPercent = found.toFixed(3);
+                    b.AnimalBreedPercent = found.toFixed(11);
                     return b;
                 });
 
