@@ -200,7 +200,7 @@ const methods = {
                 if (inserted.DistributionType == "DROP") {
                     let animal = await Animal.findByPk(inserted.AnimalID);
                     animal.isActive = 0;
-                    animal.AnimalAlive = 1;
+                    animal.AnimalAlive = 0;
                     animal.isRemove = 0;
                     animal.save();
                 } else if (inserted.DistributionType == "DEATH") {
@@ -273,6 +273,13 @@ const methods = {
                     { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
                     { where: { DistributionID: id } }
                 );
+
+                if (obj.DistributionType == "DROP" || obj.DistributionType == "DEATH") {
+                    let animal1 = await Animal.findByPk(obj.AnimalID);
+                    animal1.isActive = 1;
+                    animal1.AnimalAlive = 1;
+                    animal1.save();
+                }
 
                 let animal = await Animal.findByPk(obj.AnimalID);
                 animal.FarmID = obj.FarmID;
