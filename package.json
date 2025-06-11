@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "express-template",
   "version": "1.0.0",
   "description": "RESTFul API with express on node",
@@ -41,66 +40,9 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.4.1"
-=======
-    "name": "sakai-vue",
-    "version": "3.4.2-SNAPSHOT",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/primefaces/sakai-vue.git"
-    },
-    "license": "MIT",
-    "scripts": {
-      "serve": "vue-cli-service serve",
-      "build": "vue-cli-service build",
-      "lint": "vue-cli-service lint",
-      "test:unit": "vue-cli-service test:unit"
-    },
-    "devDependencies": {
-      "@vue/cli-plugin-babel": "^5.0.6",
-      "@vue/cli-plugin-eslint": "^5.0.6",
-      "@vue/cli-plugin-router": "^5.0.6",
-      "@vue/cli-service": "^5.0.6",
-      "@vue/compiler-sfc": "^3.2.39",
-      "babel-eslint": "^10.1.0",
-      "eslint": "^7.5.0",
-      "eslint-plugin-vue": "^7.0.0",
-      "sass": "^1.55.0",
-      "sass-loader": "^8.0.2",
-      "vue-loader": "^17.0.0"
-    },
-    "dependencies": {
-      "@vuelidate/core": "^2.0.0",
-      "@vuelidate/validators": "^2.0.0",
-      "@vuepic/vue-datepicker": "^3.4.8",
-      "@vueuse/core": "^8.7.4",
-      "axios": "^0.27.2",
-      "axios-cache-adapter": "^2.7.3",
-      "chart.js": "3.3.2",
-      "core-js": "^3.25.3",
-      "dayjs": "^1.11.3",
-      "lodash": "^4.17.21",
-      "pdfmake": "^0.2.5",
-      "primeflex": "^3.1.2",
-      "primeicons": "^5.0.0",
-      "primevue": "^3.17.0",
-      "prismjs": "1.28.0",
-      "sweetalert2": "^11.4.33",
-      "vue": "^3.2.39",
-      "vue-awesome-paginate": "^1.1.46",
-      "vue-datepicker": "^1.3.0",
-      "vue-router": "^4.1.4",
-      "vue3-google-oauth2": "^1.0.6",
-      "vuejs-paginate": "^2.1.0",
-      "vuex": "^4.0.2",
-      "vuex-persist": "^3.1.3"
-    },
-    "description": "ขั้นตอนที่ 1. ลงตัว [Vue CLI](https://cli.vuejs.org/) ก่อนที่จะ npm install",
-    "bugs": {
-      "url": "https://github.com/primefaces/sakai-vue/issues"
-    },
-    "homepage": "https://github.com/primefaces/sakai-vue#readme",
-    "main": ".eslintrc.js",
-    "author": ""
->>>>>>> 705ad087a4e9d67f47f392b6a36d5b802f06d2fb
+  },
+  "watch": {
+    "": ""
   }
+}
   
