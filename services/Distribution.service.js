@@ -200,7 +200,7 @@ const methods = {
                 if (inserted.DistributionType == "DROP") {
                     let animal = await Animal.findByPk(inserted.AnimalID);
                     animal.isActive = 0;
-                    animal.AnimalAlive = 0;
+                    animal.AnimalAlive = 3;
                     animal.isRemove = 0;
                     animal.save();
                 } else if (inserted.DistributionType == "DEATH") {
