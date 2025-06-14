@@ -4330,6 +4330,7 @@ const methods = {
                                         x.Staff?.StaffSurname,
                                     PregnancyCheckupDate: "",
                                     PregnancyCheckupStatus: "",
+                                    // isActive: x.Animal.isActive,
                                 });
                             }
                         }
