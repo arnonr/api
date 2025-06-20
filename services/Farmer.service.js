@@ -271,13 +271,22 @@ const methods = {
     fetchAPIFarmer(farmerPID) {
         return new Promise(async (resolve, reject) => {
             try {
+                console.log("FREEDOM")
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
                 console.log(tokenAccess);
-
+                // /page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2`,
+                    {
+                        "limit": 10,
+                        "page": 0,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -480,7 +489,6 @@ const methods = {
                     reject(ErrorNotFound("API Error"));
                 }
 
-                resolve(res);
             } catch (error) {
                 reject(ErrorNotFound(error));
             } finally {
@@ -499,8 +507,16 @@ const methods = {
                 console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/`,
+                    {
+                        "page": 0,
+                        "limit": 10,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -603,10 +619,18 @@ const methods = {
                 let token = await this.getToken();
                 let tokenAccess = token.data.access_token;
                 console.log(tokenAccess);
-
+                // page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/`,
+                    {
+                        "page": 0,
+                        "limit": 10,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: { Authorization: `Bearer ${tokenAccess}` },
@@ -786,8 +810,16 @@ const methods = {
                 console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${req.query.farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/`,
+                    {
+                        "page": 0,
+                        "limit": 10,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": req.query.farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: {
@@ -1022,8 +1054,16 @@ const methods = {
         return new Promise(async (resolve, reject) => {
             try {
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${req.query.farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/`,
+                    {
+                        "page": 0,
+                        "limit": 10,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": req.query.farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: {
@@ -1305,8 +1345,16 @@ const methods = {
                 console.log(tokenAccess);
 
                 let data1 = await axios.post(
-                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/page/0/limit/10/asc/true/sortBy/1/farmerPID/${req.query.farmerPID}/searchBy/biotech/searchSystem/aidm`,
-                    {},
+                    `https://service-eregist.dld.go.th/regislives-openapi/api/v2/searchFarmV2/`,
+                    {
+                        "page": 0,
+                        "limit": 10,
+                        "asc": true,
+                        "sortBy": "1",
+                        "farmerPID": req.query.farmerPID,
+                        "searchBy": "biotech",
+                        "searchSystem": "aidm"
+                    },
                     {
                         httpsAgent: agent,
                         headers: {
