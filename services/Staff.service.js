@@ -2,6 +2,7 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/Staff"),
     { Op, query, fn } = require("sequelize");
+    const path = require("path");
 
 const Sequelize = require("sequelize"),
     { sequelize } = require("../configs/databases");
@@ -681,24 +682,56 @@ const methods = {
         });
     },
 
-    photo(id, filename) {
+    photo(data) {
         return new Promise(async (resolve, reject) => {
             try {
-                // Check ID
-                const obj = await db.findByPk(id);
-                if (!obj) reject(ErrorNotFound("id: not found"));
+                //
+                let pathFile = null;
+                let real_path = "/images/staff/";
 
-                // Update
-                var os = require("os");
-                var hostname = os.hostname();
+                console.log(data.files);
+                if (!data.files || Object.keys(data.files).length === 0) {
+                } else {
+                    let uploadFile = data.files["photo_url"];
+                    let typeFile = uploadFile.mimetype.split("/");
 
-                obj.StaffImage =
-                    config.UploadPath + "/images/staff/" + filename;
-                obj.save();
+                    let d = new Date();
+                    let date =
+                        d.getFullYear() +
+                        "-" +
+                        d.getMonth() +
+                        "-" +
+                        d.getDate();
+                    let nameFile =
+                        date + "-t-" + Date.now() + "." + typeFile[1];
 
+
+                    let pathUpload = path.resolve(
+                        __dirname + "/../public/uploads" + real_path + nameFile
+                    );
+
+
+                    console.log("pathUpload: ", pathUpload);
+
+                    uploadFile.mv(pathUpload, function (err) {
+                        if (err) return err;
+                    });
+                    pathFile = real_path + nameFile;
+
+                    const obj = await db.findByPk(data.params.id);
+                    if (!obj) reject(ErrorNotFound("id: not found"));
+
+                    // Update
+
+                    console.log("PATHFILE FREEDOM", config.UploadPath + pathFile);
+                    obj.StaffImage = config.UploadPath + pathFile;
+                    await obj.save();
+
+                    resolve(obj);
+                }
                 resolve();
             } catch (error) {
-                reject(ErrorBadRequest(error.message));
+                return "error";
             }
         });
     },

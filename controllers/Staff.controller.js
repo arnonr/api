@@ -96,10 +96,7 @@ const methods = {
 
     async onPhoto(req, res) {
         try {
-            const result = await Service.photo(
-                req.params.id,
-                req.file.filename
-            );
+            const result = await Service.photo(req);
             res.success(result);
         } catch (error) {
             res.error(error);
