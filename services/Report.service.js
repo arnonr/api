@@ -4855,14 +4855,10 @@ const methods = {
                 }
 
                 if (req.query.StartDate_Created) {
-                    $where["createdAt"] = {
+                    $where["Createddatetime"] = {
                         [Op.between]: [
-                            dayjs(req.query.StartDate_Created).format(
-                                "YYYY-MM-DD"
-                            ),
-                            dayjs(req.query.EndDate_Created).format(
-                                "YYYY-MM-DD"
-                            ),
+                            dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
                         ],
                     };
                 }
@@ -5246,7 +5242,7 @@ const methods = {
                 }
 
                 if (req.query.StartDate_Created) {
-                    $where["createdAt"] = {
+                    $where["CreateAt"] = {
                         [Op.between]: [
                             dayjs(req.query.StartDate_Created).format(
                                 "YYYY-MM-DD"
@@ -7798,7 +7794,7 @@ const methods = {
                 }
 
                 if (req.query.StartDate_Created) {
-                    $where["createdAt"] = {
+                    $where["CreatedDatetime"] = {
                         [Op.between]: [
                             dayjs(req.query.StartDate_Created).format(
                                 "YYYY-MM-DD"
