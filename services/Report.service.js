@@ -1107,6 +1107,10 @@ const methods = {
                     $whereStaff["isActive"] = 1;
                 }
 
+                if (req.query.StaffStatus) {
+                    $whereStaff["StaffStatus"] = req.query.StaffStatus;
+                }
+
                 $whereStaff["StaffNumber"] = {
                     [Op.not]: null,
                 };
@@ -4857,8 +4861,12 @@ const methods = {
                 if (req.query.StartDate_Created) {
                     $where["Createddatetime"] = {
                         [Op.between]: [
-                            dayjs(req.query.StartDate_Created).format("YYYY-MM-DD"),
-                            dayjs(req.query.EndDate_Created).format("YYYY-MM-DD"),
+                            dayjs(req.query.StartDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
+                            dayjs(req.query.EndDate_Created).format(
+                                "YYYY-MM-DD"
+                            ),
                         ],
                     };
                 }
