@@ -35,6 +35,8 @@ const methods = {
             $whereAnimal["FarmID"] = req.query.FarmID;
         }
 
+        $whereAnimal["AnimalAlive"] = 1;
+
         $where["isRemove"] = 0;
         const query = Object.keys($where).length > 0 ? { where: $where } : {};
         const queryAnimal =
