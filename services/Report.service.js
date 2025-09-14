@@ -9019,14 +9019,14 @@ const methods = {
                 if (req.query.StartDate_Created) {
                 }
 
-                // if (req.query.StartDate) {
-                //   $where["CheckupDate"] = {
-                //     [Op.between]: [
-                //       dayjs(req.query.StartDate).format("YYYY-MM-DD"),
-                //       dayjs(req.query.EndDate).format("YYYY-MM-DD"),
-                //     ],
-                //   };
-                // }
+                if (req.query.StartDate) {
+                  $where["AIDate"] = {
+                    [Op.between]: [
+                      dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                      dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                    ],
+                  };
+                }
 
                 $where["TimeNo"] = 1;
 
@@ -9642,12 +9642,14 @@ const methods = {
                 if (req.query.StartDate_Created) {
                 }
 
-                $where["AIDate"] = {
-                    [Op.between]: [
-                        dayjs().subtract(1, "year").format("YYYY-MM-DD"),
-                        dayjs().format("YYYY-MM-DD"),
-                    ],
-                };
+                if (req.query.StartDate) {
+                    $where["AIDate"] = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+                }
 
                 $whereFarm["isRemove"] = 0;
                 $where["isActive"] = 1;
@@ -9898,12 +9900,14 @@ const methods = {
                 if (req.query.StartDate_Created) {
                 }
 
-                $where["AIDate"] = {
-                    [Op.between]: [
-                        dayjs().subtract(1, "year").format("YYYY-MM-DD"),
-                        dayjs().format("YYYY-MM-DD"),
-                    ],
-                };
+                if (req.query.StartDate) {
+                    $where["AIDate"] = {
+                        [Op.between]: [
+                            dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                            dayjs(req.query.EndDate).format("YYYY-MM-DD"),
+                        ],
+                    };
+                }
 
                 $whereFarm["isRemove"] = 0;
                 $where["isActive"] = 1;
@@ -10467,12 +10471,12 @@ const methods = {
                     };
                 }
 
-                $where["GiveBirthDate"] = {
-                    [Op.between]: [
-                        dayjs().subtract(1, "year").format("YYYY-MM-DD"),
-                        dayjs().format("YYYY-MM-DD"),
-                    ],
-                };
+                // $where["GiveBirthDate"] = {
+                //     [Op.between]: [
+                //         dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+                //         dayjs().format("YYYY-MM-DD"),
+                //     ],
+                // };
                 $where["isRemove"] = 0;
                 $where["PAR"] = 1;
 
