@@ -308,14 +308,23 @@ const methods = {
                     const inserted = await obj.save();
 
                     if (
-                        inserted.DistributionType == "DROP" ||
-                        inserted.DistributionType == "DEATH"
+                        inserted.DistributionType == "DROP"
                     ) {
                         let animal = await Animal.findByPk(inserted.AnimalID);
                         animal.isActive = 0;
-                        animal.AnimalAlive = 0;
+                        animal.AnimalAlive = 3;
+                        animal.isRemove = 0;
                         animal.save();
-                    } else if (
+                    }
+                    else if  (inserted.DistributionType == "DEATH"){
+                        let animal = await Animal.findByPk(inserted.AnimalID);
+                        animal.isActive = 0;
+                        animal.AnimalAlive = 0;
+                        animal.isRemove = 0;
+                        animal.save();
+                    } 
+                    
+                    else if (
                         inserted.DistributionType == "SALE" ||
                         inserted.DistributionType == "TRANSFER"
                     ) {
