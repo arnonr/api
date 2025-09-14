@@ -10174,7 +10174,7 @@ const methods = {
                 }
 
                 if (req.query.StartDate) {
-                    $where["CheckupDate"] = {
+                    $where["GiveBirthDate"] = {
                         [Op.between]: [
                             dayjs(req.query.StartDate).format("YYYY-MM-DD"),
                             dayjs(req.query.EndDate).format("YYYY-MM-DD"),
@@ -10182,12 +10182,12 @@ const methods = {
                     };
                 }
 
-                $where["GiveBirthDate"] = {
-                    [Op.between]: [
-                        dayjs().subtract(1, "year").format("YYYY-MM-DD"),
-                        dayjs().format("YYYY-MM-DD"),
-                    ],
-                };
+                // $where["GiveBirthDate"] = {
+                //     [Op.between]: [
+                //         dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+                //         dayjs().format("YYYY-MM-DD"),
+                //     ],
+                // };
                 $where["isRemove"] = 0;
 
                 const query =
@@ -10459,7 +10459,7 @@ const methods = {
                 }
 
                 if (req.query.StartDate) {
-                    $where["CheckupDate"] = {
+                    $where["GiveBirthDate"] = {
                         [Op.between]: [
                             dayjs(req.query.StartDate).format("YYYY-MM-DD"),
                             dayjs(req.query.EndDate).format("YYYY-MM-DD"),
