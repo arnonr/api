@@ -337,10 +337,11 @@ const methods = {
                     embTransStatusId = 99;
                     embBirthStatusId = 2;
                 }
-
+                const animal = await Animal.findByPk(obj.AnimalID);
                 await Animal.update(
                     {
                         ProductionStatusID: productionStatusID,
+                        ReProductionStatusID: animal.ProductionStatusID,
                         updatedAt: fn("GETDATE"),
                     },
                     { where: { AnimalID: obj.AnimalID } }
@@ -398,9 +399,12 @@ const methods = {
                 );
 
                 if (obj.TimeNo == 1) {
+
+                    // find Animal
+                    const animal = await Animal.findByPk(obj.AnimalID);
                     await Animal.update(
                         {
-                            ProductionStatusID: 4,
+                            ProductionStatusID: animal.ReProductionStatusID,
                             updatedAt: fn("GETDATE"),
                             UpdatedUserID: Number(UpdatedUserID),
                         },

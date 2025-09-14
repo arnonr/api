@@ -211,8 +211,9 @@ const methods = {
                 const obj = new db(data);
                 const inserted = await obj.save();
 
+                const animal = await Animal.findByPk(inserted.AnimalID);
                 await Animal.update(
-                    { ProductionStatusID: 1, updatedAt: fn("GETDATE") },
+                    { ProductionStatusID: 1, ReProductionStatusID: animal.ProductionStatusID, updatedAt: fn("GETDATE") },
                     { where: { AnimalID: inserted.AnimalID } }
                 );
 
@@ -312,6 +313,11 @@ const methods = {
                     { isRemove: 1, isActive: 0, updatedAt: fn("GETDATE") },
                     { where: { AbortCheckupID: id } }
                 );
+
+                const animal = await Animal.findByPk(obj.AnimalID);
+                animal.ProductionStatusID = animal.ReProductionStatusID;
+                animal.save();
+
                 resolve();
             } catch (error) {
                 reject(error);

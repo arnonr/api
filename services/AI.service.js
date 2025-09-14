@@ -385,11 +385,15 @@ const methods = {
                 const obj = new db(data);
                 const inserted = await obj.save();
 
+                const animal = await Animal.findByPk(inserted.AnimalID);
                 await Animal.update(
-                    { ProductionStatusID: 4, updatedAt: fn("GETDATE") },
+                    {
+                        ProductionStatusID: 4,
+                        ReProductionStatusID: animal.ProductionStatusID,
+                        updatedAt: fn("GETDATE"),
+                    },
                     { where: { AnimalID: inserted.AnimalID } }
                 );
-
 
                 const existingRecord = await IBeef_PAR.findOne({
                     where: {
@@ -481,10 +485,13 @@ const methods = {
                     }
                 }
 
+                // ปรับสถานะ
+                const animal = await Animal.findByPk(obj.AnimalID);
                 await db.update(
                     {
                         isRemove: 1,
                         isActive: 0,
+                        ProductionStatusID: animal.ReProductionStatusID,
                         updatedAt: fn("GETDATE"),
                         UpdatedUserID: UpdatedUserID,
                     },

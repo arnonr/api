@@ -1018,6 +1018,11 @@ Animal.init(
             allowNull: true,
             comment: "สถานภาพการผลิต",
         },
+        ReProductionStatusID: {
+            type: DataTypes.INTEGER(11),
+            allowNull: true,
+            comment: "สถานภาพการผลิตก่อนหน้า",
+        },
         AnimalDateJoin: {
             type: DataTypes.DATE,
             allowNull: true,
@@ -1344,6 +1349,138 @@ Animal.init(
         timestamps: false,
         freezeTableName: true,
         modelName: "Animal",
+        indexes: [
+            // Primary key index (automatically created)
+            {
+                name: 'PRIMARY',
+                fields: ['AnimalID']
+            },
+            // Index สำหรับการค้นหาตาม FarmID (ใช้บ่อยในการ query)
+            {
+                name: 'idx_animal_farm_id',
+                fields: ['FarmID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalStatusID
+            {
+                name: 'idx_animal_status_id',
+                fields: ['AnimalStatusID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalTypeID
+            {
+                name: 'idx_animal_type_id',
+                fields: ['AnimalTypeID']
+            },
+            // Index สำหรับการค้นหาตาม ProductionStatusID
+            {
+                name: 'idx_animal_production_status_id',
+                fields: ['ProductionStatusID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalSexID
+            {
+                name: 'idx_animal_sex_id',
+                fields: ['AnimalSexID']
+            },
+            // Composite index สำหรับ FarmID + AnimalStatusID (ใช้บ่อยในการ filter)
+            {
+                name: 'idx_animal_farm_status',
+                fields: ['FarmID', 'AnimalStatusID']
+            },
+            // Composite index สำหรับ FarmID + AnimalTypeID
+            {
+                name: 'idx_animal_farm_type',
+                fields: ['FarmID', 'AnimalTypeID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalEarID (ใช้ในการ search)
+            {
+                name: 'idx_animal_ear_id',
+                fields: ['AnimalEarID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalNationalID
+            {
+                name: 'idx_animal_national_id',
+                fields: ['AnimalNationalID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalIdentificationID
+            {
+                name: 'idx_animal_identification_id',
+                fields: ['AnimalIdentificationID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalMicrochip
+            {
+                name: 'idx_animal_microchip',
+                fields: ['AnimalMicrochip']
+            },
+            // Index สำหรับการค้นหาตาม AnimalName (ใช้ในการ search)
+            {
+                name: 'idx_animal_name',
+                fields: ['AnimalName']
+            },
+            // Index สำหรับการค้นหาตาม AnimalAlive
+            {
+                name: 'idx_animal_alive',
+                fields: ['AnimalAlive']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBirthDate
+            {
+                name: 'idx_animal_birth_date',
+                fields: ['AnimalBirthDate']
+            },
+            // Index สำหรับการค้นหาตาม AnimalFatherID
+            {
+                name: 'idx_animal_father_id',
+                fields: ['AnimalFatherID']
+            },
+            // Index สำหรับการค้นหาตาม AnimalMotherID
+            {
+                name: 'idx_animal_mother_id',
+                fields: ['AnimalMotherID']
+            },
+            // Index สำหรับการค้นหาตาม OrganizationID
+            {
+                name: 'idx_animal_organization_id',
+                fields: ['OrganizationID']
+            },
+            // Index สำหรับการค้นหาตาม OrganizationZoneID
+            {
+                name: 'idx_animal_organization_zone_id',
+                fields: ['OrganizationZoneID']
+            },
+            // Composite index สำหรับ FarmID + AnimalAlive (ใช้บ่อยในการ filter)
+            {
+                name: 'idx_animal_farm_alive',
+                fields: ['FarmID', 'AnimalAlive']
+            },
+            // Composite index สำหรับ AnimalStatusID + AnimalAlive
+            {
+                name: 'idx_animal_status_alive',
+                fields: ['AnimalStatusID', 'AnimalAlive']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBreedID1
+            {
+                name: 'idx_animal_breed_id1',
+                fields: ['AnimalBreedID1']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBreedID2
+            {
+                name: 'idx_animal_breed_id2',
+                fields: ['AnimalBreedID2']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBreedID3
+            {
+                name: 'idx_animal_breed_id3',
+                fields: ['AnimalBreedID3']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBreedID4
+            {
+                name: 'idx_animal_breed_id4',
+                fields: ['AnimalBreedID4']
+            },
+            // Index สำหรับการค้นหาตาม AnimalBreedID5
+            {
+                name: 'idx_animal_breed_id5',
+                fields: ['AnimalBreedID5']
+            }
+        ]
     }
 );
 

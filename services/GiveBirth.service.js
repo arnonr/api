@@ -312,9 +312,11 @@ const methods = {
                     animalStatusID = 15;
                 }
 
+                const animal1 = await Animal.findByPk(inserted.AnimalID);
                 await Animal.update(
                     {
                         ProductionStatusID: 2,
+                        ReProductionStatusID: animal1.ProductionStatusID,
                         AnimalPar: inserted.PAR + 1,
                         AnimalStatusID: animalStatusID,
                         updatedAt: fn("GETDATE"),
@@ -423,10 +425,13 @@ const methods = {
                 // if(){
                 let animal = await Animal.findByPk(obj.AnimalID);
 
-                animal.ProductionStatusID = 6;
+                // animal.ProductionStatusID = 6;
                 animal.AnimalPar = animal.AnimalPar - 1;
+                animal.ProductionStatusID = animal.ReProductionStatusID;
                 animal.save();
                 // }
+
+                
 
                 // await Animal.update(
                 //   {
