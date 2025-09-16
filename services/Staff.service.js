@@ -2,7 +2,7 @@ const config = require("../configs/app"),
     { ErrorBadRequest, ErrorNotFound } = require("../configs/errorMethods"),
     db = require("../models/Staff"),
     { Op, query, fn } = require("sequelize");
-    const path = require("path");
+const path = require("path");
 
 const Sequelize = require("sequelize"),
     { sequelize } = require("../configs/databases");
@@ -112,6 +112,26 @@ const methods = {
             $where["StaffGivenName"] = {
                 [Op.like]: "%" + req.query.StaffGivenName + "%",
             };
+
+        if (req.query.SearchNumberAndName) {
+            $where[Op.or] = [
+                {
+                    StaffNumber: {
+                        [Op.like]: "%" + req.query.SearchNumberAndName + "%",
+                    },
+                },
+                {
+                    StaffGivenName: {
+                        [Op.like]: "%" + req.query.SearchNumberAndName + "%",
+                    },
+                },
+                {
+                    StaffSurname: {
+                        [Op.like]: "%" + req.query.SearchNumberAndName + "%",
+                    },
+                },
+            ];
+        }
 
         if (req.query.StaffSurname)
             $where["StaffSurname"] = {
@@ -705,11 +725,9 @@ const methods = {
                     let nameFile =
                         date + "-t-" + Date.now() + "." + typeFile[1];
 
-
                     let pathUpload = path.resolve(
                         __dirname + "/../public/uploads" + real_path + nameFile
                     );
-
 
                     console.log("pathUpload: ", pathUpload);
 
@@ -723,7 +741,10 @@ const methods = {
 
                     // Update
 
-                    console.log("PATHFILE FREEDOM", config.UploadPath + pathFile);
+                    console.log(
+                        "PATHFILE FREEDOM",
+                        config.UploadPath + pathFile
+                    );
                     obj.StaffImage = config.UploadPath + pathFile;
                     await obj.save();
 
@@ -759,7 +780,6 @@ const methods = {
                     ],
                 });
 
-
                 if (!obj) {
                     await axios
                         .get(
@@ -771,7 +791,7 @@ const methods = {
                         .then(async (response) => {
                             let { items } = response.data;
 
-                            console.log(StaffNumber.toString())
+                            console.log(StaffNumber.toString());
 
                             console.log(items);
 
