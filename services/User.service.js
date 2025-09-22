@@ -1,11 +1,7 @@
 const config = require("../configs/app"),
     db = require("../models/User"),
     jwt = require("jsonwebtoken"),
-    {
-        ErrorBadRequest,
-        ErrorNotFound,
-        ErrorUnauthorized,
-    } = require("../configs/errorMethods"),
+    { ErrorBadRequest, ErrorNotFound, ErrorUnauthorized } = require("../configs/errorMethods"),
     { Op, where, fn } = require("sequelize");
 const nodemailer = require("nodemailer");
 
@@ -104,17 +100,13 @@ const methods = {
         }
 
         if (req.query.IsApprove) $where["IsApprove"] = req.query.IsApprove;
-        if (req.query.ApproveByStaffID)
-            $where["ApproveByStaffID"] = req.query.ApproveByStaffID;
+        if (req.query.ApproveByStaffID) $where["ApproveByStaffID"] = req.query.ApproveByStaffID;
 
         if (req.query.isActive) $where["isActive"] = req.query.isActive;
-        if (req.query.CreatedUserID)
-            $where["CreatedUserID"] = req.query.CreatedUserID;
-        if (req.query.UpdatedUserID)
-            $where["UpdatedUserID"] = req.query.UpdatedUserID;
+        if (req.query.CreatedUserID) $where["CreatedUserID"] = req.query.CreatedUserID;
+        if (req.query.UpdatedUserID) $where["UpdatedUserID"] = req.query.UpdatedUserID;
 
-        if (req.query.ResetPasswordToken)
-            $where["ResetPasswordToken"] = req.query.ResetPasswordToken;
+        if (req.query.ResetPasswordToken) $where["ResetPasswordToken"] = req.query.ResetPasswordToken;
 
         if (req.query.MobilePhone) {
             $where["MobilePhone"] = req.query.MobilePhone;
@@ -127,13 +119,7 @@ const methods = {
 
         // Order
         $order = [["UserID", "ASC"]];
-        if (req.query.orderByField && req.query.orderBy)
-            $order = [
-                [
-                    req.query.orderByField,
-                    req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc",
-                ],
-            ];
+        if (req.query.orderByField && req.query.orderBy) $order = [[req.query.orderByField, req.query.orderBy.toLowerCase() == "desc" ? "desc" : "asc"]];
         query["order"] = $order;
 
         if (req.query.OrganizationAiZoneID) {
@@ -168,20 +154,13 @@ const methods = {
             };
         }
 
-        if (req.query.OrganizationProvinceID)
-            $WhereOrganization["OrganizationProvinceID"] =
-                req.query.OrganizationProvinceID;
+        if (req.query.OrganizationProvinceID) $WhereOrganization["OrganizationProvinceID"] = req.query.OrganizationProvinceID;
 
-        if (req.query.OrganizationAmphurID)
-            $WhereOrganization["OrganizationAmphurID"] =
-                req.query.OrganizationAmphurID;
+        if (req.query.OrganizationAmphurID) $WhereOrganization["OrganizationAmphurID"] = req.query.OrganizationAmphurID;
 
-        if (req.query.OrganizationTumbolID)
-            $WhereOrganization["OrganizationTumbolID"] =
-                req.query.OrganizationTumbolID;
+        if (req.query.OrganizationTumbolID) $WhereOrganization["OrganizationTumbolID"] = req.query.OrganizationTumbolID;
 
-        if (req.query.OrganizationID)
-            $WhereOrganization["OrganizationID"] = req.query.OrganizationID;
+        if (req.query.OrganizationID) $WhereOrganization["OrganizationID"] = req.query.OrganizationID;
 
         query["include"] = [
             { all: true, required: false },
@@ -230,9 +209,7 @@ const methods = {
                             data = {
                                 ...data.toJSON(),
                                 AnimalTypes: animalTypeArray,
-                                AnimalTypeID: JSON.parse(
-                                    data.toJSON().AnimalTypeID
-                                ),
+                                AnimalTypeID: JSON.parse(data.toJSON().AnimalTypeID),
                             };
 
                             return data;
@@ -301,9 +278,7 @@ const methods = {
             try {
                 //check เงื่อนไขตรงนี้ได้
                 if (!Array.isArray(data.AnimalTypeID)) {
-                    reject(
-                        ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array")
-                    );
+                    reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
                     return;
                 }
 
@@ -374,11 +349,7 @@ const methods = {
 
                 if (data.AnimalTypeID) {
                     if (!Array.isArray(data.AnimalTypeID)) {
-                        reject(
-                            ErrorBadRequest(
-                                "Animal Type ID ต้องอยู่ในรูปแบบ Array"
-                            )
-                        );
+                        reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
                         return;
                     }
 
@@ -524,11 +495,9 @@ const methods = {
                 let obj = null;
                 obj = await db.findOne({
                     where: {
-                        [Op.or]: [
-                            { Username: data.Username },
-                            { MobilePhone: data.Username },
-                        ],
+                        [Op.or]: [{ Username: data.Username }, { MobilePhone: data.Username }],
                         isRemove: 0,
+                        isActive: 1,
                     },
                     include: [
                         { all: true },
@@ -567,9 +536,7 @@ const methods = {
                                         model: Organization,
                                         as: "Organization",
                                         required: true,
-                                        include: [
-                                            { model: Province, as: "Province" },
-                                        ],
+                                        include: [{ model: Province, as: "Province" }],
                                     },
                                 },
                             ],
@@ -636,9 +603,7 @@ const methods = {
             try {
                 //check เงื่อนไขตรงนี้ได้
                 if (!Array.isArray(data.AnimalTypeID)) {
-                    reject(
-                        ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array")
-                    );
+                    reject(ErrorBadRequest("Animal Type ID ต้องอยู่ในรูปแบบ Array"));
                     return;
                 }
 
@@ -858,8 +823,7 @@ const methods = {
 
                 if (!obj) reject(ErrorNotFound("email: not found"));
 
-                let chars =
-                    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 let passwordLength = 12;
                 let password = "";
 
@@ -887,12 +851,7 @@ const methods = {
                     from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
                     to: data.email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
                     subject: "Password Reset", // หัวข้ออีเมล
-                    html:
-                        "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" +
-                        obj.ResetPasswordToken +
-                        "'>http://biotech-cbg.dld.go.th/new-password?token=" +
-                        obj.ResetPasswordToken +
-                        "</a>", // html body
+                    html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" + obj.ResetPasswordToken + "'>http://biotech-cbg.dld.go.th/new-password?token=" + obj.ResetPasswordToken + "</a>", // html body
                 });
 
                 console.log("Email sent Successfully" + info.response);
@@ -917,8 +876,7 @@ const methods = {
 
                 if (!obj) reject(ErrorNotFound("email: not found"));
 
-                let chars =
-                    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 let passwordLength = 12;
                 let password = "";
 
@@ -971,12 +929,7 @@ const methods = {
                     from: '"ระบบฐานข้อมูลโคเนื้อ กระบือ แพะ', // อีเมลผู้ส่ง
                     to: data.email, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
                     subject: "Password Reset", // หัวข้ออีเมล
-                    html:
-                        "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" +
-                        obj.ResetPasswordToken +
-                        "'>http://biotech-cbg.dld.go.th/new-password?token=" +
-                        obj.ResetPasswordToken +
-                        "</a>", // html body
+                    html: "<b>ระบบฐานข้อมูล โคเนื้อ กระบือ แพะ </b><br> ท่านสามารถกำหนดรหัสผ่านในการเข้าใช้งานระบบ AIDM ได้ที่ URL : <a href='http://biotech-cbg.dld.go.th/new-password?token=" + obj.ResetPasswordToken + "'>http://biotech-cbg.dld.go.th/new-password?token=" + obj.ResetPasswordToken + "</a>", // html body
                 });
 
                 console.log("Email sent Successfully" + info.response);
