@@ -542,7 +542,7 @@ const methods = {
                             ],
                         });
                     } else {
-                        reject(ErrorUnauthorized("Username not found"));
+                        reject(ErrorUnauthorized("พบข้อผิดพลาดไม่สามารถเข้าสู่ระบบได้ กรุณาติดต่อเจ้าหน้าที่"));
                     }
                 }
 
