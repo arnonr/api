@@ -1095,7 +1095,7 @@ Animal.init(
                     //
                 } else if (this.ProductionStatusID == 6) {
                     //
-                    status = [1, 2, 4, 5, 6, 8];
+                    status = [1, 4, 5, 6, 8];
                 } else if (this.ProductionStatusID == 1) {
                     status = [1, 2, 3, 4, 7];
                 } else if (this.ProductionStatusID == 2) {
