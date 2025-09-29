@@ -3961,6 +3961,184 @@ const methods = {
         const _q = methods.scopeSearch1(req, limit, offset);
         return new Promise(async (resolve, reject) => {
             try {
+                _q.query.include = _q.query.include || [];
+                _q.query.include.push({
+                    model: Cart,
+                    as: "Carts",
+                    where: { UserID: req.body.GetUserID },
+                    required: false,
+                });
+
+                const [rows, totalCount] = await Promise.all([
+                    db.findAll(_q.query),
+                    db.count(_q.query),
+                ]);
+
+                // สร้าง notification mapping object เพื่อลดการตรวจสอบซ้ำ
+                const notificationMap = {
+                    ครบกำหนดคลอด: { count: 0, animals: [] },
+                    ครบกําหนดตรวจท้อง: { count: 0, animals: [] },
+                    ครบกําหนดติดตามลูกเกิดหลังคลอด: { count: 0, animals: [] },
+                    ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด: {
+                        count: 0,
+                        animals: [],
+                    },
+                    อายุมากกว่ากําหนด: { count: 0, animals: [] },
+                    แจ้งเตือนกลับสัด: { count: 0, animals: [] },
+                    "ผสมซ้ำเกิน 3 ครั้ง": { count: 0, animals: [] },
+                    เลยกำหนดคลอด: { count: 0, animals: [] },
+                    thaiblack: { count: 0, animals: [] }, // รวม Thai Black ทั้งหมด
+                    แดงสุราษฏร์: { count: 0, animals: [] }, // รวม แดงสุราษฏร์ ทั้งหมด
+                };
+
+                // สร้าง status mapping object
+                const statusMap = {
+                    child: [1, 6, 11],
+                    young: [2, 7, 12],
+                    girl: [3, 8, 13],
+                    father: [4, 9, 14],
+                    mother: [5, 10, 15],
+                };
+
+                let countAnimal = {
+                    all: 0,
+                    child: 0,
+                    young: 0,
+                    girl: 0,
+                    father: 0,
+                    mother: 0,
+                };
+
+                const processedRows = [];
+
+                // ใช้ Promise.all เพื่อประมวลผลแบบ parallel
+                const notificationPromises = rows.map(async (data) => {
+                    const test = await data.Notification();
+                    const data1 = test.eventLatest;
+
+                    // จัดการ Projects - ใช้ map แทน forEach
+                    const projectArray = data.Projects.map(
+                        (element) => element.ProjectName
+                    );
+
+                    // ตรวจสอบ cart จาก include แทนการ query แยก
+                    const hasCart = data.Carts && data.Carts.length > 0;
+                    data1.cart = hasCart;
+
+                    // จัดการ Notifications
+                    const notifications = data.Notifications
+                        ? data.Notifications.split(",")
+                        : [];
+
+                    return {
+                        data1,
+                        notifications,
+                        projectArray,
+                        animalStatusID: data.AnimalStatusID,
+                        animalID: data1.AnimalID,
+                    };
+                });
+
+                const processedData = await Promise.all(notificationPromises);
+
+                // ประมวลผลข้อมูลที่ได้
+                processedData.forEach(
+                    ({
+                        data1,
+                        notifications,
+                        projectArray,
+                        animalStatusID,
+                        animalID,
+                    }) => {
+                        // นับ Notifications
+                        notifications.forEach((notification) => {
+                            const trimmedNotification = notification.trim();
+
+                            if (notificationMap[trimmedNotification]) {
+                                notificationMap[trimmedNotification].count++;
+                                notificationMap[
+                                    trimmedNotification
+                                ].animals.push(animalID);
+                            } else if (
+                                trimmedNotification.includes("Thaiblack")
+                            ) {
+                                notificationMap.thaiblack.count++;
+                                notificationMap.thaiblack.animals.push(
+                                    animalID
+                                );
+                            } else if (
+                                trimmedNotification.includes("แดงสุราษฏร์")
+                            ) {
+                                notificationMap["แดงสุราษฏร์"].count++;
+                                notificationMap["แดงสุราษฏร์"].animals.push(
+                                    animalID
+                                );
+                            }
+                        });
+
+                        // นับจำนวนสัตว์ตามสถานะ
+                        countAnimal.all++;
+                        Object.keys(statusMap).forEach((status) => {
+                            if (statusMap[status].includes(animalStatusID)) {
+                                countAnimal[status]++;
+                            }
+                        });
+
+                        data1.Notification = notifications;
+                        processedRows.push(data1);
+                    }
+                );
+
+                // แปลง notificationMap เป็นรูปแบบเดิม
+                const noti = {
+                    noti1: notificationMap["ครบกำหนดคลอด"].count,
+                    noti1Animal: notificationMap["ครบกำหนดคลอด"].animals,
+                    noti2: notificationMap["ครบกําหนดตรวจท้อง"].count,
+                    noti2Animal: notificationMap["ครบกําหนดตรวจท้อง"].animals,
+                    noti3: notificationMap["ครบกําหนดติดตามลูกเกิดหลังคลอด"]
+                        .count,
+                    noti3Animal:
+                        notificationMap["ครบกําหนดติดตามลูกเกิดหลังคลอด"]
+                            .animals,
+                    noti4: notificationMap["ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"]
+                        .count,
+                    noti4Animal:
+                        notificationMap["ครบกําหนดตรวจระบบสืบพันธุ์หลังคลอด"]
+                            .animals,
+                    noti5: notificationMap["อายุมากกว่ากําหนด"].count,
+                    noti5Animal: notificationMap["อายุมากกว่ากําหนด"].animals,
+                    noti6: notificationMap["แจ้งเตือนกลับสัด"].count,
+                    noti6Animal: notificationMap["แจ้งเตือนกลับสัด"].animals,
+                    noti7: notificationMap["ผสมซ้ำเกิน 3 ครั้ง"].count,
+                    noti7Animal: notificationMap["ผสมซ้ำเกิน 3 ครั้ง"].animals,
+                    noti8: notificationMap["เลยกำหนดคลอด"].count,
+                    noti8Animal: notificationMap["เลยกำหนดคลอด"].animals,
+                    noti9: notificationMap.thaiblack.count,
+                    noti9Animal: notificationMap.thaiblack.animals,
+                    noti10: notificationMap["แดงสุราษฏร์"].count,
+                    noti10Animal: notificationMap["แดงสุราษฏร์"].animals,
+                };
+
+                resolve({
+                    total: totalCount,
+                    lastPage: Math.ceil(totalCount / limit),
+                    currPage: +req.query.page || 1,
+                    rows: processedRows,
+                    noti,
+                    countAnimal,
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    findByFarmIDOld2(req) {
+        const limit = +(req.query.size || config.pageLimit);
+        const offset = +(limit * ((req.query.page || 1) - 1));
+        const _q = methods.scopeSearch1(req, limit, offset);
+        return new Promise(async (resolve, reject) => {
+            try {
                 Promise.all([await db.findAll(_q.query), db.count(_q.query)])
                     .then(async (result) => {
                         let rows = result[0],
@@ -4809,7 +4987,6 @@ const methods = {
             }
         });
     },
-
     //
     updateAnimalStatusOld(req) {
         const limit = 500000;

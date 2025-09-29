@@ -113,6 +113,13 @@ class Animal extends Model {
             foreignKeyConstraint: true,
         });
 
+        this.hasMany(models.Cart, {
+            foreignKey: "AnimalID",
+            as: "Carts",
+            foreignKeyConstraint: true,
+        });
+
+
         // this.belongsTo(models.GiveBirth, {
         //   foreignKey: "GiveBirthSelfID",
         //   as: "GiveBirthSelf",
@@ -479,6 +486,8 @@ class Animal extends Model {
             statusText = statusText + " ท้อง";
         } else {
         }
+
+        console.log(this);
 
         var data = {
             AnimalID: animalJson.AnimalID,

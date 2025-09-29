@@ -331,6 +331,7 @@ Animal.associate({
   AnimalType,
   Project,
   ProductionStatus,
+  Cart,
 });
 
 GoatEstralActivityDetail.associate({
