@@ -4052,9 +4052,16 @@ const methods = {
                     }) => {
                         // นับ Notifications
                         notifications.forEach((notification) => {
-                            const trimmedNotification = notification.trim();
+                            let trimmedNotification = notification.trim();
 
-                            if (notificationMap[trimmedNotification]) {
+                            // console.log(trimmedNotification);
+
+                            if(trimmedNotification.includes("เลยกําหนดคลอด")) {
+                                trimmedNotification = "เลยกำหนดคลอด";
+                            }
+
+                            if (notificationMap[trimmedNotification] && notificationMap[trimmedNotification] != undefined) {
+                                console.log("FFEEDOM4");
                                 notificationMap[trimmedNotification].count++;
                                 notificationMap[
                                     trimmedNotification
@@ -4062,6 +4069,7 @@ const methods = {
                             } else if (
                                 trimmedNotification.includes("Thaiblack")
                             ) {
+                                console.log("FFEEDOM5");
                                 notificationMap.thaiblack.count++;
                                 notificationMap.thaiblack.animals.push(
                                     animalID
@@ -4069,6 +4077,8 @@ const methods = {
                             } else if (
                                 trimmedNotification.includes("แดงสุราษฏร์")
                             ) {
+
+                                console.log("FFEEDOM6");
                                 notificationMap["แดงสุราษฏร์"].count++;
                                 notificationMap["แดงสุราษฏร์"].animals.push(
                                     animalID

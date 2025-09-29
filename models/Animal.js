@@ -146,21 +146,21 @@ class Animal extends Model {
         if (this.ProductionStatusID == 6) {
             if (this.AnimalStatusID == 3 || this.AnimalStatusID == 5) {
                 if (day >= 287) {
-                    noti.push(`เลยกําหนดคลอด ${day - 280} วัน`);
+                    noti.push(`เลยกำหนดคลอด ${day - 280} วัน`);
                 } else if (day >= 280) {
                     noti.push("ครบกำหนดคลอด");
                 } else {
                 }
             } else if (this.AnimalStatusID == 8 || this.AnimalStatusID == 10) {
                 if (day >= 317) {
-                    noti.push(`เลยกําหนดคลอด ${day - 310} วัน`);
+                    noti.push(`เลยกำหนดคลอด ${day - 310} วัน`);
                 } else if (day >= 310) {
                     noti.push("ครบกำหนดคลอด");
                 } else {
                 }
             } else if (this.AnimalStatusID == 13 || this.AnimalStatusID == 15) {
                 if (day >= 157) {
-                    noti.push(`เลยกําหนดคลอด ${day - 157} วัน`);
+                    noti.push(`เลยกำหนดคลอด ${day - 157} วัน`);
                 } else if (day >= 150) {
                     noti.push("ครบกำหนดคลอด");
                 } else {
@@ -487,7 +487,7 @@ class Animal extends Model {
         } else {
         }
 
-        console.log(this);
+        // console.log(this);
 
         var data = {
             AnimalID: animalJson.AnimalID,
