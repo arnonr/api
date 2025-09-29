@@ -420,7 +420,7 @@ AI.init(
     AIStatusName: {
       type: DataTypes.VIRTUAL,
       get() {
-        let text = ["รอผล", "สำเร็จ", "ไม่สำเร็จ"];
+        let text = ["", "สำเร็จ", "ไม่สำเร็จ"];
         return text[this.AIStatus];
       },
     },
