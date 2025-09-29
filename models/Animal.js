@@ -9,6 +9,7 @@ const Yearling = require("./Yearling");
 const Reproduce = require("./Reproduce");
 const Thaiblack = require("./Thaiblack");
 const RedGoat = require("./RedGoat");
+const Semen = require("./Semen");
 
 const dayjs = require("dayjs");
 const locale = require("dayjs/locale/th");
@@ -118,7 +119,6 @@ class Animal extends Model {
             as: "Carts",
             foreignKeyConstraint: true,
         });
-
 
         // this.belongsTo(models.GiveBirth, {
         //   foreignKey: "GiveBirthSelfID",
@@ -436,6 +436,10 @@ class Animal extends Model {
                 AnimalID: this.AnimalID,
                 isRemove: 0,
             },
+            include: {
+                model: Semen,
+                as: "Semen",
+            },
         });
 
         let embryo = await TransferEmbryo.findOne({
@@ -471,24 +475,27 @@ class Animal extends Model {
                 .locale("th")
                 .format("DD/MM/BBBB");
         }
-
+        let dayAfterCalve = null;
+        let productionStatusText = null;
         if (this.ProductionStatusID == 1) {
-            statusText = statusText + " แท้ง";
+            productionStatusText = "แท้ง";
         } else if (this.ProductionStatusID == 2) {
-            statusText = statusText + " คลอด";
+            productionStatusText = "คลอด";
+            dayAfterCalve = dayjs().diff(dayjs(giveBirth.GiveBirthDate), "day");
         } else if (this.ProductionStatusID == 3) {
-            statusText = statusText + " รอตรวจซ้ำ";
+            productionStatusText = "รอตรวจซ้ำ";
         } else if (this.ProductionStatusID == 4) {
-            statusText = statusText + " ผสม";
+            productionStatusText = "ผสม";
         } else if (this.ProductionStatusID == 5) {
-            statusText = statusText + " ไม่ท้อง";
+            productionStatusText = "ไม่ท้อง";
         } else if (this.ProductionStatusID == 6) {
-            statusText = statusText + " ท้อง";
+            productionStatusText = "ท้อง";
         } else {
         }
 
         // console.log(this);
 
+        // console.log(animalJson.AnimalSex);
         var data = {
             AnimalID: animalJson.AnimalID,
             AnimalEarID: animalJson.AnimalEarID,
@@ -499,9 +506,12 @@ class Animal extends Model {
             AnimalBreedAll: animalJson.AnimalBreedAll,
             AnimalStatus: statusText,
             AnimalStatusText: statusText,
+            ProductionStatusText: productionStatusText,
             giveBirthDateLatest: giveBirthDateLatest,
             FarmName: this.AnimalFarm ? this.AnimalFarm.FarmName : null,
             AnimalSex: this.AnimalSex ? this.AnimalSex.AnimalSexName : null,
+            SemenNumber: null,
+            dayAfterCalve: dayAfterCalve ? dayAfterCalve : null,
         };
 
         if (ai && embryo) {
@@ -545,6 +555,8 @@ class Animal extends Model {
                     PregnancyTimeNo: pregnancyTimeNo,
                 };
             } else {
+                data.SemenNumber = ai.Semen ? ai.Semen.SemenNumber : null;
+
                 let preg = await PregnancyCheckup.findOne({
                     order: [["TimeNo", "DESC"]],
                     where: {
@@ -585,6 +597,9 @@ class Animal extends Model {
             }
             // CheckDate เอาอันล่าสุด
         } else if (ai) {
+            console.log(ai.Semen);
+            data.SemenNumber = ai.Semen ? ai.Semen.SemenNumber : null;
+
             let preg = await PregnancyCheckup.findOne({
                 order: [["TimeNo", "DESC"]],
                 where: {
@@ -1361,135 +1376,135 @@ Animal.init(
         indexes: [
             // Primary key index (automatically created)
             {
-                name: 'PRIMARY',
-                fields: ['AnimalID']
+                name: "PRIMARY",
+                fields: ["AnimalID"],
             },
             // Index สำหรับการค้นหาตาม FarmID (ใช้บ่อยในการ query)
             {
-                name: 'idx_animal_farm_id',
-                fields: ['FarmID']
+                name: "idx_animal_farm_id",
+                fields: ["FarmID"],
             },
             // Index สำหรับการค้นหาตาม AnimalStatusID
             {
-                name: 'idx_animal_status_id',
-                fields: ['AnimalStatusID']
+                name: "idx_animal_status_id",
+                fields: ["AnimalStatusID"],
             },
             // Index สำหรับการค้นหาตาม AnimalTypeID
             {
-                name: 'idx_animal_type_id',
-                fields: ['AnimalTypeID']
+                name: "idx_animal_type_id",
+                fields: ["AnimalTypeID"],
             },
             // Index สำหรับการค้นหาตาม ProductionStatusID
             {
-                name: 'idx_animal_production_status_id',
-                fields: ['ProductionStatusID']
+                name: "idx_animal_production_status_id",
+                fields: ["ProductionStatusID"],
             },
             // Index สำหรับการค้นหาตาม AnimalSexID
             {
-                name: 'idx_animal_sex_id',
-                fields: ['AnimalSexID']
+                name: "idx_animal_sex_id",
+                fields: ["AnimalSexID"],
             },
             // Composite index สำหรับ FarmID + AnimalStatusID (ใช้บ่อยในการ filter)
             {
-                name: 'idx_animal_farm_status',
-                fields: ['FarmID', 'AnimalStatusID']
+                name: "idx_animal_farm_status",
+                fields: ["FarmID", "AnimalStatusID"],
             },
             // Composite index สำหรับ FarmID + AnimalTypeID
             {
-                name: 'idx_animal_farm_type',
-                fields: ['FarmID', 'AnimalTypeID']
+                name: "idx_animal_farm_type",
+                fields: ["FarmID", "AnimalTypeID"],
             },
             // Index สำหรับการค้นหาตาม AnimalEarID (ใช้ในการ search)
             {
-                name: 'idx_animal_ear_id',
-                fields: ['AnimalEarID']
+                name: "idx_animal_ear_id",
+                fields: ["AnimalEarID"],
             },
             // Index สำหรับการค้นหาตาม AnimalNationalID
             {
-                name: 'idx_animal_national_id',
-                fields: ['AnimalNationalID']
+                name: "idx_animal_national_id",
+                fields: ["AnimalNationalID"],
             },
             // Index สำหรับการค้นหาตาม AnimalIdentificationID
             {
-                name: 'idx_animal_identification_id',
-                fields: ['AnimalIdentificationID']
+                name: "idx_animal_identification_id",
+                fields: ["AnimalIdentificationID"],
             },
             // Index สำหรับการค้นหาตาม AnimalMicrochip
             {
-                name: 'idx_animal_microchip',
-                fields: ['AnimalMicrochip']
+                name: "idx_animal_microchip",
+                fields: ["AnimalMicrochip"],
             },
             // Index สำหรับการค้นหาตาม AnimalName (ใช้ในการ search)
             {
-                name: 'idx_animal_name',
-                fields: ['AnimalName']
+                name: "idx_animal_name",
+                fields: ["AnimalName"],
             },
             // Index สำหรับการค้นหาตาม AnimalAlive
             {
-                name: 'idx_animal_alive',
-                fields: ['AnimalAlive']
+                name: "idx_animal_alive",
+                fields: ["AnimalAlive"],
             },
             // Index สำหรับการค้นหาตาม AnimalBirthDate
             {
-                name: 'idx_animal_birth_date',
-                fields: ['AnimalBirthDate']
+                name: "idx_animal_birth_date",
+                fields: ["AnimalBirthDate"],
             },
             // Index สำหรับการค้นหาตาม AnimalFatherID
             {
-                name: 'idx_animal_father_id',
-                fields: ['AnimalFatherID']
+                name: "idx_animal_father_id",
+                fields: ["AnimalFatherID"],
             },
             // Index สำหรับการค้นหาตาม AnimalMotherID
             {
-                name: 'idx_animal_mother_id',
-                fields: ['AnimalMotherID']
+                name: "idx_animal_mother_id",
+                fields: ["AnimalMotherID"],
             },
             // Index สำหรับการค้นหาตาม OrganizationID
             {
-                name: 'idx_animal_organization_id',
-                fields: ['OrganizationID']
+                name: "idx_animal_organization_id",
+                fields: ["OrganizationID"],
             },
             // Index สำหรับการค้นหาตาม OrganizationZoneID
             {
-                name: 'idx_animal_organization_zone_id',
-                fields: ['OrganizationZoneID']
+                name: "idx_animal_organization_zone_id",
+                fields: ["OrganizationZoneID"],
             },
             // Composite index สำหรับ FarmID + AnimalAlive (ใช้บ่อยในการ filter)
             {
-                name: 'idx_animal_farm_alive',
-                fields: ['FarmID', 'AnimalAlive']
+                name: "idx_animal_farm_alive",
+                fields: ["FarmID", "AnimalAlive"],
             },
             // Composite index สำหรับ AnimalStatusID + AnimalAlive
             {
-                name: 'idx_animal_status_alive',
-                fields: ['AnimalStatusID', 'AnimalAlive']
+                name: "idx_animal_status_alive",
+                fields: ["AnimalStatusID", "AnimalAlive"],
             },
             // Index สำหรับการค้นหาตาม AnimalBreedID1
             {
-                name: 'idx_animal_breed_id1',
-                fields: ['AnimalBreedID1']
+                name: "idx_animal_breed_id1",
+                fields: ["AnimalBreedID1"],
             },
             // Index สำหรับการค้นหาตาม AnimalBreedID2
             {
-                name: 'idx_animal_breed_id2',
-                fields: ['AnimalBreedID2']
+                name: "idx_animal_breed_id2",
+                fields: ["AnimalBreedID2"],
             },
             // Index สำหรับการค้นหาตาม AnimalBreedID3
             {
-                name: 'idx_animal_breed_id3',
-                fields: ['AnimalBreedID3']
+                name: "idx_animal_breed_id3",
+                fields: ["AnimalBreedID3"],
             },
             // Index สำหรับการค้นหาตาม AnimalBreedID4
             {
-                name: 'idx_animal_breed_id4',
-                fields: ['AnimalBreedID4']
+                name: "idx_animal_breed_id4",
+                fields: ["AnimalBreedID4"],
             },
             // Index สำหรับการค้นหาตาม AnimalBreedID5
             {
-                name: 'idx_animal_breed_id5',
-                fields: ['AnimalBreedID5']
-            }
-        ]
+                name: "idx_animal_breed_id5",
+                fields: ["AnimalBreedID5"],
+            },
+        ],
     }
 );
 

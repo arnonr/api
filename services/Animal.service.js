@@ -3669,7 +3669,7 @@ const methods = {
                 {
                     model: AnimalStatus,
                     as: "AnimalStatus",
-                }
+                },
             );
         }
 
@@ -3969,6 +3969,12 @@ const methods = {
                     required: false,
                 });
 
+                _q.query.include.push({
+                    model: AnimalSex,
+                    as: "AnimalSex",
+                    required: false,
+                });
+
                 const [rows, totalCount] = await Promise.all([
                     db.findAll(_q.query),
                     db.count(_q.query),
@@ -4014,7 +4020,14 @@ const methods = {
                 // ใช้ Promise.all เพื่อประมวลผลแบบ parallel
                 const notificationPromises = rows.map(async (data) => {
                     const test = await data.Notification();
-                    const data1 = test.eventLatest;
+
+                    let data1 = {
+                        data,
+                        ...test.eventLatest,
+                    }
+
+
+                    // data1 = test.eventLatest;
 
                     // จัดการ Projects - ใช้ map แทน forEach
                     const projectArray = data.Projects.map(
