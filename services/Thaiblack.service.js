@@ -145,6 +145,8 @@ const methods = {
                 //check เงื่อนไขตรงนี้ได้
                 data.createdAt = fn("GETDATE");
 
+
+
                 const obj = new db(data);
                 const inserted = await obj.save();
 
@@ -163,13 +165,24 @@ const methods = {
                 // ตรวจสอบว่าข้อมูลที่รับมาคือ array หรือไม่
 
                 // สมมุติว่ามีฟังก์ชัน saveAnimalData ที่บันทึกข้อมูลสัตว์แต่ละตัว
-                const { animals } = data;
+                const { animals,CreatedUserID } = data;
+
+                console.log(typeof CreatedUserID)
 
                 console.log(animals)
 
-                animals.forEach(data => {
-                    data.createdAt = fn("GETDATE");
-                });
+                // animals.forEach(data => {
+                //     data.CreatedUserID = parseInt(CreatedUserID);
+                //     data.createdAt = fn("GETDATE");
+                // });
+
+                const animalsSave = animals.map(data => {
+                    return {
+                        ...data,
+                        CreatedUserID: parseInt(CreatedUserID),
+                        createdAt: fn("GETDATE"),
+                    }
+                })
     
 
                 // animals.forEach((animal) => {
@@ -184,7 +197,7 @@ const methods = {
                 // });
 
                 // บันทึกข้อมูลหลายรายการพร้อมกัน
-                const inserted = await db.bulkCreate(animals); // ใช้ bulkCreate สำหรับ multi-insert
+                const inserted = await db.bulkCreate(animalsSave); // ใช้ bulkCreate สำหรับ multi-insert
 
                 // ดึงข้อมูลที่เพิ่งถูกสร้างเพื่อส่งกลับ
                 // let res = await methods.findByIds(
