@@ -3669,7 +3669,7 @@ const methods = {
                 {
                     model: AnimalStatus,
                     as: "AnimalStatus",
-                },
+                }
             );
         }
 
@@ -4001,6 +4001,7 @@ const methods = {
                 const statusMap = {
                     child: [1, 6, 11],
                     young: [2, 7, 12],
+                    boy: [17, 18, 19], // โคหนุ่ม
                     girl: [3, 8, 13],
                     father: [4, 9, 14],
                     mother: [5, 10, 15],
@@ -4008,11 +4009,26 @@ const methods = {
 
                 let countAnimal = {
                     all: 0,
+                    all_male: 0,
+                    all_female: 0,
                     child: 0,
+                    child_male: 0,
+                    child_female: 0,
                     young: 0,
+                    young_male: 0,
+                    young_female: 0,
+                    boy: 0,
+                    boy_male: 0,
+                    boy_female: 0,
                     girl: 0,
+                    girl_male: 0,
+                    girl_female: 0,
                     father: 0,
+                    father_male: 0,
+                    father_female: 0,
                     mother: 0,
+                    mother_male: 0,
+                    mother_female: 0,
                 };
 
                 const processedRows = [];
@@ -4024,8 +4040,7 @@ const methods = {
                     let data1 = {
                         data,
                         ...test.eventLatest,
-                    }
-
+                    };
 
                     // data1 = test.eventLatest;
 
@@ -4069,11 +4084,15 @@ const methods = {
 
                             // console.log(trimmedNotification);
 
-                            if(trimmedNotification.includes("เลยกําหนดคลอด")) {
+                            if (trimmedNotification.includes("เลยกําหนดคลอด")) {
                                 trimmedNotification = "เลยกำหนดคลอด";
                             }
 
-                            if (notificationMap[trimmedNotification] && notificationMap[trimmedNotification] != undefined) {
+                            if (
+                                notificationMap[trimmedNotification] &&
+                                notificationMap[trimmedNotification] !=
+                                    undefined
+                            ) {
                                 console.log("FFEEDOM4");
                                 notificationMap[trimmedNotification].count++;
                                 notificationMap[
@@ -4090,7 +4109,6 @@ const methods = {
                             } else if (
                                 trimmedNotification.includes("แดงสุราษฏร์")
                             ) {
-
                                 console.log("FFEEDOM6");
                                 notificationMap["แดงสุราษฏร์"].count++;
                                 notificationMap["แดงสุราษฏร์"].animals.push(
@@ -4101,9 +4119,23 @@ const methods = {
 
                         // นับจำนวนสัตว์ตามสถานะ
                         countAnimal.all++;
+
+                        // นับเพศของสัตว์
+                        if (data1.data.AnimalSexID == 1) {
+                            countAnimal.all_male++;
+                        } else if (data1.data.AnimalSexID == 2) {
+                            countAnimal.all_female++;
+                        }
+
                         Object.keys(statusMap).forEach((status) => {
                             if (statusMap[status].includes(animalStatusID)) {
                                 countAnimal[status]++;
+
+                                if (data1.data.AnimalSexID == 1) {
+                                    countAnimal[status + "_male"]++;
+                                } else if (data1.data.AnimalSexID == 2) {
+                                    countAnimal[status + "_female"]++;
+                                }
                             }
                         });
 
