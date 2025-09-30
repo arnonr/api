@@ -4837,7 +4837,7 @@ const methods = {
         });
     },
 
-    report15(req) {
+    report15mother(req) {
         // report รายงาน สรุปตรวจท้อง - Optimized version
         return new Promise(async (resolve, reject) => {
             try {
@@ -5067,6 +5067,260 @@ const methods = {
                         AnimalID: breedGroup.AnimalID,
                         AnimalRealCount: breedGroup.AnimalIDSet.size, // ใช้ Set size เพื่อนับสัตว์ไม่ซ้ำ
                         AnimalCount: breedGroup.AnimalIDSet.size, // ใช้ Set size เพื่อนับสัตว์ไม่ซ้ำ
+                        FarmCount: breedGroup.FarmID.size,
+                        PregnancyCheckupCount: breedGroup.PregnancyCheckupCount
+                    };
+                });
+
+                // Sort breeds by animal count (descending)
+                breed.sort((a, b) => b.AnimalRealCount - a.AnimalRealCount);
+
+                resolve({ data: breed });
+            } catch (error) {
+                reject(ErrorNotFound(error));
+            }
+        });
+    },
+
+    report15(req) {
+        // report รายงาน สรุปตรวจท้อง - Optimized version
+        return new Promise(async (resolve, reject) => {
+            try {
+                // Pre-format dates to avoid repeated dayjs calls
+                const startDate = req.query.StartDate ? dayjs(req.query.StartDate).format("YYYY-MM-DD") : null;
+                const endDate = req.query.EndDate ? dayjs(req.query.EndDate).format("YYYY-MM-DD") : null;
+                const startDateCreated = req.query.StartDate_Created ? dayjs(req.query.StartDate_Created).format("YYYY-MM-DD") : null;
+                const endDateCreated = req.query.EndDate_Created ?  dayjs(req.query.EndDate_Created).endOf('day').format("YYYY-MM-DD HH:mm:ss") : null;
+
+                // Build where conditions
+                let $where = {};
+                let $whereAnimal = {};
+                let $whereStaff = {};
+                let $whereOrganization = {};
+
+                // Date filters
+                if (startDate && endDate) {
+                    $where["CheckupDate"] = { [Op.between]: [startDate, endDate] };
+                }
+
+                if (startDateCreated && endDateCreated) {
+                    $where["Createddatetime"] = { [Op.between]: [startDateCreated, endDateCreated] };
+                }
+
+                // Organization filters
+                if (req.query.StaffID) {
+                    $whereStaff["StaffID"] = req.query.StaffID;
+                } else if (req.query.OrganizationID) {
+                    $whereOrganization["OrganizationID"] = req.query.OrganizationID;
+                } else if (req.query.TumbolID) {
+                    $whereOrganization["OrganizationTumbolID"] = req.query.TumbolID;
+                } else if (req.query.AmphurID) {
+                    $whereOrganization["StaffAmphurID"] = req.query.AmphurID;
+                } else if (req.query.ProvinceID) {
+                    $whereOrganization["OrganizationProvinceID"] = req.query.ProvinceID;
+                } else {
+                    if (req.query.OrganizationAiZoneID) {
+                        $whereOrganization["OrganizationAiZoneID"] = req.query.OrganizationAiZoneID;
+                    } else {
+                        $whereOrganization["OrganizationZoneID"] = req.query.OrganizationZoneID;
+                    }
+                }
+
+                // Get staff IDs based on organization filters
+                let staffIds = [];
+                if (!req.query.StaffID) {
+                    $whereOrganization["isActive"] = 1;
+                    $whereOrganization["isRemove"] = 0;
+
+                    const organizations = await Organization.findAll({
+                        where: Object.keys($whereOrganization).length > 0 ? $whereOrganization : {},
+                        attributes: ['OrganizationID']
+                    });
+
+                    const organizationIds = organizations.map(org => org.OrganizationID);
+                    
+                    $whereStaff["StaffOrganizationID"] = { [Op.in]: organizationIds };
+                }
+
+                // Staff filters
+                $whereStaff["isRemove"] = 0;
+                $whereStaff["isActive"] = req.query.StaffIsActive || 1;
+                $whereStaff["StaffStatus"] = { [Op.notIn]: ["ลาออก", "ตาย"] };
+
+                const staff = await Staff.findAll({
+                    where: $whereStaff,
+                    attributes: ['StaffID']
+                });
+
+                staffIds = staff.map(s => s.StaffID);
+                $where["ResponsibilityStaffID"] = { [Op.in]: staffIds };
+
+                // Animal filters
+                $whereAnimal["AnimalTypeID"] = { [Op.in]: JSON.parse(req.query.AnimalTypeID) };
+                $whereAnimal["isRemove"] = 0;
+                $whereAnimal["isActive"] = 1;
+                $whereAnimal["AnimalAlive"] = 1;
+
+                $where["isActive"] = 1;
+                $where["isRemove"] = 0;
+
+                // Project filter
+                let whereProject = null;
+                if (req.query.Projects && req.query.Projects !== "[]") {
+                    whereProject = {
+                        ProjectID: { [Op.in]: JSON.parse(req.query.Projects) }
+                    };
+                }
+
+                // Single optimized query with all includes
+                const preg = await PregnancyCheckup.findAll({
+                    where: $where,
+                    include: [
+                        {
+                            model: Animal,
+                            as: "Animal",
+                            where: $whereAnimal,
+                            include: [
+                                {
+                                    model: Farm,
+                                    as: "AnimalFarm",
+                                    where: { isRemove: 0 },
+                                    include: whereProject ? [{ model: Project, where: whereProject }] : []
+                                },
+                                { 
+                                    model: AnimalStatus, 
+                                    as: "AnimalStatus",
+                                    attributes: ['AnimalStatusName']
+                                }
+                            ],
+                            attributes: [
+                                'AnimalID', 'AnimalEarID', 'AnimalName', 'AnimalBreedID1', 
+                                'FarmID', 'AnimalTypeID'
+                            ]
+                        },
+                        {
+                            model: AI,
+                            as: "AI",
+                            where: { isActive: 1, isRemove: 0 },
+                            include: [
+                                {
+                                    model: Semen,
+                                    as: "Semen",
+                                    attributes: ['SemenNumber', 'AnimalBreedAll'],
+                                    include: [
+                                        { model: AnimalBreed, as: "AnimalBreed1", attributes: ['AnimalBreedID','AnimalBreedName', 'AnimalBreedShortName'] },
+                                        { model: AnimalBreed, as: "AnimalBreed2", attributes: ['AnimalBreedID','AnimalBreedName', 'AnimalBreedShortName'] },
+                                        { model: AnimalBreed, as: "AnimalBreed3", attributes: ['AnimalBreedID','AnimalBreedName', 'AnimalBreedShortName'] },
+                                        { model: AnimalBreed, as: "AnimalBreed4", attributes: ['AnimalBreedID','AnimalBreedName', 'AnimalBreedShortName'] },
+                                        { model: AnimalBreed, as: "AnimalBreed5", attributes: ['AnimalBreedID','AnimalBreedName', 'AnimalBreedShortName'] }
+                                    ]
+                                }
+                            ],
+                            attributes: ['AIDate', 'PAR', 'SemenID']
+                        },
+                        {
+                            model: Staff,
+                            attributes: ['StaffGivenName', 'StaffSurname']
+                        },
+                        {
+                            model: PregnancyCheckStatus,
+                            attributes: ['PregnancyCheckStatusName']
+                        }
+                    ],
+                    attributes: ['CheckupDate', 'Createddatetime', 'ResponsibilityStaffID']
+                });
+
+                // Pre-load all breeds for faster lookup
+                const breedMap = new Map();
+                const allBreeds = await AnimalBreed.findAll({
+                    attributes: ['AnimalBreedID', 'AnimalBreedName', 'AnimalBreedShortName'],
+                    raw: true
+                });
+                allBreeds.forEach(breed => {
+                    breedMap.set(breed.AnimalBreedID, breed);
+                });
+
+                // Filter and process data efficiently
+                const validRecords = preg.filter(x => x.AI && x.Animal && x.AI.Semen && x.AI.Semen.AnimalBreed1 && x.AI.SemenID);
+                
+                // Use Map for O(1) breed lookup instead of O(n) find operations
+                const breedGroups = new Map();
+
+                validRecords.forEach(record => {
+                    // ใช้ AnimalBreed1 จากตาราง Semen แทน
+                    console.log("FREEDOM")
+                    console.log(record.AI.Semen.AnimalBreed1)
+
+                    const breedId = record.AI.Semen.AnimalBreed1.AnimalBreedID;
+                    
+                    if (!breedGroups.has(breedId)) {
+                        breedGroups.set(breedId, {
+                            AnimalBreedID: breedId,
+                            AnimalID: [],
+                            AnimalIDSet: new Set(), // ใช้ Set เพื่อนับสัตว์ไม่ซ้ำ
+                            FarmID: new Set(),
+                            PregnancyCheckupCount: 0
+                        });
+                    }
+
+                    const breedGroup = breedGroups.get(breedId);
+                    
+                    // นับจำนวนครั้งตรวจท้อง
+                    breedGroup.PregnancyCheckupCount++;
+                    
+                    // นับสัตว์ไม่ซ้ำ
+                    breedGroup.AnimalIDSet.add(record.Animal.AnimalID);
+                    
+                    // Format dates once per record
+                    const aiDate = record.AI.AIDate ? dayjs(record.AI.AIDate).locale("th").format("DD MMM BB") : null;
+                    const checkupDate = record.CheckupDate ? dayjs(record.CheckupDate).locale("th").format("DD MMM BB") : null;
+                    const betweenDate = record.CheckupDate && record.AI.AIDate ? 
+                        dayjs(record.CheckupDate).diff(dayjs(record.AI.AIDate), "day") : null;
+
+                    breedGroup.AnimalID.push({
+                        AnimalID: record.Animal.AnimalID,
+                        FarmIdentificationNumber: record.Animal.AnimalFarm?.FarmIdentificationNumber,
+                        FarmName: record.Animal.AnimalFarm?.FarmName,
+                        AnimalEarID: record.Animal.AnimalEarID,
+                        AnimalName: record.Animal.AnimalName,
+                        AnimalStatusName: record.Animal.AnimalStatus?.AnimalStatusName,
+                        SemenNumber: record.AI.Semen?.SemenNumber,
+                        SemenBreedAll: record.AI.Semen?.AnimalBreedAll,
+                        AnimalPar: record.AI.PAR,
+                        AIDate: aiDate,
+                        CheckupDateReal: record.CheckupDate,
+                        CheckupDate: checkupDate,
+                        PregnancyCheckStatusName: record.PregnancyCheckStatus?.PregnancyCheckStatusName,
+                        BetweenDate: betweenDate,
+                        ResponsibilityStaffName: `${record.Staff?.StaffGivenName || ''} ${record.Staff?.StaffSurname || ''}`.trim()
+                    });
+
+                    breedGroup.FarmID.add(record.Animal.FarmID);
+                });
+
+                // Convert Map to array and add breed information
+                const breed = Array.from(breedGroups.values()).map(breedGroup => {
+                    const breedInfo = breedMap.get(breedGroup.AnimalBreedID);
+                    
+                    // Debug logs เพื่อตรวจสอบปัญหา
+                    console.log('breedGroup.AnimalBreedID:', breedGroup.AnimalBreedID);
+                    console.log('breedMap keys:', Array.from(breedMap.keys()));
+                    console.log('breedInfo:', breedInfo);
+                    
+                    // Sort animals by checkup date (newest first)
+                    breedGroup.AnimalID.sort((a, b) => {
+                        if (!a.CheckupDateReal || !b.CheckupDateReal) return 0;
+                        return new Date(b.CheckupDateReal) - new Date(a.CheckupDateReal);
+                    });
+
+                    return {
+                        AnimalBreedID: breedGroup.AnimalBreedID,
+                        AnimalBreedName: breedInfo ? 
+                            `${breedInfo.AnimalBreedName} (${breedInfo.AnimalBreedShortName})` : 
+                            'Unknown Breed',
+                        AnimalID: breedGroup.AnimalID,
+                        AnimalRealCount: breedGroup.AnimalIDSet.size,
+                        AnimalCount: breedGroup.AnimalIDSet.size,
                         FarmCount: breedGroup.FarmID.size,
                         PregnancyCheckupCount: breedGroup.PregnancyCheckupCount
                     };
