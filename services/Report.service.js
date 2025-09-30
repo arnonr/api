@@ -1061,7 +1061,7 @@ const methods = {
                     $whereOrganization["OrganizationTumbolID"] =
                         req.query.TumbolID;
                 } else if (req.query.AmphurID) {
-                    $whereOrganization["StaffAmphurID"] = req.query.AmphurID;
+                    $whereOrganization["OrganizationAmphurID"] = req.query.AmphurID;
                 } else if (req.query.ProvinceID) {
                     $whereOrganization["OrganizationProvinceID"] = Number(
                         req.query.ProvinceID
