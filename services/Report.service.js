@@ -5115,7 +5115,7 @@ const methods = {
                 } else if (req.query.TumbolID) {
                     $whereOrganization["OrganizationTumbolID"] = req.query.TumbolID;
                 } else if (req.query.AmphurID) {
-                    $whereOrganization["StaffAmphurID"] = req.query.AmphurID;
+                    $whereOrganization["OrganizationAmphurID"] = req.query.AmphurID;
                 } else if (req.query.ProvinceID) {
                     $whereOrganization["OrganizationProvinceID"] = req.query.ProvinceID;
                 } else {
