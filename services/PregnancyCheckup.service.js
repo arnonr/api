@@ -398,23 +398,55 @@ const methods = {
                     //   { where: { PregnancyCheckupID: id } }
                 );
 
-                if (obj.TimeNo == 1) {
+                                                                                                                                                                                                                           
 
-                    // find Animal
-                    const animal = await Animal.findByPk(obj.AnimalID);
-                    await Animal.update(
-                        {
-                            ProductionStatusID: animal.ReProductionStatusID,
-                            updatedAt: fn("GETDATE"),
-                            UpdatedUserID: Number(UpdatedUserID),
+                let ReProductionStatusID = null;
+
+                const animal = await Animal.findByPk(obj.AnimalID);
+
+                if (
+                    animal.ReProductionStatusID == null ||
+                    animal.ReProductionStatusID == ""
+                ) {
+                    ReProductionStatusID = null;
+
+                    // ตรวจสอบว่ามี AIID เดียวกันหรือไม่ที่เป็นครั้งก่อนหน้า TimeNo ถ้ามีให้เอา ProductionCheckSTatusID ของ record ก่อนหน้ามา แต่ถ้าไม่มีเปลี่ยนเป็น MA
+                    const pregnancyCheckup = await PregnancyCheckup.findOne({
+                        where: {
+                            AIID: obj.AIID,
+                            AnimalID: obj.AnimalID,
+                            TimeNo: obj.TimeNo - 1,
                         },
-                        {
-                            where: {
-                                AnimalID: obj.AnimalID,
-                            },
+                    });
+
+                    if (pregnancyCheckup) {
+                        if(pregnancyCheckup.PregnancyCheckStatusID == 1){
+                            ReProductionStatusID = 6;
+                        } else if(pregnancyCheckup.PregnancyCheckStatusID == 2){
+                            ReProductionStatusID = 5;
+                        } else {
+                            ReProductionStatusID = 3;
                         }
-                    );
+                    } else {
+                        ReProductionStatusID = 4;
+                    }
+                } else {
+                    ReProductionStatusID = animal.ReProductionStatusID;
                 }
+
+                await Animal.update(
+                    {
+                        ProductionStatusID: animal.ReProductionStatusID,
+                        updatedAt: fn("GETDATE"),
+                        UpdatedUserID: Number(UpdatedUserID),
+                    },
+                    {
+                        where: {
+                            AnimalID: obj.AnimalID,
+                        },
+                    }
+                );
+                // }
 
                 resolve();
             } catch (error) {
