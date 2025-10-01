@@ -401,6 +401,16 @@ const methods = {
 
                 await db.update(data, { where: { GiveBirthID: id } });
 
+                const animal = await Animal.findByPk(obj.AnimalID);
+                await Animal.update(
+                    {
+                        ProductionStatusID: 2,
+                        ReProductionStatusID: animal.ProductionStatusID,
+                        updatedAt: fn("GETDATE"),
+                    },
+                    { where: { AnimalID: obj.AnimalID } }
+                );
+
                 let res = methods.findById(data.GiveBirthID);
 
                 resolve(res);

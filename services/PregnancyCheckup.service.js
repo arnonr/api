@@ -237,8 +237,12 @@ const methods = {
                     embBirthStatusId = 2;
                 }
 
+                const animal = await Animal.findByPk(inserted.AnimalID);
                 await Animal.update(
-                    { ProductionStatusID: productionStatusID },
+                    {
+                        ProductionStatusID: productionStatusID,
+                        ReProductionStatusID: animal.ProductionStatusID,
+                    },
                     { where: { AnimalID: obj.AnimalID } }
                 );
 
@@ -398,8 +402,6 @@ const methods = {
                     //   { where: { PregnancyCheckupID: id } }
                 );
 
-                                                                                                                                                                                                                           
-
                 let ReProductionStatusID = null;
 
                 const animal = await Animal.findByPk(obj.AnimalID);
@@ -420,9 +422,11 @@ const methods = {
                     });
 
                     if (pregnancyCheckup) {
-                        if(pregnancyCheckup.PregnancyCheckStatusID == 1){
+                        if (pregnancyCheckup.PregnancyCheckStatusID == 1) {
                             ReProductionStatusID = 6;
-                        } else if(pregnancyCheckup.PregnancyCheckStatusID == 2){
+                        } else if (
+                            pregnancyCheckup.PregnancyCheckStatusID == 2
+                        ) {
                             ReProductionStatusID = 5;
                         } else {
                             ReProductionStatusID = 3;

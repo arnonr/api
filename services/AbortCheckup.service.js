@@ -213,7 +213,11 @@ const methods = {
 
                 const animal = await Animal.findByPk(inserted.AnimalID);
                 await Animal.update(
-                    { ProductionStatusID: 1, ReProductionStatusID: animal.ProductionStatusID, updatedAt: fn("GETDATE") },
+                    {
+                        ProductionStatusID: 1,
+                        ReProductionStatusID: animal.ProductionStatusID,
+                        updatedAt: fn("GETDATE"),
+                    },
                     { where: { AnimalID: inserted.AnimalID } }
                 );
 
@@ -293,6 +297,16 @@ const methods = {
                 data.updatedAt = fn("GETDATE");
 
                 await db.update(data, { where: { AbortCheckupID: id } });
+
+                const animal = await Animal.findByPk(obj.AnimalID);
+                await Animal.update(
+                    {
+                        ProductionStatusID: 1,
+                        ReProductionStatusID: animal.ProductionStatusID,
+                        updatedAt: fn("GETDATE"),
+                    },
+                    { where: { AnimalID: obj.AnimalID } }
+                );
 
                 let res = methods.findById(data.AbortCheckupID);
 
