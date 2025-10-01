@@ -9531,8 +9531,8 @@ const methods = {
 
                 $where["AIDate"] = {
                     [Op.between]: [
-                        dayjs().subtract(1, "year").format("YYYY-MM-DD"),
-                        dayjs().format("YYYY-MM-DD"),
+                        dayjs(req.query.StartDate).format("YYYY-MM-DD"),
+                        dayjs(req.query.EndDate).format("YYYY-MM-DD"),
                     ],
                 };
 
