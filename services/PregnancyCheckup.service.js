@@ -228,7 +228,7 @@ const methods = {
                     embTransStatusId = 1;
                     embBirthStatusId = 2;
                 } else if (obj.PregnancyCheckStatusID == 2) {
-                    productionStatusID = 5;
+                    productionStatusID = 4;
                     embTransStatusId = 2;
                     embBirthStatusId = 1;
                 } else {
@@ -333,7 +333,7 @@ const methods = {
                     embTransStatusId = 1;
                     embBirthStatusId = 2;
                 } else if (obj.PregnancyCheckStatusID == 2) {
-                    productionStatusID = 5;
+                    productionStatusID = 4;
                     embTransStatusId = 2;
                     embBirthStatusId = 1;
                 } else {
