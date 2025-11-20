@@ -481,7 +481,12 @@ class Animal extends Model {
             productionStatusText = "แท้ง";
         } else if (this.ProductionStatusID == 2) {
             productionStatusText = "คลอด";
-            dayAfterCalve = dayjs().diff(dayjs(giveBirth.GiveBirthDate), "day");
+            if (giveBirth) {
+                dayAfterCalve = dayjs().diff(
+                    dayjs(giveBirth.GiveBirthDate),
+                    "day"
+                );
+            }
         } else if (this.ProductionStatusID == 3) {
             productionStatusText = "รอตรวจซ้ำ";
         } else if (this.ProductionStatusID == 4) {
