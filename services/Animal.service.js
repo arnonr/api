@@ -2808,10 +2808,37 @@ const methods = {
                 });
 
                 data.updatedAt = fn("GETDATE");
-
                 await db.update(data, { where: { AnimalID: id } });
 
-                if (data.ProjectID === null) {
+                // ตรวจสอบตาราง Semen ถ้ามี BreederID ตรงกับ AnimalID ให้ทำการอัพเดท AnimalBreedID1.....ID5, AnimalBreedPercent1.....5 ให้ตรงกับ Animal
+                const semenRecords = await Semen.findAll({
+                    where: { BreederID: id }
+                });
+
+                if (semenRecords && semenRecords.length > 0) {
+                    // สร้างข้อมูลที่จะอัพเดท Semen
+                    const semenUpdateData = {};
+                    
+                    // คัดลอกค่าจาก AnimalBreedID และ AnimalBreedPercent จาก Animal ที่ถูกอัพเดทแล้ว
+                    for (let i = 1; i <= 5; i++) {
+                        if (obj[`AnimalBreedID${i}`]) {
+                            semenUpdateData[`AnimalBreedID${i}`] = obj[`AnimalBreedID${i}`];
+                        }
+                        if (obj[`AnimalBreedPercent${i}`]) {
+                            semenUpdateData[`AnimalBreedPercent${i}`] = obj[`AnimalBreedPercent${i}`];
+                        }
+                    }
+                    
+                    // เพิ่ updatedAt field
+                    semenUpdateData.updatedAt = fn("GETDATE");
+                    
+                    // อัพเดทข้อมูลในตาราง Semen ทั้งหมดที่มี BreederID ตรงกับ AnimalID
+                    await Semen.update(semenUpdateData, {
+                        where: { BreederID: id }
+                    });
+                }
+
+if (data.ProjectID === null) {
                     AnimalToProject.destroy({
                         where: {
                             AnimalID: id,
