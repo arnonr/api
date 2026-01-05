@@ -10,6 +10,7 @@ const AnimalToProject = require("../models/AnimalToProject");
 const Project = require("../models/Project");
 const Animal = require("../models/Animal");
 const Farm = require("../models/Farm");
+const Organization = require("../models/Organization");
 const AnimalBreed = require("../models/AnimalBreed");
 const AnimalStatus = require("../models/AnimalStatus");
 const AnimalType = require("../models/AnimalType");
@@ -6419,53 +6420,224 @@ if (data.ProjectID === null) {
     },
 
     //
-    async exportExcel(req) {
+    // async exportExcel(req) {
+    //     const limit = +(req.query.size || config.pageLimit);
+    //     const offset = +(limit * ((req.query.page || 1) - 1));
+    //     const _q = methods.scopeSearch(req, limit, offset);
+
+    //     return new Promise(async (resolve, reject) => {
+    //         try {
+    //             Promise.all([
+    //                 db.findAll({
+    //                     ..._q.query,
+    //                     limit: undefined,
+    //                     offset: undefined,
+    //                 }),
+    //             ])
+    //                 .then(async (result) => {
+    //                     let rows = result[0].map((x) => {
+    //                         return {
+    //                             หมายเลขใบหู: x.AnimalEarID,
+    //                             ชื่อสัตว์: x.AnimalName,
+    //                             อายุ: "'" + x.AnimalAge,
+    //                             สถานะ: x.AnimalStatus
+    //                                 ? x.AnimalStatus.AnimalStatusName
+    //                                 : "-",
+    //                             สายพันธุ์: x.AnimalBreedAll,
+    //                             วันเกิด: x.ThaiAnimalBirthDate,
+    //                             เพศ: x.AnimalSex.AnimalSexName,
+    //                             หมายเลขฟาร์ม:
+    //                                 x.AnimalFarm.FarmIdentificationNumber,
+    //                             ชื่อฟาร์ม: x.AnimalFarm.FarmName,
+    //                             หน่วยงาน: x.Organization
+    //                                 ? x.Organization.OrganizationName
+    //                                 : "-",
+    //                         };
+    //                     });
+
+    //                     resolve({
+    //                         rows: rows,
+    //                     });
+    //                 })
+    //                 .catch((error) => {
+    //                     reject(error);
+    //                 });
+    //         } catch (error) {
+    //             reject(error);
+    //         }
+    //     });
+    // },
+
+     async exportExcel(req) {
         const limit = +(req.query.size || config.pageLimit);
         const offset = +(limit * ((req.query.page || 1) - 1));
         const _q = methods.scopeSearch(req, limit, offset);
 
         return new Promise(async (resolve, reject) => {
             try {
-                Promise.all([
-                    db.findAll({
-                        ..._q.query,
-                        limit: undefined,
-                        offset: undefined,
-                    }),
-                ])
-                    .then(async (result) => {
-                        let rows = result[0].map((x) => {
-                            return {
-                                หมายเลขใบหู: x.AnimalEarID,
-                                ชื่อสัตว์: x.AnimalName,
-                                อายุ: "'" + x.AnimalAge,
-                                สถานะ: x.AnimalStatus
-                                    ? x.AnimalStatus.AnimalStatusName
-                                    : "-",
-                                สายพันธุ์: x.AnimalBreedAll,
-                                วันเกิด: x.ThaiAnimalBirthDate,
-                                เพศ: x.AnimalSex.AnimalSexName,
-                                หมายเลขฟาร์ม:
-                                    x.AnimalFarm.FarmIdentificationNumber,
-                                ชื่อฟาร์ม: x.AnimalFarm.FarmName,
-                                หน่วยงาน: x.Organization
-                                    ? x.Organization.OrganizationName
-                                    : "-",
-                            };
-                        });
+                const rows = await db.findAll({
+                    where: _q.query.where,
+                    order: _q.query.order,
+                    include: [
+                        {
+                            model: AnimalStatus,
+                            as: "AnimalStatus",
+                            attributes: ["AnimalStatusName"],
+                        },
+                        {
+                            model: AnimalSex,
+                            as: "AnimalSex",
+                            attributes: ["AnimalSexName"],
+                        },
+                        {
+                            model: Farm,
+                            as: "AnimalFarm",
+                            attributes: ["FarmIdentificationNumber", "FarmName"],
+                        },
+                        {
+                            model: Organization,
+                            as: "Organization",
+                            attributes: ["OrganizationName"],
+                        },
+                        {
+                            model: AnimalBreed,
+                            as: "AnimalBreed1",
+                            attributes: ["AnimalBreedShortName"],
+                        },
+                        {
+                            model: AnimalBreed,
+                            as: "AnimalBreed2",
+                            attributes: ["AnimalBreedShortName"],
+                        },
+                        {
+                            model: AnimalBreed,
+                            as: "AnimalBreed3",
+                            attributes: ["AnimalBreedShortName"],
+                        },
+                        {
+                            model: AnimalBreed,
+                            as: "AnimalBreed4",
+                            attributes: ["AnimalBreedShortName"],
+                        },
+                        {
+                            model: AnimalBreed,
+                            as: "AnimalBreed5",
+                            attributes: ["AnimalBreedShortName"],
+                        },
+                    ],
+                    raw: true,
+                    nest: true,
+                });
 
-                        resolve({
-                            rows: rows,
-                        });
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
+                let mappedRows = rows.map((x) => {
+                    // Reconstruct AnimalAge
+                    let age = null;
+                    if (x.AnimalBirthDate) {
+                        let ageMonth = dayjs().diff(x.AnimalBirthDate, "month");
+                        const year = ageMonth / 12;
+                        const month = ageMonth % 12;
+                        age = Math.floor(year) + "-" + month;
+                    }
+
+                    // Reconstruct ThaiAnimalBirthDate
+                    let thaiBirthDate = x.AnimalBirthDate
+                        ? dayjs(x.AnimalBirthDate)
+                              .locale("th")
+                              .format("DD/MM/BBBB")
+                        : null;
+
+                    // Reconstruct AnimalBreedAll
+                    let animalBreed = "";
+                    if (x.AnimalBreedID1 != null && x.AnimalBreed1) {
+                        animalBreed +=
+                            x.AnimalBreedPercent1.toString().substring(
+                                0,
+                                x.AnimalBreedPercent1.length - 1
+                            ) +
+                            x.AnimalBreed1.AnimalBreedShortName +
+                            " " +
+                            x.AnimalBreedPercent1 +
+                            "%";
+                    }
+                    if (x.AnimalBreedID2 != null && x.AnimalBreed2) {
+                        animalBreed +=
+                            ", " +
+                            x.AnimalBreedPercent2.toString().substring(
+                                0,
+                                x.AnimalBreedPercent2.length - 1
+                            ) +
+                            x.AnimalBreed2.AnimalBreedShortName +
+                            " " +
+                            x.AnimalBreedPercent2 +
+                            "% ";
+                    }
+                    if (x.AnimalBreedID3 != null && x.AnimalBreed3) {
+                        animalBreed +=
+                            ", " +
+                            x.AnimalBreedPercent3.toString().substring(
+                                0,
+                                x.AnimalBreedPercent3.length - 1
+                            ) +
+                            x.AnimalBreed3.AnimalBreedShortName +
+                            " " +
+                            x.AnimalBreedPercent3 +
+                            "%, ";
+                    }
+                    if (x.AnimalBreedID4 != null && x.AnimalBreed4) {
+                        animalBreed +=
+                            ", " +
+                            x.AnimalBreedPercent4.toString().substring(
+                                0,
+                                x.AnimalBreedPercent4.length - 1
+                            ) +
+                            x.AnimalBreed4.AnimalBreedShortName +
+                            " " +
+                            x.AnimalBreedPercent4 +
+                            "%, ";
+                    }
+                    if (x.AnimalBreedID5 != null && x.AnimalBreed5) {
+                        animalBreed +=
+                            ", " +
+                            x.AnimalBreedPercent5.toString().substring(
+                                0,
+                                x.AnimalBreedPercent5.length - 1
+                            ) +
+                            x.AnimalBreed5.AnimalBreedShortName +
+                            " " +
+                            x.AnimalBreedPercent5 +
+                            "%, ";
+                    }
+                    animalBreed = animalBreed.trim();
+
+                    return {
+                        หมายเลขใบหู: x.AnimalEarID,
+                        ชื่อสัตว์: x.AnimalName,
+                        อายุ: "'" + age,
+                        สถานะ: x.AnimalStatus
+                            ? x.AnimalStatus.AnimalStatusName
+                            : "-",
+                        สายพันธุ์: animalBreed,
+                        วันเกิด: thaiBirthDate,
+                        เพศ: x.AnimalSex ? x.AnimalSex.AnimalSexName : "-",
+                        หมายเลขฟาร์ม: x.AnimalFarm
+                            ? x.AnimalFarm.FarmIdentificationNumber
+                            : "-",
+                        ชื่อฟาร์ม: x.AnimalFarm ? x.AnimalFarm.FarmName : "-",
+                        หน่วยงาน: x.Organization
+                            ? x.Organization.OrganizationName
+                            : "-",
+                    };
+                });
+
+                resolve({
+                    rows: mappedRows,
+                });
             } catch (error) {
                 reject(error);
             }
         });
     },
+
 
     findWithAI(req) {
         const limit = +(req.query.size || config.pageLimit);
