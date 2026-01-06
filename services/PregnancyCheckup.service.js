@@ -413,7 +413,7 @@ const methods = {
                     ReProductionStatusID = null;
 
                     // ตรวจสอบว่ามี AIID เดียวกันหรือไม่ที่เป็นครั้งก่อนหน้า TimeNo ถ้ามีให้เอา ProductionCheckSTatusID ของ record ก่อนหน้ามา แต่ถ้าไม่มีเปลี่ยนเป็น MA
-                    const pregnancyCheckup = await PregnancyCheckup.findOne({
+                    const pregnancyCheckup = await db.findOne({
                         where: {
                             AIID: obj.AIID,
                             AnimalID: obj.AnimalID,
