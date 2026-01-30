@@ -3204,6 +3204,10 @@ const methods = {
                     $where["AnimalStatusID"] = 13;
                 }
 
+                if (req.query.StaffID) {
+                    $where["CreatedUserID"] = req.query.StaffID;
+                }
+
                 // ProductionStatusID
                 $where["ProductionStatusID"] = null;
 
