@@ -3205,7 +3205,16 @@ const methods = {
                 }
 
                 if (req.query.StaffID) {
-                    $where["CreatedUserID"] = req.query.StaffID;
+                    // ที่ได้มาคือ STAFFID แต่ คอลัมน์ที่เก็บคือ USERID ต้องเอา STAFFID ไปหา USERID
+                    const user = await User.findOne({
+                        where: { StaffID: req.query.StaffID },
+                    });
+
+                    if (!user) {
+                        throw ErrorNotFound("ไม่พบข้อมูลผู้ใช้");
+                    }
+
+                    $where["CreatedUserID"] = user.UserID;
                 }
 
                 // ProductionStatusID
