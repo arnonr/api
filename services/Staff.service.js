@@ -205,8 +205,11 @@ const methods = {
             ];
         }
 
-        if (req.query.isActive) $where["isActive"] = req.query.isActive;
-        $where["isActive"] = 1;
+        if (req.query.isActive !== undefined) {
+            $where["isActive"] = req.query.isActive;
+        } else {
+            $where["isActive"] = 1;
+        }
         if (req.query.CreatedUserID)
             $where["CreatedUserID"] = req.query.CreatedUserID;
         if (req.query.UpdatedUserID)
@@ -339,6 +342,7 @@ const methods = {
             }
         } else {
         }
+
 
         console.log(include);
         query["include"] = include;
