@@ -6476,60 +6476,11 @@ if (data.ProjectID === null) {
         return new Promise(async (resolve, reject) => {
             try {
                 const rows = await db.findAll({
-                    where: _q.query.where,
-                    order: _q.query.order,
-                    include: [
-                        {
-                            model: AnimalStatus,
-                            as: "AnimalStatus",
-                            attributes: ["AnimalStatusName"],
-                        },
-                        {
-                            model: AnimalSex,
-                            as: "AnimalSex",
-                            attributes: ["AnimalSexName"],
-                        },
-                        {
-                            model: Farm,
-                            as: "AnimalFarm",
-                            attributes: ["FarmIdentificationNumber", "FarmName"],
-                        },
-                        {
-                            model: Organization,
-                            as: "Organization",
-                            attributes: ["OrganizationName"],
-                        },
-                        {
-                            model: AnimalBreed,
-                            as: "AnimalBreed1",
-                            attributes: ["AnimalBreedShortName"],
-                        },
-                        {
-                            model: AnimalBreed,
-                            as: "AnimalBreed2",
-                            attributes: ["AnimalBreedShortName"],
-                        },
-                        {
-                            model: AnimalBreed,
-                            as: "AnimalBreed3",
-                            attributes: ["AnimalBreedShortName"],
-                        },
-                        {
-                            model: AnimalBreed,
-                            as: "AnimalBreed4",
-                            attributes: ["AnimalBreedShortName"],
-                        },
-                        {
-                            model: AnimalBreed,
-                            as: "AnimalBreed5",
-                            attributes: ["AnimalBreedShortName"],
-                        },
-                    ],
-                    raw: true,
-                    nest: true,
+                    ..._q.query,
                 });
 
-                let mappedRows = rows.map((x) => {
+                let mappedRows = rows.map((row) => {
+                    const x = row.toJSON();
                     // Reconstruct AnimalAge
                     let age = null;
                     if (x.AnimalBirthDate) {
